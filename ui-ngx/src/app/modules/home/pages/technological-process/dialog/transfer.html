@@ -1,0 +1,54 @@
+<div class="title">
+  选择班别
+  <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+<div class="content transfer-warp scorll-warp">
+  <div class="transfer-panel">
+    <div class="transfer-header">请选择</div>
+    <div class="search-block">
+      <mat-icon class="svgIcon">search</mat-icon>
+      <input tabindex="-1" class="search-input" type="text" placeholder="输入班别名称/组长名称搜索" [(ngModel)]="searchName">
+      <button class="search-btn" (click)="searchClass()">搜索</button>
+    </div>
+    <div class="transfer-body">
+      <div class="transfer-item" *ngFor="let item of listLeft">
+        <mat-checkbox [(ngModel)]="item.checked" class="example-margin"></mat-checkbox>
+        <span class="span">{{item.label}}</span>
+        <span class="span">{{item.leader}}</span>
+        <!-- <span class="span">{{item.teamNum}}</span> -->
+      </div>
+    </div>
+  </div>
+
+  <div class="transfer-buttons">
+    <div class="t-block">
+      <button mat-fab color="primary" class="t-btn" [disabled]="someRight" (click)="move('left')">
+        <mat-icon class="svgIcon">chevron_left</mat-icon>
+      </button>
+    </div>
+    <div class="t-block">
+      <button mat-fab color="primary" class="t-btn" [disabled]="someLeft" (click)="move('right')">
+        <mat-icon class="svgIcon">chevron_right</mat-icon>
+      </button>
+    </div>
+
+  </div>
+
+  <div class="transfer-panel">
+    <div class="transfer-header">已选中</div>
+    <div class="transfer-body scorll-warp">
+      <div class="transfer-item" *ngFor="let item of listRight">
+        <mat-checkbox [(ngModel)]="item.checked" class="example-margin"></mat-checkbox>
+        <span class="span">{{item.label}}</span>
+        <span class="span">{{item.leader}}</span>
+        <!-- <span class="span">{{item.teamNum}}</span> -->
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <button tabindex="-1" (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>提交</span>
+  </button>
+</div>

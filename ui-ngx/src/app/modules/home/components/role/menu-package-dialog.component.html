@@ -1,0 +1,16 @@
+<div class="title">
+    角色菜单配置
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+<div class="content">
+    <div class="menu_content">
+        <div style="height: 500px;width: 100%;overflow-y: scroll;">
+            <app-Tree [TreeData]="data" (NodeClickEvent)="NodeClickEventEmit($event)" [menuName]="'menuName'"
+                [menuId]="'menuId'" [tsysMenus]="'tsysMenus'" [isFlag]="'isFlag'" [select]="'select'"></app-Tree>
+        </div>
+    </div>
+    <div class="tips">温馨提示:请勾选菜单，分配菜单权限</div>
+</div>
+<div class="footer">
+    <button [mat-dialog-close]="data" cdkFocusInitial>提交</button>
+</div>

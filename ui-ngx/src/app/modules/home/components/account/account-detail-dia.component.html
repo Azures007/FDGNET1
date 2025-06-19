@@ -1,0 +1,56 @@
+<div class="title">
+    {{data.isEdit?'编辑账号':'查看账号'}}
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+<div class="content" *ngIf="!data.isEdit">
+    <div class="item">
+        <div class="label">用户名:</div>
+        <input type="text" [(ngModel)]="data.userDetail.first_name" disabled>
+    </div>
+    <div class="item">
+        <div class="label">账号:</div>
+        <input type="text" [(ngModel)]="data.userDetail.username" disabled>
+    </div>
+    <div class="item">
+        <div class="label">角色:</div>
+        <input type="text" [(ngModel)]="data.userDetail.role_name" disabled>
+    </div>
+    <div class="item">
+        <div class="label">创建人:</div>
+        <input type="text" [(ngModel)]="data.userDetail.created_name" disabled>
+    </div>
+    <div class="item">
+        <div class="label">创建时间:</div>
+        <input type="text" [(ngModel)]="data.userDetail.created_time" disabled>
+    </div>
+    <div class="item">
+        <div class="label">状态:</div>
+        <select disabled name="" id="" [(ngModel)]="data.userDetail.user_status" required aria-placeholder="请选择">
+            <option value="1">启用</option>
+            <option value="0">禁用</option>
+        </select>
+    </div>
+</div>
+
+<div class="content" *ngIf="data.isEdit">
+    <div class="item">
+        <div class="label">用户名:</div>
+        <input type="text" [(ngModel)]="data.userDetail.first_name" >
+    </div>
+    <div class="item">
+        <div class="label">账号:</div>
+        <input type="text" [(ngModel)]="data.userDetail.username" >
+    </div>
+    <div class="item">
+        <div class="label">状态:</div>
+        <select name="" id="" [(ngModel)]="data.userDetail.user_status" required aria-placeholder="请选择">
+            <option value="1">启用</option>
+            <option value="0">禁用</option>
+        </select>
+    </div>
+</div>
+<div class="footer">
+    <button (click)="DialogClose()" *ngIf="!data.isEdit">关闭</button>
+    <button (click)="DialogSaveClose()" cdkFocusInitial *ngIf="data.isEdit">保存</button>
+</div>
+

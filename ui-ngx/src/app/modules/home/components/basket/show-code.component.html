@@ -1,0 +1,17 @@
+<div class="title">
+    查看二维码
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+<div class="content">
+    <img src="{{codeSrc}}" alt="" class="code_img">
+    <div class="code_name">
+        料筐编码：{{data.data.code}}
+    </div>
+</div>
+
+<div class="footer">
+    <button (click)="DialogClose()" mat-raised-button color="primary" class="search-btn btn">
+        <mat-icon class="material-icons svgIcon">done</mat-icon>
+        <span>关闭</span>
+    </button>
+</div>

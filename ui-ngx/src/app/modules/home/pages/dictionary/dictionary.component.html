@@ -1,0 +1,119 @@
+<div class="dic_container">
+    <div class="left">
+        <div class="top">
+            <button class="add_btn btn_color_primary" (click)="handSaveAddType()">
+                <mat-icon>add</mat-icon> 新增类型
+            </button>
+        </div>
+        <div class="list">
+            <ul>
+                <li (click)="handleTypeChange(null)" [ngClass]="{'active_type':currentType == null }">
+                    <div class="code_name">全部 </div>
+                </li>
+                <li *ngFor="let type of typeList" (click)="handleTypeChange(type)"
+                    [ngClass]="{'active_type':(currentType != null && currentType.codeDsc ==  type.codeDsc)}">
+                    <div class="code_name">{{type.codeDsc}}</div>
+                    <div class="btn_list">
+                        <span (click)="handSaveEditType(type);$event.stopPropagation()">编辑</span>
+                        <span (click)="handleDelType(type);$event.stopPropagation()">删除</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="right">
+        <div class="right-container">
+            <div class="search_form">
+                <div class="search_item">
+                    <div class="label">字典名称:</div>
+                    <input type="text" [(ngModel)]="searchFormGroup.value.codeDsc">
+                </div>
+                <div class="search_item">
+                    <div class="label">状态:</div>
+                    <select required [(ngModel)]="searchFormGroup.value.enabledSt">
+                        <option value="">全部</option>
+                        <option value="1">启用</option>
+                        <option value="0">禁用</option>
+                    </select>
+                </div>
+                <button class="search_btn" (click)="getInitTableList()">
+                    <mat-icon>search</mat-icon> 查询
+                </button>
+
+            </div>
+            <div class="info_container">
+                <div class="info_title">
+                    <div class="btn_list">
+                        <button  *ngIf="set.has('/dictionary/add')" class="add_btn btn_color_primary" (click)="handSaveAdd()">
+                            <mat-icon>add</mat-icon> 新增字典
+                        </button>
+                    </div>
+                    <div class="info_tip">总共<span class="text_color_primary">{{total}}</span>个字典</div>
+                </div>
+
+                <div class="table_container">
+                    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                        <!--- Note that these columns can be defined in any order.
+                              The actual rendered columns are set as a property on the row definition" -->
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="codeValue">
+                            <th mat-header-cell *matHeaderCellDef>
+                                字典编码 </th>
+                            <td mat-cell *matCellDef="let element"> {{element.codeValue}} </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="codeDsc">
+                            <th mat-header-cell *matHeaderCellDef> 字典名称 </th>
+                            <td mat-cell *matCellDef="let element"> {{element.codeDsc}} </td>
+                        </ng-container>
+
+                        <!-- Symbol Column -->
+                        <ng-container matColumnDef="codeClDsc">
+                            <th mat-header-cell *matHeaderCellDef> 字典分类 </th>
+                            <td mat-cell *matCellDef="let element"> {{element.codeClDsc}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="codeClId">
+                            <th mat-header-cell *matHeaderCellDef>类型编码 </th>
+                            <td mat-cell *matCellDef="let element"> {{element.codeClId}} </td>
+                        </ng-container>
+
+
+                        <ng-container matColumnDef="enabledSt">
+                            <th mat-header-cell *matHeaderCellDef> 状态 </th>
+                            <td mat-cell *matCellDef="let element"
+                                [ngClass]="{'enabled':element.enabledSt == 1,'disabled':element.enabledSt == 0}">
+                                {{element.enabledSt == 1?"启用":"禁用"}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="customColumn1">
+                            <th mat-header-cell *matHeaderCellDef> 操作 </th>
+                            <td mat-cell *matCellDef="let element">
+                                <button *ngIf="set.has('/dictionary/edit')" class="mini_btn edit_btn" (click)="lookEle(element,0)">编辑</button>
+                                <button class="mini_btn enter_btn" (click)="enterDia(element,1)"
+                                    *ngIf="element.enabledSt == 0 && set.has('/dictionary/enable')">启用</button>
+                                <button class="mini_btn disable_btn" (click)="enterDia(element,0)"
+                                    *ngIf="element.enabledSt == 1 && set.has('/dictionary/disable')">禁用</button>
+                                <button *ngIf="set.has('/dictionary/detail')"  class="mini_btn look_btn" (click)="lookEle(element,1)">查看</button>
+                                <button class="mini_btn del_btn" (click)="delDia(element)"
+                                    *ngIf="element.enabledSt == 0 && set.has('/dictionary/del')">删除</button>
+                            </td>
+                        </ng-container>
+
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="footer">
+                <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size"
+                    [pageSizeOptions]="pageSizeOptions" aria-label="选择要跳转的页面" (page)="getNotices($event)">
+                </mat-paginator>
+            </div>
+        </div>
+
+    </div>
+</div>

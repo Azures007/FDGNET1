@@ -1,0 +1,17 @@
+<div class="title">
+    数据权限配置
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+<div class="content">
+    <div class="item">
+        <div class="label">工序组长权限<span>(允许查询组长自身相关数据)</span></div>
+        <input type="checkbox" name="byGroup " value="0" [(ngModel)]="data.byGroup">
+    </div>
+    <div class="item">
+        <div class="label">厂长/主任权限<span>(允许查询全部班别相关数据)</span></div>
+        <input type="checkbox" name="byFactory " value="0" [(ngModel)]="data.byFactory">
+    </div>
+</div>
+<div class="footer">
+    <button (click)="DialogSaveClose()" cdkFocusInitial>保存</button>
+</div>

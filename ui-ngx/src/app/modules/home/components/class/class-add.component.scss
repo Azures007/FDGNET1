@@ -1,0 +1,36 @@
+.content {
+	.item {
+		.label {
+            width: 101px;
+		}
+	}
+    .bind_item{
+        .right{
+            width: 240px;
+			height: 30px;
+			border: 1px solid #e0e0e0;
+			outline: none;
+			border-radius: 4px;
+			color: #000;
+			padding-left: 10px;
+            display: flex;
+            box-sizing: border-box;
+            justify-content: space-between;
+            align-items: center;
+            padding-right: 10px;
+            input{
+                width: 180px;
+                height: 28px;
+                line-height: 28px;
+                border: none;
+                color: #000;
+                padding-left: 10px;
+            }
+            span{
+                font-size: 12px;
+                color: #3399ff;
+                cursor: pointer;
+            }
+        }
+    }
+}

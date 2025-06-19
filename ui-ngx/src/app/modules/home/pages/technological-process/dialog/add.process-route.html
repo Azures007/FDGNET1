@@ -1,0 +1,190 @@
+<div class="title">
+  {{modalTitle}}
+  <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+<form [formGroup]="dataForm" class="content page-container two-col">
+  <!-- <div class="row-block">
+    <label class="label"><span class="red-star">*</span>工艺路线编号:</label>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <input autocomplete="off" class="input" formControlName="craftNumber" type="text" matInput
+        placeholder="请输入工艺路线编号">
+      <mat-error *ngIf="dataForm.hasError('required','craftNumber')">
+        工艺路线编号为<strong>必填</strong>
+      </mat-error>
+    </mat-form-field>
+    
+  </div> -->
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>工艺路线名称:</label>
+    <mat-form-field class="example-full-width" appearance="fill" class="field-">
+      <input autocomplete="off" class="input" formControlName="craftName" type="text" matInput placeholder="请输入工艺路线名称">
+      <mat-error *ngIf="dataForm.hasError('required','craftName')">
+        工艺路线名称为<strong>必填</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>生效时间:</label>
+
+    <mat-form-field appearance="fill">
+      <input placeholder="生效时间" autocomplete="off" matInput [matDatepicker]="picker" formControlName="effectiveTime">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="dataForm.hasError('required','effectiveTime')">
+        生效时间为<strong>必选</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>失效时间:</label>
+
+    <mat-form-field appearance="fill">
+      <input placeholder="失效时间" autocomplete="off" matInput [matDatepicker]="failurePicker"
+        formControlName="failureTime">
+      <mat-datepicker-toggle matSuffix [for]="failurePicker"></mat-datepicker-toggle>
+      <mat-datepicker #failurePicker></mat-datepicker>
+      <mat-error *ngIf="dataForm.hasError('required','failureTime')">
+        失效时间为<strong>必选</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>所属组织:</label>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="kdOrgId" (ngModelChange)="handleGetDept($event)">
+        <mat-option *ngFor="let item of midOrgList" [value]="item.kdOrgId">
+          {{item.kdOrgName}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','kdOrgId')">
+        请选择<strong>组织</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>所属车间:</label>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="kdDeptId">
+        <mat-option *ngFor="let item of midDeptList" [value]="item.kdDeptId">
+          {{item.kdDeptName}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','kdDeptId')">
+        请选择<strong>车间</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <label class="label">前道工艺路线:</label>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="prevCraftId">
+        <mat-option *ngFor="let item of allList" [value]="item.craftId">
+          {{item.craftName}}
+        </mat-option>
+      </mat-select>
+
+    </mat-form-field>
+  </div>
+
+
+
+  <div class="row-block equal-height">
+    <div class="label"><span class="red-star">*</span>状态:</div>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="enabled">
+        <mat-option *ngFor="let item of status" [value]="item.value">
+          {{item.label}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','enabled')">
+        请选择<strong>状态</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="row-block equal-height">
+    <div class="label">工序说明:</div>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <textarea matInput class="textarea" formControlName="craftDetail" maxlength="50"
+        placeholder="请输入工序说明，限制50个字符"></textarea>
+    </mat-form-field>
+  </div>
+
+</form>
+
+<div class="setting-warp">
+  <div class="set-title">工序设置</div>
+  <div class="setting-panl">
+    <table class="table">
+      <tr>
+        <th class="order">执行序号</th>
+        <th class="process">工序</th>
+        <th class="class-handle">处理班别</th>
+        <th>操作</th>
+        <th>规则</th>
+      </tr>
+      <tr *ngFor="let item of settingSource; let i = index">
+        <td>
+          <div>
+            <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off" type="number"
+              [(ngModel)]="item.sort">
+          </div>
+        </td>
+        <td>
+          <div class="process">
+            <select (ngModelChange)="getClassForProcess($event, item)" [disabled]="formType === 'details'"
+              class="select" name="process" id="{{'processId' + i}}" [(ngModel)]="item.processId" placeholder="请选择工序">
+              <option value="{{item.value}}" *ngFor="let item of processOptions">{{item.label}}</option>
+            </select>
+          </div>
+        </td>
+        <td class="class-handle">
+          <div class="join-content " *ngIf="item.joins.length">
+            <div class="standard-chip-warp">
+              <div class="standard-chip" *ngFor="let classItem of item.joins;let classIndex = index">
+                <span>{{classItem.label || classItem.name}}</span>
+                <span *ngIf="classIndex >= 0 && classIndex !== item.joins.length - 1">,</span>
+              </div>
+            </div>
+            <div class="addbtn" *ngIf="formType !== 'details'" (click)="showTransfer(item,i)">+选择</div>
+          </div>
+          <div *ngIf="item.processId && item.joins.length === 0">
+            该工序下未设置班别
+            <div class="addbtn" (click)="showTransfer(item,i)">+选择</div>
+          </div>
+          <div *ngIf="!item.processId && item.joins.length === 0">请选择工序</div>
+        </td>
+        <td>
+          <div class="group-btn" *ngIf="formType !== 'details'">
+            <button class="mini_btn edit_btn" (click)="handleEvent(item,'add')">添加</button>
+            <button *ngIf="settingSource.length > 1" class="mini_btn del_btn" (click)="handleEvent(i,'del')">删除</button>
+          </div>
+        </td>
+        <td>
+          <div class="check_box">
+            <mat-checkbox [(ngModel)]="item.isReportingBindCode" class="example-margin">报工扫码</mat-checkbox>
+            <mat-checkbox [(ngModel)]="item.isReceivingBindCode" class="example-margin">投入扫码</mat-checkbox>
+            <mat-checkbox [(ngModel)]="item.isReceivingUnBindCode" class="example-margin">投入解绑</mat-checkbox>
+
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  <button *ngIf="formType !== 'details'" (click)="submit()" class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>提交</span>
+  </button>
+
+  <button *ngIf="formType === 'details'" (click)="addDialogClose()" class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>关闭</span>
+  </button>
+</div>

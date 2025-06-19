@@ -1,0 +1,141 @@
+/**
+ * Copyright © 2016-2021 The Thingsboard Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@import '../../../../../scss/constants';
+
+:host {
+	width: 100%;
+	height: 100%;
+}
+
+:host ::ng-deep {
+	.tb-home-links {
+		.mat-headline {
+			font-size: 20px;
+			@media #{$mat-gt-xmd} {
+				font-size: 24px;
+			}
+		}
+		mat-card {
+			padding: 0;
+			margin: 8px;
+			mat-card-title {
+				margin: 0;
+				padding: 24px 16px 16px;
+			}
+			mat-card-title + mat-card-content {
+				padding-top: 0;
+			}
+			mat-card-content {
+				padding: 16px;
+			}
+		}
+		.tb-card-button {
+			width: 100%;
+			height: 100%;
+			max-width: 240px;
+			&:hover {
+				border-bottom: none;
+			}
+			&:focus {
+				border-bottom: none;
+			}
+			.mat-button-wrapper {
+				width: 100%;
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				mat-icon {
+					margin: auto;
+				}
+				span {
+					height: 18px;
+					min-height: 36px;
+					max-height: 36px;
+					padding: 0 0 20px 0;
+					margin: auto;
+					font-size: 18px;
+					font-weight: 400;
+					line-height: 18px;
+					white-space: normal;
+				}
+			}
+			&.mat-raised-button.mat-primary {
+				.mat-ripple-element {
+					opacity: 0.3;
+					background-color: rgba(255, 255, 255, 0.3);
+				}
+			}
+		}
+	}
+}
+
+.home_link_content {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: stretch;
+	height: 100%;
+	// background: url("assets");
+	.card_half {
+		width: 50%;
+		box-sizing: border-box;
+		padding: 20px;
+		.home_link_card {
+			background-color: #fff;
+			height: 100%;
+			border-radius: 2px;
+			.home_link_card_title {
+				width: 100%;
+				padding-left: 20px;
+				padding-top: 17px;
+        .mat-headline{
+          font-size: 18px;
+          font-family: Microsoft YaHei, Microsoft YaHei-Regular;
+          font-weight: 500;
+          text-align: left;
+          color: #000000;
+        }
+			}
+			.home_link_list {
+				width: 100%;
+				display: flex;
+				flex-wrap: wrap;
+				.home_link_item {
+					width: 33.33%;
+					padding-left: 20px;
+					box-sizing: border-box;
+					height: 84px;
+					display: flex;
+					align-items: center;
+					.tb-card-button {
+						background-color: #fff;
+						font-size: 16px;
+						font-weight: 400;
+						color: #333333;
+						box-shadow: none;
+            .place_name{
+              margin-left: 15px;
+            }
+            &:hover{
+              border: none;
+            }
+					}
+				}
+			}
+		}
+	}
+}

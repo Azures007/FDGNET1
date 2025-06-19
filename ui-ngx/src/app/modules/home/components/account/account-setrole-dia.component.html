@@ -1,0 +1,16 @@
+<div class="title">
+    角色配置
+    <span class="close_icon" (click)="dialogClose()">X</span>
+</div>
+<div class="content" *ngIf="!data.isEdit">
+
+    <div class="item">
+        <div class="label">分配角色:</div>
+        <select name="" [(ngModel)]="data.roleId" required aria-placeholder="请选择">
+            <option *ngFor="let roleItem of data.roleList" [value]="roleItem.roleId">{{roleItem.roleName}}</option>
+        </select>
+    </div>
+</div>
+<div class="footer">
+    <button (click)="DialogSaveClose()" cdkFocusInitial>保存</button>
+</div>

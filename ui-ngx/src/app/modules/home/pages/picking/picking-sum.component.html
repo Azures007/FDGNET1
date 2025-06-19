@@ -1,0 +1,89 @@
+<!-- <div class="page-container flex-column">
+
+    <div class="page-header">
+
+        <div class="row-block cols3">
+            <label class="label">申请日期：</label>
+            <mat-form-field appearance="fill" class="dateRange">
+                <mat-date-range-input [formGroup]="orderBillRange" [rangePicker]="picker" [min]="minDate">
+                    <input readonly formControlName="start" matStartDate placeholder="开始日期">
+                    <input readonly formControlName="end" matEndDate placeholder="结束日期">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker fontSize="12" #picker></mat-date-range-picker>
+            </mat-form-field>
+        </div>
+
+        <div class="row-block cols3">
+            <label class="label">料单号：</label>
+            <input class="input" [(ngModel)]="searchFormGroup.value.pickingNo" />
+        </div>
+
+        <div class="row-block cols3">
+            <label class="label">申请人：</label>
+            <input class="input" [(ngModel)]="searchFormGroup.value.createdName" />
+        </div>
+
+        <div class="row-block cols3">
+            <label class="label">订单状态：</label>
+            <select required [(ngModel)]="searchFormGroup.value.pickingStatus">
+                <option *ngFor="let item of statusSelect" [value]="item.value">
+                    {{item.label}}
+                </option>
+            </select>
+        </div>
+
+
+        <div class="row-block row-right">
+            <label class="label"></label>
+
+            <div class="btn-group">
+                <button class="search_btn" (click)="searchList()">
+                    <mat-icon class="material-icons svgIcon">search</mat-icon>查询
+                </button>
+
+                <button class="search_btn" (click)="searchList()">
+                    <mat-icon class="material-icons svgIcon">search</mat-icon>重置
+                </button>
+
+                <button class="search_btn" (click)="export()">
+                    <mat-icon class="material-icons svgIcon">vertical_align_bottom</mat-icon>
+                    导出
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="page-content">
+        <table>
+
+            <thead>
+                <tr>
+                    <th>源工单编号</th>
+                    <th>源批号</th>
+                    <th>源物料编码</th>
+                    <th>源物料名称</th>
+                    <th>状态</th>
+                    <th>物料名称</th>
+                    <th>物料编码</th>
+                    <th>规格型号</th>
+                </tr>
+            </thead>
+
+            <tbody ng-repeat="listItem in sumData.tsysPickingList.list">
+                <tr ng-repeat="pickItem in listItem.tsysPickingRecords track by $index">
+                    <td ng-if="$index === 0" rowspan={{listItem.tsysPickingRecords.length}}>{{listItem.}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div> -->

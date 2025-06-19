@@ -1,0 +1,17 @@
+<div class="title">
+    重置密码
+    <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+<div class="content">
+    <div class="item">
+        <div class="label">新密码:</div>
+        <input type="text" [(ngModel)]="data.password" placeholder="请输入新密码" autocomplete="off"  onfocus="this.type='password'">
+    </div>
+    <div class="item">
+        <div class="label">确认新密码:</div>
+        <input type="text" [(ngModel)]="data.checkWord" placeholder="再次输入登录密码" autocomplete="off"  onfocus="this.type='password'">
+    </div>
+</div>
+<div class="footer">
+    <button (click)="addSubmitDialogClose()" cdkFocusInitial>提交</button>
+</div>

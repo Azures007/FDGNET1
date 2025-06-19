@@ -1,0 +1,128 @@
+<div class="page-container flex-column">
+    <div class="page-header">
+
+        <div class="row-block cols4">
+            <label class="label">料筐编号：</label>
+            <input class="input" [(ngModel)]="searchFormGroup.value.code" />
+        </div>
+
+
+
+        <div class="row-block cols4">
+            <label class="label">状态：</label>
+            <select required [(ngModel)]="searchFormGroup.value.chargingBasketStatus">
+                <option value='-1'>全部</option>
+                <option value='0'>禁用</option>
+                <option value='1'>启用</option>
+            </select>
+        </div>
+
+        <div class="row-block cols4">
+            <div class="btn-group">
+                <button class="search_btn" (click)="getList()">
+                    <mat-icon class="material-icons svgIcon">search</mat-icon>查询
+                </button>
+                <button class="search_btn" (click)="resetQuery()">
+                    <mat-icon class="material-icons svgIcon">search</mat-icon>重置
+                </button>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="page-header">
+        <div class="row-block cols3 only-btn">
+            <button *ngIf="set.has('/basketManage/add')" class="search_btn btn" (click)="showAddVisibilly({})">
+                <mat-icon class="material-icons svgIcon">add</mat-icon>
+                <span>新增料筐</span>
+            </button>
+            <button *ngIf="set.has('/basketManage/up')" class="search_btn btn" (click)="handleUploadData()">
+                <mat-icon class="material-icons svgIcon">control_point</mat-icon>
+                <span>导入料筐</span>
+            </button>
+            <button *ngIf="set.has('/basketManage/down')" class="search_btn btn" (click)="hadnleExportTable()">
+                <mat-icon class="material-icons svgIcon">daochu</mat-icon>
+                <span>导出二维码</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <table mat-table [dataSource]="dataSource" class="table-warp">
+            <ng-container matColumnDef="code">
+                <th mat-header-cell *matHeaderCellDef>料筐编号 </th>
+                <td mat-cell *matCellDef="let element"> {{element.code}} </td>
+            </ng-container>
+            <ng-container matColumnDef="createdTime">
+                <th mat-header-cell *matHeaderCellDef> 创建时间 </th>
+                <td mat-cell *matCellDef="let element"> {{element.createdTime | date:'yyyy-MM-dd'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="createdName">
+                <th mat-header-cell *matHeaderCellDef> 创建人 </th>
+                <td mat-cell *matCellDef="let element"> {{element.createdName}} </td>
+            </ng-container>
+            <ng-container matColumnDef="chargingBasketSize">
+                <th mat-header-cell *matHeaderCellDef> 料筐尺寸 </th>
+                <td mat-cell *matCellDef="let element"> {{element.chargingBasketSize}} </td>
+            </ng-container>
+            <ng-container matColumnDef="maxBearing">
+                <th mat-header-cell *matHeaderCellDef> 料筐承重 </th>
+                <td mat-cell *matCellDef="let element"> {{element.maxBearing}} </td>
+            </ng-container>
+            <ng-container matColumnDef="weight">
+                <th mat-header-cell *matHeaderCellDef> 料筐重量 </th>
+                <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+            </ng-container>
+            <ng-container matColumnDef="unit">
+                <th mat-header-cell *matHeaderCellDef> 单位 </th>
+                <td mat-cell *matCellDef="let element"> {{element.unit ==
+                    null?'':handleUnit(element.unit)}} </td>
+            </ng-container>
+            <ng-container matColumnDef="br">
+                <th mat-header-cell *matHeaderCellDef> 备注说明 </th>
+                <td mat-cell *matCellDef="let element"> {{element.br}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="chargingBasketStatus">
+                <th mat-header-cell *matHeaderCellDef> 状态 </th>
+                <td mat-cell *matCellDef="let element"
+                    [ngClass]="{'enabled':element.chargingBasketStatus == 1,'disabled':element.chargingBasketStatus == 0}">
+                    {{element.chargingBasketStatus == 1?"启用":"禁用"}} </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="customColumn1">
+                <th mat-header-cell *matHeaderCellDef> 操作 </th>
+                <td mat-cell *matCellDef="let element">
+                    <div class="opera-group">
+                        <button class="mini_btn look_btn" (click)="handleEvent(element,'details')">详情</button>
+                        <button class="mini_btn code_btn" (click)="handleEvent(element,'code')">二维码</button>
+                        <button class="mini_btn code_btn" (click)="breakDia(element)">解绑</button>
+                        <button *ngIf="set.has('/basketManage/edit')" class="mini_btn edit_btn"
+                            (click)="handleEvent(element,'edit')">编辑</button>
+                        <button class="mini_btn enter_btn"
+                            *ngIf="element.chargingBasketStatus == 0 && set.has('/basketManage/enable')"
+                            (click)="enterDia(element,1)">启用</button>
+                        <button class="mini_btn disable_btn"
+                            *ngIf="element.chargingBasketStatus == 1 && set.has('/basketManage/disable')"
+                            (click)="enterDia(element,0) ">禁用</button>
+                        <button class="mini_btn del_btn"
+                            *ngIf="element.chargingBasketStatus == 0 && set.has('/basketManage/del')"
+                            (click)="delDia(element) ">删除</button>
+                    </div>
+                </td>
+            </ng-container>
+
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
+            aria-label="选择要跳转的页面" (page)="getNotices($event)">
+        </mat-paginator>
+    </div>
+</div>

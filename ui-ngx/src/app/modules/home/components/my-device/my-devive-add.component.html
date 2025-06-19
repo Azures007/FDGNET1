@@ -1,0 +1,65 @@
+<div class="title" *ngIf="data.params.deviceId == null">
+    新增设备
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+
+<div class="title" *ngIf="data.params.deviceId != null">
+    {{data.edit == true?'编辑设备':'查看设备'}}
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+<div class="content">
+    <div class="item">
+        <div class="label">设备名称:</div>
+        <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.deviceName" placeholder="请输入设备名称">
+    </div>
+
+    <div class="item">
+        <div class="label">设备编码:</div>
+        <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.deviceNumber" placeholder="请输入设备编码">
+    </div>
+    <div class="item">
+        <div class="label">工序:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.belongProcessId" required
+            (ngModelChange)="test($event)" placeholder="请选择工序">
+            <option *ngFor="let wsItem of data.processList" [value]="wsItem.processId">{{wsItem.processName}}</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <div class="label">生产组织:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.kdOrgId" required
+            (ngModelChange)="handleGetDept($event)" aria-placeholder="请选择">
+            <option *ngFor="let wsItem of data.midOrgList" [value]="wsItem.kdOrgId">{{wsItem.kdOrgName}}</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <div class="label">生产车间:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.kdDeptId" required
+            aria-placeholder="请选择">
+            <option *ngFor="let wsItem of data.midDeptList" [value]="wsItem.kdDeptId">{{wsItem.kdDeptName}}</option>
+        </select>
+    </div>
+
+
+    <div class="item">
+        <div class="label">状态:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.enabled" required
+            aria-placeholder="请选择">
+            <option value=0>启用</option>
+            <option value=1>禁用</option>
+        </select>
+    </div>
+
+    <div class="area_item">
+        <div class="label">备注:</div>
+        <textarea [disabled]="data.edit == false" [(ngModel)]="data.params.note" maxlength="50"
+            placeholder="请输入设备备注，限制50个字符"></textarea>
+    </div>
+</div>
+
+<div class="footer">
+    <button (click)="submit()" cdkFocusInitial *ngIf="data.params.codeId == ''"> 提交</button>
+    <button (click)="submit()" cdkFocusInitial *ngIf="data.params.codeId != '' && data.edit"> 保存</button>
+    <button [mat-dialog-close]="" cdkFocusInitial *ngIf="data.params.codeId != '' && data.edit == false"> 关闭</button>
+</div>

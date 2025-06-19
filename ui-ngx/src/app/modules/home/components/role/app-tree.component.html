@@ -1,0 +1,26 @@
+<div class="TreeBase">
+    <div class="TreeNode">
+        <div [class]="'NodeSelect' +  ' NodeSelect_' + (TreeData.select || false)" (click)="SelectClick(TreeData)">
+        </div>
+
+        <div class="NodeName Cursor ExWidth" (click)="ExplandClick(TreeData)">
+            <span class="Span NameSpan" [title]="TreeData[DefaultConfig.menuName]">{{ TreeData[DefaultConfig.menuName]
+                }}</span>
+        </div>
+
+        <div *ngIf="TreeData[DefaultConfig.tsysMenus] && TreeData[DefaultConfig.tsysMenus].length > 0" (click)="ExplandClick(TreeData)">
+            <div [class]="'NodeExpland NodeExpland_' + (TreeData[DefaultConfig.Expland] || false)"></div>
+        </div>
+    </div>
+
+    <!-- <div *ngIf="TreeData[DefaultConfig.Member] && TreeData[DefaultConfig.Member].length > 0" -->
+
+    <div *ngIf="TreeData[DefaultConfig.tsysMenus] && TreeData[DefaultConfig.tsysMenus].length > 0 && TreeData[DefaultConfig.Expland]"
+        class="ChildNode">
+        <div *ngFor="let MemberData of TreeData[DefaultConfig.tsysMenus]">
+            <app-Tree [TreeData]="MemberData" (NodeClickEvent)="NodeClickEventEmit($event)"
+                [menuName]="DefaultConfig.menuName" [menuId]="DefaultConfig.menuId" [tsysMenus]="'tsysMenus'"
+                [isFlag]="'isFlag'" [select]="'select'"></app-Tree>
+        </div>
+    </div>
+</div>

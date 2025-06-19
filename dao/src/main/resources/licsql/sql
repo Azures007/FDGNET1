@@ -1,0 +1,1058 @@
+-- Table: public.t_bus_order_body
+
+-- DROP TABLE IF EXISTS public.t_bus_order_body;
+
+CREATE TABLE IF NOT EXISTS public.t_bus_order_body
+(
+    order_body_id SERIAL  NOT NULL ,
+    order_id integer NOT NULL,
+    lot character varying(255) COLLATE pg_catalog."default",
+    prd_dept character varying(255) COLLATE pg_catalog."default",
+    material_id integer,
+    material_name character varying(255) COLLATE pg_catalog."default",
+    material_number character varying(255) COLLATE pg_catalog."default",
+    material_specification character varying(255) COLLATE pg_catalog."default",
+    plan_prd_qty numeric(25,2) NOT NULL DEFAULT 0,
+    unit character varying(255) COLLATE pg_catalog."default",
+    plan_start_date date,
+    plan_finish_date date,
+    erp_mo_fid integer,
+    erp_mo_entry_id integer,
+    product_type character varying(255) COLLATE pg_catalog."default",
+    one_pot_qty numeric(25,2),
+    pot_qty integer,
+    class_group character varying(255) COLLATE pg_catalog."default",
+    weight_qty numeric(25,2),
+    instock_qty numeric(25,2),
+    uninstock_qty numeric(25,2),
+    CONSTRAINT t_bus_order_body_pkey PRIMARY KEY (order_body_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_bus_order_body
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.t_bus_order_body.order_body_id
+    IS '用料清单id';
+
+COMMENT ON COLUMN public.t_bus_order_body.order_id
+    IS '订单id';
+
+COMMENT ON COLUMN public.t_bus_order_body.lot
+    IS '批号';
+
+COMMENT ON COLUMN public.t_bus_order_body.prd_dept
+    IS '生产车间';
+
+COMMENT ON COLUMN public.t_bus_order_body.material_id
+    IS '物料ID';
+
+COMMENT ON COLUMN public.t_bus_order_body.material_name
+    IS '物料名称';
+
+COMMENT ON COLUMN public.t_bus_order_body.material_number
+    IS '物料编码';
+
+COMMENT ON COLUMN public.t_bus_order_body.material_specification
+    IS '规格型号';
+
+COMMENT ON COLUMN public.t_bus_order_body.plan_prd_qty
+    IS '计划生产数量';
+
+COMMENT ON COLUMN public.t_bus_order_body.unit
+    IS '单位';
+
+COMMENT ON COLUMN public.t_bus_order_body.plan_start_date
+    IS '计划开工时间';
+
+COMMENT ON COLUMN public.t_bus_order_body.plan_finish_date
+    IS '计划完工时间';
+
+COMMENT ON COLUMN public.t_bus_order_body.erp_mo_fid
+    IS 'ERP生产订单id';
+
+COMMENT ON COLUMN public.t_bus_order_body.erp_mo_entry_id
+    IS 'ERP生产订单明细id';
+
+COMMENT ON COLUMN public.t_bus_order_body.product_type
+    IS '产品类型';
+
+COMMENT ON COLUMN public.t_bus_order_body.one_pot_qty
+    IS '每锅数量';
+
+COMMENT ON COLUMN public.t_bus_order_body.pot_qty
+    IS '锅数';
+
+COMMENT ON COLUMN public.t_bus_order_body.class_group
+    IS '班组';
+
+COMMENT ON COLUMN public.t_bus_order_body.weight_qty
+    IS '重量';
+
+COMMENT ON COLUMN public.t_bus_order_body.instock_qty
+    IS '合格品入库数量';
+
+COMMENT ON COLUMN public.t_bus_order_body.uninstock_qty
+    IS '未入库数量';
+
+
+
+-- Table: public.t_bus_order_head
+
+-- DROP TABLE IF EXISTS public.t_bus_order_head;
+
+CREATE TABLE IF NOT EXISTS public.t_bus_order_head
+(
+    order_id SERIAL  NOT NULL ,
+    order_no character varying(255) COLLATE pg_catalog."default",
+    bill_no character varying(200) COLLATE pg_catalog."default",
+    bill_date timestamp(6) without time zone,
+    bill_created_time timestamp(6) without time zone,
+    planner character varying(255) COLLATE pg_catalog."default",
+    bill_type character varying(255) COLLATE pg_catalog."default",
+    bill_status character varying(255) COLLATE pg_catalog."default",
+    bill_plan_qty numeric(25,2) DEFAULT 0,
+    prd_org character varying(255) COLLATE pg_catalog."default",
+    material_id integer,
+    material_number character varying(255) COLLATE pg_catalog."default",
+    material_name character varying(255) COLLATE pg_catalog."default",
+    add_guo_qty numeric(25,2) DEFAULT 0,
+    add_unit_weight numeric(25,2) DEFAULT 0,
+    add_sum_weight numeric(25,2) DEFAULT 0,
+    created_name character varying(255) COLLATE pg_catalog."default",
+    created_time timestamp(6) without time zone,
+    updated_name character varying COLLATE pg_catalog."default",
+    updated_time timestamp(6) without time zone,
+    current_process character varying(255) COLLATE pg_catalog."default",
+    class_id integer,
+    gylx_id integer,
+    b_material_id integer,
+    b_material_number character varying(255) COLLATE pg_catalog."default",
+    b_material_name character varying(255) COLLATE pg_catalog."default",
+    pick_status character varying(255) COLLATE pg_catalog."default",
+    instock_qty numeric(25,2),
+    uninstock_qty numeric(25,2),
+    weight_qty numeric(25,2),
+    CONSTRAINT t_bus_order_head_pkey PRIMARY KEY (order_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_bus_order_head
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.t_bus_order_head.order_id
+    IS '订单id';
+
+COMMENT ON COLUMN public.t_bus_order_head.order_no
+    IS '订单号,自动生成唯一订单号';
+
+COMMENT ON COLUMN public.t_bus_order_head.bill_no
+    IS '单据编号';
+
+COMMENT ON COLUMN public.t_bus_order_head.bill_date
+    IS '单据日期';
+
+COMMENT ON COLUMN public.t_bus_order_head.bill_created_time
+    IS 'erp创建日期';
+
+COMMENT ON COLUMN public.t_bus_order_head.planner
+    IS '计划员';
+
+COMMENT ON COLUMN public.t_bus_order_head.bill_type
+    IS '单据类型';
+
+COMMENT ON COLUMN public.t_bus_order_head.bill_status
+    IS '单据状态：0=未开工、1=已开工、2=暂停、3=已完工';
+
+COMMENT ON COLUMN public.t_bus_order_head.bill_plan_qty
+    IS '预期产量';
+
+COMMENT ON COLUMN public.t_bus_order_head.prd_org
+    IS '生产组织';
+
+COMMENT ON COLUMN public.t_bus_order_head.material_id
+    IS '物料ID';
+
+COMMENT ON COLUMN public.t_bus_order_head.material_number
+    IS '物料编码';
+
+COMMENT ON COLUMN public.t_bus_order_head.material_name
+    IS '物料名称';
+
+COMMENT ON COLUMN public.t_bus_order_head.add_guo_qty
+    IS '添加锅数';
+
+COMMENT ON COLUMN public.t_bus_order_head.add_unit_weight
+    IS '添加单位重量';
+
+COMMENT ON COLUMN public.t_bus_order_head.add_sum_weight
+    IS '添加总重量';
+
+COMMENT ON COLUMN public.t_bus_order_head.created_name
+    IS '创建人';
+
+COMMENT ON COLUMN public.t_bus_order_head.created_time
+    IS '创建日期';
+
+COMMENT ON COLUMN public.t_bus_order_head.updated_name
+    IS '修改人';
+
+COMMENT ON COLUMN public.t_bus_order_head.updated_time
+    IS '修改时间';
+
+COMMENT ON COLUMN public.t_bus_order_head.current_process
+    IS '当前工序';
+
+COMMENT ON COLUMN public.t_bus_order_head.class_id
+    IS '班别id-处理班别';
+
+COMMENT ON COLUMN public.t_bus_order_head.gylx_id
+    IS '工艺路线id(待处理)';
+
+COMMENT ON COLUMN public.t_bus_order_head.b_material_id
+    IS 'B物料ID';
+
+COMMENT ON COLUMN public.t_bus_order_head.b_material_number
+    IS 'B料物料编码';
+
+COMMENT ON COLUMN public.t_bus_order_head.b_material_name
+    IS 'B料物料名称';
+
+COMMENT ON COLUMN public.t_bus_order_head.pick_status
+    IS '领料状态';
+
+COMMENT ON COLUMN public.t_bus_order_head.instock_qty
+    IS '合格品入库数量';
+
+COMMENT ON COLUMN public.t_bus_order_head.uninstock_qty
+    IS '未入库数量';
+
+COMMENT ON COLUMN public.t_bus_order_head.weight_qty
+    IS '重量';
+
+-- Table: public.t_bus_order_head_bak
+
+-- DROP TABLE IF EXISTS public.t_bus_order_head_bak;
+
+CREATE TABLE IF NOT EXISTS public.t_bus_order_head_bak
+(
+    order_id SERIAL  NOT NULL ,
+    bill_no character varying(200) COLLATE pg_catalog."default",
+    planner character varying(255) COLLATE pg_catalog."default",
+    bill_type character varying(255) COLLATE pg_catalog."default",
+    bill_status character varying(255) COLLATE pg_catalog."default",
+    bill_plan_qty numeric(25,2) DEFAULT 0,
+    prd_org character varying(255) COLLATE pg_catalog."default",
+    material_id integer,
+    material_name character varying(255) COLLATE pg_catalog."default",
+    add_guo_qty numeric(25,2) DEFAULT 0,
+    add_unit_weight numeric(25,2) DEFAULT 0,
+    add_sum_weight numeric(25,2) DEFAULT 0,
+    material_number character varying(255) COLLATE pg_catalog."default",
+    created_name character varying(255) COLLATE pg_catalog."default",
+    bill_date timestamp(6) without time zone,
+    created_time timestamp(6) without time zone,
+    current_process character varying(255) COLLATE pg_catalog."default",
+    finish_date timestamp(6) without time zone,
+    class_id integer,
+    gylx_id character varying(255) COLLATE pg_catalog."default",
+    updated_time timestamp(6) without time zone,
+    updated_name character varying COLLATE pg_catalog."default",
+    order_no character varying(255) COLLATE pg_catalog."default",
+    b_material_number character varying(255) COLLATE pg_catalog."default",
+    b_material_name character varying(255) COLLATE pg_catalog."default",
+    pick_status character varying(255) COLLATE pg_catalog."default",
+    instock_qty numeric(25,2),
+    uninstock_qty numeric(25,2),
+    weight_qty numeric(25,2),
+    CONSTRAINT t_bus_order_head_pkey2 PRIMARY KEY (order_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_bus_order_head_bak
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.order_id
+    IS '订单id';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.bill_no
+    IS '单据编号';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.planner
+    IS '计划员';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.bill_type
+    IS '单据类型';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.bill_status
+    IS '单据状态：0=未开工、1=已开工、2=暂停、3=已完工';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.bill_plan_qty
+    IS '预期产量';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.prd_org
+    IS '生产组织';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.material_id
+    IS '物料ID';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.material_name
+    IS '物料名称';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.add_guo_qty
+    IS '添加锅数';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.add_unit_weight
+    IS '添加单位重量';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.add_sum_weight
+    IS '添加总重量';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.material_number
+    IS '物料编码';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.created_name
+    IS '创建人';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.bill_date
+    IS '单据日期';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.created_time
+    IS '创建日期';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.current_process
+    IS '当前工序';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.finish_date
+    IS '完工日期';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.class_id
+    IS '班别id-处理班别';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.gylx_id
+    IS '工艺路线id(待处理)';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.updated_time
+    IS '修改时间';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.updated_name
+    IS '修改人';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.order_no
+    IS '订单号,自动生成唯一订单号';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.b_material_number
+    IS 'B料物料编码';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.b_material_name
+    IS 'B料物料名称';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.pick_status
+    IS '领料状态';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.instock_qty
+    IS '合格品入库数量';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.uninstock_qty
+    IS '未入库数量';
+
+COMMENT ON COLUMN public.t_bus_order_head_bak.weight_qty
+    IS '重量';
+
+
+-- Table: public.t_bus_order_head_body
+
+-- DROP TABLE IF EXISTS public.t_bus_order_head_body;
+
+CREATE TABLE IF NOT EXISTS public.t_bus_order_head_body
+(
+    order_id integer NOT NULL,
+    order_body_id integer NOT NULL,
+    CONSTRAINT uk_75u18i54oebw127f7sy3ei3mm UNIQUE (order_body_id),
+    CONSTRAINT fk2dw5435d6pvxfdbhyoyjycsrx FOREIGN KEY (order_body_id)
+        REFERENCES public.t_bus_order_body (order_body_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fkfg6udy588it8mkqtfjcmmuoij FOREIGN KEY (order_id)
+        REFERENCES public.t_bus_order_head (order_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_bus_order_head_body
+    OWNER to postgres;
+
+
+
+-- Table: public.t_bus_order_ppbom
+
+-- DROP TABLE IF EXISTS public.t_bus_order_ppbom;
+
+CREATE TABLE IF NOT EXISTS public.t_bus_order_ppbom
+(
+    order_ppbom_id SERIAL  NOT NULL ,
+    order_id integer NOT NULL,
+    order_body_id integer NOT NULL,
+    material_id integer,
+    material_name character varying(255) COLLATE pg_catalog."default",
+    material_number character varying(255) COLLATE pg_catalog."default",
+    material_specification character varying(255) COLLATE pg_catalog."default",
+    unit character varying(255) COLLATE pg_catalog."default",
+    must_qty numeric(25,2) NOT NULL DEFAULT 0,
+    erp_ppbom_id integer,
+    erp_ppbom_entry_id integer,
+    bill_no character varying(255) COLLATE pg_catalog."default",
+    ppbom_bill_no character varying(255) COLLATE pg_catalog."default",
+    pick_qty numeric(25,2),
+    CONSTRAINT t_bus_order_ppbom_pkey PRIMARY KEY (order_ppbom_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_bus_order_ppbom
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.order_ppbom_id
+    IS '订单明细id';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.order_id
+    IS '订单id';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.order_body_id
+    IS '订单明细id';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.material_id
+    IS '物料id';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.material_name
+    IS '物料名称';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.material_number
+    IS '物料编码';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.material_specification
+    IS '规格型号';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.unit
+    IS '单位';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.must_qty
+    IS '应发数量，即为计划投入量';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.erp_ppbom_id
+    IS 'ERP生产用料清单id';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.erp_ppbom_entry_id
+    IS 'ERP生产用料清单明细id';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.bill_no
+    IS '单据编号';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.ppbom_bill_no
+    IS '生产订单编号';
+
+COMMENT ON COLUMN public.t_bus_order_ppbom.pick_qty
+    IS '已领数量';
+
+-- Table: public.t_bus_order_body_ppbom
+
+-- DROP TABLE IF EXISTS public.t_bus_order_body_ppbom;
+
+CREATE TABLE IF NOT EXISTS public.t_bus_order_body_ppbom
+(
+    order_body_id integer NOT NULL,
+    order_ppbom_id integer,
+    CONSTRAINT t_bus_order_body_ppbom_pkey PRIMARY KEY (order_body_id),
+    CONSTRAINT uk_3d7g7wh6cfkqxhomlqi0fqd5t UNIQUE (order_ppbom_id),
+    CONSTRAINT fkh4tscrggkhy3qgyyfp7wpy93m FOREIGN KEY (order_ppbom_id)
+        REFERENCES public.t_bus_order_ppbom (order_ppbom_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fktmmsryp2iq00g47h6hodfqa24 FOREIGN KEY (order_body_id)
+        REFERENCES public.t_bus_order_body (order_body_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_bus_order_body_ppbom
+    OWNER to postgres;
+
+-- Table: public.t_sys_class
+
+-- DROP TABLE IF EXISTS public.t_sys_class;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_class
+(
+    name character varying(255) COLLATE pg_catalog."default",
+    process character varying(255) COLLATE pg_catalog."default",
+    group_leader character varying(255) COLLATE pg_catalog."default",
+    scheduling character varying(255) COLLATE pg_catalog."default",
+    crt_time timestamp without time zone,
+    crt_user character varying(255) COLLATE pg_catalog."default",
+    update_time timestamp without time zone,
+    update_user character varying(255) COLLATE pg_catalog."default",
+    class_id SERIAL  NOT NULL ,
+    enabled_st character varying COLLATE pg_catalog."default" DEFAULT 0,
+    team_num character varying COLLATE pg_catalog."default",
+    CONSTRAINT t_sys_class_pkey PRIMARY KEY (class_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_class
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.t_sys_class.process
+    IS '工序说明';
+
+COMMENT ON COLUMN public.t_sys_class.group_leader
+    IS '组长';
+
+COMMENT ON COLUMN public.t_sys_class.scheduling
+    IS '排班';
+
+COMMENT ON COLUMN public.t_sys_class.enabled_st
+    IS '是否可用 0：可用 1：不可用';
+
+
+-- Table: public.t_sys_class_personnel_rel
+
+-- DROP TABLE IF EXISTS public.t_sys_class_personnel_rel;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_class_personnel_rel
+(
+    class_personnel_id SERIAL NOT NULL,
+    class_id bigint,
+    personnel_id bigint,
+    crt_user character varying(255) COLLATE pg_catalog."default",
+    crt_time timestamp without time zone,
+    update_time character varying(255) COLLATE pg_catalog."default",
+    update_user timestamp without time zone,
+    CONSTRAINT t_sys_class_personnel_rel_pkey PRIMARY KEY (class_personnel_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_class_personnel_rel
+    OWNER to postgres;
+
+COMMENT ON TABLE public.t_sys_class_personnel_rel
+    IS '班组人员关系表';
+
+COMMENT ON COLUMN public.t_sys_class_personnel_rel.class_id
+    IS '组别ID';
+
+COMMENT ON COLUMN public.t_sys_class_personnel_rel.personnel_id
+    IS '人员ID';
+
+
+-- Table: public.t_sys_code_dsc
+
+-- DROP TABLE IF EXISTS public.t_sys_code_dsc;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_code_dsc
+(
+    code_id SERIAL  NOT NULL ,
+    code_cl_id character varying(255) COLLATE pg_catalog."default",
+    code_cl_dsc character varying(255) COLLATE pg_catalog."default",
+    code_value character varying(255) COLLATE pg_catalog."default",
+    code_dsc character varying(255) COLLATE pg_catalog."default",
+    enabled_st character varying(2) COLLATE pg_catalog."default" DEFAULT 0,
+    crt_time timestamp without time zone,
+    crt_user character varying(255) COLLATE pg_catalog."default",
+    update_time timestamp without time zone,
+    update_user character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT t_sys_code_dsc_pkey PRIMARY KEY (code_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_code_dsc
+    OWNER to postgres;
+
+COMMENT ON TABLE public.t_sys_code_dsc
+    IS '代码描述公用表';
+
+COMMENT ON COLUMN public.t_sys_code_dsc.code_cl_id
+    IS '参数分类编码';
+
+COMMENT ON COLUMN public.t_sys_code_dsc.code_cl_dsc
+    IS '参数分类描述';
+
+COMMENT ON COLUMN public.t_sys_code_dsc.code_value
+    IS '参数编码';
+
+COMMENT ON COLUMN public.t_sys_code_dsc.code_dsc
+    IS '参数描述';
+
+COMMENT ON COLUMN public.t_sys_code_dsc.enabled_st
+    IS '启停状态';
+
+
+-- Table: public.t_sys_craft_info
+
+-- DROP TABLE IF EXISTS public.t_sys_craft_info;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_craft_info
+(
+    craft_id SERIAL  NOT NULL ,
+    craft_detail timestamp without time zone,
+    craft_name character varying(255) COLLATE pg_catalog."default",
+    craft_number character varying(255) COLLATE pg_catalog."default",
+    created_time timestamp without time zone,
+    created_user character varying(255) COLLATE pg_catalog."default",
+    effective_time timestamp without time zone,
+    enabled integer,
+    failure_time timestamp without time zone,
+    updated_time timestamp without time zone,
+    updated_user character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT t_sys_craft_info_pkey PRIMARY KEY (craft_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_craft_info
+    OWNER to postgres;
+
+
+-- Table: public.t_sys_craft_process_rel
+
+-- DROP TABLE IF EXISTS public.t_sys_craft_process_rel;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_craft_process_rel
+(
+    craft_process_id SERIAL  NOT NULL ,
+    craft_id integer,
+    crt_time timestamp without time zone,
+    crt_user character varying(255) COLLATE pg_catalog."default",
+    process_id integer,
+    sort integer,
+    update_time timestamp without time zone,
+    update_user character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT t_sys_craft_process_rel_pkey PRIMARY KEY (craft_process_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_craft_process_rel
+    OWNER to postgres;
+
+
+-- Table: public.t_sys_device
+
+-- DROP TABLE IF EXISTS public.t_sys_device;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_device
+(
+    device_id SERIAL  NOT NULL ,
+    created_time timestamp without time zone,
+    created_user character varying(255) COLLATE pg_catalog."default",
+    device_name character varying(255) COLLATE pg_catalog."default",
+    device_number character varying(255) COLLATE pg_catalog."default",
+    disabled_time timestamp without time zone,
+    disabled_user character varying(255) COLLATE pg_catalog."default",
+    enable_time timestamp without time zone,
+    enable_user character varying(255) COLLATE pg_catalog."default",
+    enabled integer DEFAULT 0,
+    status integer,
+    updated_user character varying(255) COLLATE pg_catalog."default",
+    updated_time timestamp without time zone,
+    workshop character varying(255) COLLATE pg_catalog."default",
+    note character varying(1000) COLLATE pg_catalog."default",
+    CONSTRAINT t_sys_device_pkey PRIMARY KEY (device_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_device
+    OWNER to postgres;
+
+COMMENT ON TABLE public.t_sys_device
+    IS '设备管理表';
+
+COMMENT ON COLUMN public.t_sys_device.device_name
+    IS '设备名称';
+
+COMMENT ON COLUMN public.t_sys_device.device_number
+    IS '设备编号';
+
+COMMENT ON COLUMN public.t_sys_device.disabled_time
+    IS '禁用时间';
+
+COMMENT ON COLUMN public.t_sys_device.disabled_user
+    IS '禁用人';
+
+COMMENT ON COLUMN public.t_sys_device.enable_time
+    IS '启用时间';
+
+COMMENT ON COLUMN public.t_sys_device.enable_user
+    IS '启用人';
+
+COMMENT ON COLUMN public.t_sys_device.enabled
+    IS '启用状态：0启用，1禁用';
+
+COMMENT ON COLUMN public.t_sys_device.status
+    IS '数据状态';
+
+COMMENT ON COLUMN public.t_sys_device.workshop
+    IS '车间';
+
+COMMENT ON COLUMN public.t_sys_device.note
+    IS '备注';
+
+
+-- Table: public.t_sys_menu
+
+-- DROP TABLE IF EXISTS public.t_sys_menu;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_menu
+(
+    menu_id SERIAL  NOT NULL ,
+    menu_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    menu_explain character varying(255) COLLATE pg_catalog."default",
+    path character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    flag character varying(1) COLLATE pg_catalog."default" DEFAULT 0,
+    parent_id integer NOT NULL DEFAULT 0,
+    enabled character varying(1) COLLATE pg_catalog."default" NOT NULL DEFAULT 0,
+    created_time date,
+    created_name character varying(50) COLLATE pg_catalog."default",
+    updated_time date,
+    updated_name character varying(50) COLLATE pg_catalog."default",
+    CONSTRAINT t_sys_menu_pkey PRIMARY KEY (menu_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_menu
+    OWNER to postgres;
+
+COMMENT ON TABLE public.t_sys_menu
+    IS '菜单表';
+
+COMMENT ON COLUMN public.t_sys_menu.menu_id
+    IS 'id';
+
+COMMENT ON COLUMN public.t_sys_menu.menu_name
+    IS '菜单名称';
+
+COMMENT ON COLUMN public.t_sys_menu.menu_explain
+    IS '菜单说明';
+
+COMMENT ON COLUMN public.t_sys_menu.path
+    IS '菜单路径';
+
+COMMENT ON COLUMN public.t_sys_menu.flag
+    IS '标识 0:菜单 1:功能按钮;';
+
+COMMENT ON COLUMN public.t_sys_menu.parent_id
+    IS '父级菜单id;根菜单为0';
+
+COMMENT ON COLUMN public.t_sys_menu.enabled
+    IS '是否可用;0：可用 1：不可用';
+
+COMMENT ON COLUMN public.t_sys_menu.created_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.t_sys_menu.created_name
+    IS '创建人';
+
+COMMENT ON COLUMN public.t_sys_menu.updated_time
+    IS '修改时间';
+
+COMMENT ON COLUMN public.t_sys_menu.updated_name
+    IS '修改人';
+
+-- Table: public.t_sys_personnel_info
+
+-- DROP TABLE IF EXISTS public.t_sys_personnel_info;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_personnel_info
+(
+    personnel_id SERIAL  NOT NULL ,
+    name character varying(255) COLLATE pg_catalog."default",
+    sex character varying(5) COLLATE pg_catalog."default",
+    phone character varying(64) COLLATE pg_catalog."default",
+    station character varying(255) COLLATE pg_catalog."default",
+    enabled_st character varying(2) COLLATE pg_catalog."default",
+    crt_time timestamp without time zone,
+    crt_user character varying(255) COLLATE pg_catalog."default",
+    update_time timestamp without time zone,
+    update_user character varying(255) COLLATE pg_catalog."default",
+    class_name character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT t_sys_personnel_info_pkey PRIMARY KEY (personnel_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_personnel_info
+    OWNER to postgres;
+
+COMMENT ON TABLE public.t_sys_personnel_info
+    IS '人员信息表';
+
+COMMENT ON COLUMN public.t_sys_personnel_info.station
+    IS '岗位';
+
+
+-- Table: public.t_sys_process_class_rel
+
+-- DROP TABLE IF EXISTS public.t_sys_process_class_rel;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_process_class_rel
+(
+    process_class_id SERIAL  NOT NULL,
+    class_id integer,
+    crt_time timestamp without time zone,
+    crt_user character varying(255) COLLATE pg_catalog."default",
+    process_id integer,
+    update_time timestamp without time zone,
+    update_user character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT t_sys_process_class_rel_pkey PRIMARY KEY (process_class_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_process_class_rel
+    OWNER to postgres;
+
+
+-- Table: public.t_sys_process_info
+
+-- DROP TABLE IF EXISTS public.t_sys_process_info;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_process_info
+(
+    process_id SERIAL  NOT NULL ,
+    created_time timestamp without time zone,
+    created_user character varying(255) COLLATE pg_catalog."default",
+    enabled integer,
+    process_detail character varying(255) COLLATE pg_catalog."default",
+    process_name character varying(255) COLLATE pg_catalog."default",
+    process_number character varying(255) COLLATE pg_catalog."default",
+    updated_time timestamp without time zone,
+    updated_user character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT t_sys_process_info_pkey PRIMARY KEY (process_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_process_info
+    OWNER to postgres;
+
+
+-- Table: public.t_sys_role
+
+-- DROP TABLE IF EXISTS public.t_sys_role;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_role
+(
+    role_id SERIAL  NOT NULL ,
+    role_name character varying(200) COLLATE pg_catalog."default" NOT NULL,
+    role_code character varying(50) COLLATE pg_catalog."default",
+    role_explain character varying(255) COLLATE pg_catalog."default",
+    enabled character varying(1) COLLATE pg_catalog."default" NOT NULL DEFAULT 0,
+    created_time date,
+    created_name character varying(200) COLLATE pg_catalog."default",
+    updated_time date,
+    updated_name character varying(200) COLLATE pg_catalog."default",
+    by_factory character varying COLLATE pg_catalog."default" DEFAULT 1,
+    by_group character varying COLLATE pg_catalog."default" DEFAULT 1,
+    CONSTRAINT t_sys_role_pkey PRIMARY KEY (role_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_role
+    OWNER to postgres;
+
+COMMENT ON TABLE public.t_sys_role
+    IS '角色表';
+
+COMMENT ON COLUMN public.t_sys_role.role_id
+    IS 'id';
+
+COMMENT ON COLUMN public.t_sys_role.role_name
+    IS '角色名';
+
+COMMENT ON COLUMN public.t_sys_role.role_code
+    IS '角色代码';
+
+COMMENT ON COLUMN public.t_sys_role.role_explain
+    IS '角色说明';
+
+COMMENT ON COLUMN public.t_sys_role.enabled
+    IS '是否可用;0：可用 1：不可用';
+
+COMMENT ON COLUMN public.t_sys_role.created_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.t_sys_role.created_name
+    IS '创建人';
+
+COMMENT ON COLUMN public.t_sys_role.updated_time
+    IS '修改时间';
+
+COMMENT ON COLUMN public.t_sys_role.updated_name
+    IS '修改人';
+
+COMMENT ON COLUMN public.t_sys_role.by_factory
+    IS '是否有厂长/主任权限0：有 1：无';
+
+COMMENT ON COLUMN public.t_sys_role.by_group
+    IS '是否有工序组长权限 0：有：1：无';
+
+
+
+-- Table: public.t_sys_role_menu
+
+-- DROP TABLE IF EXISTS public.t_sys_role_menu;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_role_menu
+(
+    role_menu_id SERIAL  NOT NULL ,
+    role_id integer NOT NULL,
+    menu_id integer NOT NULL,
+    enabled character varying(1) COLLATE pg_catalog."default" NOT NULL DEFAULT 0,
+    created_name character varying(50) COLLATE pg_catalog."default",
+    created_time date,
+    updated_name character varying(50) COLLATE pg_catalog."default",
+    updated_time date,
+    CONSTRAINT t_sys_role_menu_pkey PRIMARY KEY (role_menu_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_role_menu
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.t_sys_role_menu.role_menu_id
+    IS 'id';
+
+COMMENT ON COLUMN public.t_sys_role_menu.role_id
+    IS '角色id';
+
+COMMENT ON COLUMN public.t_sys_role_menu.menu_id
+    IS '菜单id';
+
+COMMENT ON COLUMN public.t_sys_role_menu.enabled
+    IS '是否可用;0：可用 1：不可用';
+
+COMMENT ON COLUMN public.t_sys_role_menu.created_name
+    IS '创建人';
+
+COMMENT ON COLUMN public.t_sys_role_menu.created_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.t_sys_role_menu.updated_name
+    IS '修改人';
+
+COMMENT ON COLUMN public.t_sys_role_menu.updated_time
+    IS '修改时间';
+
+
+
+-- Table: public.t_sys_role_user
+
+-- DROP TABLE IF EXISTS public.t_sys_role_user;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_role_user
+(
+    role_user_id SERIAL  NOT NULL ,
+    role_id integer,
+    user_id character varying COLLATE pg_catalog."default" NOT NULL,
+    created_time date,
+    created_name character varying(50) COLLATE pg_catalog."default",
+    updated_time date,
+    updated_name character varying(50) COLLATE pg_catalog."default",
+    user_status character varying(1) COLLATE pg_catalog."default" NOT NULL DEFAULT 0,
+    CONSTRAINT t_sys_role_user_pkey PRIMARY KEY (role_user_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_role_user
+    OWNER to postgres;
+
+COMMENT ON TABLE public.t_sys_role_user
+    IS '角色用户关系表';
+
+COMMENT ON COLUMN public.t_sys_role_user.role_user_id
+    IS 'id';
+
+COMMENT ON COLUMN public.t_sys_role_user.role_id
+    IS '角色id';
+
+COMMENT ON COLUMN public.t_sys_role_user.user_id
+    IS '用户id';
+
+COMMENT ON COLUMN public.t_sys_role_user.created_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.t_sys_role_user.created_name
+    IS '创建人';
+
+COMMENT ON COLUMN public.t_sys_role_user.updated_time
+    IS '修改时间';
+
+COMMENT ON COLUMN public.t_sys_role_user.updated_name
+    IS '修改人';
+
+COMMENT ON COLUMN public.t_sys_role_user.user_status
+    IS '用户状态 0:可用 1：不可用';
+
+
+-- Table: public.t_sys_user_menu
+
+-- DROP TABLE IF EXISTS public.t_sys_user_menu;
+
+CREATE TABLE IF NOT EXISTS public.t_sys_user_menu
+(
+    user_menu_id character varying(32) COLLATE pg_catalog."default" NOT NULL,
+    user_id character varying(32) COLLATE pg_catalog."default" NOT NULL,
+    menu_id character varying(32) COLLATE pg_catalog."default" NOT NULL,
+    enabled character varying(1) COLLATE pg_catalog."default" NOT NULL DEFAULT 0,
+    created_name character varying(20) COLLATE pg_catalog."default",
+    created_time date,
+    updated_name character varying(20) COLLATE pg_catalog."default",
+    updated_time date,
+    CONSTRAINT t_sys_user_menu_pkey PRIMARY KEY (user_menu_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.t_sys_user_menu
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.t_sys_user_menu.user_menu_id
+    IS 'id';
+
+COMMENT ON COLUMN public.t_sys_user_menu.user_id
+    IS '用户id';
+
+COMMENT ON COLUMN public.t_sys_user_menu.menu_id
+    IS '菜单id';
+
+COMMENT ON COLUMN public.t_sys_user_menu.enabled
+    IS '是否可用;0：可用 1：不可用';
+
+COMMENT ON COLUMN public.t_sys_user_menu.created_name
+    IS '创建人';
+
+COMMENT ON COLUMN public.t_sys_user_menu.created_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.t_sys_user_menu.updated_name
+    IS '修改人';
+
+COMMENT ON COLUMN public.t_sys_user_menu.updated_time
+    IS '修改时间';
+
+ALTER TABLE IF EXISTS public.t_sys_class
+    ADD COLUMN group_leader_id character varying(255);

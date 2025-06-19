@@ -1,0 +1,46 @@
+{
+  "orderFields":[
+    {
+      "name":"生产订单明细id",
+      "toField":"mid_mo_entry_bill_id",
+      "myField":"erp_mo_entry_id",
+      "from":"mid_mo_entry",
+      "toType":"int"
+    },
+    {
+      "name":"生产订单明细seq",
+      "toField":"mid_mo_entry_seq",
+      "myField":"erp_mo_entry_seq",
+      "from":"mid_mo_entry_status",
+      "toType":"int"
+    },
+    {
+      "name":"单据编号",
+      "toField":"mid_mo_bill_number",
+      "myField":"bill_no",
+      "from":"mid_mo_entry_status",
+      "toType":"varchar"
+    },
+    {
+      "name":"挂起名",
+      "toField":"mid_mo_entry_status_pending_name",
+      "myField":"pending_name",
+      "from":"mid_mo_entry_status",
+      "toType":"varchar"
+    },
+    {
+      "name":"挂起值 1挂起 0未挂起",
+      "toField":"mid_mo_entry_status_pending_value",
+      "myField":"pending_value",
+      "from":"mid_mo_entry_status",
+      "toType":"int"
+    },
+    {
+      "name":"挂起原因",
+      "toField":"mid_mo_entry_pending_case",
+      "myField":"pending_case",
+      "from":"mid_mo_entry_status",
+      "toType":"varchar"
+    }
+  ]
+}

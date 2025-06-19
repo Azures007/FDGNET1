@@ -1,0 +1,153 @@
+<div class="title">
+    {{modalTitle}}
+    <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+
+<form [formGroup]="dataForm" class="content page-container">
+
+
+    <div class="row-block">
+        <div class="label"><span class="red-star">*</span>磨具规格:</div>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="abrasiveSpecificationNo" type="text" matInput
+                placeholder="请输入磨具规格">
+            <mat-error *ngIf="dataForm.hasError('required','abrasiveSpecificationNo')">
+                磨具规格为<strong>必填</strong>
+            </mat-error>
+        </mat-form-field>
+        <div class="row_tips">
+            <div class="label" style="opacity: 0;"><span class="red-star">*</span>磨具规格:</div>
+            <div class="tip">示例：10克*20支*20盒</div>
+        </div>
+    </div>
+
+
+
+    <div class="row-block">
+        <label class="label"><span class="red-star">*</span>单支克重:</label>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="singleGramQty" type="text" matInput
+                placeholder="请输入磨具规格(单位：千克)">
+            <mat-error *ngIf="dataForm.hasError('required','singleGramQty')">
+                单支克重为<strong>必填</strong>
+            </mat-error>
+        </mat-form-field>
+        <div class="row_tips">
+            <div class="label" style="opacity: 0;"><span class="red-star">*</span>单支克重:</div>
+            <div class="tip">示例：0.01</div>
+        </div>
+    </div>
+
+
+    <div class="row-block">
+        <div class="label"><span class="red-star">*</span>生产组织:</div>
+        <mat-form-field appearance="fill" class="select">
+            <mat-select formControlName="kdOrgId" (ngModelChange)="handleGetDept($event)">
+                <mat-option *ngFor="let item of injectData.midOrgList" [value]="item.kdOrgId">
+                    {{item.kdOrgName}}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="dataForm.hasError('required','kdOrgId')">
+                请选择<strong>生产组织</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div class="row-block">
+        <div class="label"><span class="red-star">*</span>生产车间:</div>
+        <mat-form-field appearance="fill" class="select">
+            <mat-select formControlName="kdWorkshopId">
+                <mat-option *ngFor="let item of injectData.midDeptList" [value]="item.kdDeptId">
+                    {{item.kdDeptName}}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="dataForm.hasError('required','kdWorkshopId')">
+                请选择<strong>生产车间</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div class="row-block">
+        <label class="label"><span class="red-star">*</span>重量公式:</label>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="mathByWeight" type="text" matInput
+                placeholder="请输入磨具规格">
+            <mat-error *ngIf="dataForm.hasError('required','mathByWeight')">
+                重量公式为<strong>必填</strong>
+            </mat-error>
+        </mat-form-field>
+        <div class="row_tips">
+            <div class="label" style="opacity: 0;"><span class="red-star">*</span>重量公式:</div>
+            <div class="tip">示例：次*(4*11)*0.01kg</div>
+        </div>
+    </div>
+
+
+    <div class="row-block">
+        <label class="label"><span class="red-star">*</span>转数量公式:</label>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="mathByQty" type="text" matInput
+                placeholder="请输入磨具规格">
+            <mat-error *ngIf="dataForm.hasError('required','mathByQty')">
+                转数量公式为<strong>必填</strong>
+            </mat-error>
+        </mat-form-field>
+        <div class="row_tips">
+            <div class="label" style="opacity: 0;"><span class="red-star">*</span>转数量公式:</div>
+            <div class="tip">示例：次*(4*11)*1支</div>
+        </div>
+    </div>
+
+    <div class="row-block">
+        <label class="label"><span class="red-star">*</span>磨具描述:</label>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="abrasiveSpecificationRemark" type="text" matInput
+                placeholder="请输入磨具规格">
+            <mat-error *ngIf="dataForm.hasError('required','abrasiveSpecificationRemark')">
+                磨具描述为<strong>必填</strong>
+            </mat-error>
+        </mat-form-field>
+        <div class="row_tips">
+            <div class="label" style="opacity: 0;"><span class="red-star">*</span>磨具描述:</div>
+            <div class="tip">示例：4*11（跑一次44支）</div>
+        </div>
+    </div>
+
+    <div class="row-block">
+        <div class="label"><span class="red-star">*</span>状态:</div>
+        <mat-form-field appearance="fill" class="select">
+            <mat-select formControlName="abrasiveSpecificationStatus">
+                <mat-option *ngFor="let item of status" [value]="item.value">
+                    {{item.label}}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="dataForm.hasError('required','abrasiveSpecificationStatus')">
+                请选择<strong>状态</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div class="row-block">
+        <label class="label"><span class="red-star">*</span>每步支数:</label>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="abrasiveSpecificationSeq" type="text" matInput
+                placeholder="请输入每步支数">
+            <mat-error *ngIf="dataForm.hasError('required','abrasiveSpecificationSeq')">
+                每步支数为<strong>必填</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+</form>
+
+<div class="footer">
+    <button *ngIf="addNew" (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
+        <mat-icon class="material-icons svgIcon">done</mat-icon>
+        <span>提交</span>
+    </button>
+
+    <button (click)="addDialogClose()" mat-raised-button color="primary" class="search-btn btn">
+        <mat-icon class="material-icons svgIcon">done</mat-icon>
+        <span>关闭</span>
+    </button>
+</div>

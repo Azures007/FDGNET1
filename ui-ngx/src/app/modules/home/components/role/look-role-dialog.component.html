@@ -1,0 +1,66 @@
+<div class="title">
+    {{data.isEdit?'编辑角色':'查看角色'}}
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+<div class="content" *ngIf="!data.isEdit">
+    <div class="item">
+        <div class="label">角色编码:</div>
+        <input type="text" [(ngModel)]="data.roleDetail.roleCode" disabled>
+    </div>
+    <div class="item">
+        <div class="label">角色名称:</div>
+        <input type="text" [(ngModel)]="data.roleDetail.roleName" disabled>
+    </div>
+    <div class="item">
+        <div class="label">创建人:</div>
+        <input type="text" [(ngModel)]="data.roleDetail.createdName" disabled>
+    </div>
+    <div class="item">
+        <div class="label">创建时间:</div>
+        <input type="text" [(ngModel)]="data.roleDetail.createdTime" disabled>
+    </div>
+    <div class="item">
+        <div class="label">状态:</div>
+        <select disabled name="" id="" [(ngModel)]="data.roleDetail.enabled" required aria-placeholder="请选择">
+            <option value="0">启用</option>
+            <option value="1">禁用</option>
+        </select>
+    </div>
+    <div class="area_item">
+        <div class="label">角色说明:</div>
+        <textarea disabled  [(ngModel)]="data.roleDetail.roleExplain" maxlength="50" placeholder="请输入角色说明，限制50个字符"></textarea>
+    </div>
+</div>
+<div class="content" *ngIf="data.isEdit">
+    <div class="item">
+        <div class="label">角色编码:</div>
+        <input type="text" [(ngModel)]="data.roleDetail.roleCode" disabled>
+    </div>
+    <div class="item">
+        <div class="label">角色名称:</div>
+        <input type="text" [(ngModel)]="data.roleDetail.roleName">
+    </div>
+    <div class="item">
+        <div class="label">创建人:</div>
+        <input type="text" [(ngModel)]="data.roleDetail.createdName" disabled>
+    </div>
+    <div class="item">
+        <div class="label">创建时间:</div>
+        <input type="text" [(ngModel)]="data.roleDetail.createdTime" disabled>
+    </div>
+    <div class="item">
+        <div class="label">状态:</div>
+        <select  name="" id="" [(ngModel)]="data.roleDetail.enabled" required aria-placeholder="请选择">
+            <option value="0">启用</option>
+            <option value="1">禁用</option>
+        </select>
+    </div>
+    <div class="area_item">
+        <div class="label">角色说明:</div>
+        <textarea  [(ngModel)]="data.roleDetail.roleExplain" maxlength="50" placeholder="请输入角色说明，限制50个字符"></textarea>
+    </div>
+</div>
+<div class="footer">
+    <button (click)="DialogClose()" *ngIf="!data.isEdit">关闭</button>
+    <button (click)="DialogSaveClose()" cdkFocusInitial *ngIf="data.isEdit">保存</button>
+</div>

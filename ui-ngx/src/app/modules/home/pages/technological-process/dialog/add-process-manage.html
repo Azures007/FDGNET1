@@ -1,0 +1,124 @@
+<div class="title">
+  {{modalTitle}}
+  <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+<form [formGroup]="dataForm" class="content page-container">
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>工序名称:</label>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <input autocomplete="off" class="input" formControlName="processName" type="text" matInput placeholder="请输入工序名称">
+      <mat-error *ngIf="dataForm.hasError('required','processName')">
+        工序名称为<strong>必填</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>工序编号:</label>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <input autocomplete="off" class="input" formControlName="processNumber" type="text" matInput
+        placeholder="请输入工序编号">
+      <!--      <mat-hint>...</mat-hint>-->
+      <mat-error *ngIf="dataForm.hasError('required','processNumber')">
+        工序编号为<strong>必填</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <div class="label"><span class="red-star">*</span>ERP工序标识:</div>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="erpProcessNumber">
+        <mat-option *ngFor="let item of erpProcessList" [value]="item.codeValue">
+          {{item.codeDsc}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','erpProcessNumber')">
+        请选择<strong>ERP工序标识</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+
+  <div class="row-block">
+    <div class="label"><span class="red-star">*</span>状态:</div>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="enabled">
+        <mat-option *ngFor="let item of status" [value]="item.value">
+          {{item.label}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','enabled')">
+        请选择<strong>状态</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <div class="label">工序说明:</div>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <textarea matInput class="textarea" formControlName="processDetail" maxlength="50"
+        placeholder="请输入角色说明，限制50个字符"></textarea>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <div class="label"><span class="red-star">*</span>投入设置:</div>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="bySetImport">
+        <mat-option *ngFor="let item of status" [value]="item.value">
+          {{item.label}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div style="display: flex;justify-content: center;margin-top: 10px;">
+      <div class="label" style="opacity: 0;"><span class="red-star">*</span>投入设置:</div>
+      <div>控制原辅料投入报工，设置投入数量</div>
+    </div>
+  </div>
+
+  <div class="row-block">
+
+    <div class="label"><span class="red-star">*</span>指纹认证:</div>
+
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="fingerprintAuthentication">
+        <mat-option *ngFor="let item of status" [value]="item.value">
+          {{item.label}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div style="display: flex;justify-content: left;margin-top: 10px;">
+      <div class="label" style="opacity: 0;"><span class="red-star">*</span>指纹认证:</div>
+      <div>控制选择操作员指纹认证<span style="opacity: 0;">作员指纹认证</span></div>
+    </div>
+  </div>
+
+  <div class="row-block">
+    <div class="label"><span class="red-star">*</span>产出控制:</div>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="bySetExport">
+        <mat-option *ngFor="let item of status" [value]="item.value">
+          {{item.label}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','bySetExport')">
+        请选择<strong>状态</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+
+</form>
+<div class="footer">
+  <button *ngIf="formType !== 'details'" (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>提交</span>
+  </button>
+
+  <button *ngIf="formType === 'details'" (click)="addDialogClose()" mat-raised-button color="primary"
+    class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>关闭</span>
+  </button>
+</div>

@@ -1,0 +1,92 @@
+<div class="title" *ngIf="data.params.tSysClass.classId == '' || data.params.tSysClass.classId == null">
+    新增班别
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+
+<div class="title" *ngIf="(data.params.tSysClass.classId != '' && data.params.tSysClass.classId != null)">
+    {{data.edit == true?'编辑班别':'查看班别'}}
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+
+<div class="content">
+
+    <div class="item">
+        <div class="label">班别名称:</div>
+        <input [disabled]="data.edit == false " type="text" [(ngModel)]="data.params.tSysClass.name"
+            placeholder="请输入班别名称">
+    </div>
+
+    <div class="item">
+        <div class="label">班别说明:</div>
+        <input [disabled]="data.edit == false " type="text" [(ngModel)]="data.params.tSysClass.process"
+            placeholder="请输入班别说明">
+    </div>
+
+    <div class="item bind_item">
+        <div class="label">组长:</div>
+        <div class="right">
+            <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.tSysClass.groupLeader"
+                placeholder="请选择">
+            <span (click)="handleTeamLeader()" *ngIf="data.edit">选择</span>
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="label">排班:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.scheduling" required
+            (ngModelChange)="test($event)" aria-placeholder="请选择">
+            <option *ngFor="let wsItem of data.schedulingList" [value]="wsItem.codeValue">{{wsItem.codeDsc}}</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <div class="label">erp班别:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.classTeamNumber"
+            required (ngModelChange)="test($event)" placeholder="请选择班别">
+            <option *ngFor="let wsItem of data.erpClassList" [value]="wsItem.codeId">{{wsItem.codeDsc}}</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <div class="label">工序:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.belongProcessId"
+            required (ngModelChange)="test($event)" placeholder="请选择工序">
+            <option *ngFor="let wsItem of data.processList" [value]="wsItem.processId">{{wsItem.processName}}</option>
+        </select>
+    </div>
+
+
+    <div class="item">
+        <div class="label">生产组织:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.kdOrgId" required
+            (ngModelChange)="handleGetDept($event)" aria-placeholder="请选择">
+            <option *ngFor="let wsItem of data.midOrgList" [value]="wsItem.kdOrgId">{{wsItem.kdOrgName}}</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <div class="label">生产车间:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.kdDeptId" required
+            (ngModelChange)="test($event)" aria-placeholder="请选择">
+            <option *ngFor="let wsItem of data.midDeptList" [value]="wsItem.kdDeptId">
+                {{wsItem.kdDeptName}}</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <div class="label">状态:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.enabledSt" required
+            aria-placeholder="请选择">
+            <option value=1>启用</option>
+            <option value=0>禁用</option>
+        </select>
+    </div>
+</div>
+
+<div class="footer">
+    <button (click)="submit('add')" cdkFocusInitial *ngIf="data.params.tSysClass.classId == ''"> 提交</button>
+    <button (click)="submit('save')" cdkFocusInitial *ngIf="data.params.tSysClass.classId != '' && data.edit">
+        保存</button>
+    <button [mat-dialog-close]="" cdkFocusInitial *ngIf="data.params.tSysClass.classId != '' && data.edit == false">
+        关闭</button>
+</div>

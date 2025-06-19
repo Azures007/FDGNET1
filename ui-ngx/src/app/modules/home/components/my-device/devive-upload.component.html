@@ -1,0 +1,26 @@
+<div class="title">
+    导入设备
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+
+
+<div class="content">
+    <form enctype="multipart/form-data" class="up_item">
+        <div class="item_content">
+            <div class="label">上传文件</div><input type="file" id="csv_file" name="csv_file"
+                (change)="handleFile()"/>
+        </div>
+    </form>
+
+    <div class="btn_item">
+        <div class="btn_con">
+            <!-- <button>选择文件</button> -->
+            <button (click)="downloadModel()">模板下载</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    <button [mat-dialog-close]="uploadData" cdkFocusInitial>导入</button>
+</div>

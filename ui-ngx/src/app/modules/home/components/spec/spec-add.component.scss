@@ -1,0 +1,28 @@
+.page-container {
+	display: flex;
+	flex-wrap: wrap;
+}
+.search-btn {
+	margin-right: 20px;
+}
+.content{
+    .row-block {
+        position: relative;
+        margin-bottom: 40px;
+        .row_tips {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            bottom: -27px;
+            width: 100%;
+            .tip{
+                width: 204px;
+                color: #363636
+            }
+        }
+        .error_tips{
+            color: red;
+        }
+    }
+    
+}

@@ -1,0 +1,90 @@
+.TreeBase {
+	width: 100%;
+	float: right;
+}
+
+.TreeNode {
+	height: 33px;
+	width: 100%;
+}
+
+.NodeSelect {
+	float: left;
+	height: 16px;
+	width: 16px;
+	margin-left: 7px;
+	margin-top: 8px;
+	margin-right: 7px;
+}
+
+.NodeSelect_true {
+	cursor: pointer;
+	background: url('../../../../../../src/static/img/role/checked.png') no-repeat center center;
+	background-size: 100% 100%;
+}
+
+.NodeSelect_false {
+	cursor: pointer;
+	background: url('../../../../../../src/static/img/role/checkun.png') no-repeat center center;
+	background-size: 100% 100%;
+    border: 1px solid #e0e0e0;
+}
+
+.NodeName {
+	float: left;
+	margin-top: 5px;
+	height: 22px;
+}
+
+.ExWidth {
+	width: calc(100% - 54px);
+}
+
+.Width {
+	width: calc(100% - 40px);
+}
+
+.Cursor {
+	cursor: pointer;
+}
+
+.NodeExpland {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin-top: 8px;
+    margin-left: 4px;
+    margin-right: 4px;
+    cursor: pointer;
+}
+
+.NodeExpland_true {
+    background: url('../../../../../../src/static/img/role/open.png') no-repeat center center;
+	background-size: 100% 100%;
+}
+
+.NodeExpland_false {
+
+    background: url('../../../../../../src/static/img/role/close.png') no-repeat center center;
+    background-size: 100% 100%;
+}
+
+.Span {
+	font-family: PingFang SC Regular;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	display: block;
+	user-select: none;
+}
+
+.NameSpan {
+	font-size: 16px;
+	height: 22px;
+	color: #333;
+}
+
+.ChildNode {
+	float: right;
+	width: 90%;
+}

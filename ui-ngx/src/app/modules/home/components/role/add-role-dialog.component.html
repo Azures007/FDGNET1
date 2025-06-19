@@ -1,0 +1,24 @@
+<div class="title">
+    新增角色
+    <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+<div class="content">
+    <div class="item">
+        <div class="label">角色名称:</div>
+        <input type="text" [(ngModel)]="data.roleName">
+    </div>
+    <div class="item">
+        <div class="label">状态:</div>
+        <select name="" id="" [(ngModel)]="data.enabled" required aria-placeholder="请选择">
+            <option value="0">启用</option>
+            <option value="1">禁用</option>
+        </select>
+    </div>
+    <div class="area_item">
+        <div class="label">角色说明:</div>
+        <textarea  [(ngModel)]="data.roleExplain" maxlength="50" placeholder="请输入角色说明，限制50个字符"></textarea>
+    </div>
+</div>
+<div class="footer">
+    <button  [mat-dialog-close]="data" cdkFocusInitial>提交</button>
+</div>

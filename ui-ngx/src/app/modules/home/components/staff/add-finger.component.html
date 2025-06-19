@@ -1,0 +1,40 @@
+<div class="title">
+    指纹采集
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+<div class="content">
+    <div class="content_ing" *ngIf="fingerGot==0">
+        <div class="img_box">
+            <img src="../../../../../assets/imgs/finger_check.png" alt="" class="status_img">
+        </div>
+
+        <div class="check_title">请将手指放置，指纹采集设备上</div>
+        <div class="tips">
+            <div class="tips_item">
+                温馨提示：
+            </div>
+            <div class="tips_item">
+                1.请保持手指干净，干燥，不能佩戴手套。
+            </div>
+            <div class="tips_item">
+                2.请将手指在设备上轻轻按压，适当360度旋转。
+            </div>
+            <div class="tips_item">
+                3.一个操作员只需指纹认证一次。
+            </div>
+        </div>
+    </div>
+
+    <div class="get_result" *ngIf="fingerGot!=0">
+        <div class="img_box">
+            <img *ngIf="fingerGot==1" src="../../../../../assets/imgs/success.png" alt="" class="status_img">
+            <img *ngIf="fingerGot==2" src="../../../../../assets/imgs/error.png" alt="" class="status_img">
+        </div>
+        <div class="result_txt">{{fingerGot == 1?"指纹采集成功":"指纹采集失败"}}</div>
+    </div>
+</div>
+
+<div class="footer">
+    <button (click)="DialogClose()" cdkFocusInitial>
+        关闭</button>
+</div>

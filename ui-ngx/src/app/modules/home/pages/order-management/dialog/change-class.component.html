@@ -1,0 +1,26 @@
+<div class="title">
+    更改班别
+    <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+<div class="content">
+    <div class="item">
+        <div class="label">班别:</div>
+        <select name="" id="" [(ngModel)]="injectData.classId" required
+             aria-placeholder="请选择">
+            <option *ngFor="let wsItem of injectData.classList" [value]="wsItem.classId">{{wsItem.name}}</option>
+        </select>
+    </div>
+
+</div>
+
+<div class="footer">
+    <button (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
+        <mat-icon class="material-icons svgIcon">done</mat-icon>
+        <span>提交</span>
+    </button>
+
+    <button (click)="addDialogClose()" mat-raised-button color="primary" class="search-btn btn">
+        <mat-icon class="material-icons svgIcon">done</mat-icon>
+        <span>关闭</span>
+    </button>
+</div>

@@ -1,0 +1,25 @@
+<div class="title">
+    {{data.codeClId == ""?'新增字典类型':'编辑字典类型'}}
+    <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+<div class="content">
+    <div class="item">
+        <div class="label">类型编码:</div>
+        <input type="text" [(ngModel)]="data.codeValue" [disabled]="data.codeClId != '' ">
+    </div>
+    <div class="item">
+        <div class="label">类型名称:</div>
+        <input type="text" [(ngModel)]="data.codeDsc" placeholder="请输入类型名称">
+    </div>
+
+    <div class="item">
+        <div class="label">状态:</div>
+        <select [(ngModel)]="data.enabledSt" aria-placeholder="请选择">
+            <option value="1">启用</option>
+            <option value="0">禁用</option>
+        </select>
+    </div>
+</div>
+<div class="footer">
+    <button [mat-dialog-close]="data" cdkFocusInitial> {{data.codeClId == ""?'提交':'保存'}}</button>
+</div>

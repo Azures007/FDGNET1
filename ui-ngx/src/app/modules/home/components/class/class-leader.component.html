@@ -1,0 +1,48 @@
+<div class="title">
+    选择人员
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+
+<div class="content">
+    <div class="person_content left">
+        <div class="content_title">请选择</div>
+        <div class="list_content">
+            <div class="search_content">
+                <input type="text" placeholder="输入用户名" [(ngModel)]="searchPar.body.name">
+                <button class="search_btn" (click)="getTableData()">搜索</button>
+            </div>
+            <ul class="person_list">
+                <li *ngFor="let personItem of dataSource"
+                    [ngClass]="{'check_item':(checkData.personnelId!=undefined  &&personItem.personnelId == checkData.personnelId)}"
+                    (click)="chooseCurrent(personItem)">
+                    <span>{{personItem.name}}</span>
+                    <span>{{personItem.sex}}</span>
+                    <span>{{personItem.phone}}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="center">
+        <mat-icon (click)="goRight()" svgIcon="go-right" aria-hidden="false" aria-label="Example thumbs up SVG icon"
+            class="go_icon"></mat-icon>
+    </div>
+
+    <div class="person_content right">
+        <div class="content_title">已选中</div>
+        <div class="list_content">
+            <ul class="person_list">
+                <li *ngFor="let personItem of dataCheck;index as i">
+                    <span>{{personItem.name}}</span>
+                    <span>{{personItem.sex}}</span>
+                    <span>{{personItem.phone}}</span>
+                    <button class="remove_btn" (click)="remove(i)">移除</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <button [mat-dialog-close]="dataCheck" cdkFocusInitial> 确定</button>
+</div>

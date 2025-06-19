@@ -1,0 +1,83 @@
+.search-btn{
+  margin-right: 8px;
+}
+
+.svgIcon{
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.table-info{
+  padding: 12px 0;
+  font-size: 12px;
+  .total{
+    color: #0066FF;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 4px;
+  }
+  .yield{
+    color: #FF9900;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 4px;
+  }
+}
+
+.showCell{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  line-height: 23px;
+  padding-right: 4px;
+  width: 150px;
+}
+
+.mat-column-craftName{
+  width: 100px;
+}
+
+.mat-column-customColumn1{
+  width: 100px;
+}
+
+
+.mat-column-craftName{
+
+}
+
+
+.row-block {
+	select {
+		border: 1px solid #999;
+		width: 200px;
+		height: 36px;
+    outline: none;
+	}
+	option {
+		width: 200px;
+		height: 36px;
+	}
+  input{
+    outline: none;
+    width: 200px;
+		height: 36px;
+  }
+}
+
+.search-btn {
+	color: #fff;
+	background-color: #3399ff;
+	// align-items: center;
+	// display: flex;
+	// justify-content: center;
+	width: 150px;
+	height: 36px;
+	border: 1px solid #3399ff;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 16px;
+	margin-right: 10px;
+}

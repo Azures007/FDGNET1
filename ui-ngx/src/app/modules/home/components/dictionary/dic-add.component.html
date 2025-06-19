@@ -1,0 +1,53 @@
+<div class="title" *ngIf="data.params.codeId == ''">
+    新增字典
+    <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+
+<div class="title" *ngIf="data.params.codeId != ''">
+    {{data.edit == true?'编辑字典':'查看字典'}}
+    <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+
+<div class="content">
+    <div class="item" *ngIf="data.params.codeId == ''">
+        <div class="label">字典分类:</div>
+        <select name="" id="" [(ngModel)]="data.params.codeClId" required aria-placeholder="请选择">
+            <option *ngFor="let type of data.typelsit" [value]="type.codeValue">{{type.codeDsc}}</option>
+        </select>
+    </div>
+
+    <div class="item" *ngIf="data.params.codeId != ''">
+        <div class="label">类型名称:</div>
+        <input disabled type="text" [(ngModel)]="data.params.codeClDsc" placeholder="请输入类型名称">
+    </div>
+
+    <div class="item" *ngIf="data.params.codeId != ''">
+        <div class="label">类型编码:</div>
+        <input disabled type="text" [(ngModel)]="data.params.codeClId" placeholder="请输入类型编码">
+    </div>
+
+    <div class="item">
+        <div class="label">字典名称:</div>
+        <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.codeDsc" placeholder="请输入字典名称">
+    </div>
+
+    <div class="item">
+        <div class="label">字典编码:</div>
+        <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.codeValue" placeholder="请输入字典编码">
+    </div>
+
+    <div class="item">
+        <div class="label">状态:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.enabledSt" required
+            aria-placeholder="请选择">
+            <option value="1">启用</option>
+            <option value="0">禁用</option>
+        </select>
+    </div>
+</div>
+
+<div class="footer">
+    <button [mat-dialog-close]="data" cdkFocusInitial *ngIf="data.params.codeId == ''"> 提交</button>
+    <button [mat-dialog-close]="data" cdkFocusInitial *ngIf="data.params.codeId != '' && data.edit"> 保存</button>
+    <button [mat-dialog-close]="" cdkFocusInitial *ngIf="data.params.codeId != '' && data.edit == false"> 关闭</button>
+</div>

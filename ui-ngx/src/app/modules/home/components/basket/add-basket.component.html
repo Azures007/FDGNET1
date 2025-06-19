@@ -1,0 +1,90 @@
+<div class="title">
+    {{modalTitle}}
+    <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+
+<form [formGroup]="dataForm" class="content page-container">
+
+    <div class="row-block">
+        <label class="label"><span class="red-star">*</span>料筐编码:</label>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="code" type="text" matInput
+                placeholder="请输入编码，由纯数字或字母+数字组成">
+            <mat-error *ngIf="dataForm.hasError('required','code')">
+                料筐编码为<strong>必填</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <div class="row-block">
+        <label class="label"><span class="red-star">*</span>料筐重量:</label>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="weight" type="text" matInput placeholder="请输入重量">
+            <mat-error *ngIf="dataForm.hasError('required','weight')">
+                料筐重量为<strong>必填</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <div class="row-block">
+        <label class="label">料筐尺寸:</label>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="chargingBasketSize" type="text" matInput
+                placeholder="请输入料筐尺寸">
+        </mat-form-field>
+    </div>
+    <div class="row-block">
+        <label class="label">料筐承重:</label>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <input autocomplete="off" class="input" formControlName="maxBearing" type="text" matInput
+                placeholder="请输入料筐承重">
+        </mat-form-field>
+    </div>
+
+    <div class="row-block">
+        <div class="label"><span class="red-star">*</span>单位:</div>
+        <mat-form-field appearance="fill" class="select">
+            <mat-select formControlName="unit">
+                <mat-option *ngFor="let item of injectData.unitList" [value]="item.codeValue">
+                    {{item.codeDsc}}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="dataForm.hasError('required','unit')">
+                请选择<strong>单位</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div class="row-block">
+        <div class="label"><span class="red-star">*</span>状态:</div>
+        <mat-form-field appearance="fill" class="select">
+            <mat-select formControlName="chargingBasketStatus">
+                <mat-option *ngFor="let item of status" [value]="item.value">
+                    {{item.label}}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="dataForm.hasError('required','chargingBasketStatus')">
+                请选择<strong>状态</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div class="row-block">
+        <div class="label">备注说明:</div>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <textarea matInput class="textarea" formControlName="br" maxlength="30"
+                placeholder="请输入说明，限制30个字符"></textarea>
+        </mat-form-field>
+    </div>
+</form>
+
+<div class="footer">
+    <button *ngIf="formType !== 'details'" (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
+        <mat-icon class="material-icons svgIcon">done</mat-icon>
+        <span>提交</span>
+    </button>
+
+    <button *ngIf="formType === 'details'" (click)="addDialogClose()" mat-raised-button color="primary"
+        class="search-btn btn">
+        <mat-icon class="material-icons svgIcon">done</mat-icon>
+        <span>关闭</span>
+    </button>
+</div>

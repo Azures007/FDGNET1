@@ -1,0 +1,70 @@
+<div class="title" *ngIf="data.params.personnelId == ''">
+    新增人员
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+
+<div class="title" *ngIf="data.params.personnelId != ''">
+    {{data.edit == true?'编辑人员':'查看人员'}}
+    <span class="close_icon" (click)="DialogClose()">X</span>
+</div>
+<div class="content">
+    <div class="item">
+        <div class="label">姓名:</div>
+        <!-- <input [disabled]="data.edit == false " maxlength="4" onkeyup="this.value=this.value.replace(/[^a-zA-Z\u4e00-\u9fa5]/g,'')"  type="text" [(ngModel)]="data.params.name" placeholder="请输入姓名"> -->
+        <input [disabled]="data.edit == false " maxlength="4"  type="text" [(ngModel)]="data.params.name" placeholder="请输入姓名">
+    </div>
+
+    <div class="item">
+        <div class="label">性别:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.sex" required
+            aria-placeholder="请选择">
+            <option value="男">男</option>
+            <option value="女">女</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <div class="label">手机号码:</div>
+        <!-- <input [disabled]="data.edit == false" 
+        maxlength="11"
+        (keyup)='onPhoneup($event)' (keypress)='onPhonepress($event)'
+        type="text"  [(ngModel)]="data.params.phone" placeholder="请输入手机号码"> -->
+        <input [disabled]="data.edit == false" 
+        maxlength="11"
+        (keyup)='onPhoneup($event)' (keypress)='onPhonepress($event)'
+        type="text"  [(ngModel)]="data.params.phone" placeholder="请输入手机号码">
+
+    </div>
+    <div class="item">
+        <div class="label">岗位:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.station" required
+            (ngModelChange)="test($event)" aria-placeholder="请选择">
+            <option *ngFor="let wsItem of data.stationList" [value]="wsItem.codeValue">{{wsItem.codeDsc}}</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <div class="label">状态:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.enabledSt" required
+            aria-placeholder="请选择">
+            <option value=1>启用</option>
+            <option value=0>禁用</option>
+        </select>
+    </div>
+
+    <div class="item bind_item">
+        <div class="label">绑定登录账号:</div>
+        <div class="right">
+            <input [disabled]="true" type="text" [(ngModel)]="data.params.userEmail" placeholder="选填">
+            <span (click)="handleDeleteAccount()" class="delete"  *ngIf="data.edit">删除</span>
+            <span (click)="handleBindAccount()"  *ngIf="data.edit">选择</span>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <button (click)="submit()" cdkFocusInitial *ngIf="data.params.personnelId == ''"> 提交</button>
+    <button (click)="submit()" cdkFocusInitial *ngIf="data.params.personnelId != '' && data.edit"> 保存</button>
+    <button [mat-dialog-close]="" cdkFocusInitial *ngIf="data.params.personnelId != '' && data.edit == false">
+        关闭</button>
+</div>

@@ -1,0 +1,206 @@
+<div class="page-container ">
+  <div class="flex-column">
+    <mat-accordion multi="true">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            订单信息
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="page-card">
+          <div class="row">
+            <label class="label">单据编号：</label>
+            <input disabled  class="input" [ngModel]="dataParams.billNo" />
+          </div>
+          <div class="row">
+            <label class="label">订单编号：</label>
+            <input disabled [ngModel]="dataParams.orderNo" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">生产车间：</label>
+            <input disabled [ngModel]="dataParams.bodyPrdDept" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">计划员：</label>
+            <input disabled [ngModel]="dataParams.planner" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">订单状态：</label>
+            <input disabled [ngModel]="dataParams.orderStatus" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">下单时间：</label>
+            <input disabled [ngModel]="dataParams.billDate" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">工艺路线：</label>
+            <input disabled [ngModel]="dataParams.craftName" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">当前工序：</label>
+            <input disabled [ngModel]="dataParams.currentProcessName" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">单据类型：</label>
+            <input disabled [ngModel]="dataParams.billType" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">生产组织：</label>
+            <input disabled [ngModel]="dataParams.prdOrg" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">明细-班组：</label>
+            <input disabled [ngModel]="dataParams.midMoEntryTeamName" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">明细-锅数：</label>
+            <input disabled [ngModel]="dataParams.bodyPotQty" class="input" />
+          </div>
+          <div class="row">
+            <label class="label">明细-每锅数量：</label>
+            <input disabled [ngModel]="dataParams.bodyOnePotQty" class="input" />
+          </div>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            物料清单
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="page-card">
+          <table class="table">
+            <tr>
+              <th>序号</th>
+              <th>物料编码</th>
+              <th>批次</th>
+              <th>物料名称</th>
+              <th>计划产量({{handleUnit(bodyUnit)}})</th>
+              <th>计划开工日期</th>
+              <th>计划完工日期</th>
+            </tr>
+            <tr *ngFor="let item of materialList; let i = index">
+              <td>{{item.no}}</td>
+              <td>{{item.bodyMaterialNumber}}</td>
+              <td>{{item.bodyLot}}</td>
+              <td>{{item.bodyMaterialName}}</td>
+              <td>{{item.bodyPlanPrdQty}}</td>
+              <td>{{item.bodyPlanStartDate}}</td>
+              <td>{{item.bodyPlanFinishDate}}</td>
+            </tr>
+            <tr>
+              <th>合计</th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th>{{totalPrdQty}}{{handleUnit(bodyUnit)}}</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </table>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            用料清单
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="page-card">
+          <table class="table">
+            <tr>
+              <th>序号</th>
+              <th>物料编码</th>
+              <th>物料名称</th>
+              <th>规格型号</th>
+              <th>单位</th>
+              <th>应发数量</th>
+
+              <th>正误差</th>
+              <th>差误差</th>
+              <th>标准值</th>
+              <th>mes单位</th>
+              <th>开发单位</th>
+              <th>mes数量</th>
+              <th>开发数量</th>
+              <th>是否需要投入</th>
+
+              <th>投入工序</th>
+              <th>替换料组</th>
+              <th>bom编码</th>
+              <th>分母</th>
+              <th>操作分组</th>
+              <th>操作顺序</th>
+            </tr>
+            <tr *ngFor="let item of userMaterialList; let i = index">
+              <td>{{i + 1}}</td>
+              <td>{{item.materialNumber}}</td>
+              <td>{{item.materialName}}</td>
+              <td>{{item.materialSpecification}}</td>
+              <td>{{handleUnit(item.unit)}}</td>
+              <td>{{item.mustQty}}</td>
+              <td>{{item.midPpbomEntryMaterialPositiveError}}</td>
+              <td>{{item.midPpbomEntryMaterialNegativeError}}</td>
+              <td>{{item.midPpbomEntryMaterialStandard}}</td>
+              <td>{{item.midPpbomEntryWeighMesUnit}}</td>
+              <td>{{item.midPpbomEntryWeighDeveptUnit}}</td>
+              <td>{{item.midPpbomEntryWeighMesQty}}</td>
+              <td>{{item.midPpbomEntryWeighDeveptQty}}</td>
+              <td>{{item.midPpbomEntryIsInto==1?'需要':'不需要'}}</td>
+
+              <td>{{item.midPpbomEntryInputProcess}}</td>
+              <td>{{item.midPpbomEntryReplaceGroup}}</td>
+              <td>{{item.midPpbomEntryBomNumber}}</td>
+              <td>{{item.midPpbomEntryDenominator}}</td>
+              <td>{{item.midPpbomEntryHandleGroup}}</td>
+              <td>{{item.midPpbomEntryHandleSort}}</td>
+            </tr>
+          </table>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            工序执行情况
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="stepper-panel">
+          <div class="stepper-item" *ngFor="let item of processList; let i = index">
+
+            <div class="step-header">
+              <div class="step-icon">{{i+1}}</div>
+              <div class="step-label">{{item.processName}} <span *ngIf="item.statusStr">{{item.statusStr}}</span></div>
+            </div>
+            <div class="content-container">
+              <div class="stepper-content">
+                <div class="step-info">
+                  <div class="item">完成时间：{{item.finishTime || '未完成'}}</div>
+                  <div class="item">接单时间：{{item.receiveTime || '未接单'}}</div>
+                  <div class="item">耗时：{{item.elapsedTime}}小时</div>
+                </div>
+                <div class="class-list" *ngFor="let classItem of item.orderProcessRecordDtlVoList; let classIndex = index">
+                  <div class="item">班别：{{classItem.className}}</div>
+                  <div class="item">责任人：{{item.personName}}</div>
+                  <div class="item">批次：{{classItem.bodyLot}}</div>
+                  <div class="item" *ngIf="classItem.rowQty != -1"><span>原辅材料重量</span> ：{{classItem.rowQty || '无'}}<span *ngIf="classItem.rowQty">{{classItem.rowUnitStr}}</span></div>
+                  <div class="item" *ngIf="classItem.ungradedQty != -1">二级品重量：{{classItem.ungradedQty || '无'}}<span *ngIf="classItem.ungradedQty">{{classItem.ungradedUnitStr}}</span></div>
+                  <div class="item" *ngIf="classItem.productQty != -1">产后重量：{{classItem.productQty || '无'}}<span *ngIf="classItem.productQty">{{classItem.productUnitStr}}</span></div>
+                  <div class="item" *ngIf="classItem.capacityQty != -1">产能数量：{{classItem. capacityQty || '无'}}<span *ngIf="classItem.capacityQty">{{classItem.productUnitStr}}</span></div>
+                  <div class="item" *ngIf="classItem.reportLsmQty != -1">拉伸膜数量：{{classItem. reportLsmQty || '无'}}<span *ngIf="classItem.reportLsmQty">{{classItem.reportLsmUnitStr}}</span></div>
+                  <div class="item" *ngIf="classItem.reportFmQty != -1">废膜数量：{{classItem. reportFmQty || '无'}}<span *ngIf="classItem.reportFmQty">{{classItem.reportFmUnitStr}}</span></div>
+                  <div class="item" *ngIf="classItem.reportSymQty != -1">剩余膜数量：{{classItem. reportSymQty || '无'}}<span *ngIf="classItem.reportSymQty">{{classItem.reportSymUnitStr}}</span></div>
+                  <div class="item"></div>
+                  <div class="item"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+
+</div>

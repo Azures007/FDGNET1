@@ -1,0 +1,28 @@
+<div class="title">
+  工序设置
+  <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+<form  class="content page-container" >
+
+  <div class="row-block">
+    <div class="label">加入班别:</div>
+    <div class="join-content">
+      <div class="standard-chip-warp">
+        <div class="standard-chip" *ngFor="let item of joins;let i = index" >
+          <span>{{item.label || item.name}}</span>
+          <button  class="chip-btn" type="button" (click)="delTag(i)">
+            <mat-icon class="material-icons svgIcon" >cancel</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="addbtn" (click)="showTransfer()">+选择</div>
+    </div>
+  </div>
+
+</form>
+<div class="footer">
+  <button tabindex="-1" (click)="submit()"  mat-raised-button color="primary" class="search-btn btn" >
+    <mat-icon class="material-icons svgIcon" >done</mat-icon>
+    <span>提交</span>
+  </button>
+</div>
