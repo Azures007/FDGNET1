@@ -48,4 +48,8 @@ public class NcTBusOrderPPBom {
     @Column(name = "must_qty")
     @ApiModelProperty("需求数量")
     private float nnum;
+
+    @Column(name = "order_id")
+    @ApiModelProperty("订单ID")
+    private Integer orderId;
 }

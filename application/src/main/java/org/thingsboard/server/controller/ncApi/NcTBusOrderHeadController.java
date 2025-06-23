@@ -29,7 +29,7 @@ public class NcTBusOrderHeadController {
     })
     public ResponseResult create(@RequestBody NcTBusOrderHead entity) {
         service.updateByCmoid(entity.getCmoid(), entity);
-        return ResultUtil.success();
+        return ResultUtil.success("同步成功！");
     }
     @ApiOperation("(批量)新增/更新订单")
     @PostMapping("/addbatch")
@@ -42,7 +42,7 @@ public class NcTBusOrderHeadController {
         for (NcTBusOrderHead entity : entitys) {
             service.updateByCmoid(entity.getCmoid(), entity);
         }
-        return ResultUtil.success();
+        return ResultUtil.success("同步成功！");
     }
 
 }

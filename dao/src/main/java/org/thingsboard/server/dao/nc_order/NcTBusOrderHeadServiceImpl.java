@@ -54,8 +54,20 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             entity.setOrderId(orderId);
             // 确保cmoid一致
             entity.setCmoid(cmoid);
+            // 设置每个 bom 的 orderId
+            if (entity.getBomList() != null) {
+                for (var bom : entity.getBomList()) {
+                    bom.setOrderId(orderId);
+                }
+            }
             return repository.save(entity);
         } else {
+            // 新增时也要设置 bom 的 orderId
+            if (entity.getBomList() != null) {
+                for (var bom : entity.getBomList()) {
+                    bom.setOrderId(entity.getOrderId());
+                }
+            }
             return repository.save(entity);
         }
     }
