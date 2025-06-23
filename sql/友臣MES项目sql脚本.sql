@@ -45,3 +45,10 @@ COMMENT ON COLUMN t_sync_material.nc_material_classification IS '材料分类';
 COMMENT ON COLUMN t_sync_material.nc_material_quality_num IS '保质期(月)';
 COMMENT ON COLUMN t_sync_material.nc_material_quality_unit IS '保质期单位(0=年，1=月，2=日)';
 COMMENT ON COLUMN t_sync_material.nc_material_status IS 'NC状态';
+
+-- 创建t_sys_organization基地表
+CREATE TABLE t_sys_organization (
+                                    id SERIAL PRIMARY KEY,
+                                    nc_pk_org VARCHAR(255),
+                                    nc_org_name VARCHAR(255)
+);
