@@ -25,3 +25,23 @@ ALTER TABLE "public"."t_bus_order_ppbom"
     ALTER COLUMN "mid_ppbom_entry_is_into" DROP NOT NULL,
 ALTER COLUMN "mid_ppbom_entry_item_type" DROP NOT NULL,
   ALTER COLUMN "mid_ppbom_entry_use_rate" DROP NOT NULL;
+
+
+-- t_sync_material表添加新字段
+ALTER TABLE t_sync_material
+    ADD COLUMN nc_material_id VARCHAR(50),
+ADD COLUMN nc_material_category VARCHAR(100),
+ADD COLUMN nc_material_main_category VARCHAR(100),
+ADD COLUMN nc_material_classification VARCHAR(100),
+ADD COLUMN nc_material_quality_num INTEGER,
+ADD COLUMN nc_material_quality_unit VARCHAR(2),
+ADD COLUMN nc_material_status VARCHAR(20);
+
+-- 可选：添加字段注释
+COMMENT ON COLUMN t_sync_material.nc_material_id IS 'NC物料ID';
+COMMENT ON COLUMN t_sync_material.nc_material_category IS '物料分类';
+COMMENT ON COLUMN t_sync_material.nc_material_main_category IS '物料大类';
+COMMENT ON COLUMN t_sync_material.nc_material_classification IS '材料分类';
+COMMENT ON COLUMN t_sync_material.nc_material_quality_num IS '保质期(月)';
+COMMENT ON COLUMN t_sync_material.nc_material_quality_unit IS '保质期单位(0=年，1=月，2=日)';
+COMMENT ON COLUMN t_sync_material.nc_material_status IS 'NC状态';
