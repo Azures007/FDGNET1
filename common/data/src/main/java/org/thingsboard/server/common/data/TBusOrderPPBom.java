@@ -1,5 +1,6 @@
 package org.thingsboard.server.common.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -145,4 +146,12 @@ public class TBusOrderPPBom {
     @Column(name = "mid_ppbom_entry_pack_type")
     private Integer midPpbomEntryPackType;
 
+    @Column(name = "nc_cmoid")
+    @ApiModelProperty("订单明细id")
+    private String cmoid;
+
+    @Column(name = "nc_pk_material")
+    @JsonProperty("pk_material")  // 指定JSON属性名
+    @ApiModelProperty("物料id")
+    private String pkMaterial;
 }

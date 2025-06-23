@@ -34,12 +34,7 @@ import org.thingsboard.server.exception.ThingsboardErrorResponse;
 import org.thingsboard.server.queue.util.TbCoreComponent;
 import org.thingsboard.server.service.security.auth.rest.LoginRequest;
 import org.thingsboard.server.service.security.auth.rest.LoginResponse;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.ExampleBuilder;
-import springfox.documentation.builders.OperationBuilder;
-import springfox.documentation.builders.RepresentationBuilder;
-import springfox.documentation.builders.RequestParameterBuilder;
-import springfox.documentation.builders.ResponseBuilder;
+import springfox.documentation.builders.*;
 import springfox.documentation.schema.Example;
 import springfox.documentation.service.ApiDescription;
 import springfox.documentation.service.ApiInfo;
@@ -392,6 +387,19 @@ public class SwaggerConfiguration {
             return this.securityPathSelector.test(operationContext.requestMappingPattern());
         }
     }
-
+    @Bean
+    public Docket ncApi() {
+        return new Docket(DocumentationType.OAS_30)
+                .groupName("nc-api") // 这里就是你访问的 group 名
+                .apiInfo(new ApiInfoBuilder()
+                        .title("NC接口")
+                        .description("用于对接NC系统数据")
+                        .version("1.0.0")
+                        .build())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("org.thingsboard.server.controller.ncApi"))
+                .paths(PathSelectors.any())
+                .build();
+    }
 
 }

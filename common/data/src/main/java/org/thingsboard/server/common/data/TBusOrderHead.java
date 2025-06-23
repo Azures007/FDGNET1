@@ -1,5 +1,6 @@
 package org.thingsboard.server.common.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -331,4 +332,29 @@ public class TBusOrderHead  {
     @ApiModelProperty("匹配工艺路线: 0: 不匹配, 1:匹配")
     @Column(name = "order_matching")
     private String orderMatching = "0";
+
+    @Column(name = "nc_cpmohid")
+    @ApiModelProperty("生产订单id")
+    private String cpmohid;
+
+    @Column(name = "nc_cmoid")
+    @ApiModelProperty("订单明细id")
+    private String cmoid;
+
+    @Column(name = "nc_cdeptid")
+    @ApiModelProperty("生产部门id")
+    private String cdeptid;
+
+    @Column(name = "nc_vwkname")
+    @ApiModelProperty("生产线")
+    private String vwkname;
+
+    @Column(name = "nc_cwkid")
+    @ApiModelProperty("生产线id")
+    private String cwkid;
+
+    @Column(name = "nc_pk_material")
+    @JsonProperty("pk_material")  // 指定JSON属性名
+    @ApiModelProperty("物料id")
+    private String pkMaterial;
 }
