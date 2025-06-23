@@ -21,7 +21,7 @@ public class NcTBusOrderHeadController {
     @Autowired
     private NcTBusOrderHeadService service;
     @ApiOperation("新增/更新订单")
-    @PostMapping
+    @PostMapping("/add")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "同步成功"),
             @ApiResponse(code = 400, message = "请求参数错误"),
@@ -29,6 +29,19 @@ public class NcTBusOrderHeadController {
     })
     public ResponseResult create(@RequestBody NcTBusOrderHead entity) {
         service.updateByCmoid(entity.getCmoid(), entity);
+        return ResultUtil.success();
+    }
+    @ApiOperation("(批量)新增/更新订单")
+    @PostMapping("/addbatch")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "同步成功"),
+            @ApiResponse(code = 400, message = "请求参数错误"),
+            @ApiResponse(code = 500, message = "服务器内部错误")
+    })
+    public ResponseResult create(@RequestBody List<NcTBusOrderHead> entitys) {
+        for (NcTBusOrderHead entity : entitys) {
+            service.updateByCmoid(entity.getCmoid(), entity);
+        }
         return ResultUtil.success();
     }
 

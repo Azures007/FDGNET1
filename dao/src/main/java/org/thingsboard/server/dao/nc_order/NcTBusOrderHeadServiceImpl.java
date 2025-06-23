@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.TBusOrderHead;
 import org.thingsboard.server.common.data.nc_order.NcTBusOrderHead;
 import org.thingsboard.server.dao.sql.nc_order.NcTBusOrderHeadRepository;
+import org.thingsboard.server.dao.sql.nc_order.NcTBusOrderPPBomRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,9 @@ import java.util.Optional;
 public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
     @Autowired
     private NcTBusOrderHeadRepository repository;
+
+    @Autowired
+    private NcTBusOrderPPBomRepository bomRepository;
 
     @Override
     public List<NcTBusOrderHead> findAll() {
@@ -42,12 +46,16 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
     public NcTBusOrderHead updateByCmoid(String cmoid, NcTBusOrderHead entity) {
         NcTBusOrderHead existingOrder = repository.findByCmoid(cmoid);
         if (existingOrder != null) {
+            // 先删除原有 bomList
+            Integer orderId = existingOrder.getOrderId();
+            bomRepository.deleteAllLinkByOrderId(orderId);
+            bomRepository.deleteAllByOrderId(orderId);
             // 保留原有ID
-            entity.setOrderId(existingOrder.getOrderId());
+            entity.setOrderId(orderId);
             // 确保cmoid一致
             entity.setCmoid(cmoid);
             return repository.save(entity);
-        }else{
+        } else {
             return repository.save(entity);
         }
     }
