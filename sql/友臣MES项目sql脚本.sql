@@ -52,3 +52,6 @@ CREATE TABLE t_sys_organization (
                                     nc_pk_org VARCHAR(255),
                                     nc_org_name VARCHAR(255)
 );
+COMMENT ON COLUMN t_sys_organization.nc_pk_org IS 'NC基地id';
+COMMENT ON COLUMN t_sys_organization.nc_org_name IS 'NC基地名称';
+COMMENT ON TABLE "public"."t_sys_organization" IS '基地';
