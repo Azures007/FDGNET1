@@ -2,11 +2,13 @@ package org.thingsboard.server.dao.nc_order;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.TBusOrderHead;
 import org.thingsboard.server.common.data.nc_order.NcTBusOrderHead;
 import org.thingsboard.server.dao.sql.nc_order.NcTBusOrderHeadRepository;
 import org.thingsboard.server.dao.sql.nc_order.NcTBusOrderPPBomRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,27 +50,33 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
         if (existingOrder != null) {
             // 先删除原有 bomList
             Integer orderId = existingOrder.getOrderId();
-            bomRepository.deleteAllLinkByOrderId(orderId);
             bomRepository.deleteAllByOrderId(orderId);
+            bomRepository.deleteAllLinkByOrderId(orderId);
             // 保留原有ID
             entity.setOrderId(orderId);
             // 确保cmoid一致
             entity.setCmoid(cmoid);
-            // 设置每个 bom 的 orderId
-            if (entity.getBomList() != null) {
-                for (var bom : entity.getBomList()) {
-                    bom.setOrderId(orderId);
-                }
-            }
             return repository.save(entity);
         } else {
-            // 新增时也要设置 bom 的 orderId
-            if (entity.getBomList() != null) {
-                for (var bom : entity.getBomList()) {
-                    bom.setOrderId(entity.getOrderId());
-                }
-            }
             return repository.save(entity);
         }
+    }
+
+    @Override
+    @Transactional
+    public void updateByCmoidBatch(List<NcTBusOrderHead> entitys) {
+        List<NcTBusOrderHead> toSave = new ArrayList<>();
+        for (NcTBusOrderHead entity : entitys) {
+            NcTBusOrderHead existingOrder = repository.findByCmoid(entity.getCmoid());
+            if (existingOrder != null) {
+                Integer orderId = existingOrder.getOrderId();
+                bomRepository.deleteAllByOrderId(orderId);
+                bomRepository.deleteAllLinkByOrderId(orderId);
+                entity.setOrderId(orderId);
+                entity.setCmoid(existingOrder.getCmoid());
+            }
+            toSave.add(entity);
+        }
+        repository.saveAll(toSave);
     }
 }

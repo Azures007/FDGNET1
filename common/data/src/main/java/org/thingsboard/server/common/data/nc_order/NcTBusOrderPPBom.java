@@ -1,6 +1,8 @@
 package org.thingsboard.server.common.data.nc_order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,6 +20,7 @@ public class NcTBusOrderPPBom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_ppbom_id")
     @ApiModelProperty("主键ID")
+    @JsonIgnore
     private Integer orderPPBomId;
 
     @Column(name = "nc_cmoid")
@@ -48,8 +51,4 @@ public class NcTBusOrderPPBom {
     @Column(name = "must_qty")
     @ApiModelProperty("需求数量")
     private float nnum;
-
-    @Column(name = "order_id")
-    @ApiModelProperty("订单ID")
-    private Integer orderId;
 }

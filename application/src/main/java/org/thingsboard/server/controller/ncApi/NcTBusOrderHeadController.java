@@ -29,7 +29,7 @@ public class NcTBusOrderHeadController {
     })
     public ResponseResult create(@RequestBody NcTBusOrderHead entity) {
         service.updateByCmoid(entity.getCmoid(), entity);
-        return ResultUtil.success("同步成功！");
+        return ResultUtil.success();
     }
     @ApiOperation("(批量)新增/更新订单")
     @PostMapping("/addbatch")
@@ -39,10 +39,8 @@ public class NcTBusOrderHeadController {
             @ApiResponse(code = 500, message = "服务器内部错误")
     })
     public ResponseResult create(@RequestBody List<NcTBusOrderHead> entitys) {
-        for (NcTBusOrderHead entity : entitys) {
-            service.updateByCmoid(entity.getCmoid(), entity);
-        }
-        return ResultUtil.success("同步成功！");
+        service.updateByCmoidBatch(entitys);
+        return ResultUtil.success();
     }
 
 }

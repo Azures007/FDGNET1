@@ -1,5 +1,6 @@
 package org.thingsboard.server.common.data.nc_order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,6 +19,7 @@ public class NcTBusOrderHead {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     @ApiModelProperty("订单ID")
+    @JsonIgnore
     private Integer orderId;
 
     @Column(name = "nc_cpmohid")

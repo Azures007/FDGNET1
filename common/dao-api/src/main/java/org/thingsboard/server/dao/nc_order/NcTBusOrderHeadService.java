@@ -14,4 +14,6 @@ public interface NcTBusOrderHeadService {
     // 新增根据cmoid查询和更新的方法
     NcTBusOrderHead findByCmoid(String cmoid);
     NcTBusOrderHead updateByCmoid(String cmoid, NcTBusOrderHead entity);
+    // 批量根据cmoid更新
+    void updateByCmoidBatch(List<NcTBusOrderHead> entitys);
 }

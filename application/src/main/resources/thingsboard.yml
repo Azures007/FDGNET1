@@ -525,6 +525,10 @@ spring:
     open-in-view: "false"
     hibernate:
       ddl-auto: "none"
+      jdbc:
+        batch_size: 50
+      order_inserts: true
+      order_updates: true
     database-platform: "${SPRING_JPA_DATABASE_PLATFORM:org.hibernate.dialect.PostgreSQLDialect}"
     show-sql: "true"
   datasource:
