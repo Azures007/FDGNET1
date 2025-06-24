@@ -93,3 +93,17 @@ COMMENT ON COLUMN t_sys_department.nc_cdeptcode IS '部门编码';
 COMMENT ON COLUMN t_sys_department.nc_dept_parent_code IS '部门编码';
 COMMENT ON COLUMN t_sys_department.nc_pk_org IS '基地id';
 COMMENT ON COLUMN t_sys_department.nc_org_name IS '基地名称';
+
+-- 创建仓库表
+CREATE TABLE t_sys_warehouse (
+    id SERIAL PRIMARY KEY,
+    nc_pk_stordoc VARCHAR(255),
+    nc_pk_org VARCHAR(255),
+    nc_name VARCHAR(255),
+    nc_code VARCHAR(255)
+);
+COMMENT ON TABLE t_sys_warehouse IS '仓库';
+COMMENT ON COLUMN t_sys_warehouse.nc_pk_stordoc IS '仓库pk';
+COMMENT ON COLUMN t_sys_warehouse.nc_pk_org IS '基地pk';
+COMMENT ON COLUMN t_sys_warehouse.nc_name IS '仓库名称';
+COMMENT ON COLUMN t_sys_warehouse.nc_code IS '仓库编码';
