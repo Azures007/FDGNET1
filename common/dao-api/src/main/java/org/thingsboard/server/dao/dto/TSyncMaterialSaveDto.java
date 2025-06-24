@@ -1,10 +1,8 @@
-package org.thingsboard.server.dao.vo;
+package org.thingsboard.server.dao.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.thingsboard.server.common.data.TSyncMaterialBom;
 
 import javax.persistence.Column;
@@ -12,15 +10,13 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @Auther: l
- * @Date: 2022/5/25 15:40
+ * @author hhh
+ * @date 2025-06-24
  * @Description:
  */
-@ApiModel("物料信息")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class TSyncMaterialVo {
+@ApiModel("物料保存模型")
+public class TSyncMaterialSaveDto {
 
     @ApiModelProperty("ID")
     private Integer id;
@@ -43,7 +39,7 @@ public class TSyncMaterialVo {
     @ApiModelProperty("备注")
     private String br;
 
-    @ApiModelProperty("状态 0：启用 1：废弃")
+    @ApiModelProperty("状态 1：启用 0：禁用")
     private String materialStatus;
 
     @ApiModelProperty("创建时间")
@@ -85,13 +81,7 @@ public class TSyncMaterialVo {
     @ApiModelProperty("每件支数")
     private Integer kdMaterialEachPieceNum;
 
-    @ApiModelProperty("膜厚度")
-    private Float kdMaterialMembraneThickness;
-    @ApiModelProperty("膜宽度")
-    private Float kdMaterialMembraneWidth;
-    @ApiModelProperty("膜密度")
-    private Float kdMaterialMembraneDensity;
-
+    // 2025-06-23 任务29732 物料id、物料分类、物料大类、材料分类、材料编码、材料名称、规格、单位、保质期（月）、状态
     @ApiModelProperty("NC物料ID")
     private String ncMaterialId;
     @ApiModelProperty("物料分类")
@@ -114,5 +104,6 @@ public class TSyncMaterialVo {
 
     @ApiModelProperty("还原材料")
     private List<TSyncMaterialBom> materialBoms;
+
 
 }

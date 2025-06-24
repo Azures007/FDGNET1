@@ -58,52 +58,49 @@ COMMENT ON TABLE "public"."t_sys_organization" IS '基地';
 
 -- 创建生产线表
 CREATE TABLE t_sys_workline (
-                                id SERIAL PRIMARY KEY,
-                                nc_cwkid VARCHAR(255),
-                                nc_vwkname VARCHAR(255),
-                                nc_vwkcode VARCHAR(255),
-                                nc_pk_org VARCHAR(255),
-                                nc_org_name VARCHAR(255),
-                                nc_cdeptid VARCHAR(255),
-                                nc_cdeptname VARCHAR(255)
+    id SERIAL PRIMARY KEY,
+    nc_cwkid VARCHAR(255),
+    nc_vwkname VARCHAR(255),
+    nc_vwkcode VARCHAR(255),
+    nc_org_id VARCHAR(255),
+    nc_org_name VARCHAR(255)
 );
 COMMENT ON TABLE t_sys_workline IS '生产线';
 COMMENT ON COLUMN t_sys_workline.nc_cwkid IS '产线id';
 COMMENT ON COLUMN t_sys_workline.nc_vwkname IS '产线名称';
 COMMENT ON COLUMN t_sys_workline.nc_vwkcode IS '产线编码';
-COMMENT ON COLUMN t_sys_workline.nc_pk_org IS '基地id';
+COMMENT ON COLUMN t_sys_workline.nc_org_id IS '基地id';
 COMMENT ON COLUMN t_sys_workline.nc_org_name IS '基地名称';
-COMMENT ON COLUMN t_sys_workline.nc_cdeptid IS '部门id';
-COMMENT ON COLUMN t_sys_workline.nc_cdeptname IS '部门名称';
 
 -- 创建生产部门表
 CREATE TABLE t_sys_department (
-                                  id SERIAL PRIMARY KEY,
-                                  nc_cdeptid VARCHAR(255),
-                                  nc_cdeptname VARCHAR(255),
-                                  nc_cdeptcode VARCHAR(255),
-                                  nc_dept_parent_code VARCHAR(255),
-                                  nc_pk_org VARCHAR(255),
-                                  nc_org_name VARCHAR(255)
+    id SERIAL PRIMARY KEY,
+    nc_cdeptid VARCHAR(255),
+    nc_cdeptname VARCHAR(255),
+    nc_cdeptcode VARCHAR(255),
+    nc_org_id VARCHAR(255),
+    nc_org_name VARCHAR(255)
 );
 COMMENT ON TABLE t_sys_department IS '生产部门';
-COMMENT ON COLUMN t_sys_department.nc_cdeptid IS '部门id';
-COMMENT ON COLUMN t_sys_department.nc_cdeptname IS '部门名称';
-COMMENT ON COLUMN t_sys_department.nc_cdeptcode IS '部门编码';
-COMMENT ON COLUMN t_sys_department.nc_dept_parent_code IS '部门编码';
-COMMENT ON COLUMN t_sys_department.nc_pk_org IS '基地id';
+COMMENT ON COLUMN t_sys_department.nc_cdeptid IS '生产部门id';
+COMMENT ON COLUMN t_sys_department.nc_cdeptname IS '生产部门名称';
+COMMENT ON COLUMN t_sys_department.nc_cdeptcode IS '生产部门编码';
+COMMENT ON COLUMN t_sys_department.nc_org_id IS '基地id';
 COMMENT ON COLUMN t_sys_department.nc_org_name IS '基地名称';
 
--- 创建仓库表
-CREATE TABLE t_sys_warehouse (
-    id SERIAL PRIMARY KEY,
-    nc_pk_stordoc VARCHAR(255),
-    nc_pk_org VARCHAR(255),
-    nc_name VARCHAR(255),
-    nc_code VARCHAR(255)
+-- 2025-06-24 物料BOM附表
+CREATE TABLE t_sync_material_bom (
+     id SERIAL PRIMARY KEY,
+     parent_id INTEGER NOT NULL,
+     material_id INTEGER NOT NULL,
+     ratio DOUBLE PRECISION,
+     CONSTRAINT fk_material FOREIGN KEY (material_id) REFERENCES t_sync_material(id)
 );
-COMMENT ON TABLE t_sys_warehouse IS '仓库';
-COMMENT ON COLUMN t_sys_warehouse.nc_pk_stordoc IS '仓库pk';
-COMMENT ON COLUMN t_sys_warehouse.nc_pk_org IS '基地pk';
-COMMENT ON COLUMN t_sys_warehouse.nc_name IS '仓库名称';
-COMMENT ON COLUMN t_sys_warehouse.nc_code IS '仓库编码';
+
+COMMENT ON TABLE t_sync_material_bom IS '物料BOM附表';
+COMMENT ON COLUMN t_sync_material_bom.id IS '物料BOM附表ID';
+COMMENT ON COLUMN t_sync_material_bom.parent_id IS '父级物料ID';
+COMMENT ON COLUMN t_sync_material_bom.material_id IS '物料ID';
+COMMENT ON COLUMN t_sync_material_bom.ratio IS '比例';
+
+

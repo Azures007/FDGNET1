@@ -33,24 +33,8 @@ public class NcTSyncMaterial {
     private String materialModel;
 
     @Column(name = "material_status")
-    @ApiModelProperty("状态 0：启用 1：废弃")
+    @ApiModelProperty("状态 1：启用 0：禁用")
     private String materialStatus;
-
-//    @Column(name = "created_time")
-//    @ApiModelProperty("创建时间")
-//    private Date createdTime;
-//
-//    @Column(name = "created_name")
-//    @ApiModelProperty("创建人")
-//    private String createdName;
-//
-//    @Column(name = "updated_time")
-//    @ApiModelProperty("修改时间")
-//    private Date updatedTime;
-//
-//    @Column(name = "updated_name")
-//    @ApiModelProperty("修改人")
-//    private String updatedName;
 
     // 2025-06-23 任务29732 物料id、物料分类、物料大类、材料分类、材料编码、材料名称、规格、单位、保质期（月）、状态
     @ApiModelProperty("nc物料ID")

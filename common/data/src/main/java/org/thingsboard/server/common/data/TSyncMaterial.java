@@ -42,7 +42,7 @@ public class TSyncMaterial {
     private String br;
 
     @Column(name = "material_status")
-    @ApiModelProperty("状态 0：启用 1：废弃")
+    @ApiModelProperty("状态 1：启用 0：禁用")
     private String materialStatus;
 
     @Column(name = "created_time")
@@ -102,7 +102,6 @@ public class TSyncMaterial {
     @Column(name = "nc_material_id")
     private String ncMaterialId;
 
-    // 物料分类、物料大类、材料分类、保质期、保质期单位、状态
     @ApiModelProperty("物料分类")
     @Column(name = "nc_material_category")
     private String ncMaterialCategory;

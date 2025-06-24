@@ -9,8 +9,8 @@
             <div class="label">状态:</div>
             <select required [(ngModel)]="searchFormGroup.value.materialStatus">
                 <option value="">全部</option>
-                <option value="0">启用</option>
-                <option value="1">禁用</option>
+                <option value="1">启用</option>
+                <option value="0">禁用</option>
             </select>
         </div>
         <button class="search_btn" (click)="getTableData()">
@@ -58,8 +58,7 @@
 
                 <ng-container matColumnDef="materialUnit">
                     <th mat-header-cell *matHeaderCellDef> 单位 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.materialUnit ==
-                        null?'':handleUnit(element.materialUnit)}} </td>
+                    <td mat-cell *matCellDef="let element"> {{element.materialUnit == null?'':handleUnit(element.materialUnit)}} </td>
                 </ng-container>
 
 
@@ -68,18 +67,15 @@
                     <td mat-cell *matCellDef="let element"> {{element.materialModel}} </td>
                 </ng-container>
 
-                
-            <ng-container matColumnDef="kdMaterialUseOrgId">
-                <th mat-header-cell *matHeaderCellDef> 生产组织 </th>
-                <td mat-cell *matCellDef="let element">  {{element.kdMaterialUseOrgId?handleHash(2,element.kdMaterialUseOrgId):'未绑定'}} </td>
-            </ng-container>
+                <ng-container matColumnDef="kdMaterialUseOrgId">
+                    <th mat-header-cell *matHeaderCellDef> 生产组织 </th>
+                    <td mat-cell *matCellDef="let element">  {{element.kdMaterialUseOrgId?handleHash(2,element.kdMaterialUseOrgId):'未绑定'}} </td>
+                </ng-container>
 
-            <ng-container matColumnDef="kdMaterialWorkshopId">
-                <th mat-header-cell *matHeaderCellDef> 生产车间 </th>
-                <td mat-cell *matCellDef="let element"> {{element.kdMaterialWorkshopId?handleHash(1,element.kdMaterialWorkshopId):'未绑定'}} </td>
-            </ng-container>
-
-
+                <ng-container matColumnDef="kdMaterialWorkshopId">
+                    <th mat-header-cell *matHeaderCellDef> 生产车间 </th>
+                    <td mat-cell *matCellDef="let element"> {{element.kdMaterialWorkshopId?handleHash(1,element.kdMaterialWorkshopId):'未绑定'}} </td>
+                </ng-container>
 
                 <ng-container matColumnDef="br">
                     <th mat-header-cell *matHeaderCellDef> 备注 </th>
@@ -89,24 +85,23 @@
                 <ng-container matColumnDef="materialStatus">
                     <th mat-header-cell *matHeaderCellDef> 账号状态 </th>
                     <td mat-cell *matCellDef="let element"
-                        [ngClass]="{'enabled':element.materialStatus == 0,'disabled':element.materialStatus == 1}">
-                        {{element.materialStatus == 0?"启用":"禁用"}} </td>
+                        [ngClass]="{'enabled':element.materialStatus == 1,'disabled':element.materialStatus == 0}">
+                        {{element.materialStatus == 1?"启用":"禁用"}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="customColumn1">
                     <th mat-header-cell *matHeaderCellDef> 操作 </th>
                     <td mat-cell *matCellDef="let element">
                         <button *ngIf="set.has('/material/edit')" class="mini_btn edit_btn" (click)="handleEvent(element,'edit')">编辑</button>
-                        <button class="mini_btn enter_btn" (click)="enterDia(element,0)"
-                            *ngIf="element.materialStatus == 1 && set.has('/material/enable')">启用</button>
-                        <button class="mini_btn disable_btn" (click)="enterDia(element,1)"
-                            *ngIf="element.materialStatus == 0 && set.has('/material/disable')">禁用</button>
+                        <button class="mini_btn enter_btn" (click)="enterDia(element,1)"
+                            *ngIf="element.materialStatus == 0 && set.has('/material/enable')">启用</button>
+                        <button class="mini_btn disable_btn" (click)="enterDia(element,0)"
+                            *ngIf="element.materialStatus == 1 && set.has('/material/disable')">禁用</button>
                         <button class="mini_btn look_btn" (click)="handleEvent(element,'details')">查看</button>
                         <button class="mini_btn del_btn" (click)="delDia(element)"
-                            *ngIf="element.materialStatus == 1 && set.has('/material/del')">删除</button>
+                            *ngIf="element.materialStatus == 0 && set.has('/material/del')">删除</button>
                     </td>
                 </ng-container>
-
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>

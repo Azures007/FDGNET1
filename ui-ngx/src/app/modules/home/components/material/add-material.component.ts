@@ -53,10 +53,10 @@ export class AddMaterialComponent implements OnInit {
   // 状态下拉
   status = [{
     label: '启用',
-    value: '0',
+    value: '1',
   }, {
     label: '禁用',
-    value: '1',
+    value: '0',
   }];
   //单位列表
   units = [];
@@ -86,8 +86,8 @@ export class AddMaterialComponent implements OnInit {
         kdMaterialMembraneThickness: "",
         kdMaterialMembraneWidth: "",
         kdMaterialMembraneDensity: "",
-        kdMaterialUseOrgId: ['', [Validators.required]],
-        kdMaterialWorkshopId: ['', [Validators.required]],
+        kdMaterialUseOrgId: "",
+        kdMaterialWorkshopId: "",
         br: "",
         createdName: "",
         createdTime: "",
@@ -133,8 +133,8 @@ export class AddMaterialComponent implements OnInit {
           kdMaterialMembraneThickness: [{ value: obj.kdMaterialMembraneThickness, disabled: true }],
           kdMaterialMembraneWidth: [{ value: obj.kdMaterialMembraneWidth, disabled: true }],
           kdMaterialMembraneDensity: [{ value: obj.kdMaterialMembraneDensity, disabled: true }],
-          kdMaterialUseOrgId: [{ value: obj.kdMaterialUseOrgId, disabled: true }, [Validators.required]],
-          kdMaterialWorkshopId: [{ value: obj.kdMaterialWorkshopId, disabled: true }, [Validators.required]],
+          kdMaterialUseOrgId: [{ value: obj.kdMaterialUseOrgId, disabled: true }],
+          kdMaterialWorkshopId: [{ value: obj.kdMaterialWorkshopId, disabled: true }],
           br: [{ value: obj.br, disabled: true },],
         });
       } else {
@@ -151,8 +151,8 @@ export class AddMaterialComponent implements OnInit {
           kdMaterialMembraneThickness: [{ value: obj.kdMaterialMembraneThickness, disabled: true }],
           kdMaterialMembraneWidth: [{ value: obj.kdMaterialMembraneWidth, disabled: true }],
           kdMaterialMembraneDensity: [{ value: obj.kdMaterialMembraneDensity, disabled: true }],
-          kdMaterialUseOrgId: [{ value: obj.kdMaterialUseOrgId, disabled: false }, [Validators.required]],
-          kdMaterialWorkshopId: [{ value: obj.kdMaterialWorkshopId, disabled: false }, [Validators.required]],
+          kdMaterialUseOrgId: [{ value: obj.kdMaterialUseOrgId, disabled: false }],
+          kdMaterialWorkshopId: [{ value: obj.kdMaterialWorkshopId, disabled: false }],
           br: [{ value: obj.br, disabled: false }],
         });
       }

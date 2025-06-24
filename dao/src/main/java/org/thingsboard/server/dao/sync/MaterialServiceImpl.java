@@ -5,28 +5,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.TSyncMaterial;
+import org.thingsboard.server.common.data.TSyncMaterialBom;
 import org.thingsboard.server.common.data.TSysCodeDsc;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.ListMaterialDto;
+import org.thingsboard.server.dao.dto.TSyncMaterialSaveDto;
 import org.thingsboard.server.dao.sql.licheng.MidMaterialRepository;
+import org.thingsboard.server.dao.sql.sync.SyncMaterialBomRepository;
 import org.thingsboard.server.dao.sql.sync.SyncMaterialRepository;
 import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscRepository;
 import org.thingsboard.server.dao.vo.ListMaterialFiterVo;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.dao.vo.TSyncMaterialVo;
-import org.thingsboard.server.dao.vo.TaskListVo;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("materialService")
@@ -34,6 +38,9 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Autowired
     SyncMaterialRepository materialRepository;
+
+    @Autowired
+    SyncMaterialBomRepository tSyncMaterialBomRepository;
 
     @Value("${material.sync.header_key}")
     private String materialSyncHeaderKey;
@@ -74,8 +81,72 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
+    @Transactional
+    public void update(TSyncMaterialSaveDto materialDto) {
+        Integer materialId = materialDto.getId();
+        // 获取原有物料信息
+        Optional<TSyncMaterial> existingOpt = materialRepository.findById(materialId);
+        if (!existingOpt.isPresent()) {
+            throw new RuntimeException("物料未找到");
+        }
+
+        TSyncMaterial existingMaterial = existingOpt.get();
+
+        // 更新主表字段
+        BeanUtils.copyProperties(existingMaterial, materialDto, "id", "tSyncMaterialBoms"); // 排除 id 和 bom 集合
+
+        // 校验必填字段、赋值创建人创建时间
+        updateVerify(existingMaterial);
+
+        // 保存物料主表
+        materialRepository.save(existingMaterial);
+
+        if (materialDto.getMaterialBoms() != null && !materialDto.getMaterialBoms().isEmpty()) {
+            //删除所有bom
+            tSyncMaterialBomRepository.deleteByParentId(materialId);
+            return;
+        }
+
+        // 处理 BOM 集合
+        List<TSyncMaterialBom> newBoms = materialDto.getMaterialBoms();
+        List<TSyncMaterialBom> existingBoms =  tSyncMaterialBomRepository.findAllByParentId(materialId);
+
+        // 区分新增/更新/删除
+        Map<Integer, TSyncMaterialBom> existingMap = existingBoms.stream()
+                .collect(Collectors.toMap(TSyncMaterialBom::getId, b -> b));
+
+        for (TSyncMaterialBom newBom : newBoms) {
+            if (newBom.getId() == null || !existingMap.containsKey(newBom.getId())) {
+                // 新增
+                newBom.setMaterialId(materialId); // 关联主表ID
+                tSyncMaterialBomRepository.save(newBom);
+            } else {
+                // 更新
+                TSyncMaterialBom existingBom = existingMap.get(newBom.getId());
+                BeanUtils.copyProperties(existingBom, newBom);
+                tSyncMaterialBomRepository.save(existingBom);
+                existingMap.remove(newBom.getId()); // 移除已处理项
+            }
+        }
+
+        // 删除剩余的未处理项（即不在新列表中的旧项）
+        existingMap.values().forEach(bom -> tSyncMaterialBomRepository.deleteById(bom.getId()));
+    }
+
+    @Override
     public TSyncMaterial getById(Integer id) {
         return materialRepository.findById(id).get();
+    }
+
+    @Override
+    public TSyncMaterialVo getById2(Integer id) {
+        TSyncMaterialVo tSyncMaterialVo = new TSyncMaterialVo();
+
+        TSyncMaterial tSyncMaterial = materialRepository.findById(id).get();
+        BeanUtils.copyProperties(tSyncMaterial, tSyncMaterialVo);
+        tSyncMaterialVo.setMaterialBoms(tSyncMaterialBomRepository.findAllByParentId(id));
+
+        return tSyncMaterialVo;
     }
 
     @Override

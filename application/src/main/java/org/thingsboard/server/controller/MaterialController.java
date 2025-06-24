@@ -11,6 +11,7 @@ import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.ListMaterialDto;
+import org.thingsboard.server.dao.dto.TSyncMaterialSaveDto;
 import org.thingsboard.server.dao.vo.ListMaterialFiterVo;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.dao.vo.TSyncMaterialVo;
@@ -37,6 +38,14 @@ public class MaterialController extends BaseController {
         return ResultUtil.success(pageVo);
     }
 
+    // 查询物料详情
+    @ApiOperation("物料详情")
+    @GetMapping("/getById")
+    public ResponseResult<TSyncMaterialVo> getById(@RequestParam("id") Integer id) {
+        TSyncMaterialVo tSyncMaterialVo = materialService.getById2(id);
+        return ResultUtil.success(tSyncMaterialVo);
+    }
+
     @ApiOperation("修改/新增（通过物料id区分）")
     @PostMapping("/update")
     public ResponseResult update(@RequestBody TSyncMaterial tSyncMaterial) throws ThingsboardException {
@@ -44,6 +53,16 @@ public class MaterialController extends BaseController {
         tSyncMaterial.setUpdatedName(currentUser.getName());
         tSyncMaterial.setUpdatedTime(new Date());
         materialService.update(tSyncMaterial);
+        return ResultUtil.success();
+    }
+
+    @ApiOperation("修改/新增（通过物料id区分），包含bom")
+    @PostMapping("/update2")
+    public ResponseResult update2(@RequestBody TSyncMaterialSaveDto tSyncMaterialSaveDto) throws ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        tSyncMaterialSaveDto.setUpdatedName(currentUser.getName());
+        tSyncMaterialSaveDto.setUpdatedTime(new Date());
+        materialService.update(tSyncMaterialSaveDto);
         return ResultUtil.success();
     }
 

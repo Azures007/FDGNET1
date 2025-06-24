@@ -227,7 +227,7 @@ export class MaterialComponent implements OnInit {
       enbled: enbled,
     }
     let changeToen = "";
-    if (enbled == 1) {
+    if (enbled == 0) {
       changeToen = "禁用"
     } else {
       changeToen = "启用"
