@@ -43,7 +43,7 @@ public class TSyncMaterialVo {
     @ApiModelProperty("备注")
     private String br;
 
-    @ApiModelProperty("状态 0：启用 1：废弃")
+    @ApiModelProperty("状态 1：启用 0：禁用")
     private String materialStatus;
 
     @ApiModelProperty("创建时间")
