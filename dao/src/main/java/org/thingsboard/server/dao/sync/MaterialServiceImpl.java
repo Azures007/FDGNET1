@@ -150,7 +150,11 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
+        //删除所有bom
+        tSyncMaterialBomRepository.deleteByParentId(id);
+        //删除物料
         materialRepository.deleteById(id);
     }
 
