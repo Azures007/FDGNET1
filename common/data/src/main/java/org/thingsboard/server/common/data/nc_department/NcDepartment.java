@@ -26,7 +26,7 @@ public class NcDepartment {
     private String cdeptid;
 
     @Column(name = "nc_cdeptname")
-    @JsonProperty("dept_name")
+    @JsonProperty("cdeptname")
     @ApiModelProperty("生产部门名称")
     private String cdeptname;
 
@@ -35,13 +35,13 @@ public class NcDepartment {
     @ApiModelProperty("生产部门编码")
     private String cdeptcode;
 
-    @Column(name = "nc_org_id")
-    @JsonProperty("org_id")
+    @Column(name = "nc_pk_org")
+    @JsonProperty("pk_org")
     @ApiModelProperty("基地id")
-    private String orgId;
+    private String pkOrg;
 
     @Column(name = "nc_org_name")
     @JsonProperty("org_name")
     @ApiModelProperty("基地名称")
     private String orgName;
-} 
+}
