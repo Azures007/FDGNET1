@@ -113,8 +113,7 @@ CREATE TABLE t_sync_material_bom (
      id SERIAL PRIMARY KEY,
      parent_id INTEGER NOT NULL,
      material_id INTEGER NOT NULL,
-     ratio DOUBLE PRECISION,
-     CONSTRAINT fk_material FOREIGN KEY (material_id) REFERENCES t_sync_material(id)
+     ratio DOUBLE PRECISION
 );
 
 COMMENT ON TABLE t_sync_material_bom IS '物料BOM附表';
