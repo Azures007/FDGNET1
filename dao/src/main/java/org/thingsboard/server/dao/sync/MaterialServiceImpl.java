@@ -61,7 +61,8 @@ public class MaterialServiceImpl implements MaterialService {
     public PageVo<TSyncMaterialVo> listMaterial(Integer current, Integer size, ListMaterialDto listMaterialDto) {
         TSyncMaterial tSyncMaterialTo = new TSyncMaterial();
         tSyncMaterialTo.setMaterialCode(StringUtils.isBlank(listMaterialDto.getMaterialCode()) ? "" : listMaterialDto.getMaterialCode());
-        tSyncMaterialTo.setMaterialName(StringUtils.isBlank(listMaterialDto.getMaterialCode()) ? "" : listMaterialDto.getMaterialCode());
+        tSyncMaterialTo.setMaterialName(StringUtils.isBlank(listMaterialDto.getMaterialName()) ? "" : listMaterialDto.getMaterialName());
+        tSyncMaterialTo.setNcMaterialCategory(StringUtils.isBlank(listMaterialDto.getNcMaterialCategory()) ? "" : listMaterialDto.getNcMaterialCategory());
         tSyncMaterialTo.setMaterialStatus(StringUtils.isBlank(listMaterialDto.getMaterialStatus()) ? "" : listMaterialDto.getMaterialStatus());
         int i = current * size;
         List<Map> all = materialRepository.findAllJoinMid(tSyncMaterialTo, i, size);
@@ -128,6 +129,7 @@ public class MaterialServiceImpl implements MaterialService {
                     tSyncMaterialBomRepository.save(newBom);
                 } else {
                     // 更新
+                    newBom.setParentId(materialId); // 关联主表ID
                     TSyncMaterialBom existingBom = existingMap.get(newBom.getId());
                     BeanUtils.copyProperties(newBom, existingBom);
                     tSyncMaterialBomRepository.save(existingBom);
