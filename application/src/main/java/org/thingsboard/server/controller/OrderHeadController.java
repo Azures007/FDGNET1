@@ -13,6 +13,7 @@ import org.thingsboard.server.dao.dto.OrderChangeClassSaveDto;
 import org.thingsboard.server.dao.dto.OrderStartOrderSaveDto;
 import org.thingsboard.server.dao.dto.TBusOrderDto;
 import org.thingsboard.server.dao.dto.TBusOrderHeadDto;
+import org.thingsboard.server.dao.order.OrderBackendService;
 import org.thingsboard.server.dao.vo.*;
 import org.thingsboard.server.service.order.OrderHeadExcelService;
 import org.thingsboard.server.service.security.model.SecurityUser;
@@ -30,7 +31,10 @@ import java.util.List;
 public class OrderHeadController extends BaseController {
 
     @Autowired
-    OrderHeadExcelService orderHeadExcelService;
+    OrderHeadExcelService orderHeadExcelService;@Autowired
+    OrderBackendService orderBackendService;
+
+
 
     @ApiOperation("获取工序执行数据")
     @GetMapping("/getOrderProcess")
@@ -168,14 +172,14 @@ public class OrderHeadController extends BaseController {
     })
     @PostMapping("/startOrder")
     public ResponseResult startOrder(@RequestParam("orderId") Integer orderId, @RequestParam("craftId") Integer craftId, @RequestParam("craftDesc") String craftDesc) throws Exception {
-        orderHeadExcelService.startOrder(orderId, craftId, craftDesc);
+        orderBackendService.startOrder(orderId, craftId, craftDesc);
         return ResultUtil.success();
     }
 
     @ApiOperation("接单开工（批量）")
     @PostMapping("/startOrderBatch")
     public ResponseResult startOrderBatch(@RequestBody List<OrderStartOrderSaveDto> saveDtoList) throws Exception {
-        orderHeadExcelService.startOrderBatch(saveDtoList);
+        orderBackendService.startOrderBatch(saveDtoList);
         return ResultUtil.success();
     }
 
@@ -186,7 +190,7 @@ public class OrderHeadController extends BaseController {
     })
     @PostMapping("/getCraftInfo")
     public ResponseResult startOrder(@RequestParam("materialNumber") String materialNumber, @RequestParam("orderId") Integer orderId) throws Exception {
-        var craftInfo = orderHeadExcelService.getCraftInfoByMaterial(materialNumber,orderId);
+        var craftInfo = orderBackendService.getCraftInfoByMaterial(materialNumber);
         return ResultUtil.success(craftInfo);
     }
 
@@ -230,13 +234,13 @@ public class OrderHeadController extends BaseController {
     @ApiImplicitParam(name = "orderId", value = "订单id", required = true)
     @GetMapping("/getOrderClassInfo")
     public ResponseResult<List<TSysClass>> getOrderClassInfo(@RequestParam("orderId") Integer orderId) {
-        return ResultUtil.success(orderHeadExcelService.getOrderClassInfo(orderId));
+        return ResultUtil.success(orderBackendService.getOrderClassInfo(orderId));
     }
 
     @ApiOperation("订单班别变更提交")
     @PostMapping("/changeOrderClass")
     public ResponseResult changeOrderClass(@RequestBody OrderChangeClassSaveDto saveDto) {
-        orderHeadExcelService.changeOrderClass(saveDto);
+        orderBackendService.changeOrderClass(saveDto);
         return ResultUtil.success();
     }
 

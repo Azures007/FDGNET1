@@ -22,6 +22,21 @@ public class NcTBusOrderHead {
     @JsonIgnore
     private Integer orderId;
 
+    @Column(name = "order_no")
+    @ApiModelProperty("MES订单号")
+    @JsonIgnore
+    private String orderNo;
+
+    @ApiModelProperty("订单状态：0=未开工、1=已开工、2=暂停、3=已完工、4=已挂起")
+    @JsonIgnore
+    @Column(name = "order_status")
+    private String orderStatus;
+
+    @ApiModelProperty("是否删除 0：删除 1：非删除")
+    @Column(name = "is_deleted")
+    @JsonIgnore
+    private String isDeleted;
+
     @Column(name = "nc_cpmohid")
     @ApiModelProperty("生产订单id")
     private String cpmohid;

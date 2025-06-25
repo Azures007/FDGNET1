@@ -13,7 +13,17 @@ public interface NcTBusOrderHeadService {
     void deleteById(Integer id);
     // 新增根据cmoid查询和更新的方法
     NcTBusOrderHead findByCmoid(String cmoid);
+    /**
+     *  根据cmoid更新
+     * @param cmoid
+     * @param entity
+     * @return
+     */
     NcTBusOrderHead updateByCmoid(String cmoid, NcTBusOrderHead entity);
-    // 批量根据cmoid更新
+
+    /**
+     *  批量根据cmoid更新
+     * @param entitys
+     */
     void updateByCmoidBatch(List<NcTBusOrderHead> entitys);
 }
