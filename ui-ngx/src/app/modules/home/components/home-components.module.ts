@@ -163,6 +163,7 @@ import { StaffUploadComponent } from '@home/components/staff/staff-upload.compon
 import { ClassAddComponent } from '@home/components/class/class-add.component';
 import { ClassLeaderComponent } from '@home/components/class/class-leader.component';
 import { AddMaterialComponent } from './material/add-material.component';
+import { ChooseMaterialComponent } from './material/choose-material/choose-material.component';
 import { AddBasketComponent } from './basket/add-basket.component';
 import { ShowCodeComponent } from './basket/show-code.component';
 import { EnterDiaComponent } from './basket/enter-dia.component';
@@ -310,6 +311,7 @@ import { MenuAddComponent } from './menu-admin/menu-add.component'
       ClassAddComponent,
       ClassLeaderComponent,
       AddMaterialComponent,
+      ChooseMaterialComponent,
       AddBasketComponent,
       ShowCodeComponent,
       EnterDiaComponent,

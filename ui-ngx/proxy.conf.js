@@ -15,8 +15,8 @@
  */
 // const forwardUrl = "http://192.168.175.21:8080";
 // const wsForwardUrl = "ws://192.168.175.21:8080";
-const ZYip = '192.168.175.211:8080'
-// const ZYip = '116.205.226.5:8090'
+// const ZYip = '192.168.175.211:8080'
+const ZYip = '116.205.226.5:8090'
 
 const forwardUrl = `http://${ZYip}`;
 const wsForwardUrl = `ws://${ZYip}`;

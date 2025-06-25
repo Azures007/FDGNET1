@@ -1,117 +1,120 @@
 <div class="material_container">
-    <div class="search_form">
-        <div class="search_item">
-            <div class="label">物料搜索:</div>
-            <input type="text" [(ngModel)]="searchFormGroup.value.materialCode" placeholder="请输入物料名称或编码" style="width: 180px;">
-        </div>
+  <div class="search_form">
+    <div class="search_item">
+      <div class="label">物料分类:</div>
+      <input type="text" [(ngModel)]="searchFormGroup.value.ncMaterialCategory" placeholder="请输入物料分类"
+        style="width: 180px;">
+    </div>
+    <div class="search_item">
+      <div class="label">材料编码:</div>
+      <input type="text" [(ngModel)]="searchFormGroup.value.materialCode" placeholder="请输入材料编码"
+        style="width: 180px;">
+    </div>
+    <div class="search_item">
+      <div class="label">材料名称:</div>
+      <input type="text" [(ngModel)]="searchFormGroup.value.materialName" placeholder="请输入材料名称"
+        style="width: 180px;">
+    </div>
+    <div class="search_item">
+      <div class="label">状态:</div>
+      <select required [(ngModel)]="searchFormGroup.value.materialStatus">
+        <option value="">全部</option>
+        <option value="1">启用</option>
+        <option value="0">禁用</option>
+      </select>
+    </div>
+    <button class="search_btn" (click)="getTableData()">
+      <mat-icon>search</mat-icon> 查询
+    </button>
+  </div>
+  <div class="info_container">
 
-        <div class="search_item">
-            <div class="label">状态:</div>
-            <select required [(ngModel)]="searchFormGroup.value.materialStatus">
-                <option value="">全部</option>
-                <option value="1">启用</option>
-                <option value="0">禁用</option>
-            </select>
-        </div>
-        <button class="search_btn" (click)="getTableData()">
-            <mat-icon>search</mat-icon> 查询
+    <div class="info_title">
+      <div class="btn_list">
+        <button *ngIf="set.has('/material/add')" class="add_btn btn_color_primary" (click)="showAddVisibilly({})"
+          style="margin-right: 10px;">
+          <mat-icon>add</mat-icon> 新增物料
         </button>
-    </div>
-    <div class="info_container">
-
-        <div class="info_title">
-            <div class="btn_list">
-                <button  *ngIf="set.has('/material/add')" class="add_btn btn_color_primary" (click)="showAddVisibilly({})" style="margin-right: 10px;">
-                    <mat-icon>add</mat-icon> 新增物料
-                </button>
-                <button *ngIf="set.has('/material/sync')" class="add_btn btn_color_primary" (click)="showSync()">
-                    <mat-icon>sync</mat-icon> 同步
-                </button>
-            </div>
-            <div class="info_tip">总共<span class="text_color_primary">{{total}}</span>个物料</div>
-        </div>
-
-        <div class="table_container">
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
-                <ng-container matColumnDef="materialCode">
-                    <th mat-header-cell *matHeaderCellDef> 物料编码 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.materialCode}} </td>
-                </ng-container>
-
-
-                <ng-container matColumnDef="createdTime">
-                    <th mat-header-cell *matHeaderCellDef> 创建时间 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.createdTime | date:'yyyy-MM-dd hh-mm-ss'}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="groupCode">
-                    <th mat-header-cell *matHeaderCellDef> 分组编码 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.groupCode}} </td>
-                </ng-container>
-
-
-                <ng-container matColumnDef="materialName">
-                    <th mat-header-cell *matHeaderCellDef> 物料名称 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.materialName}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="materialUnit">
-                    <th mat-header-cell *matHeaderCellDef> 单位 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.materialUnit == null?'':handleUnit(element.materialUnit)}} </td>
-                </ng-container>
-
-
-                <ng-container matColumnDef="materialModel">
-                    <th mat-header-cell *matHeaderCellDef> 规格 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.materialModel}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="kdMaterialUseOrgId">
-                    <th mat-header-cell *matHeaderCellDef> 生产组织 </th>
-                    <td mat-cell *matCellDef="let element">  {{element.kdMaterialUseOrgId?handleHash(2,element.kdMaterialUseOrgId):'未绑定'}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="kdMaterialWorkshopId">
-                    <th mat-header-cell *matHeaderCellDef> 生产车间 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.kdMaterialWorkshopId?handleHash(1,element.kdMaterialWorkshopId):'未绑定'}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="br">
-                    <th mat-header-cell *matHeaderCellDef> 备注 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.br}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="materialStatus">
-                    <th mat-header-cell *matHeaderCellDef> 账号状态 </th>
-                    <td mat-cell *matCellDef="let element"
-                        [ngClass]="{'enabled':element.materialStatus == 1,'disabled':element.materialStatus == 0}">
-                        {{element.materialStatus == 1?"启用":"禁用"}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="customColumn1">
-                    <th mat-header-cell *matHeaderCellDef> 操作 </th>
-                    <td mat-cell *matCellDef="let element">
-                        <button *ngIf="set.has('/material/edit')" class="mini_btn edit_btn" (click)="handleEvent(element,'edit')">编辑</button>
-                        <button class="mini_btn enter_btn" (click)="enterDia(element,1)"
-                            *ngIf="element.materialStatus == 0 && set.has('/material/enable')">启用</button>
-                        <button class="mini_btn disable_btn" (click)="enterDia(element,0)"
-                            *ngIf="element.materialStatus == 1 && set.has('/material/disable')">禁用</button>
-                        <button class="mini_btn look_btn" (click)="handleEvent(element,'details')">查看</button>
-                        <button class="mini_btn del_btn" (click)="delDia(element)"
-                            *ngIf="element.materialStatus == 0 && set.has('/material/del')">删除</button>
-                    </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-        </div>
+        <button *ngIf="set.has('/material/sync')" class="add_btn btn_color_primary" (click)="showSync()">
+          <mat-icon>sync</mat-icon> 同步
+        </button>
+        <span>温馨提示：该模块对ERP主产品物料信息进行维护，用于工艺路线绑定</span>
+      </div>
+      <div class="info_tip">总共<span class="text_color_primary">{{total}}</span>个物料</div>
     </div>
 
-    <div class="footer">
-        <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
-            aria-label="选择要跳转的页面" (page)="getNotices($event)">
-        </mat-paginator>
+    <div class="table_container">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+        <ng-container matColumnDef="ncMaterialCategory">
+          <th mat-header-cell *matHeaderCellDef> 物料分类 </th>
+          <td mat-cell *matCellDef="let element"> {{element.ncMaterialCategory}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="ncMaterialMainCategory">
+          <th mat-header-cell *matHeaderCellDef> 物料大类 </th>
+          <td mat-cell *matCellDef="let element"> {{element.ncMaterialMainCategory}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="ncMaterialClassification">
+          <th mat-header-cell *matHeaderCellDef> 材料分类 </th>
+          <td mat-cell *matCellDef="let element"> {{element.ncMaterialClassification}} </td>
+        </ng-container>
+        <ng-container matColumnDef="materialCode">
+          <th mat-header-cell *matHeaderCellDef> 材料编码 </th>
+          <td mat-cell *matCellDef="let element"> {{element.materialCode}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="materialName">
+          <th mat-header-cell *matHeaderCellDef> 材料名称 </th>
+          <td mat-cell *matCellDef="let element"> {{element.materialName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="materialModel">
+          <th mat-header-cell *matHeaderCellDef> 规格 </th>
+          <td mat-cell *matCellDef="let element"> {{element.materialModel}} </td>
+        </ng-container>
+        <ng-container matColumnDef="materialUnit">
+          <th mat-header-cell *matHeaderCellDef> 单位 </th>
+          <td mat-cell *matCellDef="let element"> {{element.materialUnit == null?'':handleUnit(element.materialUnit)}}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="ncMaterialQualityNum">
+          <th mat-header-cell *matHeaderCellDef> 保质期 </th>
+          <td mat-cell *matCellDef="let element"> {{element.ncMaterialQualityNum}}
+            ({{handleQualityUnit(element.ncMaterialQualityUnit)}})
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="materialStatus">
+          <th mat-header-cell *matHeaderCellDef> 状态 </th>
+          <td mat-cell *matCellDef="let element"
+            [ngClass]="{'enabled':element.materialStatus == 1,'disabled':element.materialStatus == 0}">
+            {{element.materialStatus == 1?"启用":"禁用"}} </td>
+        </ng-container>
+        <ng-container matColumnDef="customColumn1">
+          <th mat-header-cell *matHeaderCellDef> 操作 </th>
+          <td mat-cell *matCellDef="let element">
+            <button *ngIf="set.has('/material/edit')" class="mini_btn edit_btn"
+              (click)="handleEvent(element,'edit')">编辑</button>
+            <button class="mini_btn enter_btn" (click)="enterDia(element,1)"
+              *ngIf="element.materialStatus == 0 && set.has('/material/enable')">启用</button>
+            <button class="mini_btn disable_btn" (click)="enterDia(element,0)"
+              *ngIf="element.materialStatus == 1 && set.has('/material/disable')">禁用</button>
+            <button class="mini_btn look_btn" (click)="handleEvent(element,'details')">查看</button>
+            <button class="mini_btn del_btn" (click)="delDia(element)"
+              *ngIf="element.materialStatus == 0 && set.has('/material/del')">删除</button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
     </div>
+  </div>
+
+  <div class="footer">
+    <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
+      aria-label="选择要跳转的页面" (page)="getNotices($event)">
+    </mat-paginator>
+  </div>
 </div>

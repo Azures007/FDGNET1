@@ -1,165 +1,179 @@
 <div class="title">
-    {{modalTitle}}
-    <span class="close_icon" (click)="addDialogClose()">X</span>
+  {{modalTitle}}
+  <span class="close_icon" (click)="addDialogClose()">X</span>
 </div>
 
-<form [formGroup]="dataForm" class="content page-container">
-
-    <div class="row-block">
-        <label class="label"><span class="red-star">*</span>物料编码:</label>
-        <mat-form-field class="example-full-width" appearance="fill">
-            <input autocomplete="off" class="input" formControlName="materialCode" type="text" matInput
-                placeholder="请输入物料编码">
-            <mat-error *ngIf="dataForm.hasError('required','materialCode')">
-                物料编码为<strong>必填</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>
-
-    <div class="row-block">
-        <label class="label"><span class="red-star">*</span>分组编码:</label>
-        <mat-form-field class="example-full-width" appearance="fill">
-            <input autocomplete="off" class="input" formControlName="groupCode" type="text" matInput
-                placeholder="请输入分组编码">
-            <mat-error *ngIf="dataForm.hasError('required','groupCode')">
-                分组编码为<strong>必填</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>
-
-    <div class="row-block">
-        <label class="label"><span class="red-star">*</span>物料名称:</label>
-        <mat-form-field class="example-full-width" appearance="fill">
-            <input autocomplete="off" class="input" formControlName="materialName" type="text" matInput
-                placeholder="请输入物料名称">
-            <mat-error *ngIf="dataForm.hasError('required','materialName')">
-                物料名称为<strong>必填</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>
-
-    <div class="row-block">
-        <label class="label">规格型号:</label>
-        <mat-form-field class="example-full-width" appearance="fill">
-            <input autocomplete="off" class="input" formControlName="materialModel" type="text" matInput
-                placeholder="请输入规格型号">
-        </mat-form-field>
-    </div>
-
-	<!--<div class="row-block">
-	    <label class="label">单支克重:</label>
-	    <mat-form-field class="example-full-width" appearance="fill">
-	        <input autocomplete="off" class="input" formControlName="kdMaterialStretchWeight" type="text" matInput
-	            placeholder="请输入单支克重">
-	    </mat-form-field>
-	</div>
-
-	<div class="row-block">
-	    <label class="label">每件支数:</label>
-	    <mat-form-field class="example-full-width" appearance="fill">
-	        <input autocomplete="off" class="input" formControlName="kdMaterialEachPieceNum" type="text" matInput
-	            placeholder="请输入每件支数">
-	    </mat-form-field>
-	</div>
-
+<form [formGroup]="dataForm" class="content page-container two-col">
   <div class="row-block">
-    <label class="label">膜厚度:</label>
+    <label class="label"><span class="red-star">*</span>材料名称:</label>
     <mat-form-field class="example-full-width" appearance="fill">
-      <input autocomplete="off" class="input" formControlName="kdMaterialMembraneThickness" type="text" matInput
-             placeholder="请输入膜厚度">
+      <input autocomplete="off" class="input" formControlName="materialName" type="text" matInput placeholder="请输入材料名称">
+      <mat-error *ngIf="dataForm.hasError('required','materialName')">
+        材料名称为<strong>必填</strong>
+      </mat-error>
     </mat-form-field>
   </div>
   <div class="row-block">
-    <label class="label">膜宽度:</label>
+    <label class="label"><span class="red-star">*</span>材料编码:</label>
     <mat-form-field class="example-full-width" appearance="fill">
-      <input autocomplete="off" class="input" formControlName="kdMaterialMembraneWidth" type="text" matInput
-             placeholder="请输入膜宽度">
+      <input autocomplete="off" class="input" formControlName="materialCode" type="text" matInput placeholder="请输入材料编码">
+      <mat-error *ngIf="dataForm.hasError('required','materialCode')">
+        材料编码为<strong>必填</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>规格:</label>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <input autocomplete="off" class="input" formControlName="materialModel" type="text" matInput placeholder="请输入规格">
+      <mat-error *ngIf="dataForm.hasError('required','materialModel')">
+        规格为<strong>必填</strong>
+      </mat-error>
+    </mat-form-field>
+
+  </div>
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>物料分类:</label>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <input autocomplete="off" class="input" formControlName="ncMaterialCategory" type="text" matInput
+        placeholder="请输入物料分类">
+      <mat-error *ngIf="dataForm.hasError('required','ncMaterialCategory')">
+        物料分类为<strong>必填</strong>
+      </mat-error>
+    </mat-form-field>
+
+  </div>
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>物料大类:</label>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <input autocomplete="off" class="input" formControlName="ncMaterialMainCategory" type="text" matInput
+        placeholder="请输入物料大类">
+      <mat-error *ngIf="dataForm.hasError('required','ncMaterialMainCategory')">
+        物料大类为<strong>必填</strong>
+      </mat-error>
+    </mat-form-field>
+
+  </div>
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>材料分类:</label>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <input autocomplete="off" class="input" formControlName="ncMaterialClassification" type="text" matInput
+        placeholder="请输入材料分类">
+      <mat-error *ngIf="dataForm.hasError('required','ncMaterialClassification')">
+        材料分类为<strong>必填</strong>
+      </mat-error>
+    </mat-form-field>
+
+  </div>
+  <div class="row-block">
+    <div class="label"><span class="red-star">*</span>状态:</div>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="materialStatus">
+        <mat-option *ngFor="let item of status" [value]="item.value">
+          {{item.label}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','materialStatus')">
+        请选择<strong>状态</strong>
+      </mat-error>
     </mat-form-field>
   </div>
   <div class="row-block">
-    <label class="label">膜密度:</label>
-    <mat-form-field class="example-full-width" appearance="fill">
-      <input autocomplete="off" class="input" formControlName="kdMaterialMembraneDensity" type="text" matInput
-             placeholder="请输入膜密度">
+    <div class="label"><span class="red-star">*</span>单位:</div>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="materialUnit">
+        <mat-option *ngFor="let item of units" [value]="item.codeValue">
+          {{item.codeDsc}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','materialUnit')">
+        请选择<strong>单位</strong>
+      </mat-error>
     </mat-form-field>
-  </div>-->
+  </div>
+  <div class="row-block">
+    <div class="label"><span class="red-star">*</span>保质期单位:</div>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="ncMaterialQualityUnit">
+        <mat-option *ngFor="let item of qualityUnit" [value]="item.codeValue">
+          {{item.codeDsc}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','ncMaterialQualityUnit')">
+        请选择<strong>保质期单位</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="row-block">
+    <label class="label"><span class="red-star">*</span>保质期<span
+        *ngIf="dataForm.value.ncMaterialQualityUnit">（{{getLabelByQualityUnit(dataForm.value.ncMaterialQualityUnit)}}）</span>:</label>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <input autocomplete="off" class="input" formControlName="ncMaterialQualityNum" type="text" matInput
+        [placeholder]="'请输入保质期' + (getLabelByQualityUnit(dataForm.value.ncMaterialQualityUnit) ? '（' + getLabelByQualityUnit(dataForm.value.ncMaterialQualityUnit) + '）' : '')">
+      <mat-error *ngIf="dataForm.hasError('required','ncMaterialQualityNum')">
+        保质期{{getLabelByQualityUnit(dataForm.value.ncMaterialQualityUnit) ? '（' +
+        getLabelByQualityUnit(dataForm.value.ncMaterialQualityUnit) + '）' : ''}}为<strong>必填</strong>
+      </mat-error>
+      <mat-error *ngIf="dataForm.hasError('pattern','ncMaterialQualityNum')">
+        保质期{{getLabelByQualityUnit(dataForm.value.ncMaterialQualityUnit) ? '（' +
+        getLabelByQualityUnit(dataForm.value.ncMaterialQualityUnit) + '）' : ''}}必须为<strong>正整数</strong>
+      </mat-error>
+    </mat-form-field>
 
-    <div class="row-block">
-        <div class="label"><span class="red-star">*</span>单位:</div>
-        <mat-form-field appearance="fill" class="select">
-            <mat-select formControlName="materialUnit">
-                <mat-option *ngFor="let item of units" [value]="item.codeValue">
-                    {{item.codeDsc}}
-                </mat-option>
-            </mat-select>
-            <mat-error *ngIf="dataForm.hasError('required','materialUnit')">
-                请选择<strong>单位</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>
-
-  <!--<div class="row-block">
-        <div class="label"><span class="red-star">*</span>生产组织:</div>
-        <mat-form-field appearance="fill" class="select">
-            <mat-select formControlName="kdMaterialUseOrgId" (ngModelChange)="handleGetDept($event)">
-                <mat-option *ngFor="let item of injectData.midOrgList" [value]="item.kdOrgId">
-                    {{item.kdOrgName}}
-                </mat-option>
-            </mat-select>
-            <mat-error *ngIf="dataForm.hasError('required','kdMaterialUseOrgId')">
-                请选择<strong>生产组织</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>
-
-    <div class="row-block">
-        <div class="label"><span class="red-star">*</span>生产车间:</div>
-        <mat-form-field appearance="fill" class="select">
-            <mat-select formControlName="kdMaterialWorkshopId">
-                <mat-option *ngFor="let item of injectData.midDeptList" [value]="item.kdDeptId">
-                    {{item.kdDeptName}}
-                </mat-option>
-            </mat-select>
-            <mat-error *ngIf="dataForm.hasError('required','kdMaterialWorkshopId')">
-                请选择<strong>生产车间</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>-->
-
-    <div class="row-block">
-        <div class="label"><span class="red-star">*</span>状态:</div>
-        <mat-form-field appearance="fill" class="select">
-            <mat-select formControlName="materialStatus">
-                <mat-option *ngFor="let item of status" [value]="item.value">
-                    {{item.label}}
-                </mat-option>
-            </mat-select>
-            <mat-error *ngIf="dataForm.hasError('required','materialStatus')">
-                请选择<strong>状态</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>
-
-    <div class="row-block">
-        <div class="label">备注说明:</div>
-        <mat-form-field class="example-full-width" appearance="fill">
-            <textarea matInput class="textarea" formControlName="br" maxlength="30"
-                placeholder="请输入说明，限制30个字符"></textarea>
-        </mat-form-field>
-    </div>
+  </div>
+  <div class="row-block">
+    <div class="label">备注:</div>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <textarea matInput class="textarea" formControlName="br" maxlength="30" placeholder="请输入备注，限制30个字符"></textarea>
+    </mat-form-field>
+  </div>
 
 </form>
-
+<div class="setting-warp">
+  <div class="set-title">还原材料列表
+    <button *ngIf="formType !== 'details'" class="add_btn btn_color_primary" (click)="addMaterial()"
+      style="margin-left: 10px;">
+      <mat-icon>add</mat-icon> 新增
+    </button>
+  </div>
+  <div class="setting-panl">
+    <table class="table">
+      <tr>
+        <th>还原材料</th>
+        <th>还原比例</th>
+        <th>操作</th>
+      </tr>
+      <tr *ngFor="let item of materialBoms; let i = index">
+        <td>
+          <div>{{item.materialName}}</div>
+        </td>
+        <td>
+          <div>
+            <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
+              [(ngModel)]="item.ratio">
+          </div>
+        </td>
+        <td>
+          <div class="group-btn" *ngIf="formType !== 'details'">
+            <!-- <button class="mini_btn edit_btn" (click)="selectMaterial(i)">选择</button> -->
+            <button class="mini_btn del_btn" (click)="delMaterial(i)">删除</button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
 
 <div class="footer">
-    <button *ngIf="formType !== 'details'" (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
-        <mat-icon class="material-icons svgIcon">done</mat-icon>
-        <span>提交</span>
-    </button>
+  <button *ngIf="formType !== 'details'" (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>提交</span>
+  </button>
 
-    <button *ngIf="formType === 'details'" (click)="addDialogClose()" mat-raised-button color="primary"
-        class="search-btn btn">
-        <mat-icon class="material-icons svgIcon">done</mat-icon>
-        <span>关闭</span>
-    </button>
+  <button *ngIf="formType === 'details'" (click)="addDialogClose()" mat-raised-button color="primary"
+    class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>关闭</span>
+  </button>
 </div>

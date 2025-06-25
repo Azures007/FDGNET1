@@ -39,7 +39,8 @@ export class MaterialComponent implements OnInit {
     size: 50,
     materialStatus: "",
     materialCode: "",
-    orderCreatedTime: '',
+    materialName: '',
+    ncMaterialCategory: ''
   });
 
   //翻页参数
@@ -79,7 +80,7 @@ export class MaterialComponent implements OnInit {
   workShop = [];
 
 
-  displayedColumns: string[] = ['materialCode', 'createdTime', 'groupCode', 'materialName', 'materialUnit', 'materialModel', 'br', 'materialStatus','kdMaterialUseOrgId','kdMaterialWorkshopId', 'customColumn1'];
+  displayedColumns: string[] = ['ncMaterialCategory', 'ncMaterialMainCategory', 'ncMaterialClassification', 'materialCode', 'materialName', 'materialModel', 'materialUnit', 'ncMaterialQualityNum', 'materialStatus', 'customColumn1'];
 
   ngOnInit(): void {
     this.setMyMap();
@@ -89,7 +90,7 @@ export class MaterialComponent implements OnInit {
   setMyMap() {
     this.deptMap = this.putHash(new Map(), this.midDeptList, 'dept', 'kdDeptId');
     this.orgMap = this.putHash(new Map(), this.midOrgList, 'org', 'kdOrgId');
-    console.log(this.orgMap,'orgmap')
+    console.log(this.orgMap, 'orgmap')
     this.getWorkShopList()
   }
 
@@ -140,9 +141,10 @@ export class MaterialComponent implements OnInit {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
       body: {
+        materialName: this.searchFormGroup.value.materialName,
+        ncMaterialCategory: this.searchFormGroup.value.ncMaterialCategory,
         materialStatus: this.searchFormGroup.value.materialStatus,
         materialCode: this.searchFormGroup.value.materialCode,
-        orderCreatedTime: '',
       }
     }
     this.MaterialService.fetchGetTableList(par).subscribe(res => {
@@ -175,11 +177,46 @@ export class MaterialComponent implements OnInit {
       }
     }
   }
-
+  handleQualityUnit(unit) {
+    let str = '';
+    if (unit == '2') {
+      str = '日'
+    }
+    if (unit == '1') {
+      str = '月'
+    }
+    if (unit == '0') {
+      str = '年'
+    }
+    return str
+  }
   //新增物料
   showAddVisibilly(data) {
+    if (data.type) {
+      this.MaterialService.fetchGetDetails(data.data.id).subscribe(res => {
+        data.data = res.data;
+        let dialogRef = this._dialog.open(AddMaterialComponent, {
+          width: "950px",
+          height: "auto",
+          panelClass: 'custom-modalbox',
+          data: {
+            data: JSON.parse(JSON.stringify(data)),
+            midDeptList: this.midDeptList,
+            midOrgList: this.midOrgList,
+          }
+        })
+        dialogRef.afterClosed().subscribe(result => {
+          if (result && result === 'refresh') {
+            this.getTableData();
+            const msg = data.type ? (data.type === 'details' ? '查看物料' : '编辑物料') : '新增物料';
+            this.utils.showMessage(`${msg}成功`, 'success');
+          }
+        });
+      })
+      return;
+    }
     let dialogRef = this._dialog.open(AddMaterialComponent, {
-      width: "695px",
+      width: "950px",
       height: "auto",
       panelClass: 'custom-modalbox',
       data: {

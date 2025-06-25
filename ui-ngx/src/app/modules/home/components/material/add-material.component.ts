@@ -5,6 +5,7 @@ import { Utils } from '../../pages/order-management/w-utils';
 import { MaterialService } from '@app/core/http/material.service';
 import { DictionaryService } from '@app/core/http/dictionary.service';
 import { RoleService } from '@app/core/http/role.service';
+import { ChooseMaterialComponent } from './choose-material/choose-material.component';
 
 @Component({
   selector: 'tb-add-material',
@@ -23,27 +24,22 @@ export class AddMaterialComponent implements OnInit {
     public _dialog: MatDialog,
     private roleService: RoleService,
   ) { }
-
-  // 新增物料参数
+  // 还原材料列表
+  materialBoms = [];
+  // 新增材料参数
   addParams = {
     id: "",
-    br: "",
-    groupCode: "",
+    materialName: "",
     materialCode: "",
     materialModel: "",
-    materialName: "",
+    ncMaterialCategory: "",
+    ncMaterialMainCategory: "",
+    ncMaterialClassification: "",
     materialStatus: "",
     materialUnit: "",
-    createdName: "",
-    createdTime: "",
-    kdMaterialStretchWeight: "", // 拉伸膜后重量、单支克重
-    kdMaterialEachPieceNum: "", // 每件支数
-    // 膜厚度、膜宽度、膜密度
-    kdMaterialMembraneThickness: "",
-    kdMaterialMembraneWidth: "",
-    kdMaterialMembraneDensity: "",
-    kdMaterialUseOrgId: "",
-    kdMaterialWorkshopId: "",
+    ncMaterialQualityUnit: "",
+    ncMaterialQualityNum: "",
+    br: "",
   }
 
   dataForm: FormGroup;
@@ -60,7 +56,7 @@ export class AddMaterialComponent implements OnInit {
   }];
   //单位列表
   units = [];
-
+  qualityUnit = [];
 
   get modalTitle() {
     return this.formType ? (this.formType === 'details' ? '查看物料' : '编辑物料') : '新增物料';
@@ -75,84 +71,67 @@ export class AddMaterialComponent implements OnInit {
     }
     if (this.utils.isEmpty(this.injectData.data)) {
       this.dataForm = this.fb.group({
-        groupCode: ['', [Validators.required]],
-        materialCode: ['', [Validators.required]],
         materialName: ['', [Validators.required]],
-        materialModel: "",
+        materialCode: ['', [Validators.required]],
+        materialModel: ['', [Validators.required]],
+        ncMaterialCategory: ['', [Validators.required]],
+        ncMaterialMainCategory: ['', [Validators.required]],
+        ncMaterialClassification: ['', [Validators.required]],
         materialStatus: ['', [Validators.required]],
         materialUnit: ['', [Validators.required]],
-        kdMaterialStretchWeight: "",
-        kdMaterialEachPieceNum: "",
-        kdMaterialMembraneThickness: "",
-        kdMaterialMembraneWidth: "",
-        kdMaterialMembraneDensity: "",
-        kdMaterialUseOrgId: "",
-        kdMaterialWorkshopId: "",
+        ncMaterialQualityUnit: ['', [Validators.required]],
+        // 校验正整数
+        ncMaterialQualityNum: ['', [Validators.required, Validators.pattern(/^[1-9]\d*$/)]],
         br: "",
-        createdName: "",
-        createdTime: "",
       });
     } else {
       this.formType = this.injectData.data.type;
       const obj = {
-        br: "",
-        groupCode: "",
+        id: "",
+        materialName: "",
         materialCode: "",
         materialModel: "",
-        materialName: "",
+        ncMaterialCategory: "",
+        ncMaterialMainCategory: "",
+        ncMaterialClassification: "",
         materialStatus: "",
         materialUnit: "",
-        createdName: "",
-        createdTime: "",
-        kdMaterialStretchWeight: "",
-        kdMaterialEachPieceNum: "",
-        kdMaterialMembraneThickness: "",
-        kdMaterialMembraneWidth: "",
-        kdMaterialMembraneDensity: "",
-        kdMaterialUseOrgId: "",
-        kdMaterialWorkshopId: ""
+        ncMaterialQualityUnit: "",
+        ncMaterialQualityNum: "",
+        br: "",
       }
 
       Object.keys(this.injectData.data.data).forEach(key => {
         obj[key] = this.injectData.data.data[key];
       });
-      if(this.injectData.data.data.kdMaterialUseOrgId != ""){
-        this.handleGetDept(this.injectData.data.data.kdMaterialUseOrgId);
-      }
 
       if (this.formType === 'details') {
         this.dataForm = this.fb.group({
-          groupCode: [{ value: obj.groupCode, disabled: true }, [Validators.required]],
-          materialCode: [{ value: obj.materialCode, disabled: true }, [Validators.required]],
-          materialName: [{ value: obj.materialName, disabled: true }, [Validators.required]],
-          materialModel: [{ value: obj.materialModel, disabled: true },],
-          materialStatus: [{ value: obj.materialStatus, disabled: true }, [Validators.required]],
-          materialUnit: [{ value: obj.materialUnit, disabled: true }, [Validators.required]],
-          kdMaterialStretchWeight: [{ value: obj.kdMaterialStretchWeight, disabled: true }],
-          kdMaterialEachPieceNum: [{ value: obj.kdMaterialEachPieceNum, disabled: true }],
-          kdMaterialMembraneThickness: [{ value: obj.kdMaterialMembraneThickness, disabled: true }],
-          kdMaterialMembraneWidth: [{ value: obj.kdMaterialMembraneWidth, disabled: true }],
-          kdMaterialMembraneDensity: [{ value: obj.kdMaterialMembraneDensity, disabled: true }],
-          kdMaterialUseOrgId: [{ value: obj.kdMaterialUseOrgId, disabled: true }],
-          kdMaterialWorkshopId: [{ value: obj.kdMaterialWorkshopId, disabled: true }],
-          br: [{ value: obj.br, disabled: true },],
+          materialName: [{ value: obj.materialName, disabled: true }],
+          materialCode: [{ value: obj.materialCode, disabled: true }],
+          materialModel: [{ value: obj.materialModel, disabled: true }],
+          ncMaterialCategory: [{ value: obj.ncMaterialCategory, disabled: true }],
+          ncMaterialMainCategory: [{ value: obj.ncMaterialMainCategory, disabled: true }],
+          ncMaterialClassification: [{ value: obj.ncMaterialClassification, disabled: true }],
+          materialStatus: [{ value: obj.materialStatus, disabled: true }],
+          materialUnit: [{ value: obj.materialUnit, disabled: true }],
+          ncMaterialQualityUnit: [{ value: obj.ncMaterialQualityUnit, disabled: true }],
+          ncMaterialQualityNum: [{ value: obj.ncMaterialQualityNum, disabled: true }],
+          br: [{ value: obj.br, disabled: true }],
         });
       } else {
         this.addParams.id = this.injectData.data.data.id;
         this.dataForm = this.fb.group({
-          groupCode: [{ value: obj.groupCode, disabled: false }, [Validators.required]],
-          materialCode: [{ value: obj.materialCode, disabled: false }, [Validators.required]],
           materialName: [{ value: obj.materialName, disabled: false }, [Validators.required]],
-          materialModel: [{ value: obj.materialModel, disabled: false }],
+          materialCode: [{ value: obj.materialCode, disabled: false }, [Validators.required]],
+          materialModel: [{ value: obj.materialModel, disabled: false }, [Validators.required]],
+          ncMaterialCategory: [{ value: obj.ncMaterialCategory, disabled: false }, [Validators.required]],
+          ncMaterialMainCategory: [{ value: obj.ncMaterialMainCategory, disabled: false }, [Validators.required]],
+          ncMaterialClassification: [{ value: obj.ncMaterialClassification, disabled: false }, [Validators.required]],
           materialStatus: [{ value: obj.materialStatus, disabled: false }, [Validators.required]],
           materialUnit: [{ value: obj.materialUnit, disabled: false }, [Validators.required]],
-          kdMaterialStretchWeight: [{ value: obj.kdMaterialStretchWeight, disabled: true }],
-          kdMaterialEachPieceNum: [{ value: obj.kdMaterialEachPieceNum, disabled: true }],
-          kdMaterialMembraneThickness: [{ value: obj.kdMaterialMembraneThickness, disabled: true }],
-          kdMaterialMembraneWidth: [{ value: obj.kdMaterialMembraneWidth, disabled: true }],
-          kdMaterialMembraneDensity: [{ value: obj.kdMaterialMembraneDensity, disabled: true }],
-          kdMaterialUseOrgId: [{ value: obj.kdMaterialUseOrgId, disabled: false }],
-          kdMaterialWorkshopId: [{ value: obj.kdMaterialWorkshopId, disabled: false }],
+          ncMaterialQualityUnit: [{ value: obj.ncMaterialQualityUnit, disabled: false }, [Validators.required]],
+          ncMaterialQualityNum: [{ value: obj.ncMaterialQualityNum, disabled: false }, [Validators.required]],
           br: [{ value: obj.br, disabled: false }],
         });
       }
@@ -160,7 +139,12 @@ export class AddMaterialComponent implements OnInit {
     this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {
       this.units = res.data.list;
     })
-
+    this.DictionaryService.fetchGetTypeTableList({
+      ...par,
+      codeClId: 'QUALITY_UNIT_0000',
+    }).subscribe(res => {
+      this.qualityUnit = res.data.list;
+    })
   }
 
 
@@ -184,11 +168,24 @@ export class AddMaterialComponent implements OnInit {
       Object.keys(this.dataForm.value).forEach(key => {
         this.addParams[key] = this.dataForm.value[key];
       });
-      if (!this.utils.isEmpty(this.injectData)) {
-        this.addParams.createdName = this.injectData.data.createdName;
-        this.addParams.createdTime = this.injectData.data.createdTime;
+      if(this.materialBoms.length) {
+        this.addParams['materialBoms'] = this.materialBoms;
+        const items = this.materialBoms.find(item => {
+          return !item.ratio;
+        })
+        if(items) {
+          this.utils.showMessage('请输入比例', 'error');
+          return;
+        }
+        const checkRatio = this.materialBoms.filter(item => {
+          // 判断ratio是否为为小数位小于等于10位的数字
+          return !/^\d+(\.\d{0,10})?$/.test(item.ratio);
+        })
+        if(checkRatio?.length) {
+          this.utils.showMessage(checkRatio.map(item => item.materialName).join('、') + '还原比例输入格式为最大10位小数', 'error');
+          return;
+        }
       }
-
       this.MaterialService.fetchSave(this.addParams).subscribe(res => {
         if (res.errcode === 200) {
           this.dialogRef.close('refresh');
@@ -203,5 +200,37 @@ export class AddMaterialComponent implements OnInit {
         this.dataForm.controls[i].updateValueAndValidity();
       }
     }
+  }
+  getLabelByQualityUnit(value) {
+    let label = '';
+    this.qualityUnit.forEach(item => {
+      if (item.codeValue === value) {
+        label = item.codeDsc;
+      }
+    })
+    return label;
+  }
+  addMaterial() {
+    let dialogRef = this._dialog.open(ChooseMaterialComponent, {
+      width: "950px",
+      height: "auto",
+      panelClass: 'custom-modalbox',
+      data: {}
+    })
+    dialogRef.afterClosed().subscribe(result => {
+      if(result){
+        this.materialBoms.push({
+          materialId: result.id,
+          materialName: result.materialName,
+          ratio: '',
+        })
+      }
+    });
+  }
+  selectMaterial(index) {
+
+  }
+  delMaterial(index) {
+    this.materialBoms.splice(index, 1);
   }
 }

@@ -18,6 +18,11 @@ export class MaterialService {
         let url = `/api/material/listMaterial?current=${data.current}&size=${data.size}`
         return this.http.post(url, data.body)
     }
+    // 获取详情
+    public fetchGetDetails(id): Observable<any> {
+        let url = "/api/material/getById"
+        return this.http.get(url + `?id=${id}`)
+    }
 
     //获取过滤后列表
     public fetchGetFiterTableList(params, config?: RequestConfig): Observable<any> {
@@ -48,7 +53,7 @@ export class MaterialService {
         let url = "/api/material/isEnabled"
         return this.http.get(url + `?enabled=${params.enbled}&id=${params.id}`, defaultHttpOptionsFromConfig(config))
     }
-    
+
     //工艺路线绑定物料
     public fetchSaveMaterial(data): Observable<any> {
         return this.http.post(`/api/craft/setMaterial?craftId=${data.craftId}`, data.body);
