@@ -280,7 +280,7 @@ public class OrderBackendServiceImpl implements OrderBackendService{
             throw new RuntimeException("不存在的物料编码，请在MES更新主产品物料信息");
         }
         var material = materialList.get(0);
-        if ("1".equals(material.getMaterialStatus())) {
+        if ("0".equals(material.getMaterialStatus())) {
             throw new RuntimeException("物料已被禁用，请在MES变更物料状态");
         }
         //通过物料获取工艺路线

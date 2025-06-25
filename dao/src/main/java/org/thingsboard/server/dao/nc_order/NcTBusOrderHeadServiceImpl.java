@@ -138,6 +138,6 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
                     log.info("订单自动绑定工艺路线失败OrderId："+entity.getOrderId()+"," + e.getMessage());
                 }
             }
-        });
+        }).start();
     }
 }

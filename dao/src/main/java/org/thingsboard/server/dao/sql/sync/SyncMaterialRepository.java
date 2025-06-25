@@ -32,9 +32,7 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
      * @param materialCode
      * @return
      */
-    @Query(value = "select a.* from t_sync_material a \n" +
-            "where (material_code like %?1% or material_name like %?1% ) \n" +
-            "and material_code not in (select material_code from t_sys_craft_material_rel group by material_code)",nativeQuery = true)
+    @Query(value = "select a.* from t_sync_material a  where material_code not in (select material_code from t_sys_craft_material_rel group by material_code)",nativeQuery = true)
     Page<TSyncMaterial> listMaterialFiter(String materialCode, PageRequest pageRequest);
 
     /**
@@ -55,7 +53,7 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
      * @param craftId
      */
     @Query(value = "select a.* from t_sync_material a \n" +
-            "where a.kd_material_id in (select material_id from t_sys_craft_material_rel where craft_id=?1 group by material_id)",nativeQuery = true)
+            "where material_code in (select material_code from t_sys_craft_material_rel where craft_id=?1 group by material_code)",nativeQuery = true)
     List<TSyncMaterial> listMaterialOffFiter(Integer craftId);
 
     @Query(value = "select a.* from t_sync_material a " +
