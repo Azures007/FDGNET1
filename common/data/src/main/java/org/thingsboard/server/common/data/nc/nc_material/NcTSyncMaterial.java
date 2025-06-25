@@ -41,7 +41,6 @@ public class NcTSyncMaterial {
     @Column(name = "nc_material_id")
     private String ncMaterialId;
 
-    // 物料分类、物料大类、材料分类、保质期、保质期单位、状态
     @ApiModelProperty("物料分类")
     @Column(name = "nc_material_category")
     private String ncMaterialCategory;
