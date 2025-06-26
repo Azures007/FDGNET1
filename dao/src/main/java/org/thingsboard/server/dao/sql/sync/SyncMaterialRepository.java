@@ -32,9 +32,7 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
      * @param materialCode
      * @return
      */
-    @Query(value = "select a.* from t_sync_material a \n" +
-            "where (material_code like %?1% or material_name like %?1% ) \n" +
-            "and material_code not in (select material_code from t_sys_craft_material_rel group by material_code)",nativeQuery = true)
+    @Query(value = "select a.* from t_sync_material a  where material_code not in (select material_code from t_sys_craft_material_rel group by material_code)",nativeQuery = true)
     Page<TSyncMaterial> listMaterialFiter(String materialCode, PageRequest pageRequest);
 
     /**
@@ -55,7 +53,7 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
      * @param craftId
      */
     @Query(value = "select a.* from t_sync_material a \n" +
-            "where a.kd_material_id in (select material_id from t_sys_craft_material_rel where craft_id=?1 group by material_id)",nativeQuery = true)
+            "where material_code in (select material_code from t_sys_craft_material_rel where craft_id=?1 group by material_code)",nativeQuery = true)
     List<TSyncMaterial> listMaterialOffFiter(Integer craftId);
 
     @Query(value = "select a.* from t_sync_material a " +
@@ -92,13 +90,22 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
             "       m.kd_material_use_org_number     AS kdMaterialUseOrgNumber,\n" +
             "       m.kd_material_use_org_name       AS kdMaterialUseOrgName,\n" +
             "       m.kd_material_stretch_weight     AS kdMaterialStretchWeight,\n" +
-            "       m.kd_material_each_piece_num     AS kdMaterialEachPieceNum\n" +
+            "       m.kd_material_each_piece_num     AS kdMaterialEachPieceNum,\n" +
+            "       a.nc_material_id                 AS ncMaterialId,\n" +
+            "       a.nc_material_category           AS ncMaterialCategory,\n" +
+            "       a.nc_material_main_category      AS ncMaterialMainCategory,\n" +
+            "       a.nc_material_classification     AS ncMaterialClassification,\n" +
+            "       a.nc_material_quality_num        AS ncMaterialQualityNum,\n" +
+            "       a.nc_material_quality_unit       AS ncMaterialQualityUnit,\n" +
+            "       a.nc_material_status             AS ncMaterialStatus \n" +
             " from t_sync_material a \n" +
             " left join mid_material m on m.kd_material_id = a.kd_material_id \n" +
-            " where (material_code like %:#{#tSyncMaterialTo.materialCode}%" +
-            " or material_name like %:#{#tSyncMaterialTo.materialName}%) " +
-            "and (material_status =:#{#tSyncMaterialTo.materialStatus} or :#{#tSyncMaterialTo.materialStatus} is null or :#{#tSyncMaterialTo.materialStatus} ='') " +
-            "order by created_time desc,id desc " +
+            " where 1=1 \n" +
+            "and (a.material_code like %:#{#tSyncMaterialTo.materialCode}% or :#{#tSyncMaterialTo.materialCode} is null or :#{#tSyncMaterialTo.materialCode} ='') \n" +
+            "and (material_name like %:#{#tSyncMaterialTo.materialName}% or :#{#tSyncMaterialTo.materialName} is null or :#{#tSyncMaterialTo.materialName} = '') \n" +
+            "and (a.nc_material_category like %:#{#tSyncMaterialTo.ncMaterialCategory}% or :#{#tSyncMaterialTo.ncMaterialCategory} is null or :#{#tSyncMaterialTo.ncMaterialCategory} ='') \n" +
+            " and (material_status =:#{#tSyncMaterialTo.materialStatus} or :#{#tSyncMaterialTo.materialStatus} is null or :#{#tSyncMaterialTo.materialStatus} ='') \n" +
+            " order by created_time desc,id desc " +
             " limit :size offset :current ",nativeQuery = true)
     List<Map> findAllJoinMid(@Param("tSyncMaterialTo") TSyncMaterial tSyncMaterialTo,
                          @Param("current") Integer current,

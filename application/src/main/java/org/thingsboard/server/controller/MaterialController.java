@@ -42,23 +42,13 @@ public class MaterialController extends BaseController {
     @ApiOperation("物料详情")
     @GetMapping("/getById")
     public ResponseResult<TSyncMaterialVo> getById(@RequestParam("id") Integer id) {
-        TSyncMaterialVo tSyncMaterialVo = materialService.getById2(id);
+        TSyncMaterialVo tSyncMaterialVo = materialService.getByIdWithBoms(id);
         return ResultUtil.success(tSyncMaterialVo);
     }
 
-    @ApiOperation("修改/新增（通过物料id区分）")
-    @PostMapping("/update")
-    public ResponseResult update(@RequestBody TSyncMaterial tSyncMaterial) throws ThingsboardException {
-        SecurityUser currentUser = getCurrentUser();
-        tSyncMaterial.setUpdatedName(currentUser.getName());
-        tSyncMaterial.setUpdatedTime(new Date());
-        materialService.update(tSyncMaterial);
-        return ResultUtil.success();
-    }
-
     @ApiOperation("修改/新增（通过物料id区分），包含bom")
-    @PostMapping("/update2")
-    public ResponseResult update2(@RequestBody TSyncMaterialSaveDto tSyncMaterialSaveDto) throws ThingsboardException {
+    @PostMapping("/update")
+    public ResponseResult update(@RequestBody TSyncMaterialSaveDto tSyncMaterialSaveDto) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
         tSyncMaterialSaveDto.setUpdatedName(currentUser.getName());
         tSyncMaterialSaveDto.setUpdatedTime(new Date());
@@ -75,7 +65,11 @@ public class MaterialController extends BaseController {
     public ResponseResult isEnabled(@RequestParam("id") Integer id, @RequestParam("enabled") Integer enabled) throws Exception {
         TSyncMaterial tSyncMaterial = materialService.getById(id);
         tSyncMaterial.setMaterialStatus(enabled == 0 ? GlobalConstant.enableFalse : GlobalConstant.enableTrue);
-        this.update(tSyncMaterial);
+        // 更新
+        SecurityUser currentUser = getCurrentUser();
+        tSyncMaterial.setUpdatedName(currentUser.getName());
+        tSyncMaterial.setUpdatedTime(new Date());
+        materialService.update(tSyncMaterial);
         return ResultUtil.success();
     }
 

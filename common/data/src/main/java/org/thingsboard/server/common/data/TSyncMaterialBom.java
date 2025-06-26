@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "t_sync_material_bom")
@@ -27,6 +28,10 @@ public class TSyncMaterialBom {
 
     @Column(name = "ratio")
     @ApiModelProperty("比例")
-    private Double ratio;
+    private BigDecimal ratio;
+
+    @Column(name = "material_name")
+    @ApiModelProperty("物料名称")
+    private String materialName;
 
 }

@@ -61,7 +61,8 @@ public class MaterialServiceImpl implements MaterialService {
     public PageVo<TSyncMaterialVo> listMaterial(Integer current, Integer size, ListMaterialDto listMaterialDto) {
         TSyncMaterial tSyncMaterialTo = new TSyncMaterial();
         tSyncMaterialTo.setMaterialCode(StringUtils.isBlank(listMaterialDto.getMaterialCode()) ? "" : listMaterialDto.getMaterialCode());
-        tSyncMaterialTo.setMaterialName(StringUtils.isBlank(listMaterialDto.getMaterialCode()) ? "" : listMaterialDto.getMaterialCode());
+        tSyncMaterialTo.setMaterialName(StringUtils.isBlank(listMaterialDto.getMaterialName()) ? "" : listMaterialDto.getMaterialName());
+        tSyncMaterialTo.setNcMaterialCategory(StringUtils.isBlank(listMaterialDto.getNcMaterialCategory()) ? "" : listMaterialDto.getNcMaterialCategory());
         tSyncMaterialTo.setMaterialStatus(StringUtils.isBlank(listMaterialDto.getMaterialStatus()) ? "" : listMaterialDto.getMaterialStatus());
         int i = current * size;
         List<Map> all = materialRepository.findAllJoinMid(tSyncMaterialTo, i, size);
@@ -83,54 +84,62 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     @Transactional
     public void update(TSyncMaterialSaveDto materialDto) {
+        TSyncMaterial tSyncMaterial = null;
         Integer materialId = materialDto.getId();
         // 获取原有物料信息
-        Optional<TSyncMaterial> existingOpt = materialRepository.findById(materialId);
-        if (!existingOpt.isPresent()) {
-            throw new RuntimeException("物料未找到");
-        }
-
-        TSyncMaterial existingMaterial = existingOpt.get();
-
-        // 更新主表字段
-        BeanUtils.copyProperties(existingMaterial, materialDto, "id", "tSyncMaterialBoms"); // 排除 id 和 bom 集合
-
-        // 校验必填字段、赋值创建人创建时间
-        updateVerify(existingMaterial);
-
-        // 保存物料主表
-        materialRepository.save(existingMaterial);
-
-        if (materialDto.getMaterialBoms() != null && !materialDto.getMaterialBoms().isEmpty()) {
-            //删除所有bom
-            tSyncMaterialBomRepository.deleteByParentId(materialId);
-            return;
-        }
-
-        // 处理 BOM 集合
-        List<TSyncMaterialBom> newBoms = materialDto.getMaterialBoms();
-        List<TSyncMaterialBom> existingBoms =  tSyncMaterialBomRepository.findAllByParentId(materialId);
-
-        // 区分新增/更新/删除
-        Map<Integer, TSyncMaterialBom> existingMap = existingBoms.stream()
-                .collect(Collectors.toMap(TSyncMaterialBom::getId, b -> b));
-
-        for (TSyncMaterialBom newBom : newBoms) {
-            if (newBom.getId() == null || !existingMap.containsKey(newBom.getId())) {
-                // 新增
-                newBom.setMaterialId(materialId); // 关联主表ID
-                tSyncMaterialBomRepository.save(newBom);
+        if (materialId == null || materialId == 0) {
+            tSyncMaterial = new TSyncMaterial();
+        } else {
+            Optional<TSyncMaterial> existingOpt = materialRepository.findById(materialId);
+            if (!existingOpt.isPresent()) {
+                throw new RuntimeException("物料未找到");
             } else {
-                // 更新
-                TSyncMaterialBom existingBom = existingMap.get(newBom.getId());
-                BeanUtils.copyProperties(existingBom, newBom);
-                tSyncMaterialBomRepository.save(existingBom);
-                existingMap.remove(newBom.getId()); // 移除已处理项
+                tSyncMaterial = existingOpt.get();
             }
         }
 
-        // 删除剩余的未处理项（即不在新列表中的旧项）
-        existingMap.values().forEach(bom -> tSyncMaterialBomRepository.deleteById(bom.getId()));
+        // 更新主表字段
+        BeanUtils.copyProperties(materialDto, tSyncMaterial, "id", "tSyncMaterialBoms"); // 排除 id 和 bom 集合
+
+        // 校验必填字段、赋值创建人创建时间
+        updateVerify(tSyncMaterial);
+
+        // 保存物料主表
+        materialRepository.saveAndFlush(tSyncMaterial);
+
+        materialId = tSyncMaterial.getId();
+
+        if (materialDto.getMaterialBoms() == null || materialDto.getMaterialBoms().isEmpty()) {
+            //删除所有bom
+            tSyncMaterialBomRepository.deleteByParentId(materialId);
+            return;
+        } else {
+            // 处理 BOM 集合
+            List<TSyncMaterialBom> newBoms = materialDto.getMaterialBoms();
+            List<TSyncMaterialBom> existingBoms =  tSyncMaterialBomRepository.findAllByParentId(materialId);
+
+            // 区分新增/更新/删除
+            Map<Integer, TSyncMaterialBom> existingMap = existingBoms.stream()
+                    .collect(Collectors.toMap(TSyncMaterialBom::getId, b -> b));
+
+            for (TSyncMaterialBom newBom : newBoms) {
+                if (newBom.getId() == null || !existingMap.containsKey(newBom.getId())) {
+                    // 新增
+                    newBom.setParentId(materialId); // 关联主表ID
+                    tSyncMaterialBomRepository.save(newBom);
+                } else {
+                    // 更新
+                    newBom.setParentId(materialId); // 关联主表ID
+                    TSyncMaterialBom existingBom = existingMap.get(newBom.getId());
+                    BeanUtils.copyProperties(newBom, existingBom);
+                    tSyncMaterialBomRepository.save(existingBom);
+                    existingMap.remove(newBom.getId()); // 移除已处理项
+                }
+            }
+
+            // 删除剩余的未处理项（即不在新列表中的旧项）
+            existingMap.values().forEach(bom -> tSyncMaterialBomRepository.deleteById(bom.getId()));
+        }
     }
 
     @Override
@@ -139,7 +148,7 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public TSyncMaterialVo getById2(Integer id) {
+    public TSyncMaterialVo getByIdWithBoms(Integer id) {
         TSyncMaterialVo tSyncMaterialVo = new TSyncMaterialVo();
 
         TSyncMaterial tSyncMaterial = materialRepository.findById(id).get();
@@ -195,7 +204,7 @@ public class MaterialServiceImpl implements MaterialService {
         PageRequest pageRequest = PageRequest.of(current, size);
         ListMaterialFiterVo listMaterialFiterVo = new ListMaterialFiterVo();
         listMaterialFiterVo.setOffMaterial(materialRepository.listMaterialOffFiter(craftId));
-        Page<TSyncMaterial> page = materialRepository.listMaterialFiter(materialCode,kdOrgId,kdDeptId,pageRequest);
+        Page<TSyncMaterial> page = materialRepository.listMaterialFiter(materialCode,pageRequest);
         listMaterialFiterVo.setNoMaterial(new PageVo<TSyncMaterial>(page));
         return listMaterialFiterVo;
     }
