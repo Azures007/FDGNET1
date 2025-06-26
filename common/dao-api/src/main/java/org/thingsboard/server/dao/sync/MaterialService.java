@@ -31,7 +31,7 @@ public interface MaterialService {
 
     TSyncMaterial getById(Integer id);
 
-    TSyncMaterialVo getById2(Integer id);
+    TSyncMaterialVo getByIdWithBoms(Integer id);
 
 
     void delete(Integer id);

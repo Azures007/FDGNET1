@@ -148,7 +148,7 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public TSyncMaterialVo getById2(Integer id) {
+    public TSyncMaterialVo getByIdWithBoms(Integer id) {
         TSyncMaterialVo tSyncMaterialVo = new TSyncMaterialVo();
 
         TSyncMaterial tSyncMaterial = materialRepository.findById(id).get();

@@ -30,4 +30,8 @@ public class TSyncMaterialBom {
     @ApiModelProperty("比例")
     private BigDecimal ratio;
 
+    @Column(name = "material_name")
+    @ApiModelProperty("物料名称")
+    private String materialName;
+
 }

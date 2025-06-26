@@ -126,3 +126,5 @@ ALTER TABLE t_sync_material_bom
 ALTER COLUMN ratio TYPE NUMERIC(20,10)
 USING ratio::NUMERIC(20,10)
 
+ALTER TABLE t_sync_material_bom ADD COLUMN material_name VARCHAR(100);
+COMMENT ON COLUMN t_sync_material_bom.material_name IS '物料名称';

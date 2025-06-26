@@ -42,7 +42,7 @@ public class MaterialController extends BaseController {
     @ApiOperation("物料详情")
     @GetMapping("/getById")
     public ResponseResult<TSyncMaterialVo> getById(@RequestParam("id") Integer id) {
-        TSyncMaterialVo tSyncMaterialVo = materialService.getById2(id);
+        TSyncMaterialVo tSyncMaterialVo = materialService.getByIdWithBoms(id);
         return ResultUtil.success(tSyncMaterialVo);
     }
 
