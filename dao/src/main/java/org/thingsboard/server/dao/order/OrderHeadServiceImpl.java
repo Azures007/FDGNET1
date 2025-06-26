@@ -1163,7 +1163,8 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         //合格完成率=合格品产后报工数量/计划生产数量，保留两位小数，单位% 任务12816 2022-07-13
         //合格品完成率要先除以一个每件支数：合格完成率=合格品产后报工数量/每件支数/计划生产数量*100% 2023-04-17 锦江 --废弃
         //合格完成率=(((产后数量手输*单支克重)-AB料累计数）/单支克重/每件支数)/计划产量 2023-04-18 俊良 18681
-        MidMaterial bykdMaterialId = midMaterialRepository.getBykdMaterialId(tBusOrderHead.getBodyMaterialId());
+        //友臣 注释报错
+        /*MidMaterial bykdMaterialId = midMaterialRepository.getBykdMaterialId(tBusOrderHead.getBodyMaterialId());
         if (PROCESS_NUMBER_LASHENMO.equals(processNumber)) {
             if (bykdMaterialId != null && bykdMaterialId.getKdMaterialEachPieceNum() > 0 && bykdMaterialId.getKdMaterialStretchWeight() > 0) {
                 Integer kdMaterialEachPieceNum = bykdMaterialId.getKdMaterialEachPieceNum();//每件支数
@@ -1179,10 +1180,11 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         } else {
             //合格完成率=合格品产后报工数量/计划生产数量
             orderProcessVo.setQualifiedRate(BigDecimalUtil.div(orderProcessVo.getTotalProductQty() * 100, tBusOrderHead.getBodyPlanPrdQty()).floatValue());
-        }
+        }*/
         //产能数量、产能单位，对应工序：剥皮||蟹柳||拉伸膜||包装
         //产能数量 = 单只克重（单只克重字段如果是克为单位需除以1000）*产后数量手输 2023-04-18 18681
-        if (PROCESS_NUMBER_BOPI.equals(processNumber) || PROCESS_NUMBER_XIELIU.equals(processNumber) || PROCESS_NUMBER_LASHENMO.equals(processNumber) || PROCESS_NUMBER_BAOZHUANG.equals(processNumber)) {
+        //友臣 注释报错
+        /*if (PROCESS_NUMBER_BOPI.equals(processNumber) || PROCESS_NUMBER_XIELIU.equals(processNumber) || PROCESS_NUMBER_LASHENMO.equals(processNumber) || PROCESS_NUMBER_BAOZHUANG.equals(processNumber)) {
             if (bykdMaterialId != null && bykdMaterialId.getKdMaterialEachPieceNum() > 0 && bykdMaterialId.getKdMaterialStretchWeight() > 0) {
                 Float kdMaterialStretchWeightKg = bykdMaterialId.getKdMaterialStretchWeight() / 1000;//单支克重(千克)
                 orderProcessRecordDtlVo.setCapacityQty(BigDecimalUtil.mul(productManualQty, kdMaterialStretchWeightKg).floatValue());
@@ -1192,7 +1194,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             orderProcessRecordDtlVo.setCapacityUnitStr(capacityUnitStr);
         } else {
             orderProcessRecordDtlVo.setCapacityQty(-1f);
-        }
+        }*/
         //特殊字段:拉伸膜重量、废膜重量、剩余膜重量
         if (PROCESS_NUMBER_LASHENMO.equals(processNumber)) {//拉伸膜
             orderProcessRecordDtlVo.setReportLsmQty(reportLsmQty);
