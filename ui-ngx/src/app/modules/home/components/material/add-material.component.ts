@@ -104,7 +104,9 @@ export class AddMaterialComponent implements OnInit {
       Object.keys(this.injectData.data.data).forEach(key => {
         obj[key] = this.injectData.data.data[key];
       });
-
+      if (this.injectData.data.data.materialBoms) {
+        this.materialBoms = this.injectData.data.data.materialBoms;
+      }
       if (this.formType === 'details') {
         this.dataForm = this.fb.group({
           materialName: [{ value: obj.materialName, disabled: true }],
