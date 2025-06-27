@@ -128,3 +128,9 @@ USING ratio::NUMERIC(20,10)
 
 ALTER TABLE t_sync_material_bom ADD COLUMN material_name VARCHAR(100);
 COMMENT ON COLUMN t_sync_material_bom.material_name IS '物料名称';
+
+
+-- 更新菜单默认可用为1 2025-01-02
+update t_sys_menu set enabled = '1' where enabled = '0';
+
+

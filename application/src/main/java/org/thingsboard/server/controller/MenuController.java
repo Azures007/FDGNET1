@@ -67,12 +67,12 @@ public class MenuController extends BaseController {
     @ApiOperation("禁用控制接口")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "menuId", value = "菜单Id", required = true),
-            @ApiImplicitParam(name = "enabled", value = "禁用标识 1：不可用 0：可用", required = true)
+            @ApiImplicitParam(name = "enabled", value = "禁用标识 0：不可用 1：可用", required = true)
     })
     @GetMapping("/isEnabled")
     public ResponseResult isEnabled(@RequestParam("menuId") Integer menuId, @RequestParam("enabled") Integer enabled) throws Exception {
         TSysMenu tSysMenu = menuService.getById(menuId);
-        tSysMenu.setEnabled(enabled == 0 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
+        tSysMenu.setEnabled(enabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
         this.update(tSysMenu);
         return ResultUtil.success();
     }
@@ -108,8 +108,10 @@ public class MenuController extends BaseController {
     })
     @ApiOperation("菜单列表（非树结构）")
     public ResponseResult<PageVo<TSysMenu>> pageMenu(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                     @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        PageVo<TSysMenu> tSysMenuPageVo = menuService.pageMenu(current, size);
+                                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                     @RequestBody TSysMenu tSysMenu) {
+//        PageVo<TSysMenu> tSysMenuPageVo = menuService.pageMenu(current, size);
+        PageVo<TSysMenu> tSysMenuPageVo = menuService.pageMenu(current, size, tSysMenu);
         return ResultUtil.success(tSysMenuPageVo);
     }
 

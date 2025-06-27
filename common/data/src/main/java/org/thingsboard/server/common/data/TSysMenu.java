@@ -36,10 +36,11 @@ public class TSysMenu {
     @ApiModelProperty("父级菜单id,根菜单为0")
     @Column(name = "parent_id")
     private Integer parentId;
-    @ApiModelProperty("标识 0:菜单 1:功能按钮 2:Url;")
+    @ApiModelProperty("菜单类型，标识 0:菜单 1:功能按钮 2:Url;")
     @Column(name = "flag")
     private String flag;
-    @ApiModelProperty("是否可用 0：可用 1：不可用")
+    @ApiModelProperty("是否可用 0：不可用 1：可用")
+//    @ApiModelProperty("是否可用 0：可用 1：不可用") 废弃
     private String enabled;
     @ApiModelProperty("创建人")
     @Column(name = "created_name")
@@ -65,7 +66,7 @@ public class TSysMenu {
     @ApiModelProperty("标记使用")
     private boolean select = false;
     @Column(name = "menu_type")
-    @ApiModelProperty("菜单类型")
+    @ApiModelProperty("菜单类型，toggle=折叠菜单，link=菜单")
     private String menuType;
     @Column(name = "skip_url")
     @ApiModelProperty("跳转url，只对标识为url时有效")

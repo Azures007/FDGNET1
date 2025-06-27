@@ -5,12 +5,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.TSysMenu;
-import org.thingsboard.server.common.data.TSysRoleMenu;
-import org.thingsboard.server.common.data.TSysRoleUser;
+import org.thingsboard.server.common.data.*;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.SetRoleMenuDto;
 import org.thingsboard.server.dao.sql.menu.MenuRepository;
@@ -19,6 +18,7 @@ import org.thingsboard.server.dao.sql.role.RoleUserRepository;
 import org.thingsboard.server.dao.vo.MenuListVo;
 import org.thingsboard.server.dao.vo.PageVo;
 
+import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,7 +53,7 @@ public class MenuServiceImpl implements MenuService {
                 tSysMenu.setParentId(0);
             }
             if (StringUtils.isBlank(tSysMenu.getEnabled())) {
-                tSysMenu.setEnabled("0");
+                tSysMenu.setEnabled(GlobalConstant.enableTrue);
             }
             if (StringUtils.isBlank(tSysMenu.getFlag())) {
                 tSysMenu.setFlag("0");
@@ -186,6 +186,12 @@ public class MenuServiceImpl implements MenuService {
         return menuListVo;
     }
 
+    /**
+     * 分页菜单列表
+     * @param current
+     * @param size
+     * @return
+     */
     @Override
     public PageVo<TSysMenu> pageMenu(Integer current, Integer size) {
         Sort sort=Sort.by(Sort.Direction.DESC,"createdTime");
@@ -193,6 +199,26 @@ public class MenuServiceImpl implements MenuService {
         Page<TSysMenu> all = menuRepository.findAll(pageRequest);
         PageVo<TSysMenu> tSysMenuPageVo=new PageVo<>(all);
         return tSysMenuPageVo;
+    }
+
+    @Override
+    public PageVo<TSysMenu> pageMenu(Integer current, Integer size, TSysMenu tSysMenu) {
+        List<Sort.Order> orders = new ArrayList<>();
+        orders.add(new Sort.Order(Sort.Direction.ASC, "menuId"));
+        Sort sort1 = Sort.by(orders);
+        Pageable pageable = PageRequest.of(current, size, sort1);
+        Page<TSysMenu> tSysMenuPage = menuRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<Predicate>();
+            if (!StringUtils.isEmpty(tSysMenu.getMenuName())) {
+                predicates.add(criteriaBuilder.like(root.get("menuName"), "%" + tSysMenu.getMenuName() + "%"));
+            }
+            if (tSysMenu.getParentId() >= 0) {
+                predicates.add(criteriaBuilder.equal(root.get("parentId"), tSysMenu.getParentId()));
+            }
+            return criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
+        }, pageable);
+        PageVo<TSysMenu> pageVo = new PageVo<>(tSysMenuPage);
+        return pageVo;
     }
 
     @Override

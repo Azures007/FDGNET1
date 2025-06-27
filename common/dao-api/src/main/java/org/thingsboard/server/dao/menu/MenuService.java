@@ -41,7 +41,7 @@ public interface MenuService {
      */
     void setRoleMenu(SetRoleMenuDto setRoleMenuDto);
     /**
-    * 返回当前用户的菜单列表
+     * 返回当前用户的菜单列表
      */
     List<TSysMenu> getMyMenu(String userId);
 
@@ -54,12 +54,20 @@ public interface MenuService {
     MenuListVo getMenuListVoByTree();
 
     /**
-     *  分页菜单列表
+     * 分页菜单列表
      * @param current
      * @param size
      * @return
      */
     PageVo<TSysMenu> pageMenu(Integer current, Integer size);
+
+    /**
+     *  分页菜单列表
+     * @param current
+     * @param size
+     * @return
+     */
+    PageVo<TSysMenu> pageMenu(Integer current, Integer size, TSysMenu tSysMenu);
 
     /**
      * 返回当前用户报表菜单
