@@ -30,6 +30,12 @@
 		.example-tree div[role=group] > .mat-tree-node {
 			padding-left: 40px;
 		}
+		.mat-tree-node {
+			cursor: pointer;
+		}
+		.classify-tree-node-selected {
+			color: #FF9D44
+		}
 	}
 	.right {
 		width: 80%;

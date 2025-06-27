@@ -17,9 +17,12 @@ import { MenuAdminService } from '@app/core/http/menuAdmin.service';
 
 
 interface FoodNode {
+  menuId: undefined | number;
+  parentId: undefined | number;
   menuName: string;
   tsysMenus?: FoodNode[];
-  menuType: string
+  menuType: string;
+  select: boolean | undefined;
 }
 
 @Component({
@@ -68,6 +71,12 @@ export class MenuComponent implements OnInit {
   tableDataSource = [];
   displayedColumns: string[] = ['menuId', 'menuName', 'parentId', 'flag', 'path', 'createdTime', 'sort', 'br', 'enabled', 'customColumn1']
 
+  // 当前选中的菜单
+  curMenu = {
+    parentId: -1,
+    menuName: ''
+  };
+
   ngOnInit(): void {
     this.getTreeData();
   }
@@ -80,19 +89,58 @@ export class MenuComponent implements OnInit {
       let arr = [];
       arr.push(res.data);
       // const TREE_DATA:FoodNode[] = arr;
+      if (arr[0]) {
+        arr[0].select = true;
+        this.curMenu = {
+          parentId: -1,
+          menuName: ''
+        }
+      }
       this.dataSource.data = arr;
-      console.log(this.dataSource);
+      this.treeControl.dataNodes = arr;
+      this.treeControl.expandAll();
       this.getTableData();
     })
   }
-
+  choseNode(node: FoodNode, e?: MouseEvent) {
+    if (e) {
+      e.stopPropagation();
+    }
+    if (node.parentId === undefined) {
+      this.curMenu = {
+        parentId: -1,
+        menuName: ''
+      }
+    } else {
+      this.curMenu = {
+        parentId: node.parentId,
+        menuName: node.menuName
+      }
+    }
+    this.treeControl.dataNodes.forEach((item) => {
+      item.select = false;
+      if (item.tsysMenus) {
+        this.cancelSelect(item.tsysMenus);
+      }
+    });
+    node.select = true;
+    this.getTableData();
+  }
+  cancelSelect(nodes) {
+    nodes.forEach((item) => {
+      item.select = false;
+      if (item.tsysMenus) {
+        this.cancelSelect(item.tsysMenus);
+      }
+    });
+  }
   //获取右侧表格数据
   getTableData() {
     let par = {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
       body: {
-
+        ...this.curMenu
       }
     }
     this.MenuAdminService.fetchGetTable(par).subscribe(res => {

@@ -26,11 +26,14 @@ export class MenuAddComponent implements OnInit {
     menuId: "",
     menuName: '',
     parentId: -1,
-    menuType: 2,
+    menuType: 'link',
     br: "",
     sort: "",
     enabled: "",
-    path:"",
+    path: "",
+    flag: "0",
+    skipUrl: '',
+    menuExplain: 'domain'
   }
 
   dataForm: FormGroup;
@@ -48,6 +51,13 @@ export class MenuAddComponent implements OnInit {
 
   // 状态下拉
   menuTypeS = [{
+    label: '折叠菜单',
+    value: 'toggle',
+  }, {
+    label: '菜单',
+    value: 'link',
+  }];
+  menuFlagS = [{
     label: '菜单',
     value: '0',
   }, {
@@ -56,9 +66,7 @@ export class MenuAddComponent implements OnInit {
   }, {
     label: '外链URL',
     value: '2',
-  }
-  ];
-
+  }]
 
 
 
@@ -73,27 +81,47 @@ export class MenuAddComponent implements OnInit {
       this.dataForm = this.fb.group({
         menuId: "",
         menuName: ['', [Validators.required]],
-        parentId: [{ value: '-1', disabled: true }, [Validators.required]],
-        menuType: [{ value: '2', disabled: true }, [Validators.required]],
+        parentId: [{ value: '-1', disabled: false }, [Validators.required]],
+        menuType: [{ value: 'link', disabled: false }, [Validators.required]],
         br: ['', [Validators.required]],
         sort: ['', [Validators.required]],
         enabled: ['', [Validators.required]],
         path: ['', [Validators.required]],
+        flag: [{ value: '0', disabled: false }, [Validators.required]],
+        skipUrl: ['', []],
+        menuExplain: ['domain', []]
       });
     } else {
       this.formType = this.injectData.data.type;
+      const isDetail = this.formType === 'details';
       const obj = {
         menuId: "",
         menuName: '',
         parentId: -1,
-        menuType: 2,
+        menuType: 'link',
         br: "",
         sort: "",
         enabled: "",
-        path:"",
+        path: "",
+        flag: '0',
+        skipUrl: '',
+        menuExplain: 'domain'
       }
       Object.keys(this.injectData.data.data).forEach(key => {
         obj[key] = this.injectData.data.data[key];
+      });
+      this.dataForm = this.fb.group({
+        menuId: obj.menuId,
+        menuName: [{ value: obj.menuName, disabled: isDetail }, [Validators.required]],
+        parentId: [{ value: obj.parentId, disabled: isDetail }, [Validators.required]],
+        menuType: [{ value: obj.menuType, disabled: isDetail }, [Validators.required]],
+        br: [{ value: obj.br, disabled: isDetail }, [Validators.required]],
+        sort: [{ value: obj.sort, disabled: isDetail }, [Validators.required]],
+        enabled: [{ value: obj.enabled, disabled: isDetail }, [Validators.required]],
+        path: [{ value: obj.path, disabled: isDetail }, [Validators.required]],
+        flag: [{ value: obj.flag, disabled: isDetail }, [Validators.required]],
+        skipUrl: [{ value: obj.skipUrl, disabled: isDetail }, []],
+        menuExplain: [{ value: obj.menuExplain, disabled: isDetail }, []]
       });
     }
   }
@@ -122,7 +150,7 @@ export class MenuAddComponent implements OnInit {
         }
       })
 
-    }else {
+    } else {
       for (const i in this.dataForm.controls) {
         this.dataForm.controls[i].markAsTouched();
         this.dataForm.controls[i].updateValueAndValidity();
