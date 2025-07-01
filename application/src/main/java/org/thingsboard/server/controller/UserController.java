@@ -557,7 +557,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("返回用户详细信息")
     @ApiImplicitParam(name = "userId", value = "用户id", readOnly = true)
-    @GetMapping("/listUserDetail")
+    @GetMapping("/user/listUserDetail")
     public ResponseResult<List<TSysUserDetail>> listUserDetail(@RequestParam("userId") String userId) {
         List<TSysUserDetail> list = userService.listUserDetail(userId);
         return ResultUtil.success(list);
