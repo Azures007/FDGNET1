@@ -24,7 +24,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.weaver.ast.Var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -55,6 +54,7 @@ import org.thingsboard.server.dao.model.ModelConstants;
 import org.thingsboard.server.dao.service.DataValidator;
 import org.thingsboard.server.dao.service.PaginatedRemover;
 import org.thingsboard.server.dao.sql.role.RoleUserRepository;
+import org.thingsboard.server.dao.sql.user.UserDetailRepository;
 import org.thingsboard.server.dao.tenant.TbTenantProfileCache;
 import org.thingsboard.server.dao.tenant.TenantDao;
 import org.thingsboard.server.dao.vo.PageVo;
@@ -95,6 +95,9 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
     @Autowired
     RoleUserRepository roleUserRepository;
+
+    @Autowired
+    UserDetailRepository userDetailRepository;
 
     public UserServiceImpl(UserDao userDao,
                            UserCredentialsDao userCredentialsDao,
@@ -373,6 +376,17 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         updateUserVerify(updateAndSaveDto, userDaoById, tSysRoleUser);
         userDao.save(user.getTenantId(), userDaoById);
         roleUserRepository.saveAndFlush(tSysRoleUser);
+        // 用户信息表
+        List<TSysUserDetail> tSysUserDetailListSave = updateAndSaveDto.getTSysUserDetailList();
+        List<TSysUserDetail> byUserId = userDetailRepository.findByUserId(updateAndSaveDto.getUser_id());
+        // 判断byUserId是否存在保存的记录集合中，不存在则删除记录
+        for (TSysUserDetail tSysUserDetail : byUserId) {
+            if (!tSysUserDetailListSave.contains(tSysUserDetail)) {
+                userDetailRepository.delete(tSysUserDetail);
+            }
+        }
+        // 保存新的用户详细信息列表
+        userDetailRepository.saveAll(tSysUserDetailListSave);
     }
 
     @Override
@@ -407,6 +421,11 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
             userVos.add(userVo);
         }
         return userVos;
+    }
+
+    @Override
+    public List<TSysUserDetail> listUserDetail(String userId) {
+        return userDetailRepository.findByUserId(userId);
     }
 
     @Override

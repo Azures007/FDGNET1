@@ -134,3 +134,25 @@ COMMENT ON COLUMN t_sync_material_bom.material_name IS '物料名称';
 update t_sys_menu set enabled = '1' where enabled = '0';
 
 
+-- 2025-06-30 用户详细信息表
+CREATE TABLE t_sys_user_detail (
+                                   user_detail_id serial4 NOT NULL, -- 用户信息表ID
+                                   user_id varchar(255) NOT NULL, -- 用户ID
+                                   nc_pk_org varchar(255) NULL, -- 基地ID
+                                   nc_org_name varchar(255) NULL, -- 基地名称
+                                   nc_cwkid varchar(255) NULL, -- 产线ID
+                                   nc_vwkname varchar(255) NULL, -- 产线名称
+                                   nc_cdeptid varchar(255) NULL, -- 部门ID
+                                   nc_cdeptname varchar(255) NULL, -- 部门名称
+                                   CONSTRAINT t_sys_user_detail_pkey PRIMARY KEY (user_detail_id)
+);
+COMMENT ON TABLE public.t_sys_user_detail IS '用户详细信息表';
+
+COMMENT ON COLUMN public.t_sys_user_detail.user_detail_id IS '用户信息表ID';
+COMMENT ON COLUMN public.t_sys_user_detail.user_id IS '用户ID';
+COMMENT ON COLUMN public.t_sys_user_detail.nc_pk_org IS '基地ID';
+COMMENT ON COLUMN public.t_sys_user_detail.nc_org_name IS '基地名称';
+COMMENT ON COLUMN public.t_sys_user_detail.nc_cwkid IS '产线ID';
+COMMENT ON COLUMN public.t_sys_user_detail.nc_vwkname IS '产线名称';
+COMMENT ON COLUMN public.t_sys_user_detail.nc_cdeptid IS '部门ID';
+COMMENT ON COLUMN public.t_sys_user_detail.nc_cdeptname IS '部门名称';

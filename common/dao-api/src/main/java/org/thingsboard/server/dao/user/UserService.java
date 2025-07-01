@@ -17,6 +17,7 @@ package org.thingsboard.server.dao.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.thingsboard.server.common.data.TSysUserDetail;
 import org.thingsboard.server.common.data.User;
 import org.thingsboard.server.common.data.id.CustomerId;
 import org.thingsboard.server.common.data.id.TenantId;
@@ -34,7 +35,7 @@ import org.thingsboard.server.dao.vo.UserVo;
 import java.util.List;
 
 public interface UserService {
-	
+
 	User findUserById(TenantId tenantId, UserId userId);
 
 	ListenableFuture<User> findUserByIdAsync(TenantId tenantId, UserId userId);
@@ -44,15 +45,15 @@ public interface UserService {
 	User saveUser(User user);
 
 	UserCredentials findUserCredentialsByUserId(TenantId tenantId, UserId userId);
-	
+
 	UserCredentials findUserCredentialsByActivateToken(TenantId tenantId, String activateToken);
 
 	UserCredentials findUserCredentialsByResetToken(TenantId tenantId, String resetToken);
 
 	UserCredentials saveUserCredentials(TenantId tenantId, UserCredentials userCredentials);
-	
+
 	UserCredentials activateUserCredentials(TenantId tenantId, String activateToken, String password);
-	
+
 	UserCredentials requestPasswordReset(TenantId tenantId, String email);
 
     UserCredentials requestExpiredPasswordReset(TenantId tenantId, UserCredentialsId userCredentialsId);
@@ -64,11 +65,11 @@ public interface UserService {
     PageData<User> findUsersByTenantId(TenantId tenantId, PageLink pageLink);
 
     PageData<User> findTenantAdmins(TenantId tenantId, PageLink pageLink);
-	
+
 	void deleteTenantAdmins(TenantId tenantId);
 
     PageData<User> findCustomerUsers(TenantId tenantId, CustomerId customerId, PageLink pageLink);
-	    
+
 	void deleteCustomerUsers(TenantId tenantId, CustomerId customerId);
 
 	void setUserCredentialsEnabled(TenantId tenantId, UserId userId, boolean enabled);
@@ -137,4 +138,10 @@ public interface UserService {
 	PageVo<UserVo> pageUserByNemeOrAccount(Integer current, Integer size, String nemeOrAccount) throws JsonProcessingException;
 
 	List<UserVo> pageUserByUserNameAndName(String nameAndUsername) throws JsonProcessingException;
+
+	/**
+	 * 获取人员信息管理绑定账号列表
+	 * @return
+	 */
+	List<TSysUserDetail> listUserDetail(String userId);
 }

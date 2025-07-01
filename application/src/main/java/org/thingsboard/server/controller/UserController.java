@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.rule.engine.api.MailService;
 import org.thingsboard.server.common.data.EntityType;
 import org.thingsboard.server.common.data.TSysRoleUser;
+import org.thingsboard.server.common.data.TSysUserDetail;
 import org.thingsboard.server.common.data.User;
 import org.thingsboard.server.common.data.audit.ActionType;
 import org.thingsboard.server.common.data.edge.EdgeEventActionType;
@@ -552,6 +553,14 @@ public class UserController extends BaseController {
             @RequestParam("nameAndUsername") String nameAndUsername) throws JsonProcessingException {
         List<UserVo> users = userService.pageUserByUserNameAndName(nameAndUsername);
         return ResultUtil.success(users);
+    }
+
+    @ApiOperation("返回用户详细信息")
+    @ApiImplicitParam(name = "userId", value = "用户id", readOnly = true)
+    @GetMapping("/listUserDetail")
+    public ResponseResult<List<TSysUserDetail>> listUserDetail(@RequestParam("userId") String userId) {
+        List<TSysUserDetail> list = userService.listUserDetail(userId);
+        return ResultUtil.success(list);
     }
 
     @ApiOperation("重置密码")
