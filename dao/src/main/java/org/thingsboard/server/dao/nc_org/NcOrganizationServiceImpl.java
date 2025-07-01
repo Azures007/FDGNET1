@@ -24,4 +24,9 @@ public class NcOrganizationServiceImpl implements NcOrganizationService {
             repository.save(entity);
         }
     }
+
+    @Override
+    public List<NcOrganization> findAll() {
+        return repository.findAll();
+    }
 } 

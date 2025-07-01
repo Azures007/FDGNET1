@@ -1,36 +1,23 @@
-package org.thingsboard.server.controller.ncApi;
+package org.thingsboard.server.controller.ncManageApi;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.thingsboard.server.common.data.nc_workline.NcWorkline;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.nc_workline.NcWorklineService;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/outapi/nc/workline")
-@Api(tags = "NC生产线接口")
-public class NcWorklineController {
+@RequestMapping("/manageapi/nc/workline")
+@Api(tags = "NC生产线管理接口")
+public class NcWorklineManageController {
     @Autowired
     private NcWorklineService service;
-
-    @ApiOperation("批量新增/更新生产线")
-    @PostMapping("/addbatch")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "同步成功"),
-            @ApiResponse(code = 400, message = "请求参数错误"),
-            @ApiResponse(code = 500, message = "服务器内部错误")
-    })
-    public ResponseResult create(@RequestBody List<NcWorkline> entitys) {
-        service.saveOrUpdateBatchByCwkid(entitys);
-        return ResultUtil.success("同步成功");
-    }
 
     @ApiOperation("查询所有生产线")
     @GetMapping("/list")

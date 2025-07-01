@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface NcOrganizationService {
     void saveOrUpdateBatchByPkOrg(List<NcOrganization> entitys);
+    List<NcOrganization> findAll();
 } 

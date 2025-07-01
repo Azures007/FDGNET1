@@ -5,4 +5,7 @@ import java.util.List;
 
 public interface NcWorklineService {
     void saveOrUpdateBatchByCwkid(List<NcWorkline> entitys);
+    List<NcWorkline> findAll();
+    List<NcWorkline> findByPkOrg(String pkOrg);
+    List<NcWorkline> findByVwkcodeOrVwknameLike(String keyword);
 } 

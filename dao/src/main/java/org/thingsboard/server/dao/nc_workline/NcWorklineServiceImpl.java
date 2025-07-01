@@ -47,4 +47,19 @@ public class NcWorklineServiceImpl implements NcWorklineService {
         // 批量保存
         repository.saveAll(entitiesToSave);
     }
+
+    @Override
+    public List<NcWorkline> findAll() {
+        return repository.findAll();
+    }
+
+    @Override
+    public List<NcWorkline> findByPkOrg(String pkOrg) {
+        return repository.findByPkOrg(pkOrg);
+    }
+
+    @Override
+    public List<NcWorkline> findByVwkcodeOrVwknameLike(String keyword) {
+        return repository.findByVwkcodeOrVwknameLike(keyword);
+    }
 }
