@@ -357,4 +357,9 @@ public class TBusOrderHead  {
     @JsonProperty("pk_material")  // 指定JSON属性名
     @ApiModelProperty("物料id")
     private String pkMaterial;
+
+    @ApiModelProperty("开工时间")
+    @Column(name = "nc_receive_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ncReceiveTime;
 }

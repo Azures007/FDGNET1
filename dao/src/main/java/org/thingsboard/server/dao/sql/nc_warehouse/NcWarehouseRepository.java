@@ -12,4 +12,6 @@ public interface NcWarehouseRepository extends JpaRepository<NcWarehouse, Intege
 
     @Query("SELECT w FROM NcWarehouse w WHERE w.pkStordoc IN :pkStordocs")
     List<NcWarehouse> findByPkStordocs(@Param("pkStordocs") List<String> pkStordocs);
-} 
+
+    List<NcWarehouse> findByPkOrg(String pkOrg);
+}

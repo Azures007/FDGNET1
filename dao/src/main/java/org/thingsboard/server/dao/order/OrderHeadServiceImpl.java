@@ -170,20 +170,28 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         Page<TBusOrderHead> orderHeadPage = orderHeadRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<Predicate>();
 
+            //生产订单号
             if (!StringUtils.isEmpty(orderDto.getBillNo())) {
                 predicates.add(criteriaBuilder.like(root.get("billNo"), "%" + orderDto.getBillNo() + "%"));
             }
+            //产品编码
+            if (!StringUtils.isEmpty(orderDto.getNcMaterialCode())) {
+                predicates.add(criteriaBuilder.like(root.get("bodyMaterialNumber"), "%" + orderDto.getNcMaterialCode() + "%"));
+            }
+            //产品名称
+            if (!StringUtils.isEmpty(orderDto.getNcMaterialName())) {
+                predicates.add(criteriaBuilder.like(root.get("bodyMaterialName"), "%" + orderDto.getNcMaterialName() + "%"));
+            }
+            //订单状态
             if (!StringUtils.isEmpty(orderDto.getOrderStatus())) {
                 predicates.add(criteriaBuilder.equal(root.get("orderStatus"), orderDto.getOrderStatus()));
             }
             if (!StringUtils.isEmpty(orderDto.getOrderMatching()) && !"0".equals(orderDto.getOrderMatching())) {
                 predicates.add(criteriaBuilder.equal(root.get("orderMatching"), orderDto.getOrderMatching()));
             }
-            if (orderDto.getCurrentProcess() != 0) {
-                predicates.add(criteriaBuilder.equal(root.get("currentProcess"), orderDto.getCurrentProcess()));
-            }
-            if (orderDto.getClassId() != 0) {
-                predicates.add(criteriaBuilder.equal(root.get("classId"), orderDto.getClassId()));
+            //生产线 ID
+            if (!StringUtils.isEmpty(orderDto.getCwkid())) {
+                predicates.add(criteriaBuilder.equal(root.get("cwkid"), orderDto.getCwkid()));
             }
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -199,6 +207,15 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 if (orderDto.getPlanStartDateEnd() != null) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("bodyPlanStartDate"), sdf.parse(orderDto.getPlanStartDateEnd())));
                 }
+                //新增开工时间条件
+                if (orderDto.getNcReceiveTimeStart() != null) {
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("ncReceiveTime"), sdf.parse(orderDto.getNcReceiveTimeStart())));
+                }
+                if (orderDto.getNcReceiveTimeEnd() != null) {
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("ncReceiveTime"), sdf.parse(orderDto.getNcReceiveTimeEnd())));
+                }
+
+
                 //过滤是否删除,1,非删除
                 predicates.add(criteriaBuilder.equal(root.get("isDeleted"), GlobalConstant.enableTrue));
             } catch (ParseException e) {

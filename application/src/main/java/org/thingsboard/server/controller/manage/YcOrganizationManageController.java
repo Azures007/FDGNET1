@@ -1,4 +1,4 @@
-package org.thingsboard.server.controller.ycManageApi;
+package org.thingsboard.server.controller.manage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

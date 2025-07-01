@@ -175,7 +175,7 @@ public class OrderBackendServiceImpl implements OrderBackendService{
                 }
                 var tBusOrderProcessSetRt = orderProcessRepository.saveAll(tBusOrderProcessSet);
                 tBusOrderHeadRt.setTBusOrderProcessSet(tBusOrderProcessSetRt.stream().collect(Collectors.toSet()));
-                tBusOrderHeadRt.setOrderStatus("1");//已开工
+                //tBusOrderHeadRt.setOrderStatus("1");//已开工
                 tBusOrderHeadRt.setOrderMatching(LichengConstants.ORDER_HEAD_MATCHING_1);//匹配
                 orderHeadRepository.save(tBusOrderHeadRt);
             }

@@ -14,6 +14,12 @@ public class TBusOrderDto {
     @ApiModelProperty("单据编号（支持模糊查询）")
     private String billNo="";
 
+    @ApiModelProperty("nc_产品编码（支持模糊查询）")
+    private String ncMaterialCode="";
+
+    @ApiModelProperty("nc_产品名称（支持模糊查询）")
+    private String ncMaterialName="";
+
     @ApiModelProperty("订单状态：0=未开工、1=已开工、2=暂停、3=已完工")
     private String orderStatus="";
 
@@ -28,12 +34,21 @@ public class TBusOrderDto {
     @ApiModelProperty("单据日期-结束")
     private String billDateEnd;
 
-    @ApiModelProperty("计划完工时间-开始")
+    @ApiModelProperty("nc_开工时间-开始")
+    private String ncReceiveTimeStart;
+    @ApiModelProperty("nc_开工时间-结束")
+    private String ncReceiveTimeEnd;
+
+    @ApiModelProperty("计划开始时间-开始")
     private String planStartDateStart;
-    @ApiModelProperty("计划完工时间-结束")
+
+    @ApiModelProperty("计划开始时间-结束")
     private String planStartDateEnd;
 
     @ApiModelProperty("匹配工艺路线: 0: 不匹配, 1:匹配")
     private String orderMatching = "";
+
+    @ApiModelProperty("生产线ID")
+    private String cwkid = "";
 
 }

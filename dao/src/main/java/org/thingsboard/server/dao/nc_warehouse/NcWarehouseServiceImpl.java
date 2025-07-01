@@ -38,4 +38,14 @@ public class NcWarehouseServiceImpl implements NcWarehouseService {
         }
         repository.saveAll(entitiesToSave);
     }
-} 
+
+    @Override
+    public List<NcWarehouse> findAll() {
+        return repository.findAll();
+    }
+
+    @Override
+    public List<NcWarehouse> findByPkOrg(String pkOrg) {
+        return repository.findByPkOrg(pkOrg);
+    }
+}
