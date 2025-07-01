@@ -11,7 +11,7 @@ import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.nc_org.NcOrganizationService;
 
 @RestController
-@RequestMapping("/api/org")
+@RequestMapping("/api/manage/org")
 @Api(tags = "NC基地管理接口")
 public class YcOrganizationManageController {
     @Autowired

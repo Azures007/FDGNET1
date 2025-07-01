@@ -12,7 +12,7 @@ import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.nc_workline.NcWorklineService;
 
 @RestController
-@RequestMapping("/api/workline")
+@RequestMapping("/api/manage/workline")
 @Api(tags = "NC生产线管理接口")
 public class YcWorklineManageController {
     @Autowired
