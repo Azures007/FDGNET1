@@ -1,4 +1,4 @@
-package org.thingsboard.server.controller.ncManageApi;
+package org.thingsboard.server.controller.ycManageApi;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -7,15 +7,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.thingsboard.server.common.data.nc_workline.NcWorkline;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.nc_workline.NcWorklineService;
 
 @RestController
-@RequestMapping("/manageapi/nc/workline")
+@RequestMapping("/api/workline")
 @Api(tags = "NC生产线管理接口")
-public class NcWorklineManageController {
+public class YcWorklineManageController {
     @Autowired
     private NcWorklineService service;
 
@@ -36,4 +35,4 @@ public class NcWorklineManageController {
     public ResponseResult search(@RequestParam String keyword) {
         return ResultUtil.success(service.findByVwkcodeOrVwknameLike(keyword));
     }
-} 
+}
