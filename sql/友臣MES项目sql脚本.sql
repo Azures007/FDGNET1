@@ -170,7 +170,7 @@ COMMENT ON COLUMN public.t_bus_order_head.nc_note IS '备注';
 ALTER TABLE t_bus_order_ppbom ADD COLUMN nc_material_model VARCHAR(255);
 COMMENT ON COLUMN public.t_bus_order_ppbom.nc_material_model IS '型号';
 
-ALTER TABLE t_sys_department ADD COLUMN is_delete VARCHAR(1) DEFAULT '0'; 
+ALTER TABLE t_sys_department ADD COLUMN is_delete VARCHAR(1) DEFAULT '0';
 COMMENT  ON COLUMN t_sys_department.is_delete IS '0:未删除 1:已删除';
 ALTER TABLE t_sys_warehouse ADD COLUMN is_delete VARCHAR(1) DEFAULT '0';
 COMMENT  ON COLUMN t_sys_warehouse.is_delete IS '0:未删除 1:已删除';
@@ -178,3 +178,4 @@ ALTER TABLE t_sys_workline ADD COLUMN is_delete VARCHAR(1) DEFAULT '0';
 COMMENT  ON COLUMN t_sys_workline.is_delete IS '0:未删除 1:已删除';
 ALTER TABLE t_sys_organization ADD COLUMN is_delete VARCHAR(1) DEFAULT '0';
 COMMENT  ON COLUMN t_sys_organization.is_delete IS '0:未删除 1:已删除';
+ALTER TABLE t_bus_order_head ALTER COLUMN is_deleted SET DEFAULT '0';
