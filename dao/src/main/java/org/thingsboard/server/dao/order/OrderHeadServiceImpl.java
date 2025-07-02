@@ -2045,6 +2045,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         for (TBusOrderHead order : pageVo.getList()) {
             OrderSimpleListVo vo = new OrderSimpleListVo();
             vo.setIndex(index++);
+            vo.setOrderId(order.getOrderId());
             vo.setBillNo(order.getBillNo());
             vo.setBillDate(order.getBillDate() != null ? order.getBillDate().toString() : "");
             vo.setBillType(order.getBillType());
