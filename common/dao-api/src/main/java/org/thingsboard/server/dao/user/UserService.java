@@ -86,6 +86,13 @@ public interface UserService {
     void update(UpdateAndSaveDto updateAndSaveDto) throws JsonProcessingException;
 
 	/**
+	 * 添加用户详情
+	 * @param userId
+	 * @param tSysUserDetailListSave
+	 */
+	void updateUserDetailList(String userId, List<TSysUserDetail> tSysUserDetailListSave);
+
+	/**
 	 * 用户分页列表
 	 * @param current
 	 * @param size
@@ -116,6 +123,12 @@ public interface UserService {
 	 * @param userId
 	 */
     void deleteRoleUser(String userId);
+
+	/**
+	 * 删除用户详情
+	 * @param userId
+	 */
+	void deleteUserDetail(String userId);
 
 	/**
 	 * 获取用户信息通过姓名
