@@ -62,4 +62,9 @@ public class NcWorklineServiceImpl implements NcWorklineService {
     public List<NcWorkline> findByVwkcodeOrVwknameLike(String keyword) {
         return repository.findByVwkcodeOrVwknameLike(keyword);
     }
+
+    @Override
+    public void deleteBatchByIds(List<String> ids) {
+        repository.softDeleteBatchByIds(ids);
+    }
 }

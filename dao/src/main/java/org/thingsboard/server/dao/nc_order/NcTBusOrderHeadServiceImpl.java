@@ -79,8 +79,9 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
         if (existingOrder != null) {
             // 先删除原有 bomList
             Integer orderId = existingOrder.getOrderId();
-            bomRepository.deleteAllByOrderId(orderId);
             bomRepository.deleteAllLinkByOrderId(orderId);
+            bomRepository.deleteAllByOrderId(cmoid);
+
             // 保留原有ID
             entity.setOrderId(orderId);
             // 确保cmoid一致
@@ -119,8 +120,8 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             NcTBusOrderHead existingOrder = repository.findByCmoid(entity.getCmoid());
             if (existingOrder != null) {
                 Integer orderId = existingOrder.getOrderId();
-                bomRepository.deleteAllByOrderId(orderId);
                 bomRepository.deleteAllLinkByOrderId(orderId);
+                bomRepository.deleteAllByOrderId(entity.getCmoid());
                 entity.setOrderId(orderId);
                 entity.setCmoid(existingOrder.getCmoid());
             }

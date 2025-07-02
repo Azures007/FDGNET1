@@ -31,4 +31,11 @@ public class NcDepartmentController {
         service.saveOrUpdateBatchByCdeptid(entitys);
         return ResultUtil.success("同步成功");
     }
+
+    @ApiOperation("批量删除生产部门")
+    @PostMapping("/deletebatch")
+    public ResponseResult deleteBatch(@RequestBody List<String> ids) {
+        service.deleteBatchByIds(ids);
+        return ResultUtil.success("删除成功");
+    }
 } 

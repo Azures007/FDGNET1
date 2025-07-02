@@ -10,6 +10,9 @@ public class OrderSimpleListVo {
     @ApiModelProperty("序号")
     private Integer index;
 
+    @ApiModelProperty("mes订单id")
+    private Integer orderId;
+
     @ApiModelProperty("生产订单号")
     private String billNo;
 
@@ -39,4 +42,4 @@ public class OrderSimpleListVo {
 
     @ApiModelProperty("订单状态")
     private String orderStatus;
-} 
+}

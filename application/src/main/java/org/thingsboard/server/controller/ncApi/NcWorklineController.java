@@ -49,4 +49,11 @@ public class NcWorklineController {
     public ResponseResult search(@RequestParam String keyword) {
         return ResultUtil.success(service.findByVwkcodeOrVwknameLike(keyword));
     }
+
+    @ApiOperation("批量删除生产线")
+    @PostMapping("/deletebatch")
+    public ResponseResult deleteBatch(@RequestBody List<String> ids) {
+        service.deleteBatchByIds(ids);
+        return ResultUtil.success("删除成功");
+    }
 } 

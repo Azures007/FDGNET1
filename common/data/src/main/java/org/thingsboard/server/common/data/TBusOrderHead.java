@@ -362,4 +362,8 @@ public class TBusOrderHead  {
     @Column(name = "nc_receive_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ncReceiveTime;
+
+    @Column(name = "nc_note")
+    @ApiModelProperty("备注")
+    private String ncNote;
 }

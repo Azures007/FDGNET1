@@ -487,12 +487,16 @@ public class UserController extends BaseController {
             }
             //保存角色用户关系
             roleService.saveRoleUser(tSysRoleUser);
+            //添加用户详情
+            userService.updateUserDetailList(saveUser.getId().toString(), updateAndSaveDto.getTSysUserDetailList());
             resetPas(req, password, String.valueOf(saveUser.getId()));
         } else {
 
             updateAndSaveDto.setUpdated_name(currentUser.getName());
             updateAndSaveDto.setUpdated_time(new Date());
             userService.update(updateAndSaveDto);
+            //添加用户详情
+            userService.updateUserDetailList(updateAndSaveDto.getUser_id(), updateAndSaveDto.getTSysUserDetailList());
         }
         return ResultUtil.success();
     }
@@ -620,6 +624,7 @@ public class UserController extends BaseController {
     public ResponseResult delete(@RequestParam("userId") String userId) throws Exception {
         userService.deleteUser(GlobalConstant.createUser().getTenantId(), new UserId(UUID.fromString(userId)));
         userService.deleteRoleUser(userId);
+        userService.deleteUserDetail(userId);
         return ResultUtil.success();
     }
 

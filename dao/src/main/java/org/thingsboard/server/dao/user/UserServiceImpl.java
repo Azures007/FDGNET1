@@ -376,14 +376,25 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         updateUserVerify(updateAndSaveDto, userDaoById, tSysRoleUser);
         userDao.save(user.getTenantId(), userDaoById);
         roleUserRepository.saveAndFlush(tSysRoleUser);
+    }
+
+    @Override
+    public void updateUserDetailList(String userId, List<TSysUserDetail> tSysUserDetailListSave){
+        if (tSysUserDetailListSave == null){
+            userDetailRepository.deleteByUserId(userId);
+            return;
+        }
         // 用户信息表
-        List<TSysUserDetail> tSysUserDetailListSave = updateAndSaveDto.getTSysUserDetailList();
-        List<TSysUserDetail> byUserId = userDetailRepository.findByUserId(updateAndSaveDto.getUser_id());
+        List<TSysUserDetail> byUserId = userDetailRepository.findByUserId(userId);
         // 判断byUserId是否存在保存的记录集合中，不存在则删除记录
         for (TSysUserDetail tSysUserDetail : byUserId) {
             if (!tSysUserDetailListSave.contains(tSysUserDetail)) {
                 userDetailRepository.delete(tSysUserDetail);
             }
+        }
+        // 循环赋值userId
+        for (TSysUserDetail tSysUserDetail : tSysUserDetailListSave) {
+            tSysUserDetail.setUserId(userId);
         }
         // 保存新的用户详细信息列表
         userDetailRepository.saveAll(tSysUserDetailListSave);
@@ -481,6 +492,11 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
     @Override
     public void deleteRoleUser(String userId) {
         roleUserRepository.deleteByUserId(userId);
+    }
+
+    @Override
+    public void deleteUserDetail(String userId) {
+        userDetailRepository.deleteByUserId(userId);
     }
 
     @Override
