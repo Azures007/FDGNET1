@@ -77,7 +77,7 @@ export class OrderListComponent implements OnInit {
   //单位列表
   allUnits = [];
 
-  displayedColumns: string[] = ['select', 'no', 'billNo', 'bodyLot', 'billDate', 'bodyPrdDept', 'midMoEntryTeamName', 'bodyPlanPrdQty', 'bodyPlanFinishDate',
+  displayedColumns: string[] = ['no', 'billNo', 'bodyLot', 'billDate', 'bodyPrdDept', 'midMoEntryTeamName', 'bodyPlanPrdQty', 'bodyPlanFinishDate',
     'bodyMaterialSpecification', 'statusStr', 'processStr', 'classId', 'orderMatching', 'customColumn1',];
 
 
@@ -89,13 +89,12 @@ export class OrderListComponent implements OnInit {
   searchFormGroup = this.fb.group({
     current: 0,
     size: 50,
-    currentProcess: 0,
     billNo: '',
-    orderStatus: '',
-    classId: 0,
-    orderMatching: '0',
+    ncMaterialCode: '',
+    ncMaterialName: '',
+    cwkid: '',
   });
-
+  cwkList = [];
   clickedRows = new Set();
   bodyUnit = "";
 
@@ -131,23 +130,27 @@ export class OrderListComponent implements OnInit {
   }
 
   ngOnInit() {
-    let testStr = GlobalConstants.apiURL;
-    console.log(testStr,'global')
     this.minDate = new Date('2020-01-01 00:00:00');
-    let par = {
-      current: 0,
-      size: 999,
-      codeClId: 'UNIT0000',
-      enabledSt: 1
-    }
-    this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {
-      this.allUnits = res.data.list;
-      this.getAllClass();
-      this.getStatus();
+    // let par = {
+    //   current: 0,
+    //   size: 999,
+    //   codeClId: 'UNIT0000',
+    //   enabledSt: 1
+    // }
+    // this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {
+    //   this.allUnits = res.data.list;
+    //   this.getAllClass();
+    //   this.getStatus();
+    // })
+    this.apiOrder.fetchBaseList().subscribe(res => {
+      this.cwkList = res.data;
     })
-
+    this.searchList();
   }
 
+  resetQuery() {
+
+  }
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
@@ -196,37 +199,19 @@ export class OrderListComponent implements OnInit {
   // this.searchFormGroup.value.currentProcess !== 0 ? this.searchFormGroup.value.currentProcess : '',
 
   searchList() {
-    let storagePar = localStorage.getItem('storagePar');
     let params = null;
-    if (storagePar && JSON.parse(storagePar).body) {
-      let storageParObj = JSON.parse(storagePar);
-      this.searchFormGroup.value.current = storageParObj.current;
-      this.searchFormGroup.value.size = storageParObj.size;
-      this.searchFormGroup.value.currentProcess = storageParObj.body.currentProcess;
-      this.searchFormGroup.value.classId = storageParObj.body.classId;
-      this.searchFormGroup.value.billNo = storageParObj.body.billNo;
-      this.searchFormGroup.value.orderStatus = storageParObj.body.orderStatus;
-      this.searchFormGroup.value.orderMatching = storageParObj.body.orderMatching;
-      this.orderBillRange.value.end = storageParObj.body.billDateEnd;
-      this.orderBillRange.value.start = storageParObj.body.billDateStart;
-      this.orderPlanRange.value.end = storageParObj.body.planStartDateEnd;
-      this.orderPlanRange.value.start = storageParObj.body.planStartDateStart;
-    } else {
-
-    }
     params = {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
       body: {
-        currentProcess: this.searchFormGroup.value.currentProcess,
-        classId: this.searchFormGroup.value.classId,
-        billDateEnd: this.utils.dateFormat(new Date(this.orderBillRange.value.end), 'yyyy-MM-dd 23:59:59'),
         billDateStart: this.utils.dateFormat(new Date(this.orderBillRange.value.start), 'yyyy-MM-dd 00:00:00'),
+        billDateEnd: this.utils.dateFormat(new Date(this.orderBillRange.value.end), 'yyyy-MM-dd 23:59:59'),
         billNo: this.searchFormGroup.value.billNo,
-        orderStatus: this.searchFormGroup.value.orderStatus !== 0 ? this.searchFormGroup.value.orderStatus : '',
-        orderMatching: this.searchFormGroup.value.orderMatching,
-        planStartDateEnd: this.utils.dateFormat(new Date(this.orderPlanRange.value.end), 'yyyy-MM-dd 23:59:59'),
-        planStartDateStart: this.utils.dateFormat(new Date(this.orderPlanRange.value.start), 'yyyy-MM-dd 00:00:00'),
+        ncMaterialCode: this.searchFormGroup.value.ncMaterialCode,
+        ncMaterialName: this.searchFormGroup.value.ncMaterialName,
+        ncReceiveTimeStart: this.utils.dateFormat(new Date(this.orderPlanRange.value.start), 'yyyy-MM-dd 00:00:00'),
+        ncReceiveTimeEnd: this.utils.dateFormat(new Date(this.orderPlanRange.value.end), 'yyyy-MM-dd 23:59:59'),
+        cwkid: this.searchFormGroup.value.cwkid,
       }
     }
 
@@ -238,29 +223,13 @@ export class OrderListComponent implements OnInit {
         const allData = res.data || [];
         allData.list.forEach((item, index) => {
           item.no = ++index;
-          item.processStr = '';
-          item.statusStr = '';
-          this.processOptions.forEach(data => {
-            if (item?.currentProcess && Number(item.currentProcess.processId) === data.value) {
-              item.processStr = data.label;
-            }
-          })
-
-          this.orderSelect.forEach(data => {
-            if (Number(item.orderStatus) === Number(data.value)) {
-              item.statusStr = data.label;
-            }
-          })
         })
         const MyData: PeriodicElement[] = allData.list;
         this.tableData = allData.list;
-        this.selection = new SelectionModel<PeriodicElement>(true, []);
         this.dataSource = new MatTableDataSource<PeriodicElement>(MyData);
         this.total = res.data.total;
-        localStorage.removeItem('storagePar')
       } else {
         this.utils.showMessage(res.errmsg, 'error');
-        localStorage.removeItem('storagePar')
       }
 
 

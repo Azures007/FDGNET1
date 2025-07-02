@@ -15,7 +15,7 @@ export class OrderService {
 
   // 获取订单列表
   public fetchGetTableList(data): Observable<any> {
-    return this.http.post(`/api/orderhead/query?current=${data.current}&size=${data.size}`, data.body);
+    return this.http.post(`/api/manage/orderhead/query?current=${data.current}&size=${data.size}`, data.body);
   }
 
   // 导出
@@ -67,5 +67,7 @@ export class OrderService {
   public fetchGetOrderClassInfo(data): Observable<any> {
     return this.http.get(`/api/orderhead/getOrderClassInfo?orderId=${data.orderId}`);
   }
-
+  public fetchBaseList(): Observable<any> {
+        return this.http.get('/api/manage/workline/list')
+    }
 }

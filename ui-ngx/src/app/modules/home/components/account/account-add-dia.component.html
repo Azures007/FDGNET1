@@ -23,54 +23,62 @@
             placeholder="再次输入登录密码(6位字母或数字)" onfocus="this.type='password'">
     </div>
 </div>
-<!-- <div class="from_content">
-    <form [formGroup]="dataForm" class="content page-container">
-        <div class="row-block">
-            <label class="label"><span class="red-star">*</span>用户名:</label>
-            <mat-form-field class="example-full-width" appearance="fill">
-                <input autocomplete="off" class="input" formControlName="first_name" type="text" matInput
-                    placeholder="请输入用户名" autocomplete="false">
-                <mat-error *ngIf="dataForm.hasError('required','first_name')">
-                    用户为<strong>必填</strong>
-                </mat-error>
-            </mat-form-field>
-        </div>
-
-        <div class="row-block">
-            <label class="label"><span class="red-star">*</span>账号:</label>
-            <mat-form-field class="example-full-width" appearance="fill">
-                <input autocomplete="off" class="input" formControlName="username" type="text" matInput
-                    placeholder="请输入账号" autocomplete="false">
-                <mat-error *ngIf="dataForm.hasError('maxLength','username')">
-                    账号为<strong>必填</strong>
-                </mat-error>
-                <mat-error *ngIf="dataForm.hasError('maxLength','username')">
-                    密码最长为<strong>11</strong>
-                </mat-error>
-                <mat-error *ngIf="dataForm.hasError('minLength','username')">
-                    密码为<strong>11</strong>个字符
-                </mat-error>
-            </mat-form-field>
-        </div>
-
-        <div class="row-block">
-            <label class="label"><span class="red-star">*</span>密码:</label>
-            <mat-form-field class="example-full-width" appearance="fill">
-                <input autocomplete="off" class="input" formControlName="password" type="password" matInput
-                    placeholder="请输入密码" autocomplete="false">
-                <mat-error *ngIf="dataForm.hasError('required','password')">
-                    密码为<strong>必填</strong>
-                </mat-error>
-                <mat-error *ngIf="dataForm.hasError('maxLength','password')">
-                    长度最长为<strong>11</strong>
-                </mat-error>
-                <mat-error *ngIf="dataForm.hasError('min Length','password')">
-                    用户名最短为<strong>11</strong>个字符
-                </mat-error>
-            </mat-form-field>
-        </div>
-    </form>
-</div> -->
+<div class="setting-warp">
+  <div class="set-title">基地
+    <button class="add_btn btn_color_primary" (click)="addBase()"
+      style="margin-left: 10px;">
+      <mat-icon>add</mat-icon> 新增
+    </button>
+  </div>
+  <div class="setting-panl">
+    <table class="table">
+      <tr>
+        <th class="class-handle">基地</th>
+        <th class="class-handle">产线</th>
+        <th class="class-handle">仓库</th>
+        <th>操作</th>
+      </tr>
+      <tr *ngFor="let item of baseList; let i = index">
+        <td class="class-handle">
+          <div class="join-content ">
+            <div class="standard-chip-warp">
+              <div class="standard-chip">
+                <span>{{item.ncOrgName}}</span>
+              </div>
+            </div>
+            <div class="addbtn" (click)="showBasePick(item,i)">+选择</div>
+          </div>
+        </td>
+        <td class="class-handle">
+          <div class="join-content ">
+            <div class="standard-chip-warp">
+              <div class="standard-chip">
+                <span>{{item.ncVwkname}}</span>
+              </div>
+            </div>
+            <div class="addbtn" (click)="showLinePick(item,i)">+选择</div>
+          </div>
+        </td>
+        <td class="class-handle">
+          <div class="join-content ">
+            <div class="standard-chip-warp">
+              <div class="standard-chip">
+                <span>{{item.ncWarehouseName}}</span>
+              </div>
+            </div>
+            <div class="addbtn" (click)="showWarehousePick(item,i)">+选择</div>
+          </div>
+        </td>
+        <td>
+          <div class="group-btn">
+            <!-- <button class="mini_btn edit_btn" (click)="selectBase(i)">选择</button> -->
+            <button class="mini_btn del_btn" (click)="delBase(i)">删除</button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
 <div class="footer">
     <button (click)="addSubmitDialogClose()" cdkFocusInitial>提交</button>
 </div>

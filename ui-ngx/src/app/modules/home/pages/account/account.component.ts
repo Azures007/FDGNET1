@@ -101,7 +101,7 @@ export class AccountComponent implements OnInit {
   //新增账号
   showAddVisibilly() {
     let diaref = this._dialog.open(AccountAddDiaComponent, {
-      width: "695px",
+      width: "800px",
       height: "auto",
       panelClass: 'custom-modalbox',
       data: JSON.parse(JSON.stringify(this.userData))
@@ -148,7 +148,10 @@ export class AccountComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result != undefined) {
         console.log(result.userDetail, '账号')
-        let parData = result.userDetail;
+        let parData = {
+          ...result.userDetail,
+          tsysUserDetailList: result.tsysUserDetailList
+        };
         this.AccountService.fetchSaveUser(parData).subscribe(res => {
           if (res.errcode == 0) {
             let data = {

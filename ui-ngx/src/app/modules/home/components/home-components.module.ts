@@ -169,7 +169,9 @@ import { ShowCodeComponent } from './basket/show-code.component';
 import { EnterDiaComponent } from './basket/enter-dia.component';
 import { AddFingerComponent } from './staff/add-finger.component';
 import { SpecAddComponent } from './spec/spec-add.component';
-import { MenuAddComponent } from './menu-admin/menu-add.component'
+import { MenuAddComponent } from './menu-admin/menu-add.component';
+import { ChooseBaseComponent } from '@home/components/account/pick/choose-base.component';
+
 
 
 @NgModule({
@@ -312,6 +314,7 @@ import { MenuAddComponent } from './menu-admin/menu-add.component'
       ClassLeaderComponent,
       AddMaterialComponent,
       ChooseMaterialComponent,
+      ChooseBaseComponent,
       AddBasketComponent,
       ShowCodeComponent,
       EnterDiaComponent,

@@ -14,33 +14,19 @@
     </div>
 
     <div class="row-block cols3">
-      <label class="label">单据编号：</label>
+      <label class="label">生产订单号：</label>
       <input class="input" [(ngModel)]="searchFormGroup.value.billNo" />
     </div>
-
     <div class="row-block cols3">
-      <label class="label">当前工序：</label>
-      <!-- <mat-form-field appearance="fill">
-        <mat-select [(value)]="searchFormGroup.value.currentProcess">
-          <mat-option *ngFor="let food of processOptions" [value]="food.value">
-            {{food.label}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field> -->
-
-      <select required [(ngModel)]="searchFormGroup.value.currentProcess">
-        <option *ngFor="let item of processOptions" [value]="item.value">
-          {{item.label}}
-        </option>
-      </select>
+      <label class="label">产品编码</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.ncMaterialCode" />
     </div>
-
-
-
-
-
     <div class="row-block cols3">
-      <label class="label">计划完工日期：</label>
+      <label class="label">产品名称</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.ncMaterialName" />
+    </div>
+    <div class="row-block cols3">
+      <label class="label">开工日期：</label>
       <mat-form-field appearance="fill" class="dateRange">
         <mat-date-range-input [formGroup]="orderPlanRange" [rangePicker]="picker2" [min]="minDate">
           <input readonly formControlName="start" matStartDate placeholder="开始日期">
@@ -54,63 +40,27 @@
 
 
     <div class="row-block cols3">
-      <label class="label">订单状态：</label>
-      <select required [(ngModel)]="searchFormGroup.value.orderStatus">
-        <option *ngFor="let item of orderSelect" [value]="item.value">
-          {{item.label}}
+      <label class="label">生产线：</label>
+      <select required [(ngModel)]="searchFormGroup.value.cwkid">
+        <option *ngFor="let item of cwkList" [value]="item.cwkid">
+          {{item.vwkname}}
         </option>
       </select>
     </div>
-
-    <div class="row-block cols3">
-      <label class="label">工艺匹配：</label>
-      <select required [(ngModel)]="searchFormGroup.value.orderMatching">
-        <option *ngFor="let item of orderMatchingStasus" [value]="item.value">
-          {{item.label}}
-        </option>
-      </select>
-    </div>
-
-    <div class="row-block cols3">
-      <label class="label">处理班别：</label>
-      <!-- <mat-form-field appearance="fill">
-        <mat-select [(value)]="searchFormGroup.value.classId">
-          <mat-option *ngFor="let shift of shiftSelect" [value]="shift.value">
-            {{shift.label}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field> -->
-
-      <select required [(ngModel)]="searchFormGroup.value.classId">
-        <option *ngFor="let shift of shiftSelect" [value]="shift.value">
-          {{shift.label}}
-        </option>
-      </select>
-
-    </div>
-
     <div class="row-block cols3"></div>
     <div class="row-block cols3"></div>
     <div class="row-block row-right">
       <label class="label"></label>
       <div class="btn-group">
-        <!-- <button mat-raised-button color="primary" class="search-btn btn" (click)="searchList()">
-          <mat-icon class="material-icons svgIcon">search</mat-icon>
-          <span>查询</span>
-        </button>
-        <button mat-raised-button color="primary" class="btn" (click)="export()">
-          <mat-icon class="material-icons svgIcon">vertical_align_bottom</mat-icon>
-          <span>导出</span>
-        </button> -->
         <button class="search_btn" (click)="searchList()">
           <mat-icon class="material-icons svgIcon">search</mat-icon>查询
+        </button>
+        <button class="search_btn" (click)="resetQuery()">
+            <mat-icon class="material-icons svgIcon">search</mat-icon>重置
         </button>
         <button *ngIf="set.has('/order/list/up')" class="search_btn" (click)="export()">
           <mat-icon class="material-icons svgIcon">vertical_align_bottom</mat-icon>
           导出
-        </button>
-        <button *ngIf="set.has('/order/list/moreStart')" class="search_btn pl_btn" (click)="listStart()">
-          <mat-icon class="material-icons svgIcon">search</mat-icon>批量接单
         </button>
       </div>
 
@@ -121,20 +71,6 @@
 
   <div class="page-content">
     <table mat-table [dataSource]="dataSource" class="table-warp">
-
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? toggleAllRows() : null" [checked]="selection.hasValue() && isAllSelected()"
-            [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-            [checked]="selection.isSelected(row)" [disabled]="row.orderStatus != 0" [aria-label]="checkboxLabel(row)">
-          </mat-checkbox>
-        </td>
-      </ng-container>
-
       <ng-container matColumnDef="no" sticky="true">
         <th mat-header-cell *matHeaderCellDef> 序号 </th>
         <td mat-cell *matCellDef="let element"> {{element.no}} </td>
