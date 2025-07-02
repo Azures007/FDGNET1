@@ -186,9 +186,9 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             if (!StringUtils.isEmpty(orderDto.getOrderStatus())) {
                 predicates.add(criteriaBuilder.equal(root.get("orderStatus"), orderDto.getOrderStatus()));
             }
-            if (!StringUtils.isEmpty(orderDto.getOrderMatching()) && !"0".equals(orderDto.getOrderMatching())) {
+            /*if (!StringUtils.isEmpty(orderDto.getOrderMatching()) && !"0".equals(orderDto.getOrderMatching())) {
                 predicates.add(criteriaBuilder.equal(root.get("orderMatching"), orderDto.getOrderMatching()));
-            }
+            }*/
             //生产线 ID
             if (!StringUtils.isEmpty(orderDto.getCwkid())) {
                 predicates.add(criteriaBuilder.equal(root.get("cwkid"), orderDto.getCwkid()));
@@ -201,12 +201,12 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 if (orderDto.getBillDateEnd() != null) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("billDate"), sdf.parse(orderDto.getBillDateEnd())));
                 }
-                if (orderDto.getPlanStartDateStart() != null) {
+                /*if (orderDto.getPlanStartDateStart() != null) {
                     predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("bodyPlanStartDate"), sdf.parse(orderDto.getPlanStartDateStart())));
                 }
                 if (orderDto.getPlanStartDateEnd() != null) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("bodyPlanStartDate"), sdf.parse(orderDto.getPlanStartDateEnd())));
-                }
+                }*/
                 //新增开工时间条件
                 if (orderDto.getNcReceiveTimeStart() != null) {
                     predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("ncReceiveTime"), sdf.parse(orderDto.getNcReceiveTimeStart())));
@@ -2053,7 +2053,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             vo.setName(order.getBodyMaterialName());
             vo.setMaterialspec(order.getBodyMaterialSpecification());
             vo.setNnum(order.getBodyPlanPrdQty());
-            vo.setTplanstarttime(order.getPlanStartDate() != null ? order.getPlanStartDate().toString() : "");
+            vo.setTplanstarttime(order.getBodyPlanStartDate() != null ? order.getBodyPlanStartDate().toString() : "");
             vo.setOrderStatus(order.getOrderStatus());
             list.add(vo);
         }

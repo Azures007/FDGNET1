@@ -23,11 +23,11 @@ public class TBusOrderDto {
     @ApiModelProperty("订单状态：0=未开工、1=已开工、2=暂停、3=已完工")
     private String orderStatus="";
 
-    @ApiModelProperty("当前工序id")
-    private Integer currentProcess=0;
+    /*@ApiModelProperty("当前工序id")
+    private Integer currentProcess=0;*/
 
-    @ApiModelProperty("处理班别id")
-    private Integer classId=0;
+    /*@ApiModelProperty("处理班别id")
+    private Integer classId=0;*/
 
     @ApiModelProperty("单据日期-开始")
     private String billDateStart;
@@ -39,14 +39,14 @@ public class TBusOrderDto {
     @ApiModelProperty("nc_开工时间-结束")
     private String ncReceiveTimeEnd;
 
-    @ApiModelProperty("计划开始时间-开始")
+    /*@ApiModelProperty("计划开始时间-开始")
     private String planStartDateStart;
 
     @ApiModelProperty("计划开始时间-结束")
     private String planStartDateEnd;
 
     @ApiModelProperty("匹配工艺路线: 0: 不匹配, 1:匹配")
-    private String orderMatching = "";
+    private String orderMatching = "";*/
 
     @ApiModelProperty("生产线ID")
     private String cwkid = "";

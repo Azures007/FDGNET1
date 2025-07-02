@@ -101,11 +101,10 @@ public class OrderHeadController extends BaseController {
             @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false)
     })
     @PostMapping("/query")
-    public ResponseResult<PageVo<TBusOrderHead>> query(@RequestParam(value = "current", defaultValue = "0") Integer current,
+    public ResponseResult<PageVo<OrderSimpleListVo>> query(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                        @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                        @RequestBody TBusOrderDto orderDto) {
-        PageVo<TBusOrderHead> pageVo = orderHeadService.tBusOrderHeadList(current, size, orderDto);
-        return ResultUtil.success(pageVo);
+        return ResultUtil.success(orderHeadService.getSimpleOrderList(current, size, orderDto));
     }
 
     @ApiOperation("保存/修改订单（id为空则表示新增，id不为空表示修改）")
@@ -243,17 +242,4 @@ public class OrderHeadController extends BaseController {
         orderBackendService.changeOrderClass(saveDto);
         return ResultUtil.success();
     }
-
-    @ApiOperation("查询订单简要列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false)
-    })
-    @PostMapping("/simpleList")
-    public ResponseResult<PageVo<OrderSimpleListVo>> simpleList(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                      @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                      @RequestBody TBusOrderDto orderDto) {
-        return ResultUtil.success(orderHeadService.getSimpleOrderList(current, size, orderDto));
-    }
-
 }
