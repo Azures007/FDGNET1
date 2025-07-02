@@ -29,4 +29,9 @@ public class NcOrganizationServiceImpl implements NcOrganizationService {
     public List<NcOrganization> findAll() {
         return repository.findAll();
     }
+
+    @Override
+    public void deleteBatchByIds(List<String> ids) {
+        repository.softDeleteBatchByIds(ids);
+    }
 } 

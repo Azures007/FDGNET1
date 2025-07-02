@@ -8,4 +8,5 @@ public interface NcWorklineService {
     List<NcWorkline> findAll();
     List<NcWorkline> findByPkOrg(String pkOrg);
     List<NcWorkline> findByVwkcodeOrVwknameLike(String keyword);
+    void deleteBatchByIds(List<String> ids);
 } 

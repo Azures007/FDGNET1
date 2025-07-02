@@ -48,4 +48,9 @@ public class NcWarehouseServiceImpl implements NcWarehouseService {
     public List<NcWarehouse> findByPkOrg(String pkOrg) {
         return repository.findByPkOrg(pkOrg);
     }
+
+    @Override
+    public void deleteBatchByIds(List<String> ids) {
+        repository.softDeleteBatchByIds(ids);
+    }
 }

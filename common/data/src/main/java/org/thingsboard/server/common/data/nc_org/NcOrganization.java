@@ -29,4 +29,8 @@ public class NcOrganization {
     @ApiModelProperty("基地名称")
     @JsonProperty("org_name")
     private String orgName;
+
+    @ApiModelProperty("是否删除 0:未删除 1:已删除")
+    @Column(name = "is_delete")
+    private String isDelete;
 }

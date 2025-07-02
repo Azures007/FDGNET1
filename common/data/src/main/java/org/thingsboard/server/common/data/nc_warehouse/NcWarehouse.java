@@ -39,4 +39,8 @@ public class NcWarehouse {
     @JsonProperty("code")
     @ApiModelProperty("仓库编码")
     private String code;
+
+    @ApiModelProperty("是否删除 0:未删除 1:已删除")
+    @Column(name = "is_delete")
+    private String isDelete;
 } 
