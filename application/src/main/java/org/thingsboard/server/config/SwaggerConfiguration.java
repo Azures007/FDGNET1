@@ -401,5 +401,30 @@ public class SwaggerConfiguration {
                 .paths(PathSelectors.any())
                 .build();
     }
-
+    @Bean
+    public Docket manageApi() {
+        return new Docket(DocumentationType.OAS_30)
+                .groupName("manage-api") // 这里就是你访问的 group 名
+                .apiInfo(new ApiInfoBuilder()
+                        .title("管理后台接口")
+                        .description("用于对接管理后台")
+                        .version("1.0.0")
+                        .build())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("org.thingsboard.server.controller.manage"))
+                .paths(PathSelectors.any())
+                .build()
+                .globalResponses(HttpMethod.GET,
+                        defaultErrorResponses(false)
+                )
+                .globalResponses(HttpMethod.POST,
+                        defaultErrorResponses(true)
+                )
+                .globalResponses(HttpMethod.DELETE,
+                        defaultErrorResponses(false)
+                )
+                .securitySchemes(newArrayList(httpLogin()))
+                .securityContexts(newArrayList(securityContext()))
+                .enableUrlTemplating(true);
+    }
 }

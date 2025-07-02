@@ -196,10 +196,10 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 if (orderDto.getBillDateStart() != null) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("billDate"), sdf.parse(orderDto.getBillDateStart())));
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("billDate"), orderDto.getBillDateStart()));
                 }
                 if (orderDto.getBillDateEnd() != null) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("billDate"), sdf.parse(orderDto.getBillDateEnd())));
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("billDate"), orderDto.getBillDateEnd()));
                 }
                 /*if (orderDto.getPlanStartDateStart() != null) {
                     predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("bodyPlanStartDate"), sdf.parse(orderDto.getPlanStartDateStart())));
@@ -209,16 +209,16 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 }*/
                 //新增开工时间条件
                 if (orderDto.getNcReceiveTimeStart() != null) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("ncReceiveTime"), sdf.parse(orderDto.getNcReceiveTimeStart())));
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("ncReceiveTime"), orderDto.getNcReceiveTimeStart()));
                 }
                 if (orderDto.getNcReceiveTimeEnd() != null) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("ncReceiveTime"), sdf.parse(orderDto.getNcReceiveTimeEnd())));
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("ncReceiveTime"), orderDto.getNcReceiveTimeEnd()));
                 }
 
 
                 //过滤是否删除,1,非删除
                 predicates.add(criteriaBuilder.equal(root.get("isDeleted"), GlobalConstant.enableFalse));
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
@@ -2060,6 +2060,71 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         result.setList(list);
         return result;
     }
-
+    @Override
+    public OrderDetailSimpleVo getOrderDetailSimple(Integer orderId) {
+        TBusOrderHead order = orderHeadRepository.findById(orderId).orElse(null);
+        if (order == null) return null;
+        OrderDetailSimpleVo vo = new OrderDetailSimpleVo();
+        vo.setBillNo(order.getBillNo());
+        vo.setBillType(order.getBillType());
+        vo.setOrderStatus(order.getOrderStatus());
+        vo.setCraftName(order.getCraftId() != null ? order.getCraftId().getCraftName() : "");
+        vo.setRemark(order.getNcNote());
+        vo.setBillDate(order.getBillDate() != null ? order.getBillDate().toString() : "");
+        vo.setCreatorName(order.getCreatedName());
+        vo.setVwkname(order.getVwkname());
+        vo.setOrderNo(order.getOrderNo());
+        // 物料清单（产品信息）
+        OrderDetailSimpleVo.ProductItem product = new OrderDetailSimpleVo.ProductItem();
+        product.setCode(order.getBodyMaterialNumber());
+        product.setName(order.getBodyMaterialName());
+        product.setPlanQty(order.getBodyPlanPrdQty());
+        product.setPlanStartDate(order.getBodyPlanStartDate() != null ? order.getBodyPlanStartDate().toString() : "");
+        product.setPlanFinishDate(order.getBodyPlanFinishDate() != null ? order.getBodyPlanFinishDate().toString() : "");
+        vo.setProduct(product);
+        // 用料清单
+        List<OrderDetailSimpleVo.MaterialItem> materials = new java.util.ArrayList<>();
+        if (order.getTBusOrderPPBomSet() != null) {
+            for (TBusOrderPPBom bom : order.getTBusOrderPPBomSet()) {
+                OrderDetailSimpleVo.MaterialItem item = new OrderDetailSimpleVo.MaterialItem();
+                item.setCode(bom.getMaterialNumber());
+                item.setName(bom.getMaterialName());
+                item.setSpec(bom.getMaterialSpecification());
+                item.setModel(bom.getMaterialModel());
+                item.setUnit(bom.getUnit());
+                item.setQty(Float.parseFloat(bom.getMustQty().toString()));
+                materials.add(item);
+            }
+        }
+        vo.setMaterials(materials);
+        // 组装工序执行情况表
+        List<OrderDetailSimpleVo.ProcessExecuteVo> processExecutes = new ArrayList<>();
+        int processIndex = 1;
+        if (order.getTBusOrderProcessSet() != null) {
+            for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
+                List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
+                if (recordList != null) {
+                    for (TBusOrderProcessRecord record : recordList) {
+                        OrderDetailSimpleVo.ProcessExecuteVo execVo = new OrderDetailSimpleVo.ProcessExecuteVo();
+                        execVo.setIndex(processIndex++);
+                        execVo.setProcessName(process.getProcessId() != null ? process.getProcessId().getProcessName() : "");
+                        execVo.setProcessType(record.getBusType());
+                        execVo.setMaterialName(record.getMaterialName());
+                        execVo.setMaterialSpec("");
+                        execVo.setLot(record.getBodyLot());
+                        execVo.setUnit(record.getRecordUnit());
+                        execVo.setQty(record.getRecordQty());
+                        execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
+                        execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
+                        execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
+                        execVo.setReportTime(record.getReportTime() != null ? record.getReportTime().toString() : "");
+                        processExecutes.add(execVo);
+                    }
+                }
+            }
+        }
+        vo.setProcessExecutes(processExecutes);
+        return vo;
+    }
 }
 

@@ -249,4 +249,9 @@ public interface OrderHeadService {
      * 查询订单简要列表
      */
     PageVo<OrderSimpleListVo> getSimpleOrderList(Integer current, Integer size, TBusOrderDto orderDto);
+
+    /**
+     * 获取订单详情（简要VO）
+     */
+    OrderDetailSimpleVo getOrderDetailSimple(Integer orderId);
 }
