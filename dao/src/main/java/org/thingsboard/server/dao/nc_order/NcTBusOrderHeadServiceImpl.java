@@ -140,4 +140,23 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             }
         }).start();
     }
+
+    @Override
+    @Transactional
+    public void deleteBatchByCmoids(List<String> cmoids) {
+        if (cmoids == null || cmoids.isEmpty()) {
+            return;
+        }
+        List<NcTBusOrderHead> ordersToDelete = new ArrayList<>();
+        for (String cmoid : cmoids) {
+            NcTBusOrderHead order = repository.findByCmoid(cmoid);
+            if (order != null) {
+                order.setIsDeleted("1"); // 设置为删除状态
+                ordersToDelete.add(order);
+            }
+        }
+        if (!ordersToDelete.isEmpty()) {
+            repository.saveAll(ordersToDelete);
+        }
+    }
 }

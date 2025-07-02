@@ -27,12 +27,17 @@ public class NcTBusOrderHead {
     @JsonIgnore
     private String orderNo;
 
+    @ApiModelProperty("单据类型")
+    @Column(name = "bill_type")
+    @JsonProperty("billtypename") 
+    private String billType;
+    
     @ApiModelProperty("订单状态：0=未开工、1=已开工、2=暂停、3=已完工、4=已挂起")
     @JsonIgnore
     @Column(name = "order_status")
     private String orderStatus;
 
-    @ApiModelProperty("是否删除 0：删除 1：非删除")
+    @ApiModelProperty("是否删除 1：删除 0：非删除")
     @Column(name = "is_deleted")
     @JsonIgnore
     private String isDeleted;

@@ -26,4 +26,10 @@ public interface NcTBusOrderHeadService {
      * @param entitys
      */
     void updateByCmoidBatch(List<NcTBusOrderHead> entitys);
+
+    /**
+     *  批量删除订单（软删除，设置isDeleted=1）
+     * @param cmoids 订单明细id列表
+     */
+    void deleteBatchByCmoids(List<String> cmoids);
 }

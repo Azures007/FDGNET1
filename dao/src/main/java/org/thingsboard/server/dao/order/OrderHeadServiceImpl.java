@@ -217,7 +217,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 
 
                 //过滤是否删除,1,非删除
-                predicates.add(criteriaBuilder.equal(root.get("isDeleted"), GlobalConstant.enableTrue));
+                predicates.add(criteriaBuilder.equal(root.get("isDeleted"), GlobalConstant.enableFalse));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

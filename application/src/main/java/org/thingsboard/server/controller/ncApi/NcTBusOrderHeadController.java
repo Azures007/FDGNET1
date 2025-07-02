@@ -43,4 +43,16 @@ public class NcTBusOrderHeadController {
         return ResultUtil.success("同步成功");
     }
 
+    @ApiOperation("批量删除订单")
+    @PostMapping("/deletebatch")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "删除成功"),
+            @ApiResponse(code = 400, message = "请求参数错误"),
+            @ApiResponse(code = 500, message = "服务器内部错误")
+    })
+    public ResponseResult deleteBatch(@RequestBody List<String> cmoids) {
+        service.deleteBatchByCmoids(cmoids);
+        return ResultUtil.success("删除成功");
+    }
+
 }
