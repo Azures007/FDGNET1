@@ -45,8 +45,8 @@ public interface OrderHeadService {
 
     /**
      * 根据工序状态和用户id，获取生产中任务列表和完工任务列表
-     * 生产中  “订单表”关联“工序执行表”，“工序执行表”的“处理人”是当前登录用户，且“工序状态”为“已开工”或“暂停”。
-     * 已完工  “订单表”关联“工序执行表”，“工序执行表”的“处理人”是当前登录用户，且“工序状态”为“已完工”。
+     * 生产中  "订单表"关联"工序执行表"，"工序执行表"的"处理人"是当前登录用户，且"工序状态"为"已开工"或"暂停"。
+     * 已完工  "订单表"关联"工序执行表"，"工序执行表"的"处理人"是当前登录用户，且"工序状态"为"已完工"。
      * @return
      */
     PageVo<TaskListFinishVo> getTaskListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort, OrderTaskSelectDto selectDto);
@@ -244,4 +244,9 @@ public interface OrderHeadService {
      * @return
      */
     TaskListVo getTaskListVo(Integer orderProcessId);
+
+    /**
+     * 查询订单简要列表
+     */
+    PageVo<OrderSimpleListVo> getSimpleOrderList(Integer current, Integer size, TBusOrderDto orderDto);
 }

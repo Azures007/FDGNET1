@@ -244,5 +244,16 @@ public class OrderHeadController extends BaseController {
         return ResultUtil.success();
     }
 
+    @ApiOperation("查询订单简要列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false)
+    })
+    @PostMapping("/simpleList")
+    public ResponseResult<PageVo<OrderSimpleListVo>> simpleList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                                      @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                      @RequestBody TBusOrderDto orderDto) {
+        return ResultUtil.success(orderHeadService.getSimpleOrderList(current, size, orderDto));
+    }
 
 }

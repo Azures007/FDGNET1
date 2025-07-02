@@ -496,18 +496,18 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     @Transactional
     @Override
     public void rejectedShiftRecord(ShiftRecordDto shiftRecordDto, String userId) throws ParseException {
-        //当前订单对应的工序执行ID，执行工序状态更新为“移交驳回”
+        //当前订单对应的工序执行ID，执行工序状态更新为"移交驳回"
         TBusOrderProcess tBusOrderProcess2 = orderProcessRepository.findById(shiftRecordDto.getOrderProcessId()).orElse(null);
         if (tBusOrderProcess2 != null && tBusOrderProcess2.getProcessStatus().equals(LichengConstants.PROCESSSTATUS_5)) {
             throw new RuntimeException("重复移交驳回");
         }
         tBusOrderProcess2.setProcessStatus(LichengConstants.PROCESSSTATUS_5);
         orderProcessRepository.saveAndFlush(tBusOrderProcess2);
-        //移交方订单对应的工序执行ID，执行工序状态更新为赋值为“移交中”之前的状态。
+        //移交方订单对应的工序执行ID，执行工序状态更新为赋值为"移交中"之前的状态。
         TBusOrderProcess tBusOrderProcess = orderProcessRepository.findById(tBusOrderProcess2.getOldOrderProcessId()).orElse(null);
         //更新原工序状态
         //tBusOrderProcess.setOldProcessStatus(tBusOrderProcess.getProcessStatus());
-        //更新工序状态为“移交中”之前的状态
+        //更新工序状态为"移交中"之前的状态
         tBusOrderProcess.setProcessStatus(tBusOrderProcess.getOldProcessStatus());
         orderProcessRepository.saveAndFlush(tBusOrderProcess);
         //系统给移交方推送APP消息，格式如下：
@@ -693,7 +693,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 //                    order.setHandOverPersonName(tSysPersonnelInfo == null ? "" : tSysPersonnelInfo.getName());//移交人==移交前记录的移交人
 //                    order.setTransferTime(Utils.formatDateTimeToString(tBusOrderProcessOld.getHandOverTime()));//转移时间
 //                }
-                // 任务14219 2022-09-04 已完工列表，拉伸膜、包装工序，实际完成产量，修改为获取“合格品产出(手输)”数量
+                // 任务14219 2022-09-04 已完工列表，拉伸膜、包装工序，实际完成产量，修改为获取"合格品产出(手输)"数量
                 if (PROCESS_NUMBER_LASHENMO.equals(order.getExecuteProcessNumber()) || PROCESS_NUMBER_BAOZHUANG.equals(order.getExecuteProcessNumber())) {
                     order.setRecordT3UnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getRecordT3Unit()));
                 } else {
@@ -1114,7 +1114,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                     }
                 }
             } else if (orderProcessRecord.getRecordType().equals("3")) {//产后报工
-                //工序实际产量:从“报工/盘点结果表”获取工序产后重量。
+                //工序实际产量:从"报工/盘点结果表"获取工序产后重量。
                 realPrdQty3 = BigDecimalUtil.add(realPrdQty3, orderProcessRecord.getRecordQty()).floatValue();
                 recordUnit3 = orderProcessRecord.getRecordUnit();
                 recordUnitStr3 = recordUnitName;
@@ -1323,7 +1323,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 List<TBusOrderProcessRecord> orderProcessRecordListBG = orderProcessRecordRepository.findAllByOrderProcessIdAndBusType(orderProcess.getOrderProcessId(), "BG");
                 for (var orderProcessRecordBG : orderProcessRecordListBG) {
                     if (orderProcessRecordBG.getRecordType().equals("3")) {//产后报工
-                        //工序实际产量:从“报工/盘点结果表”获取工序产后重量。
+                        //工序实际产量:从"报工/盘点结果表"获取工序产后重量。
                         realPrdQty3 = orderProcessRecordBG.getRecordQty();
                     }
                 }
@@ -1393,7 +1393,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 List<TBusOrderProcessRecord> orderProcessRecordListBG = orderProcessRecordRepository.findAllByOrderProcessIdAndBusType(orderProcess.getOrderProcessId(), "BG");
                 for (var orderProcessRecordBG : orderProcessRecordListBG) {
                     if (orderProcessRecordBG.getRecordType().equals("3")) {//产后报工
-                        //工序实际产量:从“报工/盘点结果表”获取工序产后重量。
+                        //工序实际产量:从"报工/盘点结果表"获取工序产后重量。
                         realPrdQty3 = orderProcessRecordBG.getRecordQty();
                     }
                 }
@@ -1594,7 +1594,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         if (null == tBusOrderProcess) {
             return ResultUtil.error("工序执行信息错误：无法获取到订单工序执行的信息，无法进行操作！");
         }
-        //工序暂停	对工序进行暂停变更，暂停操作后，订单状态变更为“暂停”	订单状态为“已开工”状态，才能进行暂停操作。
+        //工序暂停	对工序进行暂停变更，暂停操作后，订单状态变更为"暂停"	订单状态为"已开工"状态，才能进行暂停操作。
         if ("1".equals(tBusOrderProcess.getProcessStatus())) {
             if (suspendReason.isEmpty()) {
                 return ResultUtil.error("暂停原因错误：暂停原因不能为空，无法进行操作！");
@@ -1629,7 +1629,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         if (null == tBusOrderProcess) {
             return ResultUtil.error("工序执行信息错误：无法获取到订单工序执行的信息，无法进行操作！");
         }
-        //工序恢复	对工序进行恢复变更，恢复操作后，订单状态变更为“已开工”	订单状态为“暂停”状态，才能进行恢复操作。
+        //工序恢复	对工序进行恢复变更，恢复操作后，订单状态变更为"已开工"	订单状态为"暂停"状态，才能进行恢复操作。
         if ("2".equals(tBusOrderProcess.getProcessStatus())) {
             tBusOrderProcess.setProcessStatus("1");
             orderProcessService.saveTBusOrderProcess(tBusOrderProcess);
@@ -1672,7 +1672,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             return ResultUtil.error("工序执行信息错误：无法获取到订单工序执行的信息，无法进行操作！");
         }
         //工序结束	对工序进行结束确认，系统记录结束时间点。	操作限制：前道工序确认结束后，本道工序才能进行结束确认。
-        //否则弹层提示：“前道工序还未结束，不允许进行工序结束操作。”
+        //否则弹层提示："前道工序还未结束，不允许进行工序结束操作。"
         if (tBusOrderProcess.getProcessSeq() > 1) {
             TBusOrderProcess tBusOrderProcessPrev = orderProcessService.getProcessPrevByOrderId(orderId, orderProcessId);
             if (null == tBusOrderProcessPrev) {
@@ -1711,7 +1711,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 
             orderProcessService.saveTBusOrderProcess(tBusOrderProcess);
             //订单状态更新为已完工
-            //工序结束：工序执行表全部记录都已完工，再去更新订单状态，更新为“已完工”；工序执行表“工序状态”更新为“已完工”
+            //工序结束：工序执行表全部记录都已完工，再去更新订单状态，更新为"已完工"；工序执行表"工序状态"更新为"已完工"
             TBusOrderHead orderHead = orderHeadRepository.findById(orderId).orElse(null);
             if (orderHead.getOrderStatus().equals("4")) {
                 throw new RuntimeException("订单已挂起，禁止操作！");
@@ -1792,7 +1792,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     public ResponseResult resumedProcess(Integer orderId, Integer orderProcessId) {
         // 通过订单Id获取订单当前工序
         TBusOrderProcess tBusOrderProcess = orderProcessService.findById(orderProcessId);
-        //增加“工序撤回”按钮，只允许订单工序为下道工序，且下道工序未开工，才允许进行撤回，否则弹层提示：“下道工序已开工，不允许撤回！”
+        //增加"工序撤回"按钮，只允许订单工序为下道工序，且下道工序未开工，才允许进行撤回，否则弹层提示："下道工序已开工，不允许撤回！"
         TBusOrderHead orderHead = orderHeadRepository.findById(orderId).orElse(null);
         var orderProcessSet = orderHead.getTBusOrderProcessSet();
         List<TBusOrderProcess> orderProcessList = new ArrayList<>();
@@ -1866,7 +1866,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             //获取盘点，订单完工盘点的记录
 //            List<TBusOrderProcessRecord> orderProcessRecordList = orderProcessRecordService.findAllByOrderProcessIdAndBusTypeAndRecordTypePd(tBusOrderProcess.getOldOrderProcessId(), LichengConstants.ORDER_BUS_TYPE_PD, LichengConstants.STOCKTAKING0002);
             if (LichengConstants.ORDER_PROCESS_TYPE_2.equals(tBusOrderProcess.getType()) && orderProcessRecordList.size() > 0 && orderProcessRecordList.get(0).getRecordTypePd().equals(LichengConstants.STOCKTAKING0002)) {
-                //订单进行“订单完工盘点”类型进行移交，把订单的工序状态更新为已完工
+                //订单进行"订单完工盘点"类型进行移交，把订单的工序状态更新为已完工
                 tBusOrderProcess.setProcessStatus(LichengConstants.PROCESSSTATUS_3);
             } else if (LichengConstants.ORDER_PROCESS_TYPE_2.equals(tBusOrderProcess.getType()) && orderProcessRecordList.size() > 0 && orderProcessRecordList.get(0).getRecordTypePd().equals(LichengConstants.STOCKTAKING0003)) {
                 // 判断盘点记录是否为中途完工盘点，是则不更新 2022-09-14 任务14384  2022-09-20 中途完工盘点改为已完工
@@ -2035,6 +2035,31 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         orderHeadRepository.saveAndFlush(tBusOrderHead);
     }
 
+    @Override
+    public PageVo<OrderSimpleListVo> getSimpleOrderList(Integer current, Integer size, TBusOrderDto orderDto) {
+        PageVo<TBusOrderHead> pageVo = tBusOrderHeadList(current, size, orderDto);
+        PageVo<OrderSimpleListVo> result = new PageVo<>();
+        result.setTotal(pageVo.getTotal());
+        List<OrderSimpleListVo> list = new java.util.ArrayList<>();
+        int index = 1 + current * size;
+        for (TBusOrderHead order : pageVo.getList()) {
+            OrderSimpleListVo vo = new OrderSimpleListVo();
+            vo.setIndex(index++);
+            vo.setBillNo(order.getBillNo());
+            vo.setBillDate(order.getBillDate() != null ? order.getBillDate().toString() : "");
+            vo.setBillType(order.getBillType());
+            vo.setVwkname(order.getVwkname());
+            vo.setCode(order.getBodyMaterialNumber());
+            vo.setName(order.getBodyMaterialName());
+            vo.setMaterialspec(order.getBodyMaterialSpecification());
+            vo.setNnum(order.getBodyPlanPrdQty());
+            vo.setTplanstarttime(order.getPlanStartDate() != null ? order.getPlanStartDate().toString() : "");
+            vo.setOrderStatus(order.getOrderStatus());
+            list.add(vo);
+        }
+        result.setList(list);
+        return result;
+    }
 
 }
 
