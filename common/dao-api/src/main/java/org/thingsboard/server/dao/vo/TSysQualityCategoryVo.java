@@ -1,0 +1,25 @@
+package org.thingsboard.server.dao.vo;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.thingsboard.server.common.data.TSysQualityCategory;
+import org.thingsboard.server.common.data.TSysQualityCategoryConfig;
+
+import java.util.List;
+
+@Data
+@ApiModel("质检类目明细")
+public class TSysQualityCategoryVo extends TSysQualityCategory {
+
+    @ApiModelProperty("班别和组长关系")
+    List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList;
+
+    public List<TSysQualityCategoryConfig> gettSysQualityCategoryConfigList() {
+        return tSysQualityCategoryConfigList;
+    }
+
+    public void settSysQualityCategoryConfigList(List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList) {
+        this.tSysQualityCategoryConfigList = tSysQualityCategoryConfigList;
+    }
+}

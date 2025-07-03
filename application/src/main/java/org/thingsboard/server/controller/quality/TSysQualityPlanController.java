@@ -1,0 +1,104 @@
+package org.thingsboard.server.controller.quality;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+import org.thingsboard.server.common.data.TSysQualityPlan;
+import org.thingsboard.server.common.data.web.ResponseResult;
+import org.thingsboard.server.common.data.web.ResultUtil;
+import org.thingsboard.server.controller.BaseController;
+import org.thingsboard.server.dao.ImportParam.TSysQualityPlanImportParam;
+import org.thingsboard.server.dao.constant.GlobalConstant;
+import org.thingsboard.server.dao.dto.TSysQualityPlanDto;
+import org.thingsboard.server.dao.tSysQualityPlan.TSysQualityPlanService;
+import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.vo.TSysQualityPlanVo;
+import org.thingsboard.server.service.security.model.SecurityUser;
+
+import java.util.Date;
+
+/**
+ * @author 陈懋燊
+ * @project youchen_IOTServer
+ * @description 质检方案
+ * @date 2025/6/27 15:12:11
+ */
+@Api(value = "质检方案接口", tags = "质检方案接口")
+@RequestMapping("/api/tSysQualityPlanConfig")
+@RestController
+public class TSysQualityPlanController extends BaseController {
+
+    @Autowired
+    private TSysQualityPlanService tSysQualityPlanService;
+
+    @ApiOperation("查询质检类目列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false)
+
+    })
+    @PostMapping("/qualityPlanList")
+    public ResponseResult<PageVo<TSysQualityPlan>> qualityPlanList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                           @RequestBody TSysQualityPlanDto tSysQualityPlanDto) {
+        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(current, size, tSysQualityPlanDto);
+        PageVo<TSysQualityPlan> pageVo = new PageVo<>(qualityPlanList);
+        return ResultUtil.success(pageVo);
+    }
+
+
+
+
+    @ApiOperation("保存/修改质检类目信息（id为空则表示新增，id不为空表示修改）")
+    @PostMapping("/saveQualityPlan")
+    public ResponseResult saveQualityPlan(@RequestBody TSysQualityPlanImportParam tSysQualityPlanImportParam) throws Exception {
+        SecurityUser currentUser = getCurrentUser();
+        TSysQualityPlan tSysQualityPlan = tSysQualityPlanImportParam.gettSysQualityPlan();
+        tSysQualityPlan.setUpdateUser(currentUser.getName());
+        tSysQualityPlan.setUpdateTime(new Date());
+        tSysQualityPlanService.saveTSysQualityPlanDetail(tSysQualityPlan,tSysQualityPlanImportParam.gettSysQualityPlanJudgmentList(), tSysQualityPlanImportParam.gettSysQualityPlanConfigList());
+        return ResultUtil.success();
+    }
+
+    @ApiOperation("删除质检类目")
+    @GetMapping("/deleteQualityPlan")
+    public ResponseResult deleteQualityPlan(@RequestParam("categoryId") Integer categoryId) {
+        tSysQualityPlanService.deleteTSysQualityPlan(categoryId);
+        return ResultUtil.success();
+    }
+
+    @ApiOperation("根据ID查询明细")
+    @GetMapping("/getQualityPlanById")
+    public ResponseResult<TSysQualityPlanVo> getQualityPlanById(@RequestParam("categoryId") Integer categoryId) {
+
+        TSysQualityPlanVo vo = tSysQualityPlanService.getQualityPlanById(categoryId);
+
+        if (vo == null) {
+            return ResultUtil.error("未找到该数据");
+        } else {
+            return ResultUtil.success(vo);
+        }
+
+    }
+
+    @ApiOperation("禁用控制接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "categoryId", value = "班别ID", required = true),
+            @ApiImplicitParam(name = "enabledSt", value = "禁用标识 0：禁用 1：启用", required = true)
+    })
+    @GetMapping("/isEnabled")
+    public ResponseResult isEnabled(@RequestParam("categoryId") Integer categoryId, @RequestParam("enabledSt") Integer isEnabled) throws Exception {
+        TSysQualityPlan tSysQualityPlan = tSysQualityPlanService.getQualityPlanById(categoryId);
+        tSysQualityPlan.setIsEnabled(isEnabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
+//        this.saveClass(tSysClass);
+        SecurityUser currentUser = getCurrentUser();
+        tSysQualityPlan.setUpdateUser(currentUser.getName());
+        tSysQualityPlan.setUpdateTime(new Date());
+        tSysQualityPlanService.saveTSysQualityPlan(tSysQualityPlan);
+        return ResultUtil.success();
+    }
+}
