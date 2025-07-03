@@ -38,7 +38,7 @@ public class WaitTaskController extends BaseController {
             SecurityUser currentUser = getCurrentUser();
             List<String> processStatusList = new ArrayList<>();
             processStatusList.add("0");
-            PageVo<TaskListVo> classList = orderHeadService.getWaitTaskUserId2(current, size, processStatusList, currentUser.getId().getId().toString(), sort,selectDto);
+            PageVo<TaskListVo> classList = appOrderTaskService.getWaitTaskUserId2(current, size, processStatusList, currentUser.getId().getId().toString(), sort,selectDto);
             return ResultUtil.success(classList);
         } else {
             return ResultUtil.error("排序参数值错误！");

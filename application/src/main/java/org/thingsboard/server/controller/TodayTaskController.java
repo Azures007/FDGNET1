@@ -33,7 +33,7 @@ public class TodayTaskController extends BaseController{
                                                    @RequestBody(required = false) OrderTaskSelectDto selectDto) throws Exception{
         if ("desc".equals(sort) || "asc".equals(sort)){
             SecurityUser currentUser = getCurrentUser();
-            PageVo<TaskListVo> classList = orderHeadService.getTodayTaskList(current,size,currentUser.getId().getId().toString(),sort,selectDto);
+            PageVo<TaskListVo> classList = appOrderTaskService.getTodayTaskList(current,size,currentUser.getId().getId().toString(),sort,selectDto);
             return ResultUtil.success(classList);
         }else {
             return ResultUtil.error("排序参数值错误！");

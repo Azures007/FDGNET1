@@ -1423,3 +1423,20 @@ COMMENT ON COLUMN public.t_bus_order_process_history.iot_math IS '计算公式';
 COMMENT ON COLUMN public.t_sys_device_iot_history.device_id IS '此字段存放本次采集数量';
 -- 2024-6-17
 ALTER TABLE public.t_bus_order_update ALTER COLUMN order_json TYPE varchar(30000) USING order_json::varchar;
+
+
+-- 客户，客户类型、订单备注
+ALTER TABLE public.t_bus_order_head ADD mid_mo_customer_id int4 NULL;
+COMMENT ON COLUMN public.t_bus_order_head.mid_mo_customer_id IS '客户id';
+
+ALTER TABLE public.t_bus_order_head ADD mid_mo_customer_name varchar NULL;
+COMMENT ON COLUMN public.t_bus_order_head.mid_mo_customer_name IS '客户名称';
+
+ALTER TABLE public.t_bus_order_head ADD mid_mo_customer_number varchar NULL;
+COMMENT ON COLUMN public.t_bus_order_head.mid_mo_customer_number IS '客户编码';
+
+ALTER TABLE public.t_bus_order_head ADD mid_mo_customer_type varchar NULL;
+COMMENT ON COLUMN public.t_bus_order_head.mid_mo_customer_type IS '客户类型';
+
+ALTER TABLE public.t_bus_order_head ADD mid_mo_desc varchar NULL;
+COMMENT ON COLUMN public.t_bus_order_head.mid_mo_desc IS '订单备注';

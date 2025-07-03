@@ -24,6 +24,7 @@ import org.thingsboard.server.dao.TSysCraftinfo.TSysCraftInfoService;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.*;
 import org.thingsboard.server.dao.message.MessageService;
+import org.thingsboard.server.dao.orderProcess.AppOrderProcessRecordSubmitService;
 import org.thingsboard.server.dao.orderProcess.OrderProcessRecordService;
 import org.thingsboard.server.dao.sql.TSysCraftInfo.TSysCraftInfoRepository;
 import org.thingsboard.server.dao.sql.TSysCraftInfo.TSysCraftProcessRelRepository;
@@ -143,6 +144,9 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 
     @Autowired
     MidMaterialRepository midMaterialRepository;
+
+    @Autowired
+    AppOrderProcessRecordSubmitService appOrderProcessRecordSubmitService;
 
     @Override
     public PageVo<TBusOrderHead> tBusOrderHeadList(Integer current, Integer size, TBusOrderHeadDto tBusOrderHeadDto) {
@@ -273,165 +277,6 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         }
         pageVo.setTotal(total);
         pageVo.setList(orderVos);
-        return pageVo;
-    }
-
-    @Override
-    public PageVo<TaskListVo> getTodayTaskList(Integer current, Integer size, String userId, String sort, OrderTaskSelectDto selectDto) {
-        if (null == selectDto) {
-            selectDto = new OrderTaskSelectDto();
-        }
-//        Sort sort1 = Sort.by("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-//        current = current * size;
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        String currentDateStr = sdf1.format(new Date());
-//        TSysRole role = roleRepository.getByUserId(userId);
-//        userId = role.getByFactory().equals("0") ? "" : userId;
-        List<Map> select = orderHeadRepository.getTodayTaskList2(userId, currentDateStr, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
-        try {
-            PageVo<TaskListVo> pageVo = new PageVo(size, current);
-            List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
-                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-            int total = orderHeadRepository.getCountCurrentTask2(userId, currentDateStr, selectDto.getProcessNumber(), selectDto.getBodyLot());
-            pageVo.setTotal(total);
-            pageVo.setList(castEntity);
-            return pageVo;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    @Override
-    public PageVo<TaskListVo> getTaskListByProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort) {
-//        Sort sort1 = Sort.by("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-        current = current * size;
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        String currentDateStr = sdf1.format(new Date());
-        List<Map> select;
-        int total = 0;
-        if (processStatusList.size() == 2) {
-            select = orderHeadRepository.getWaitTaskUserId(userId, getMyDate(), of);
-            total = orderHeadRepository.getWaitTaskCountByUserId(userId, getMyDate());
-        } else {
-            select = orderHeadRepository.getWaitTaskUserId2(userId, "", "", of);
-            total = orderHeadRepository.getWaitTaskCountByUserId2(userId, "", "");
-        }
-        try {
-            PageVo<TaskListVo> pageVo = new PageVo(size, current);
-//            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
-            List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
-                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-            pageVo.setTotal(total);
-            pageVo.setList(castEntity);
-            return pageVo;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public PageVo<TaskListVo> getWaithandOverVerify(Integer current, Integer size, String userId, String sort, OrderTaskSelectDto selectDto) {
-        if (null == selectDto) {
-            selectDto = new OrderTaskSelectDto();
-        }
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-//        current = current * size;
-//        List<Object[]> select = orderHeadRepository.getWaitTaskUserIdHandOver(userId, of);
-//        TSysRole role = roleRepository.getByUserId(userId);
-//        userId = role.getByFactory().equals("0") ? "" : userId;
-        List<Map> select = orderHeadRepository.getWaitTaskUserIdHandOver(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
-        try {
-            PageVo<TaskListVo> pageVo = new PageVo(size, current);
-//            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
-            List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
-                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-            int total = orderHeadRepository.getWaitTaskCountByUserIdHandOver(userId, selectDto.getProcessNumber(), selectDto.getBodyLot());
-            pageVo.setTotal(total);
-            pageVo.setList(castEntity);
-            return pageVo;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-//    @Override
-//    public PageVo<TaskListVo> gethandOverTask(Integer current, Integer size, String userId, String sort) {
-//        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-//        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-//        List<Sort.Order> orders = new ArrayList<>();
-//        orders.add(order1);
-//        orders.add(order2);
-//        Sort sort1 = Sort.by(orders);
-//        PageRequest of = PageRequest.of(current, size, sort1);
-//        current = current * size;
-//        List<String> processStatusList = new ArrayList<>();
-//        processStatusList.add("1");
-//        processStatusList.add("2");
-//        List<Object[]> select = orderHeadRepository.getTaskListByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, LichengConstants.ORDER_PROCESS_TYPE_2, of);
-//        try {
-//            PageVo<TaskListVo> pageVo = new PageVo(size, current);
-//            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
-//            castEntity.stream().forEach(order -> {
-//                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-//            });
-//            int total = orderHeadRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, LichengConstants.ORDER_PROCESS_TYPE_2);
-//            pageVo.setTotal(total);
-//            pageVo.setList(castEntity);
-//            return pageVo;
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-
-    @Override
-    public PageVo<TaskListVo> listFinishProcessTaskList(Integer current, Integer size, String sort, Integer orderProcessId) {
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-        current = current * size;
-        List<Map> maps = orderHeadRepository.listFinishProcessTaskList(orderProcessId, of);
-        int count = orderHeadRepository.countFinishProcessTaskList(orderProcessId);
-        PageVo<TaskListVo> pageVo = new PageVo(size, current);
-        pageVo.setTotal(count);
-        pageVo.setList(JSON.parseArray(JSON.toJSONString(maps), TaskListVo.class));
         return pageVo;
     }
 
@@ -576,78 +421,9 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     }
 
     @Override
-    public List<String> listBodyIot(String userId, String type) {
-        List<String> iots = new ArrayList<>();
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        switch (type) {
-            case LichengConstants.TASK_TYPE_1: {
-                //今日任务
-                String currentDateStr = sdf1.format(new Date());
-                iots = orderHeadRepository.listTaskType1(userId, currentDateStr);
-            }
-            break;
-            case LichengConstants.TASK_TYPE_2: {
-                //待生产
-                iots = orderHeadRepository.listTaskType2(userId);
-            }
-            break;
-            case LichengConstants.TASK_TYPE_3: {
-                //生产中
-                List<String> processStatusList = new ArrayList<>();
-                processStatusList.add("1");
-                processStatusList.add("2");
-                String orderProcessType = LichengConstants.ORDER_PROCESS_TYPE_1;
-                iots = orderHeadRepository.listTaskType3(userId, processStatusList, orderProcessType);
-            }
-            break;
-            case LichengConstants.TASK_TYPE_4: {
-                //未生产
-                iots = orderHeadRepository.listTaskType4(userId);
-            }
-            break;
-            case LichengConstants.TASK_TYPE_5: {
-                //已完工
-                List<String> processStatusList2 = new ArrayList<>();
-                processStatusList2.add("3");
-                iots = orderHeadRepository.listTaskType5(userId, processStatusList2);
-            }
-            break;
-            case LichengConstants.TASK_TYPE_6: {
-                //移交待生产
-                iots = orderHeadRepository.listTaskType6(userId);
-            }
-            break;
-            case LichengConstants.TASK_TYPE_7: {
-                //移交生产中
-                List<String> processStatusList = new ArrayList<>();
-                processStatusList.add("1");
-                processStatusList.add("2");
-                iots = orderHeadRepository.listTaskType7(userId, processStatusList, LichengConstants.ORDER_PROCESS_TYPE_2);
-            }
-            break;
-            case LichengConstants.TASK_TYPE_8: {
-                //明日任务
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.DATE, 1);
-                Date time = cal.getTime();
-                iots = orderHeadRepository.listTaskType8(sdf1.format(time));
-            }
-            break;
-        }
-        return iots;
-    }
-
-    @Override
     public TBusOrderHead getOrderProcess(Integer orderProcessId) {
         Integer id = orderProcessRepository.getHead(orderProcessId);
         return orderHeadRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public TaskListVo getTaskListVo(Integer orderProcessId) {
-        Map taskListVo = orderProcessRepository.getTaskListVo(orderProcessId);
-        TaskListVo taskListVo1 = JSON.parseObject(JSON.toJSONString(taskListVo), TaskListVo.class);
-        return taskListVo1;
     }
 
     /**
@@ -670,243 +446,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         Map map = orderProcessRecordRepository.sumQtyAndUnit(orderProcessId);
         saveDto.setRecordQty(Float.parseFloat(String.valueOf(map.get("record_qty"))));
         saveDto.setRecordUnit(String.valueOf(map.get("record_unit")));
-        orderProcessRecordService.submit(saveDto, userId);
-    }
-
-    @Override
-    public PageVo<TaskListFinishVo> getTaskListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort, OrderTaskSelectDto selectDto) {
-        if (null == selectDto) {
-            selectDto = new OrderTaskSelectDto();
-        }
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-//        current = current * size;
-        PageRequest of = PageRequest.of(current, size, sort1);
-//        TSysRole role = roleRepository.getByUserId(userId);
-//        userId = role.getByFactory().equals("0") ? "" : userId;
-//        List<Object[]> select = orderHeadRepository.getTaskListByPersonIdAndProcessStatus(userId, processStatusList, of);
-        List<Map> select = orderHeadRepository.getTaskListByPersonIdAndProcessStatus(userId, processStatusList, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
-        try {
-            PageVo<TaskListFinishVo> pageVo = new PageVo(size, current);
-//            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
-            List<TaskListFinishVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListFinishVo.class);
-            castEntity.stream().forEach(order -> {
-                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-
-//                TBusOrderProcess tBusOrderProcess = orderProcessRepository.findById(order.getOrderProcessId()).orElse(null);
-                //order.setPersonName(order.getProcessName());//接受人==处理人
-//                TBusOrderProcess tBusOrderProcessOld = orderProcessRepository.findById(tBusOrderProcess == null ? -1 : tBusOrderProcess.getOldOrderProcessId()).orElse(null);
-//                if (tBusOrderProcessOld != null) {
-//                    TSysPersonnelInfo tSysPersonnelInfo = tBusOrderProcessOld.getHandOverPerSonId();
-//                    order.setHandOverPersonName(tSysPersonnelInfo == null ? "" : tSysPersonnelInfo.getName());//移交人==移交前记录的移交人
-//                    order.setTransferTime(Utils.formatDateTimeToString(tBusOrderProcessOld.getHandOverTime()));//转移时间
-//                }
-                // 任务14219 2022-09-04 已完工列表，拉伸膜、包装工序，实际完成产量，修改为获取"合格品产出(手输)"数量
-                if (PROCESS_NUMBER_LASHENMO.equals(order.getExecuteProcessNumber()) || PROCESS_NUMBER_BAOZHUANG.equals(order.getExecuteProcessNumber())) {
-                    order.setRecordT3UnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getRecordT3Unit()));
-                } else {
-                    order.setRecordT3ManualQty(-1f);
-                }
-            });
-            int total = orderHeadRepository.getTaskListCountByPersonIdAndProcessStatus(userId, processStatusList, selectDto.getProcessNumber(), selectDto.getBodyLot());
-            pageVo.setTotal(total);
-            pageVo.setList(castEntity);
-            return pageVo;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public PageVo<TaskListVo> getTaskListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String orderProcessType, String userId, String sort, OrderTaskSelectDto selectDto) {
-        if (null == selectDto) {
-            selectDto = new OrderTaskSelectDto();
-        }
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-//        current = current * size;
-        //判断当前用户角色是否有主任/厂长权限
-//        TSysRole role = roleRepository.getByUserId(userId);
-//        userId = role.getByFactory().equals("0") ? "" : userId;
-//        List<Object[]> select = orderHeadRepository.getTaskListByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, orderProcessType, of);
-        List<Map> select = orderHeadRepository.getTaskListByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, orderProcessType, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
-        try {
-            PageVo<TaskListVo> pageVo = new PageVo(size, current);
-//            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
-            List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
-                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-            int total = orderHeadRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, orderProcessType, selectDto.getProcessNumber(), selectDto.getBodyLot());
-            pageVo.setTotal(total);
-            pageVo.setList(castEntity);
-            return pageVo;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public PageVo<TaskListHandOverVo> getTaskHandOverListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort) {
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "billDate");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-//        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-//        current = current * size;
-//        List<Object[]> select = orderHeadRepository.getTaskListHandOverByPersonIdAndProcessStatus(userId, processStatusList, of);
-        List<Map> select = orderHeadRepository.getTaskListHandOverByPersonIdAndProcessStatus(userId, processStatusList, of);
-        try {
-            PageVo<TaskListHandOverVo> pageVo = new PageVo(size, current);
-//            List<TaskListHandOverVo> castEntity = EntityUtils.castEntity(select, TaskListHandOverVo.class, new TaskListHandOverVo());
-            List<TaskListHandOverVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListHandOverVo.class);
-            castEntity.stream().forEach(order -> {
-                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-            int total = orderHeadRepository.getTaskListHandOverCountByPersonIdAndProcessStatus(userId, processStatusList);
-            pageVo.setTotal(total);
-            pageVo.setList(castEntity);
-            return pageVo;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public PageVo<TaskListVo> getWaitTaskUserId2(Integer current, Integer size, List<String> processStatusList, String userId, String sort, OrderTaskSelectDto selectDto) {
-        if (null == selectDto) {
-            selectDto = new OrderTaskSelectDto();
-        }
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "billDate");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-//        current = current * size;
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        String currentDateStr = sdf1.format(new Date());
-//        TSysRole role = roleRepository.getByUserId(userId);
-//        userId = role.getByFactory().equals("0") ? "" : userId;
-//        System.out.println("-----");
-//        List<Object[]> select = orderHeadRepository.getWaitTaskUserId2(userId, of);
-        List<Map> select = orderHeadRepository.getWaitTaskUserId2(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
-//        System.out.println("-----");
-        try {
-            PageVo<TaskListVo> pageVo = new PageVo(size, current);
-//            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
-            List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
-                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-            int total = orderHeadRepository.getWaitTaskCountByUserId2(userId, selectDto.getProcessNumber(), selectDto.getBodyLot());
-            pageVo.setTotal(total);
-            pageVo.setList(castEntity);
-            return pageVo;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private String getMyDate() {
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:00");
-        Date time = new Date();
-        return formatter.format(time);
-    }
-
-    @Override
-    public PageVo<TaskListVo> getUnStartTaskList(Integer current, Integer size, String userId, String sort, OrderTaskSelectDto selectDto) {
-        if (null == selectDto) {
-            selectDto = new OrderTaskSelectDto();
-        }
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-//        TSysRole role = roleRepository.getByUserId(userId);
-//        userId = role.getByFactory().equals("0") ? "" : userId;
-//        current = current * size;
-//        List<Object[]> select = orderHeadRepository.getOffTaskList2(userId, of);
-        List<Map> select = orderHeadRepository.getOffTaskList2(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
-        try {
-            PageVo<TaskListVo> pageVo = new PageVo(size, current);
-//            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
-            List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
-                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-//            int total = orderHeadRepository.getOffTask(userId);
-            int total = orderHeadRepository.getOffTask2(userId, selectDto.getProcessNumber(), selectDto.getBodyLot());
-            pageVo.setTotal(total);
-            pageVo.setList(castEntity);
-            return pageVo;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public PageVo<TaskListVo> getNextDayTaskList(Integer current, Integer size, String userId, String sort, OrderTaskSelectDto selectDto) {
-        if (null == selectDto) {
-            selectDto = new OrderTaskSelectDto();
-        }
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-//        current = current * size;
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.DAY_OF_MONTH, 1);
-        String nextDayDateStr = sdf1.format(c.getTime());
-
-//        List<Object[]> select = orderHeadRepository.getNextDayTaskList(nextDayDateStr, of);
-        List<Map> select = orderHeadRepository.getNextDayTaskList(nextDayDateStr, selectDto.getBodyLot(), of);
-        try {
-            PageVo<TaskListVo> pageVo = new PageVo(size, current);
-//            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
-            List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
-                order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-            int total = orderHeadRepository.getCountNextDayTask(nextDayDateStr, selectDto.getBodyLot());
-            pageVo.setTotal(total);
-            pageVo.setList(castEntity);
-            return pageVo;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
+        appOrderProcessRecordSubmitService.submit(saveDto, userId);
     }
 
     @Override
@@ -1450,71 +990,12 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 
     @Override
     public void deleteTBusOrderHead(Integer orderHeadId) {
-        orderHeadRepository.deleteById(orderHeadId);
-    }
-
-    public int getTaskByDate(String userId, String currentDateStr) {
-//        return orderHeadRepository.getCountCurrentTask(userId, currentDateStr);
-        return orderHeadRepository.getCountCurrentTask2(userId, currentDateStr, "", "");
-    }
-
-    @Override
-    public GetOrderSizeVo getOrderSize(String userId) {
-        GetOrderSizeVo getOrderSizeVo;
-        ValueOperations valueOperations = redisTemplate.opsForValue();
-        Object val = valueOperations.get(ORDER_HEAD_HEADER_SIZE + userId);
-        if (val != null) {
-            Map map = JSON.parseObject(JSON.toJSONString(val), Map.class);
-            getOrderSizeVo = JSON.parseObject(JSON.toJSONString(map), GetOrderSizeVo.class);
-        } else {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-            String currentDateStr = sdf1.format(new Date());
-            //判断当前用户角色是否有主任/厂长权限
-//        TSysRole role = roleRepository.getByUserId(userId);
-//        userId = role.getByFactory().equals("0") ? "" : userId;
-            //获取今日任务
-            int currentTask = getTaskByDate(userId, currentDateStr);
-            List<String> processStatusList1 = new ArrayList<>();
-            processStatusList1.add("0");
-            // 待生产任务
-//        int waitTask = orderHeadRepository.getWaitTaskCountByUserId(userId,getMyDate());
-            int waitTask = orderHeadRepository.getWaitTaskCountByUserId2(userId, "", "");
-            //生产中任务
-            List<String> processStatusList = new ArrayList<>();
-            processStatusList.add("1");
-            processStatusList.add("2");
-            int startTask = orderHeadRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, LichengConstants.ORDER_PROCESS_TYPE_1, "", "");
-            //未生产任务
-            int offTask = orderHeadRepository.getOffTask2(userId, "", "");
-            //已完工任务
-            List<String> processStatusList2 = new ArrayList<>();
-            processStatusList2.add("3");
-            int endTask = orderHeadRepository.getTaskListCountByPersonIdAndProcessStatus(userId, processStatusList2, "", "");
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE, 1);
-            Date time = cal.getTime();
-            //明日任务
-            int tomorrowTask = orderHeadRepository.getCountNextDayTask(sdf1.format(time), "");
-            //移交待生产任务
-            int waithandOverVerify = orderHeadRepository.getWaitTaskCountByUserIdHandOver(userId, "", "");
-            //移交生产中任务
-            int handOverTask = orderHeadRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, LichengConstants.ORDER_PROCESS_TYPE_2, "", "");
-            //转移列表
-            int shiftTask = orderHeadRepository.countShiftNoAcceptTaskList(userId, "", "");
-            getOrderSizeVo = new GetOrderSizeVo(currentTask, waitTask, startTask, offTask, endTask, tomorrowTask, handOverTask, waithandOverVerify, shiftTask);
-            if (getOrderSizeVo != null) {
-                valueOperations.set(ORDER_HEAD_HEADER_SIZE + userId,getOrderSizeVo, 1, TimeUnit.MINUTES);
-            }
+        if (orderHeadId == null) {
+            throw new RuntimeException("订单id不能为空");
         }
-        return getOrderSizeVo;
-    }
-
-
-    @Override
-    public Integer getCurrentTask(String userId) {
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        String currentDateStr = sdf1.format(new Date());
-        return getTaskByDate(userId, currentDateStr);
+        TBusOrderHead tBusOrderHead = orderHeadRepository.findById(orderHeadId).orElse(null);
+        tBusOrderHead.setIsDeleted(GlobalConstant.enableTrue);
+        orderHeadRepository.saveAndFlush(tBusOrderHead);
     }
 
     @Override
@@ -1945,7 +1426,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             saveDto.setDeviceId(null);
             saveDto.setRecordType("5");
             saveDto.setRecordTypeBg("REPORTYPE0001");
-            orderProcessRecordService.submit(saveDto, userId);
+            appOrderProcessRecordSubmitService.submit(saveDto, userId);
         }
     }
 

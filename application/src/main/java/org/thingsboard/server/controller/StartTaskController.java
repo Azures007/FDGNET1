@@ -39,7 +39,7 @@ public class StartTaskController extends BaseController{
             processStatusList.add("1");
             processStatusList.add("2");
             String orderProcessType = LichengConstants.ORDER_PROCESS_TYPE_1;
-            PageVo<TaskListVo> classList = orderHeadService.getTaskListByPersonIdAndProcessStatus(current,size,processStatusList,orderProcessType,currentUser.getId().getId().toString(),sort,selectDto);
+            PageVo<TaskListVo> classList = appOrderTaskService.getTaskListByPersonIdAndProcessStatus(current,size,processStatusList,orderProcessType,currentUser.getId().getId().toString(),sort,selectDto);
             return ResultUtil.success(classList);
         }else {
             return ResultUtil.error("排序参数值错误！");

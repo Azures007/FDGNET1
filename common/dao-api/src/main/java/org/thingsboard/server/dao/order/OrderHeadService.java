@@ -31,17 +31,11 @@ public interface OrderHeadService {
      */
     PageVo<OrderListVo> getOrderHeadList(Integer current, Integer size, TBusOrderDto tBusOrderDto) throws Exception;
 
-    /**
-     * 获取账号今日任务列表
-     * @return
-     */
-    PageVo<TaskListVo> getTodayTaskList(Integer current, Integer size, String userId, String sort,OrderTaskSelectDto selectDto);
-
-    /**
-     * 根据工序状态获取账号任务列表
-     * @return
-     */
-    PageVo<TaskListVo> getTaskListByProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort);
+//    /**
+//     * 获取账号今日任务列表
+//     * @return
+//     */
+//    PageVo<TaskListVo> getTodayTaskList(Integer current, Integer size, String userId, String sort,OrderTaskSelectDto selectDto);
 
     /**
      * 根据工序状态和用户id，获取生产中任务列表和完工任务列表
@@ -49,23 +43,23 @@ public interface OrderHeadService {
      * 已完工  "订单表"关联"工序执行表"，"工序执行表"的"处理人"是当前登录用户，且"工序状态"为"已完工"。
      * @return
      */
-    PageVo<TaskListFinishVo> getTaskListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort, OrderTaskSelectDto selectDto);
+//    PageVo<TaskListFinishVo> getTaskListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort, OrderTaskSelectDto selectDto);
 
-    PageVo<TaskListVo> getTaskListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String orderProcessType, String userId, String sort,OrderTaskSelectDto selectDto);
+//    PageVo<TaskListVo> getTaskListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String orderProcessType, String userId, String sort,OrderTaskSelectDto selectDto);
 
-    PageVo<TaskListHandOverVo> getTaskHandOverListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort);
+//    PageVo<TaskListHandOverVo> getTaskHandOverListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort);
 
     /**
      * 根据工序状态获取账号待生产任务列表
      * @return
      */
-    PageVo<TaskListVo> getWaitTaskUserId2(Integer current, Integer size, List<String> processStatusList, String userId, String sort,OrderTaskSelectDto selectDto);
+//    PageVo<TaskListVo> getWaitTaskUserId2(Integer current, Integer size, List<String> processStatusList, String userId, String sort,OrderTaskSelectDto selectDto);
 
     /**
      * 获取账号未开工任务列表
      * @return
      */
-    PageVo<TaskListVo> getUnStartTaskList(Integer current, Integer size, String userId, String sort,OrderTaskSelectDto selectDto);
+//    PageVo<TaskListVo> getUnStartTaskList(Integer current, Integer size, String userId, String sort,OrderTaskSelectDto selectDto);
 //    /**
 //     * 获取账号完工任务列表
 //     * @return
@@ -75,7 +69,7 @@ public interface OrderHeadService {
      * 获取账号明日任务列表
      * @return
      */
-    PageVo<TaskListVo> getNextDayTaskList(Integer current, Integer size, String userId, String sort,OrderTaskSelectDto selectDto);
+//    PageVo<TaskListVo> getNextDayTaskList(Integer current, Integer size, String userId, String sort,OrderTaskSelectDto selectDto);
 
 
     /**
@@ -132,14 +126,14 @@ public interface OrderHeadService {
      */
     void deleteTBusOrderHead(Integer orderId);
 
-    /**
-     * 获取当前用户订单信息
-     * @param userId
-     * @return
-     */
-    GetOrderSizeVo getOrderSize(String userId);
-
-    Integer getCurrentTask(String toString);
+//    /**
+//     * 获取当前用户订单信息
+//     * @param userId
+//     * @return
+//     */
+//    GetOrderSizeVo getOrderSize(String userId);
+//
+//    Integer getCurrentTask(String toString);
 
     TBusOrderUpdate listOrderUpdate(Integer id);
 
@@ -150,7 +144,7 @@ public interface OrderHeadService {
     /**
      * 移交待确认任务列表
      */
-    PageVo<TaskListVo> getWaithandOverVerify(Integer current, Integer size,String toString, String sort,OrderTaskSelectDto selectDto);
+//    PageVo<TaskListVo> getWaithandOverVerify(Integer current, Integer size,String toString, String sort,OrderTaskSelectDto selectDto);
 
     /**
      * 移交生产中任务列表
@@ -206,7 +200,7 @@ public interface OrderHeadService {
      */
     void shiftRecord(Integer orderProcessId,String userId,Integer toOrderProcessId);
 
-    PageVo<TaskListVo> listFinishProcessTaskList(Integer current, Integer size, String sort,Integer orderProcessId);
+//    PageVo<TaskListVo> listFinishProcessTaskList(Integer current, Integer size, String sort,Integer orderProcessId);
 
     ShiftRecordDetailVo shiftRecordDetail(Integer orderProcessId, Integer toOrderProcessId);
 
@@ -234,16 +228,9 @@ public interface OrderHeadService {
      * @param type
      * @return
      */
-    List<String> listBodyIot(String userId, String type);
+//    List<String> listBodyIot(String userId, String type);
 
     TBusOrderHead getOrderProcess(Integer orderProcessId);
-
-    /**
-     * 获取任务列表数据
-     * @param orderProcessId
-     * @return
-     */
-    TaskListVo getTaskListVo(Integer orderProcessId);
 
     /**
      * 查询订单简要列表

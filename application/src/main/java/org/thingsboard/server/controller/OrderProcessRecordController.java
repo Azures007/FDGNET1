@@ -125,7 +125,7 @@ public class OrderProcessRecordController extends BaseController {
     @GetMapping("/deleteRecord")
     public ResponseResult deleteRecord(@RequestParam("orderProcessHistoryId") Integer orderProcessHistoryId) {
         synchronized (lock) {
-            orderProcessRecordService.deleteRecord(orderProcessHistoryId, true);
+            appOrderProcessRecordDeleteService.deleteRecord(orderProcessHistoryId, true);
         }
         return ResultUtil.success();
     }
@@ -141,7 +141,7 @@ public class OrderProcessRecordController extends BaseController {
             List<String> processStatusList = new ArrayList<>();
             processStatusList.add("1");
             processStatusList.add("2");
-            PageVo<TaskListFinishVo> taskListVoPageVo = orderHeadService.getTaskListByPersonIdAndProcessStatus(current, size, processStatusList, currentUser.getId().getId().toString(), sort, selectDto);
+            PageVo<TaskListFinishVo> taskListVoPageVo = appOrderTaskService.getTaskListByPersonIdAndProcessStatus(current, size, processStatusList, currentUser.getId().getId().toString(), sort, selectDto);
             return ResultUtil.success(taskListVoPageVo);
         } else {
             return ResultUtil.error("排序参数值错误！");
@@ -255,7 +255,7 @@ public class OrderProcessRecordController extends BaseController {
     public ResponseResult submit(@RequestBody OrderRecordSaveDto saveDto) throws Exception {
         SecurityUser user = getCurrentUser();
         synchronized (lock) {
-            orderProcessRecordService.submit(saveDto, user.getId().getId().toString());
+            appOrderProcessRecordSubmitService.submit(saveDto, user.getId().getId().toString());
         }
         return ResultUtil.success();
     }
@@ -266,7 +266,7 @@ public class OrderProcessRecordController extends BaseController {
     public ResponseResult submit(@RequestBody OrderRecordSaveListDto saveListDto) throws Exception {
         SecurityUser user = getCurrentUser();
         synchronized (lock) {
-            orderProcessRecordService.mulSubmit(saveListDto, user.getId().getId().toString());
+            appOrderProcessRecordSubmitService.mulSubmit(saveListDto, user.getId().getId().toString());
         }
         return ResultUtil.success();
     }
@@ -362,7 +362,7 @@ public class OrderProcessRecordController extends BaseController {
     @PostMapping("/customWorkerCategorySubmit")
     public ResponseResult customWorkerCategorySubmit(@RequestBody OrderRecordSaveDto saveDto) throws Exception {
         SecurityUser user = getCurrentUser();
-        orderProcessRecordService.submit(saveDto, user.getId().getId().toString());
+        appOrderProcessRecordSubmitService.submit(saveDto, user.getId().getId().toString());
         return ResultUtil.success();
     }
 

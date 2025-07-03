@@ -12,4 +12,7 @@ public class OrderTaskSelectDto {
 
     @ApiModelProperty("批次过滤条件")
     private String bodyLot = "";
+
+    @ApiModelProperty("多字段模糊查询")
+    private String selectOrField;
 }

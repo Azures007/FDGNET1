@@ -28,7 +28,7 @@ public class IndexController extends BaseController {
     @GetMapping("/getOrderSize")
     public ResponseResult<GetOrderSizeVo> getOrderSize() throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
-        GetOrderSizeVo getOrderSizeVo= orderHeadService.getOrderSize(currentUser.getId().getId().toString());
+        GetOrderSizeVo getOrderSizeVo= appOrderTaskService.getOrderSize(currentUser.getId().getId().toString());
         return ResultUtil.success(getOrderSizeVo);
     }
 
