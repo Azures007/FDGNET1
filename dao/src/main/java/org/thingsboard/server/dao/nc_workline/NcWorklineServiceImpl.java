@@ -41,6 +41,7 @@ public class NcWorklineServiceImpl implements NcWorklineService {
             if (existing != null) {
                 entity.setId(existing.getId());
             }
+            entity.setIsDelete("0");
             entitiesToSave.add(entity);
         }
 
@@ -62,7 +63,7 @@ public class NcWorklineServiceImpl implements NcWorklineService {
     public List<NcWorkline> findByVwkcodeOrVwknameLike(String keyword) {
         return repository.findByVwkcodeOrVwknameLike(keyword);
     }
-
+    @Transactional
     @Override
     public void deleteBatchByIds(List<String> ids) {
         repository.softDeleteBatchByIds(ids);

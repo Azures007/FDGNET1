@@ -110,6 +110,11 @@ public class NcTBusOrderHead {
     @ApiModelProperty("计划完工日期")
     private Date tplanendtime;
 
+    @ApiModelProperty("开工时间")
+    @Column(name = "nc_receive_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ncReceiveTime;
+
     @Column(name = "nc_note")
     @ApiModelProperty("备注")
     private String ncNote;

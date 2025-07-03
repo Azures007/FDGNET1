@@ -21,6 +21,7 @@ public class NcOrganizationServiceImpl implements NcOrganizationService {
             if (old != null) {
                 entity.setId(old.getId());
             }
+            entity.setIsDelete("0");
             repository.save(entity);
         }
     }
@@ -29,9 +30,9 @@ public class NcOrganizationServiceImpl implements NcOrganizationService {
     public List<NcOrganization> findAll() {
         return repository.findAll();
     }
-
+    @Transactional
     @Override
     public void deleteBatchByIds(List<String> ids) {
         repository.softDeleteBatchByIds(ids);
     }
-} 
+}

@@ -207,12 +207,24 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 if (orderDto.getPlanStartDateEnd() != null) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("bodyPlanStartDate"), sdf.parse(orderDto.getPlanStartDateEnd())));
                 }*/
-                //新增开工时间条件
-                if (orderDto.getNcReceiveTimeStart() != null) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("ncReceiveTime"), orderDto.getNcReceiveTimeStart()));
-                }
-                if (orderDto.getNcReceiveTimeEnd() != null) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("ncReceiveTime"), orderDto.getNcReceiveTimeEnd()));
+                // 新增开工时间条件，支持空值查询
+                if (orderDto.getNcReceiveTimeStart() != null || orderDto.getNcReceiveTimeEnd() != null) {
+                    if (orderDto.getNcReceiveTimeStart() != null && orderDto.getNcReceiveTimeEnd() != null) {
+                        // 开工时间范围查询
+                        predicates.add(criteriaBuilder.between(root.get("ncReceiveTime"), orderDto.getNcReceiveTimeStart(), orderDto.getNcReceiveTimeEnd()));
+                    } else if (orderDto.getNcReceiveTimeStart() != null) {
+                        // 大于等于指定开始时间
+                        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("ncReceiveTime"), orderDto.getNcReceiveTimeStart()));
+                    } else {
+                        // 小于等于指定结束时间
+                        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("ncReceiveTime"), orderDto.getNcReceiveTimeEnd()));
+                    }
+                } else {
+                    // 如果没有设置时间范围，则包含 ncReceiveTime 为 null 的情况
+                    predicates.add(criteriaBuilder.or(
+                            criteriaBuilder.isNull(root.get("ncReceiveTime")),
+                            criteriaBuilder.isTrue(criteriaBuilder.literal(true)) // 占位符确保条件有效
+                    ));
                 }
 
 
@@ -2125,6 +2137,11 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             }
         }
         vo.setProcessExecutes(processExecutes);
+        // 新增：设置工艺工序列表
+        if (order.getCraftId() != null) {
+            var craftDetail = craftInfoService.detail(order.getCraftId().getCraftId());
+            vo.setCraftProcesses(craftDetail.getProcessInfos());
+        }
         return vo;
     }
 }

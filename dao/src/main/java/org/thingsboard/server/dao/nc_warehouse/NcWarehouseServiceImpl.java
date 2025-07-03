@@ -34,6 +34,7 @@ public class NcWarehouseServiceImpl implements NcWarehouseService {
             if (existing != null) {
                 entity.setId(existing.getId());
             }
+            entity.setIsDelete("0");
             entitiesToSave.add(entity);
         }
         repository.saveAll(entitiesToSave);
@@ -48,7 +49,7 @@ public class NcWarehouseServiceImpl implements NcWarehouseService {
     public List<NcWarehouse> findByPkOrg(String pkOrg) {
         return repository.findByPkOrg(pkOrg);
     }
-
+    @Transactional
     @Override
     public void deleteBatchByIds(List<String> ids) {
         repository.softDeleteBatchByIds(ids);
