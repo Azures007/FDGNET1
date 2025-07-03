@@ -49,8 +49,8 @@ export class OrderListComponent implements OnInit {
   });
 
   orderPlanRange = new FormGroup({
-    start: new FormControl(new Date(new Date().getTime() - 2 * 24 * 3600 * 1000)),
-    end: new FormControl(new Date(new Date().getTime() + 4 * 24 * 3600 * 1000)),
+    start: new FormControl(null),
+    end: new FormControl(null),
   });
 
   orderSelect = [];
@@ -77,8 +77,8 @@ export class OrderListComponent implements OnInit {
   //单位列表
   allUnits = [];
 
-  displayedColumns: string[] = ['no', 'billNo', 'bodyLot', 'billDate', 'bodyPrdDept', 'midMoEntryTeamName', 'bodyPlanPrdQty', 'bodyPlanFinishDate',
-    'bodyMaterialSpecification', 'statusStr', 'processStr', 'classId', 'orderMatching', 'customColumn1',];
+  displayedColumns: string[] = ['index', 'billNo', 'billDate', 'billType', 'vwkname', 'code', 'name', 'materialspec',
+    'nnum', 'tplanstarttime', 'orderStatus', 'customColumn1',];
 
 
   processOptions = [];
@@ -93,26 +93,49 @@ export class OrderListComponent implements OnInit {
     ncMaterialCode: '',
     ncMaterialName: '',
     cwkid: '',
+    orderStatus: '0'
   });
   cwkList = [];
   clickedRows = new Set();
   bodyUnit = "";
 
-  orderMatchingStasus = [
+  orderStatus = [
+    {
+      label: "未开工",
+      value: "0",
+      total: ''
+    },
+    {
+      label: "已开工",
+      value: "1",
+      total: ''
+    },
+    {
+      label: "已完工",
+      value: "3",
+      total: ''
+    },
+    {
+      label: "暂停",
+      value: "2",
+      hide: true,
+      total: ''
+    },
     {
       label: "全部",
-      value: ""
-    },
-    {
-      label: "匹配",
-      value: "1"
-    },
-    {
-      label: "不匹配",
-      value: "-1"
+      value: "",
+      total: ''
     },
   ]
-
+  get getOrderStatusList() {
+    let list = [];
+    this.orderStatus.forEach(element => {
+      if (!element.hide) {
+        list.push(element);
+      }
+    });
+    return list;
+  }
   btns = JSON.parse(localStorage.getItem('btns'));
   set = new Set(this.btns);
 
@@ -147,8 +170,38 @@ export class OrderListComponent implements OnInit {
     })
     this.searchList();
   }
-
+  getOrderStatus(status: string) {
+    let label = '';
+    this.orderStatus.forEach(element => {
+      if (element.value == status) {
+        label = element.label;
+      }
+    });
+    return label;
+  }
+  changeStatus(status: string) {
+    this.searchFormGroup.value.orderStatus = status;
+    this.searchList();
+  }
   resetQuery() {
+    this.orderBillRange = new FormGroup({
+      start: new FormControl(new Date(new Date().getTime() - 2 * 24 * 3600 * 1000)),
+      end: new FormControl(new Date(new Date().getTime() + 4 * 24 * 3600 * 1000)),
+    });
+    this.orderPlanRange = new FormGroup({
+      start: new FormControl(null),
+      end: new FormControl(null),
+    });
+    this.searchFormGroup = this.fb.group({
+      current: 0,
+      size: 50,
+      billNo: '',
+      ncMaterialCode: '',
+      ncMaterialName: '',
+      cwkid: '',
+      orderStatus: this.searchFormGroup.value.orderStatus,
+    });
+    this.searchList();
 
   }
   isAllSelected() {
@@ -204,14 +257,15 @@ export class OrderListComponent implements OnInit {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
       body: {
-        billDateStart: this.utils.dateFormat(new Date(this.orderBillRange.value.start), 'yyyy-MM-dd 00:00:00'),
-        billDateEnd: this.utils.dateFormat(new Date(this.orderBillRange.value.end), 'yyyy-MM-dd 23:59:59'),
+        billDateStart: new Date(this.utils.dateFormat(new Date(this.orderBillRange.value.start), 'yyyy-MM-dd 00:00:00')),
+        billDateEnd: new Date(this.utils.dateFormat(new Date(this.orderBillRange.value.end), 'yyyy-MM-dd 23:59:59')),
         billNo: this.searchFormGroup.value.billNo,
         ncMaterialCode: this.searchFormGroup.value.ncMaterialCode,
         ncMaterialName: this.searchFormGroup.value.ncMaterialName,
-        ncReceiveTimeStart: this.utils.dateFormat(new Date(this.orderPlanRange.value.start), 'yyyy-MM-dd 00:00:00'),
-        ncReceiveTimeEnd: this.utils.dateFormat(new Date(this.orderPlanRange.value.end), 'yyyy-MM-dd 23:59:59'),
+        ncReceiveTimeStart: this.orderPlanRange.value.start ? new Date(this.utils.dateFormat(new Date(this.orderPlanRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
+        ncReceiveTimeEnd: this.orderPlanRange.value.end ? new Date(this.utils.dateFormat(new Date(this.orderPlanRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
         cwkid: this.searchFormGroup.value.cwkid,
+        orderStatus: this.searchFormGroup.value.orderStatus,
       }
     }
 
@@ -228,6 +282,11 @@ export class OrderListComponent implements OnInit {
         this.tableData = allData.list;
         this.dataSource = new MatTableDataSource<PeriodicElement>(MyData);
         this.total = res.data.total;
+        this.orderStatus.forEach(item => {
+          if (item.value === this.searchFormGroup.value.orderStatus) {
+            item.total = res.data.total;
+          }
+        })
       } else {
         this.utils.showMessage(res.errmsg, 'error');
       }
@@ -276,15 +335,15 @@ export class OrderListComponent implements OnInit {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
       body: {
-        currentProcess: this.searchFormGroup.value.currentProcess,
-        classId: this.searchFormGroup.value.classId,
-        billDateEnd: this.utils.dateFormat(new Date(this.orderBillRange.value.end), 'yyyy-MM-dd 23:59:59'),
-        billDateStart: this.utils.dateFormat(new Date(this.orderBillRange.value.start), 'yyyy-MM-dd 00:00:00'),
+        billDateStart: new Date(this.utils.dateFormat(new Date(this.orderBillRange.value.start), 'yyyy-MM-dd 00:00:00')),
+        billDateEnd: new Date(this.utils.dateFormat(new Date(this.orderBillRange.value.end), 'yyyy-MM-dd 23:59:59')),
         billNo: this.searchFormGroup.value.billNo,
-        orderStatus: this.searchFormGroup.value.orderStatus !== 0 ? this.searchFormGroup.value.orderStatus : '',
-        orderMatching: this.searchFormGroup.value.orderMatching,
-        planStartDateEnd: this.utils.dateFormat(new Date(this.orderPlanRange.value.end), 'yyyy-MM-dd 23:59:59'),
-        planStartDateStart: this.utils.dateFormat(new Date(this.orderPlanRange.value.start), 'yyyy-MM-dd 00:00:00'),
+        ncMaterialCode: this.searchFormGroup.value.ncMaterialCode,
+        ncMaterialName: this.searchFormGroup.value.ncMaterialName,
+        ncReceiveTimeStart: this.orderPlanRange.value.start ? new Date(this.utils.dateFormat(new Date(this.orderPlanRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
+        ncReceiveTimeEnd: this.orderPlanRange.value.end ? new Date(this.utils.dateFormat(new Date(this.orderPlanRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
+        cwkid: this.searchFormGroup.value.cwkid,
+        orderStatus: this.searchFormGroup.value.orderStatus,
       }
     }
 
@@ -409,21 +468,6 @@ export class OrderListComponent implements OnInit {
   handleEvent(data, type) {
     switch (type) {
       case 'details':
-        let params = {
-          current: this.searchFormGroup.value.current,
-          size: this.searchFormGroup.value.size,
-          body: {
-            currentProcess: this.searchFormGroup.value.currentProcess,
-            classId: this.searchFormGroup.value.classId,
-            billDateEnd: this.orderBillRange.value.end,
-            billDateStart: this.orderBillRange.value.start,
-            billNo: this.searchFormGroup.value.billNo,
-            orderStatus: this.searchFormGroup.value.orderStatus,
-            planStartDateEnd: this.orderPlanRange.value.end,
-            planStartDateStart: this.orderPlanRange.value.start,
-          }
-        }
-        localStorage.setItem('storagePar', JSON.stringify(params));
         this.router.navigateByUrl(`order/details/${data.orderId}`);
         break;
       case 'start':

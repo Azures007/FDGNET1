@@ -20,7 +20,7 @@ export class OrderService {
 
   // 导出
   public fetchExport(data): Observable<any> {
-    return this.http.post(`/api/orderhead/exportorder?current=${data.current}&size=${data.size}`, data.body, {
+    return this.http.post(`/api/manage/orderhead/exportorder?current=${data.current}&size=${data.size}`, data.body, {
       responseType: 'blob',
       observe: 'response'
     });
@@ -28,7 +28,7 @@ export class OrderService {
 
   // 获取订单详情
   public fetchGetOrderDetails(data): Observable<any> {
-    return this.http.get(`/api/orderhead/get?orderId=${data.orderId}`);
+    return this.http.get(`/api/manage/orderhead/get?orderId=${data.orderId}`);
   }
 
   // 获取订单中的工序详情

@@ -171,6 +171,7 @@ import { AddFingerComponent } from './staff/add-finger.component';
 import { SpecAddComponent } from './spec/spec-add.component';
 import { MenuAddComponent } from './menu-admin/menu-add.component';
 import { ChooseBaseComponent } from '@home/components/account/pick/choose-base.component';
+import { CraftDetailComponent } from '@home/components/order/craft-detail.component';
 
 
 
@@ -315,6 +316,7 @@ import { ChooseBaseComponent } from '@home/components/account/pick/choose-base.c
       AddMaterialComponent,
       ChooseMaterialComponent,
       ChooseBaseComponent,
+      CraftDetailComponent,
       AddBasketComponent,
       ShowCodeComponent,
       EnterDiaComponent,

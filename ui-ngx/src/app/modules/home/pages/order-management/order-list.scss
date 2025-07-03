@@ -34,7 +34,21 @@
 		}
 	}
 }
-
+.tags {
+	display: flex;
+  margin-bottom: 10px;
+	.tag {
+    background-color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+		margin-right: 10px;
+		cursor: pointer;
+		&.active {
+			color: #fff;
+			background-color: #3399ff;
+		}
+	}
+}
 .search_btn {
 	color: #fff;
 	background-color: #3399ff;
