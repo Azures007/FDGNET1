@@ -3,6 +3,8 @@ package org.thingsboard.server.dao.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.thingsboard.server.dao.dto.ProcessInfoDto;
+
 import java.util.List;
 
 @ApiModel("订单详情简要VO")
@@ -45,7 +47,7 @@ public class OrderDetailSimpleVo {
     private List<ProcessExecuteVo> processExecutes;
 
     @ApiModelProperty("工艺工序列表")
-    private java.util.List<org.thingsboard.server.dao.dto.TSysCraftInfoSaveDto.ProcessInfoDto> craftProcesses;
+    private List<ProcessInfoDto> craftProcesses;
 
     @Data
     public static class ProductItem {
