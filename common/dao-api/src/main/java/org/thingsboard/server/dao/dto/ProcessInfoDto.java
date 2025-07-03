@@ -27,4 +27,7 @@ public class ProcessInfoDto {
     private Boolean isReceivingBindCode;
     @ApiModelProperty("扫码解绑（投入解绑） 0：否 1：是")
     private Boolean isReceivingUnBindCode;
+
+    @ApiModelProperty("组长")
+    private String groupLeader;
 }

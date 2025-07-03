@@ -2137,6 +2137,11 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             }
         }
         vo.setProcessExecutes(processExecutes);
+        // 新增：设置工艺工序列表
+        if (order.getCraftId() != null) {
+            var craftDetail = craftInfoService.detail(order.getCraftId().getCraftId());
+            vo.setCraftProcesses(craftDetail.getProcessInfos());
+        }
         return vo;
     }
 }

@@ -44,6 +44,9 @@ public class OrderDetailSimpleVo {
     @ApiModelProperty("工序执行情况表")
     private List<ProcessExecuteVo> processExecutes;
 
+    @ApiModelProperty("工艺工序列表")
+    private java.util.List<org.thingsboard.server.dao.dto.TSysCraftInfoSaveDto.ProcessInfoDto> craftProcesses;
+
     @Data
     public static class ProductItem {
         @ApiModelProperty("产品编码")
