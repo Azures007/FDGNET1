@@ -47,7 +47,7 @@ public class NcDepartmentServiceImpl implements NcDepartmentService {
         // 批量保存
         repository.saveAll(entitiesToSave);
     }
-
+    @Transactional
     @Override
     public void deleteBatchByIds(List<String> ids) {
         repository.softDeleteBatchByIds(ids);
