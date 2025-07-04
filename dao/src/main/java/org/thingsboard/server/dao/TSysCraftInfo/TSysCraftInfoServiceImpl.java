@@ -271,7 +271,7 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
                 rel.setCrtUser(name);
                 rel.setCraftId(craftId);
                 rel.setMaterialCode(materialCode.get("materialCode").toString());
-                rel.setMaterialId(Integer.parseInt(String.valueOf(materialCode.get("materialId").toString())));
+                //rel.setMaterialId(Integer.parseInt(String.valueOf(materialCode.get("materialId").toString())));
                 rel.setCrtTime(new Date());
                 rels.add(rel);
             }
