@@ -28,7 +28,7 @@ public class NcOrganizationServiceImpl implements NcOrganizationService {
 
     @Override
     public List<NcOrganization> findAll() {
-        return repository.findAll();
+        return repository.findByIsDelete("0");
     }
     @Transactional
     @Override

@@ -51,12 +51,12 @@ public class NcWorklineServiceImpl implements NcWorklineService {
 
     @Override
     public List<NcWorkline> findAll() {
-        return repository.findAll();
+        return repository.findByIsDelete("0");
     }
 
     @Override
     public List<NcWorkline> findByPkOrg(String pkOrg) {
-        return repository.findByPkOrg(pkOrg);
+        return repository.findByPkOrgAndIsDelete(pkOrg, "0");
     }
 
     @Override

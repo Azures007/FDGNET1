@@ -19,4 +19,8 @@ public interface NcWorklineRepository extends JpaRepository<NcWorkline, Integer>
     @Modifying
     @Query("update NcWorkline w set w.isDelete = '1' where w.cwkid in :ids")
     void softDeleteBatchByIds(@Param("ids") List<String> ids);
+
+    List<NcWorkline> findByIsDelete(String number);
+
+    List<NcWorkline> findByPkOrgAndIsDelete(String pkOrg, String number);
 }

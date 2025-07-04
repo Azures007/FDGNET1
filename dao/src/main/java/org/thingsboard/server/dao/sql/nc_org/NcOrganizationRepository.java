@@ -15,4 +15,6 @@ public interface NcOrganizationRepository extends JpaRepository<NcOrganization, 
     @Modifying
     @Query("update NcOrganization o set o.isDelete = '1' where o.pkOrg in :ids")
     void softDeleteBatchByIds(@Param("ids") List<String> ids);
+
+    List<NcOrganization> findByIsDelete(String number);
 }
