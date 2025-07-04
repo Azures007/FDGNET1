@@ -1549,6 +1549,12 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             vo.setNnum(order.getBodyPlanPrdQty());
             vo.setTplanstarttime(order.getBodyPlanStartDate() != null ? order.getBodyPlanStartDate().toString() : "");
             vo.setOrderStatus(order.getOrderStatus());
+            vo.setCraftName(order.getCraftId() != null ? order.getCraftId().getCraftName() : "");
+            // 新增：设置工艺工序列表
+            if (order.getCraftId() != null) {
+                var craftDetail = craftInfoService.detail(order.getCraftId().getCraftId());
+                vo.setCraftProcesses(craftDetail.getProcessInfos());
+            }
             list.add(vo);
         }
         result.setList(list);

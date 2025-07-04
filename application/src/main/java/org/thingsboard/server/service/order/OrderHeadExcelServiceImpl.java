@@ -29,6 +29,7 @@ import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscService;
 import org.thingsboard.server.dao.tSysPersonnelInfo.TSysPersonnelInfoService;
 import org.thingsboard.server.dao.vo.LcToStartVo;
 import org.thingsboard.server.dao.vo.OrderListVo;
+import org.thingsboard.server.dao.vo.OrderSimpleListVo;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.service.rpc.LcERPCallBack;
 import org.thingsboard.server.utils.ExcelUtil;
@@ -111,7 +112,7 @@ public class OrderHeadExcelServiceImpl implements OrderHeadExcelService {
 
     @Override
     public void download(Integer current, Integer size, TBusOrderHeadDto tBusOrderHeadDto, HttpServletResponse response) throws IOException {
-        PageVo<TBusOrderHead> tBusOrderHeadPage= orderHeadService.tBusOrderHeadList(current,size,tBusOrderHeadDto);
+        /*PageVo<TBusOrderHead> tBusOrderHeadPage= orderHeadService.tBusOrderHeadList(current,size,tBusOrderHeadDto);
         List<OrderExcelVo> excelVos=new ArrayList<>();
         for (var tBusOrderHead : tBusOrderHeadPage.getList()) {
             OrderExcelVo vo=new OrderExcelVo();
@@ -127,12 +128,12 @@ public class OrderHeadExcelServiceImpl implements OrderHeadExcelService {
             vo.setBillPlanQty(tBusOrderHead.getBodyPlanPrdQty());
             excelVos.add(vo);
         }
-        ExcelUtil.writeExcel(response,excelVos,System.currentTimeMillis()+"","sheet1",new OrderExcelVo());
+        ExcelUtil.writeExcel(response,excelVos,System.currentTimeMillis()+"","sheet1",new OrderExcelVo());*/
     }
 
     @Override
     public void download(Integer current, Integer size, TBusOrderDto tBusOrderDto, HttpServletResponse response) throws IOException {
-        PageVo<TBusOrderHead> tBusOrderHeadPage= orderHeadService.tBusOrderHeadList(current,size,tBusOrderDto);
+        PageVo<OrderSimpleListVo> tBusOrderHeadPage= orderHeadService.getSimpleOrderList(current, size, tBusOrderDto);
         List<OrderExcelVo> excelVos=new ArrayList<>();
         for (var tBusOrderHead : tBusOrderHeadPage.getList()) {
             OrderExcelVo vo=new OrderExcelVo();
@@ -143,9 +144,6 @@ public class OrderHeadExcelServiceImpl implements OrderHeadExcelService {
                 TSysCodeDsc codeDscOS = sysCodeDscService.getCodeByCodeClAndCodeVale("ORDERSTATUS0000", codeValue);
                 vo.setOrderStatus(codeDscOS.getCodeDsc());
             }
-            vo.setCurrentProcessName(tBusOrderHead.getCurrentProcess()==null?"":tBusOrderHead.getCurrentProcess().getProcessName());
-            vo.setClassName(tBusOrderHead.getClassId()==null?"":tBusOrderHead.getClassId().getName());
-            vo.setBillPlanQty(tBusOrderHead.getBodyPlanPrdQty());
             excelVos.add(vo);
         }
         ExcelUtil.writeExcel(response,excelVos,System.currentTimeMillis()+"","sheet1",new OrderExcelVo());
@@ -153,7 +151,7 @@ public class OrderHeadExcelServiceImpl implements OrderHeadExcelService {
 
     @Override
     public void downloadOrder(Integer current, Integer size, TBusOrderDto tBusOrderDto, HttpServletResponse response) throws Exception {
-        PageVo<OrderListVo> tBusOrderHeadPage= orderHeadService.getOrderHeadList(current,size,tBusOrderDto);
+        /*PageVo<OrderListVo> tBusOrderHeadPage= orderHeadService.getOrderHeadList(current,size,tBusOrderDto);
         List<OrderExcelVo> excelVos=new ArrayList<>();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
         for (var tBusOrderHead : tBusOrderHeadPage.getList()) {
@@ -173,7 +171,7 @@ public class OrderHeadExcelServiceImpl implements OrderHeadExcelService {
             vo.setClassName(tBusOrderHead.getClass_id());
             excelVos.add(vo);
         }
-        ExcelUtil.writeExcel(response,excelVos,System.currentTimeMillis()+"","sheet1",new OrderExcelVo());
+        ExcelUtil.writeExcel(response,excelVos,System.currentTimeMillis()+"","sheet1",new OrderExcelVo());*/
     }
 
 }
