@@ -18,6 +18,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ClassService } from '@app/core/http/class.service';
 import { retry } from 'rxjs/operators';
 import { GlobalConstants } from '@app/common/global-constants';
+import { CraftDetailComponent } from '../../components/order/craft-detail.component';
 
 export interface PeriodicElement {
   no: Number,
@@ -78,7 +79,7 @@ export class OrderListComponent implements OnInit {
   allUnits = [];
 
   displayedColumns: string[] = ['index', 'billNo', 'billDate', 'billType', 'vwkname', 'code', 'name', 'materialspec',
-    'nnum', 'tplanstarttime', 'orderStatus', 'customColumn1',];
+    'nnum', 'tplanstarttime', 'craftName', 'orderStatus', 'customColumn1',];
 
 
   processOptions = [];
@@ -169,6 +170,23 @@ export class OrderListComponent implements OnInit {
       this.cwkList = res.data;
     })
     this.searchList();
+  }
+  toCraftDetails(row) {
+    if(!row.craftName) {
+      return;
+    }
+    let dialogRef = this.dialog.open(CraftDetailComponent, {
+      width: "500px",
+      height: "auto",
+      panelClass: 'custom-modalbox',
+      data: {
+        title: row.craftName,
+        dataSource: row.craftProcesses
+      }
+    })
+    dialogRef.afterClosed().subscribe(result => {
+
+    });
   }
   getOrderStatus(status: string) {
     let label = '';
@@ -484,7 +502,7 @@ export class OrderListComponent implements OnInit {
   // 接单开工弹窗
   showAddVisibilly(data, element): void {
     let par = {
-      materialNumber: element.bodyMaterialNumber,
+      materialNumber: element.code,
       orderId:data,
     }
     this.apiOrder.fetchGetMaterial(par).subscribe(res => {

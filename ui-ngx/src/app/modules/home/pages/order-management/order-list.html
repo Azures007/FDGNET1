@@ -114,6 +114,10 @@
         <th mat-header-cell *matHeaderCellDef> 计划开工日期 </th>
         <td mat-cell *matCellDef="let element"> {{element.tplanstarttime}} </td>
       </ng-container>
+      <ng-container matColumnDef="craftName">
+        <th mat-header-cell *matHeaderCellDef> 工艺路线 </th>
+        <td mat-cell *matCellDef="let element" class="link" (click)="toCraftDetails(element)"> {{element.craftName}} </td>
+      </ng-container>
       <ng-container matColumnDef="orderStatus">
         <th mat-header-cell *matHeaderCellDef> 订单状态</th>
         <td mat-cell *matCellDef="let element"> {{getOrderStatus(element.orderStatus)}} </td>
@@ -122,7 +126,11 @@
         <th mat-header-cell *matHeaderCellDef> 操作 </th>
         <td mat-cell *matCellDef="let element">
           <div class="opera-group">
+            <button class="mini_btn edit_btn" (click)="handleEvent(element,'start')"
+              *ngIf="!element.craftName && set.has('/order/list/start')">接单</button>
             <button class="mini_btn look_btn" (click)="handleEvent(element,'details')">详情</button>
+            <!-- <button class="mini_btn look_btn" (click)="handleEvent(element,'change')"
+              *ngIf="element.tbusOrderProcessSet.length == 1 && element.tbusOrderProcessSet[0].processStatus == '0'">班别变更</button> -->
           </div>
         </td>
       </ng-container>
