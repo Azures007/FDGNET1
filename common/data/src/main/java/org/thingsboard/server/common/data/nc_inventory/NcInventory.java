@@ -12,8 +12,8 @@ import javax.persistence.*;
 @ApiModel("NC仓库库存表")
 public class NcInventory {
     @Id
-    @Column(name = "bill_id")
-    @ApiModelProperty("单据ID")
+    @Column(name = "bill_id", nullable = false)
+    @ApiModelProperty(name="单据ID", required = true)
     private String billId;
 
     @Column(name = "warehouse_id")
@@ -60,7 +60,7 @@ public class NcInventory {
     @ApiModelProperty("库存量")
     private Float qty;
 
-    @Column(name = "status")
-    @ApiModelProperty("状态(有效)")
+    @Column(name = "status", nullable = false)
+    @ApiModelProperty(name="状态", required = true)
     private String status;
 }

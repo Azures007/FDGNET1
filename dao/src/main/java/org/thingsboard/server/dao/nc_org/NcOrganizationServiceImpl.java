@@ -16,23 +16,14 @@ public class NcOrganizationServiceImpl implements NcOrganizationService {
     @Override
     @Transactional
     public void saveOrUpdateBatchByPkOrg(List<NcOrganization> entitys) {
-        for (NcOrganization entity : entitys) {
-            NcOrganization old = repository.findByPkOrg(entity.getPkOrg());
-            if (old != null) {
-                entity.setId(old.getId());
-            }
-            entity.setIsDelete("0");
-            repository.save(entity);
+        if (entitys == null || entitys.isEmpty()) {
+            return;
         }
+        repository.saveAll(entitys);
     }
 
     @Override
     public List<NcOrganization> findAll() {
-        return repository.findByIsDelete("0");
-    }
-    @Transactional
-    @Override
-    public void deleteBatchByIds(List<String> ids) {
-        repository.softDeleteBatchByIds(ids);
+        return repository.findByStatus("生效");
     }
 }

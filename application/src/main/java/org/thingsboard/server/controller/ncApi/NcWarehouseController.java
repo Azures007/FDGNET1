@@ -31,11 +31,4 @@ public class NcWarehouseController {
         service.saveOrUpdateBatchByPkStordoc(entitys);
         return ResultUtil.success("同步成功");
     }
-
-    @ApiOperation("批量删除仓库")
-    @PostMapping("/deletebatch")
-    public ResponseResult deleteBatch(@RequestBody List<String> ids) {
-        service.deleteBatchByIds(ids);
-        return ResultUtil.success("删除成功");
-    }
-} 
+}

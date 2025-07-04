@@ -22,36 +22,16 @@ public class NcWarehouseServiceImpl implements NcWarehouseService {
         if (entitys == null || entitys.isEmpty()) {
             return;
         }
-        List<String> pkStordocs = entitys.stream()
-                .map(NcWarehouse::getPkStordoc)
-                .collect(Collectors.toList());
-        List<NcWarehouse> existingEntities = repository.findByPkStordocs(pkStordocs);
-        Map<String, NcWarehouse> existingMap = existingEntities.stream()
-                .collect(Collectors.toMap(NcWarehouse::getPkStordoc, entity -> entity));
-        List<NcWarehouse> entitiesToSave = new ArrayList<>();
-        for (NcWarehouse entity : entitys) {
-            NcWarehouse existing = existingMap.get(entity.getPkStordoc());
-            if (existing != null) {
-                entity.setId(existing.getId());
-            }
-            entity.setIsDelete("0");
-            entitiesToSave.add(entity);
-        }
-        repository.saveAll(entitiesToSave);
+        repository.saveAll(entitys);
     }
 
     @Override
     public List<NcWarehouse> findAll() {
-        return repository.findAll();
+        return repository.findByStatus("生效");
     }
 
     @Override
     public List<NcWarehouse> findByPkOrg(String pkOrg) {
         return repository.findByPkOrg(pkOrg);
-    }
-    @Transactional
-    @Override
-    public void deleteBatchByIds(List<String> ids) {
-        repository.softDeleteBatchByIds(ids);
     }
 }

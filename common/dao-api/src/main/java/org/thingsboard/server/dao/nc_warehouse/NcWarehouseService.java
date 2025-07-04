@@ -7,5 +7,4 @@ public interface NcWarehouseService {
     void saveOrUpdateBatchByPkStordoc(List<NcWarehouse> entitys);
     List<NcWarehouse> findAll();
     List<NcWarehouse> findByPkOrg(String pkOrg);
-    void deleteBatchByIds(List<String> ids);
 }

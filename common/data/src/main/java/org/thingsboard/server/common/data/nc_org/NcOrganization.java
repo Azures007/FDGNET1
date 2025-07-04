@@ -14,14 +14,8 @@ import javax.persistence.*;
 @ApiModel("基地")
 public class NcOrganization {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    @ApiModelProperty("ID")
-    @JsonIgnore
-    private Integer id;
-
-    @Column(name = "nc_pk_org")
-    @ApiModelProperty("基地id")
+    @Column(name = "nc_pk_org", nullable = false)
+    @ApiModelProperty(name = "基地id", required = true)
     @JsonProperty("pk_org")
     private String pkOrg;
 
@@ -30,8 +24,7 @@ public class NcOrganization {
     @JsonProperty("org_name")
     private String orgName;
 
-    @ApiModelProperty("是否删除 0:未删除 1:已删除")
-    @Column(name = "is_delete")
-    @JsonIgnore
-    private String isDelete;
+    @ApiModelProperty(name = "状态：生效；失效", required = true)
+    @Column(name = "nc_status", nullable = false)
+    private String status;
 }

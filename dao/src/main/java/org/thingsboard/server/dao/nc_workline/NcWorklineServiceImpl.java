@@ -23,49 +23,21 @@ public class NcWorklineServiceImpl implements NcWorklineService {
             return;
         }
 
-        // 收集所有的cwkid
-        List<String> cwkids = entitys.stream()
-                .map(NcWorkline::getCwkid)
-                .collect(Collectors.toList());
-
-        // 批量查询已存在的记录
-        List<NcWorkline> existingEntities = repository.findByCwkids(cwkids);
-        Map<String, NcWorkline> existingMap = existingEntities.stream()
-                .collect(Collectors.toMap(NcWorkline::getCwkid, entity -> entity));
-
-        // 准备要保存的实体列表
-        List<NcWorkline> entitiesToSave = new ArrayList<>();
-
-        for (NcWorkline entity : entitys) {
-            NcWorkline existing = existingMap.get(entity.getCwkid());
-            if (existing != null) {
-                entity.setId(existing.getId());
-            }
-            entity.setIsDelete("0");
-            entitiesToSave.add(entity);
-        }
-
-        // 批量保存
-        repository.saveAll(entitiesToSave);
+        repository.saveAll(entitys);
     }
 
     @Override
     public List<NcWorkline> findAll() {
-        return repository.findByIsDelete("0");
+        return repository.findByStatus("生效");
     }
 
     @Override
     public List<NcWorkline> findByPkOrg(String pkOrg) {
-        return repository.findByPkOrgAndIsDelete(pkOrg, "0");
+        return repository.findByPkOrgAndStatus(pkOrg, "生效");
     }
 
     @Override
     public List<NcWorkline> findByVwkcodeOrVwknameLike(String keyword) {
         return repository.findByVwkcodeOrVwknameLike(keyword);
-    }
-    @Transactional
-    @Override
-    public void deleteBatchByIds(List<String> ids) {
-        repository.softDeleteBatchByIds(ids);
     }
 }

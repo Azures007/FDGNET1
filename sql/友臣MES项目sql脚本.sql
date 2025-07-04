@@ -179,3 +179,31 @@ COMMENT  ON COLUMN t_sys_workline.is_delete IS '0:未删除 1:已删除';
 ALTER TABLE t_sys_organization ADD COLUMN is_delete VARCHAR(1) DEFAULT '0';
 COMMENT  ON COLUMN t_sys_organization.is_delete IS '0:未删除 1:已删除';
 ALTER TABLE t_bus_order_head ALTER COLUMN is_deleted SET DEFAULT '0';
+
+ALTER TABLE "public"."t_sys_workline" RENAME COLUMN "is_delete" TO "nc_status";
+
+ALTER TABLE "public"."t_sys_workline"
+ALTER COLUMN "nc_status" TYPE varchar(16) COLLATE "pg_catalog"."default";
+
+COMMENT ON COLUMN "public"."t_sys_workline"."nc_status" IS '状态：生效;失效';
+
+ALTER TABLE "public"."t_sys_organization" RENAME COLUMN "is_delete" TO "nc_status";
+
+ALTER TABLE "public"."t_sys_organization"
+ALTER COLUMN "nc_status" TYPE varchar(16) COLLATE "pg_catalog"."default";
+
+COMMENT ON COLUMN "public"."t_sys_organization"."nc_status" IS '状态：生效;失效';
+
+ALTER TABLE "public"."t_sys_warehouse" RENAME COLUMN "is_delete" TO "nc_status";
+
+ALTER TABLE "public"."t_sys_warehouse"
+ALTER COLUMN "nc_status" TYPE varchar(16) COLLATE "pg_catalog"."default";
+
+COMMENT ON COLUMN "public"."t_sys_warehouse"."nc_status" IS '状态：生效;失效';
+
+ALTER TABLE "public"."t_sys_department" RENAME COLUMN "is_delete" TO "nc_status";
+
+ALTER TABLE "public"."t_sys_department"
+ALTER COLUMN "nc_status" TYPE varchar(16) COLLATE "pg_catalog"."default";
+
+COMMENT ON COLUMN "public"."t_sys_department"."nc_status" IS '状态：生效;失效';

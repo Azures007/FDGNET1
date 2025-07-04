@@ -9,14 +9,8 @@ import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
 import java.util.List;
 
 public interface NcWarehouseRepository extends JpaRepository<NcWarehouse, Integer> {
-    NcWarehouse findByPkStordoc(String pkStordoc);
-
-    @Query("SELECT w FROM NcWarehouse w WHERE w.pkStordoc IN :pkStordocs")
-    List<NcWarehouse> findByPkStordocs(@Param("pkStordocs") List<String> pkStordocs);
 
     List<NcWarehouse> findByPkOrg(String pkOrg);
 
-    @Modifying
-    @Query("update NcWarehouse w set w.isDelete = '1' where w.pkStordoc in :ids")
-    void softDeleteBatchByIds(@Param("ids") List<String> ids);
+    List<NcWarehouse> findByStatus(String status);
 }

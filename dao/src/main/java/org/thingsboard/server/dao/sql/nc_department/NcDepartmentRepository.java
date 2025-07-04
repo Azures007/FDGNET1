@@ -15,6 +15,6 @@ public interface NcDepartmentRepository extends JpaRepository<NcDepartment, Inte
     List<NcDepartment> findByCdeptids(@Param("cdeptids") List<String> cdeptids);
 
     @Modifying
-    @Query("update NcDepartment d set d.isDelete = '1' where d.cdeptid in :ids")
+    @Query("update NcDepartment d set d.status = '失效' where d.cdeptid in :ids")
     void softDeleteBatchByIds(@Param("ids") List<String> ids);
-} 
+}

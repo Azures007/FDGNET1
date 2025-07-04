@@ -14,6 +14,9 @@ public class NcInventoryServiceImpl implements NcInventoryService {
 
     @Override
     public void saveOrUpdateBatchByBillId(List<NcInventory> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
         // 直接saveAll，JPA会根据主键billId自动新增或更新
         repository.saveAll(list);
     }

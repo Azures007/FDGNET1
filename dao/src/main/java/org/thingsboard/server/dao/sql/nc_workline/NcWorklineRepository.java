@@ -12,15 +12,11 @@ public interface NcWorklineRepository extends JpaRepository<NcWorkline, Integer>
     NcWorkline findByCwkid(String cwkid);
     @Query("SELECT w FROM NcWorkline w WHERE w.cwkid IN :cwkids")
     List<NcWorkline> findByCwkids(@Param("cwkids") List<String> cwkids);
-    List<NcWorkline> findAll();
     List<NcWorkline> findByPkOrg(String pkOrg);
-    @Query("SELECT w FROM NcWorkline w WHERE w.vwkcode LIKE %:keyword% OR w.vwkname LIKE %:keyword%")
+    @Query("SELECT w FROM NcWorkline w WHERE w.vwkcode LIKE %:keyword% OR w.vwkname LIKE %:keyword% AND w.status='生效'")
     List<NcWorkline> findByVwkcodeOrVwknameLike(@Param("keyword") String keyword);
-    @Modifying
-    @Query("update NcWorkline w set w.isDelete = '1' where w.cwkid in :ids")
-    void softDeleteBatchByIds(@Param("ids") List<String> ids);
 
-    List<NcWorkline> findByIsDelete(String number);
+    List<NcWorkline> findByStatus(String status);
 
-    List<NcWorkline> findByPkOrgAndIsDelete(String pkOrg, String number);
+    List<NcWorkline> findByPkOrgAndStatus(String pkOrg, String status);
 }
