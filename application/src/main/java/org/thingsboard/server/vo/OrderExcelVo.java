@@ -2,6 +2,7 @@ package org.thingsboard.server.vo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -14,34 +15,36 @@ import java.util.Date;
 @Data
 public class OrderExcelVo extends BaseRowModel {
 
-    @ExcelProperty("单据编号")
+    @ExcelProperty("序号")
+    private Integer index;
+
+    @ExcelProperty("生产订单号")
     private String billNo;
 
-    @ExcelProperty("下单时间")
-    private Date billDate;
-
-    @ExcelProperty("生产车间")
-    private String bodyPrdDept;
-
-    @ExcelProperty("计划产量")
-    private Float billPlanQty;
-
-    @ExcelProperty("计划完工日期")
-    private Date bodyPlanFinishDate;
-
-    @ExcelProperty("产品规格")
-    private String bodyMaterialSpecification;
+    @ExcelProperty("下单日期")
+    private String billDate;
 
     @ExcelProperty("订单类型")
     private String billType;
 
+    @ExcelProperty("生产线")
+    private String vwkname;
+
+    @ExcelProperty("产品编码")
+    private String code;
+
+    @ExcelProperty("产品名称")
+    private String name;
+
+    @ExcelProperty("规格")
+    private String materialspec;
+
+    @ExcelProperty("计划产量(件)")
+    private Float nnum;
+
+    @ExcelProperty("计划开工日期")
+    private String tplanstarttime;
+
     @ExcelProperty("订单状态")
     private String orderStatus;
-
-    @ExcelProperty("当前工序")
-    private String currentProcessName;
-
-    @ExcelProperty("处理班别")
-    private String className;
-
 }
