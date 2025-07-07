@@ -662,4 +662,25 @@ public class UserController extends BaseController {
         List<NcWorkline> list = userService.findLineListByUserNameAndPkOrg(username, pkOrg);
         return ResultUtil.success(list);
     }
+
+    @ApiOperation("切换当前用户的基地和产线")
+    @PostMapping("/user/switchOrgLine")
+    public ResponseResult<Void> switchOrgLine(@RequestParam("pkOrg") String pkOrg,
+                                              @RequestParam("cwkid") String cwkid) throws ThingsboardException {
+        SecurityUser user = getCurrentUser();
+        userService.saveUserCurrentOrgLine(user.getId().toString(), pkOrg, cwkid);
+        return ResultUtil.success();
+    }
+    @ApiOperation("获取当前用户的基地和产线")
+    @GetMapping("/user/currentOrgLine")
+    public ResponseResult<Map<String, String>> getCurrentOrgLine() throws ThingsboardException {
+        SecurityUser user = getCurrentUser();
+        String userId = user.getId().toString();
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+        String cwkid = userService.getUserCurrentCwkid(userId);
+        Map<String, String> result = new HashMap<>();
+        result.put("pkOrg", pkOrg);
+        result.put("cwkid", cwkid);
+        return ResultUtil.success(result);
+    }
 }

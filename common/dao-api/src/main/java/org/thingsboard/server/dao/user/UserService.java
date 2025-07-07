@@ -174,4 +174,26 @@ public interface UserService {
 	 * @return
 	 */
 	List<NcWorkline> findLineListByUserNameAndPkOrg(String username, String pkOrg);
+
+	/**
+	 * 保存当前用户的基地和产线到redis
+	 * @param userId
+	 * @param pkOrg
+	 * @param cwkid
+	 */
+	void saveUserCurrentOrgLine(String userId, String pkOrg, String cwkid);
+
+	/**
+	 * 获取当前用户的基地
+	 * @param userId
+	 * @return
+	 */
+	String getUserCurrentPkOrg(String userId);
+
+	/**
+	 * 获取当前用户的产线
+	 * @param userId
+	 * @return
+	 */
+	String getUserCurrentCwkid(String userId);
 }

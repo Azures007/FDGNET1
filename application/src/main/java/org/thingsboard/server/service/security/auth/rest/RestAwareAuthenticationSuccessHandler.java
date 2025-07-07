@@ -30,6 +30,8 @@ import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.service.security.auth.jwt.RefreshTokenRepository;
 import org.thingsboard.server.service.security.model.SecurityUser;
 import org.thingsboard.server.service.security.model.token.JwtTokenFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.thingsboard.server.dao.user.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +49,9 @@ public class RestAwareAuthenticationSuccessHandler implements AuthenticationSucc
     private final RefreshTokenRepository refreshTokenRepository;
     @Autowired
     RedisTemplate redisTemplate;
+    @Autowired
+    @Qualifier("userServiceImpl")
+    private UserService userService;
 
     @Autowired
     public RestAwareAuthenticationSuccessHandler(final ObjectMapper mapper, final JwtTokenFactory tokenFactory, final RefreshTokenRepository refreshTokenRepository) {
@@ -69,6 +74,8 @@ public class RestAwareAuthenticationSuccessHandler implements AuthenticationSucc
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+        // 登录时保存基地和产线到redis
+        userService.saveUserCurrentOrgLine(securityUser.getId().toString(), securityUser.getPkOrg(), securityUser.getCwkid());
         JwtToken accessToken = tokenFactory.createAccessJwtToken(securityUser);
         JwtToken refreshToken = refreshTokenRepository.requestRefreshToken(securityUser);
 

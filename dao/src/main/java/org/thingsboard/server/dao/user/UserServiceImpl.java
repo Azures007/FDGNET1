@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -109,6 +110,8 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
     @Autowired
     private NcWorklineService ncWorklineService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     public UserServiceImpl(UserDao userDao,
                            UserCredentialsDao userCredentialsDao,
@@ -784,5 +787,22 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         List<NcWorkline> lines = ncWorklineService.findAllByCwkids(cwkids);
 
         return lines;
+    }
+    @Override
+    public void saveUserCurrentOrgLine(String userId, String pkOrg, String cwkid) {
+        redisTemplate.opsForHash().put("user:orgline:" + userId, "pkOrg", pkOrg);
+        redisTemplate.opsForHash().put("user:orgline:" + userId, "cwkid", cwkid);
+    }
+
+    @Override
+    public String getUserCurrentPkOrg(String userId) {
+        Object val = redisTemplate.opsForHash().get("user:orgline:" + userId, "pkOrg");
+        return val != null ? val.toString() : null;
+    }
+
+    @Override
+    public String getUserCurrentCwkid(String userId) {
+        Object val = redisTemplate.opsForHash().get("user:orgline:" + userId, "cwkid");
+        return val != null ? val.toString() : null;
     }
 }
