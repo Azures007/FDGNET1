@@ -37,6 +37,8 @@ import org.thingsboard.server.common.data.id.CustomerId;
 import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.id.UserCredentialsId;
 import org.thingsboard.server.common.data.id.UserId;
+import org.thingsboard.server.common.data.nc_org.NcOrganization;
+import org.thingsboard.server.common.data.nc_workline.NcWorkline;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.security.Authority;
@@ -51,6 +53,8 @@ import org.thingsboard.server.dao.entity.AbstractEntityService;
 import org.thingsboard.server.dao.exception.DataValidationException;
 import org.thingsboard.server.dao.exception.IncorrectParameterException;
 import org.thingsboard.server.dao.model.ModelConstants;
+import org.thingsboard.server.dao.nc_org.NcOrganizationService;
+import org.thingsboard.server.dao.nc_workline.NcWorklineService;
 import org.thingsboard.server.dao.service.DataValidator;
 import org.thingsboard.server.dao.service.PaginatedRemover;
 import org.thingsboard.server.dao.sql.role.RoleUserRepository;
@@ -63,6 +67,7 @@ import org.thingsboard.server.dao.vo.UserVo;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.thingsboard.server.dao.service.Validator.*;
 
@@ -98,6 +103,12 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
     @Autowired
     UserDetailRepository userDetailRepository;
+
+    @Autowired
+    private NcOrganizationService ncOrganizationService;
+
+    @Autowired
+    private NcWorklineService ncWorklineService;
 
     public UserServiceImpl(UserDao userDao,
                            UserCredentialsDao userCredentialsDao,
@@ -748,5 +759,30 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
             deleteUser(tenantId, new UserId(entity.getUuidId()));
         }
     };
+    @Override
+    public List<NcOrganization> findBaseListByUserName(String username) {
+        User user = findUserByEmail(TenantId.SYS_TENANT_ID, username);
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        String userId = user.getId().toString();
+        List<TSysUserDetail> details = userDetailRepository.findByUserId(userId);
+        //获取NcPkOrg到list,并去重复
+        List<String> ncPkOrgs = details.stream().map(TSysUserDetail::getNcPkOrg).distinct().collect(Collectors.toList());
+        return ncOrganizationService.findAllByPkOrgs(ncPkOrgs);
+    }
 
+    @Override
+    public List<NcWorkline> findLineListByUserNameAndPkOrg(String username, String pkOrg) {
+        User user = findUserByEmail(TenantId.SYS_TENANT_ID, username);
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        String userId = user.getId().toString();
+        List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrg(userId, pkOrg);
+        List<String> cwkids = details.stream().map(TSysUserDetail::getNcCwkid).distinct().collect(Collectors.toList());
+        List<NcWorkline> lines = ncWorklineService.findAllByCwkids(cwkids);
+
+        return lines;
+    }
 }

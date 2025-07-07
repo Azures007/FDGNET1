@@ -51,4 +51,13 @@ public interface UserDetailRepository extends JpaRepository<TSysUserDetail, Inte
      * @param userId 用户ID
      */
     void deleteByUserId(String userId);
+
+    /**
+     * 根据用户ID和基地ID查询用户详细信息
+     * @param userId 用户ID
+     * @param ncPkOrg 基地ID
+     * @return 用户详细信息
+     */
+    @Query("SELECT t FROM TSysUserDetail t WHERE t.userId = :userId AND t.ncPkOrg = :ncPkOrg")
+    List<TSysUserDetail> findByUserIdAndNcPkOrg(@Param("userId") String userId, @Param("ncPkOrg") String ncPkOrg);
 }

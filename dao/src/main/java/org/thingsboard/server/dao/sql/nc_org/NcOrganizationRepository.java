@@ -9,7 +9,7 @@ import org.thingsboard.server.common.data.nc_org.NcOrganization;
 
 import java.util.List;
 
-public interface NcOrganizationRepository extends JpaRepository<NcOrganization, Integer> {
+public interface NcOrganizationRepository extends JpaRepository<NcOrganization, String> {
     NcOrganization findByPkOrg(String pkOrg);
 
     @Modifying
@@ -17,4 +17,5 @@ public interface NcOrganizationRepository extends JpaRepository<NcOrganization, 
     void softDeleteBatchByIds(@Param("ids") List<String> ids);
 
     List<NcOrganization> findByStatus(String status);
+    List<NcOrganization> findByPkOrgInAndStatus(List<String> pkOrg, String status);
 }

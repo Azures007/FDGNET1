@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.thingsboard.server.common.data.nc_org.NcOrganization;
 import org.thingsboard.server.common.data.nc_workline.NcWorkline;
 
 import java.util.List;
@@ -19,4 +20,5 @@ public interface NcWorklineRepository extends JpaRepository<NcWorkline, Integer>
     List<NcWorkline> findByStatus(String status);
 
     List<NcWorkline> findByPkOrgAndStatus(String pkOrg, String status);
+    List<NcWorkline> findByCwkidInAndStatus(List<String> cwkid, String status);
 }
