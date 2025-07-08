@@ -31,6 +31,8 @@ public class SecurityUser extends User {
     private Collection<GrantedAuthority> authorities;
     private boolean enabled;
     private UserPrincipal userPrincipal;
+    private String pkOrg;
+    private String cwkid;
 
     public SecurityUser() {
         super();
@@ -70,5 +72,10 @@ public class SecurityUser extends User {
     public void setUserPrincipal(UserPrincipal userPrincipal) {
         this.userPrincipal = userPrincipal;
     }
+
+    public String getPkOrg() { return pkOrg; }
+    public void setPkOrg(String pkOrg) { this.pkOrg = pkOrg; }
+    public String getCwkid() { return cwkid; }
+    public void setCwkid(String cwkid) { this.cwkid = cwkid; }
 
 }

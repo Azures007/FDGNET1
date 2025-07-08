@@ -80,7 +80,7 @@ public class RestLoginProcessingFilter extends AbstractAuthenticationProcessingF
         UserPrincipal principal = new UserPrincipal(UserPrincipal.Type.USER_NAME, loginRequest.getUsername());
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(principal, loginRequest.getPassword());
-        token.setDetails(authenticationDetailsSource.buildDetails(request));
+        token.setDetails(loginRequest);
         return this.getAuthenticationManager().authenticate(token);
     }
 

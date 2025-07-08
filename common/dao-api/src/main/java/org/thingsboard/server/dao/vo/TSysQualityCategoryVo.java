@@ -6,13 +6,20 @@ import lombok.Data;
 import org.thingsboard.server.common.data.TSysQualityCategory;
 import org.thingsboard.server.common.data.TSysQualityCategoryConfig;
 
+import javax.persistence.Column;
 import java.util.List;
 
 @Data
 @ApiModel("质检类目明细")
 public class TSysQualityCategoryVo extends TSysQualityCategory {
 
-    @ApiModelProperty("班别和组长关系")
+//    @ApiModelProperty("关键工序")
+//    private String keyProcessName;
+//
+//    @ApiModelProperty("监控方法")
+//    private String monitoringMethodName;
+
+    @ApiModelProperty("质检类目配置表")
     List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList;
 
     public List<TSysQualityCategoryConfig> gettSysQualityCategoryConfigList() {

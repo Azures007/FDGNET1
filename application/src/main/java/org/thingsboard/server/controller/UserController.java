@@ -44,6 +44,8 @@ import org.thingsboard.server.common.data.id.CustomerId;
 import org.thingsboard.server.common.data.id.EdgeId;
 import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.id.UserId;
+import org.thingsboard.server.common.data.nc_org.NcOrganization;
+import org.thingsboard.server.common.data.nc_workline.NcWorkline;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.security.Authority;
@@ -643,5 +645,42 @@ public class UserController extends BaseController {
         updateAndSaveDto.setRole_id(roleId);
         updateAndSave(updateAndSaveDto, response, request);
         return ResultUtil.success();
+    }
+
+    @ApiOperation("根据用户名获取基地列表（无认证）")
+    @GetMapping("/noauth/user/orgList")
+    public ResponseResult<List<NcOrganization>> getBaseListByUserName(@RequestParam("username") String username) {
+        List<NcOrganization> list = userService.findBaseListByUserName(username);
+        return ResultUtil.success(list);
+    }
+
+    @ApiOperation("根据用户名和基地ID获取产线列表（无认证）")
+    @GetMapping("/noauth/user/worklineList")
+    public ResponseResult<List<NcWorkline>> getWorkLineListByUserNameAndPkOrg(
+            @RequestParam("username") String username,
+            @RequestParam("pkOrg") String pkOrg) {
+        List<NcWorkline> list = userService.findLineListByUserNameAndPkOrg(username, pkOrg);
+        return ResultUtil.success(list);
+    }
+
+    @ApiOperation("切换当前用户的基地和产线")
+    @PostMapping("/user/switchOrgLine")
+    public ResponseResult<Void> switchOrgLine(@RequestParam("pkOrg") String pkOrg,
+                                              @RequestParam("cwkid") String cwkid) throws ThingsboardException {
+        SecurityUser user = getCurrentUser();
+        userService.saveUserCurrentOrgLine(user.getId().toString(), pkOrg, cwkid);
+        return ResultUtil.success();
+    }
+    @ApiOperation("获取当前用户的基地和产线")
+    @GetMapping("/user/currentOrgLine")
+    public ResponseResult<Map<String, String>> getCurrentOrgLine() throws ThingsboardException {
+        SecurityUser user = getCurrentUser();
+        String userId = user.getId().toString();
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+        String cwkid = userService.getUserCurrentCwkid(userId);
+        Map<String, String> result = new HashMap<>();
+        result.put("pkOrg", pkOrg);
+        result.put("cwkid", cwkid);
+        return ResultUtil.success(result);
     }
 }

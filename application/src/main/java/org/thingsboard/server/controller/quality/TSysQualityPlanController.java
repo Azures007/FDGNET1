@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -28,14 +29,14 @@ import java.util.Date;
  * @date 2025/6/27 15:12:11
  */
 @Api(value = "质检方案接口", tags = "质检方案接口")
-@RequestMapping("/api/tSysQualityPlanConfig")
+@RequestMapping("/api/tSysQualityPlan")
 @RestController
 public class TSysQualityPlanController extends BaseController {
 
     @Autowired
     private TSysQualityPlanService tSysQualityPlanService;
 
-    @ApiOperation("查询质检类目列表")
+    @ApiOperation("查询质检方案列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
             @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false)
@@ -53,7 +54,7 @@ public class TSysQualityPlanController extends BaseController {
 
 
 
-    @ApiOperation("保存/修改质检类目信息（id为空则表示新增，id不为空表示修改）")
+    @ApiOperation("保存/修改质检方案信息（id为空则表示新增，id不为空表示修改）")
     @PostMapping("/saveQualityPlan")
     public ResponseResult saveQualityPlan(@RequestBody TSysQualityPlanImportParam tSysQualityPlanImportParam) throws Exception {
         SecurityUser currentUser = getCurrentUser();
@@ -64,7 +65,7 @@ public class TSysQualityPlanController extends BaseController {
         return ResultUtil.success();
     }
 
-    @ApiOperation("删除质检类目")
+    @ApiOperation("删除质检方案")
     @GetMapping("/deleteQualityPlan")
     public ResponseResult deleteQualityPlan(@RequestParam("categoryId") Integer categoryId) {
         tSysQualityPlanService.deleteTSysQualityPlan(categoryId);
@@ -87,17 +88,20 @@ public class TSysQualityPlanController extends BaseController {
 
     @ApiOperation("禁用控制接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "categoryId", value = "班别ID", required = true),
+            @ApiImplicitParam(name = "planId", value = "方案ID", required = true),
             @ApiImplicitParam(name = "enabledSt", value = "禁用标识 0：禁用 1：启用", required = true)
     })
-    @GetMapping("/isEnabled")
-    public ResponseResult isEnabled(@RequestParam("categoryId") Integer categoryId, @RequestParam("enabledSt") Integer isEnabled) throws Exception {
-        TSysQualityPlan tSysQualityPlan = tSysQualityPlanService.getQualityPlanById(categoryId);
-        tSysQualityPlan.setIsEnabled(isEnabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
+    @PostMapping("/isEnabled")
+    public ResponseResult isEnabled(@RequestParam("planId") Integer planId, @RequestParam("enabledSt") Integer isEnabled) throws Exception {
+        TSysQualityPlanVo tSysQualityPlanVo = tSysQualityPlanService.getQualityPlanById(planId);
+        tSysQualityPlanVo.setIsEnabled(isEnabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
 //        this.saveClass(tSysClass);
         SecurityUser currentUser = getCurrentUser();
-        tSysQualityPlan.setUpdateUser(currentUser.getName());
-        tSysQualityPlan.setUpdateTime(new Date());
+        tSysQualityPlanVo.setUpdateUser(currentUser.getName());
+        tSysQualityPlanVo.setUpdateTime(new Date());
+
+        TSysQualityPlan tSysQualityPlan = new TSysQualityPlan();
+        BeanUtils.copyProperties(tSysQualityPlanVo,tSysQualityPlan);
         tSysQualityPlanService.saveTSysQualityPlan(tSysQualityPlan);
         return ResultUtil.success();
     }

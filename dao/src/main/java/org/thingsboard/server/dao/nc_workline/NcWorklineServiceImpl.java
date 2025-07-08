@@ -40,4 +40,8 @@ public class NcWorklineServiceImpl implements NcWorklineService {
     public List<NcWorkline> findByVwkcodeOrVwknameLike(String keyword) {
         return repository.findByVwkcodeOrVwknameLike(keyword);
     }
+    @Override
+    public List<NcWorkline> findAllByCwkids(List<String> cwkids) {
+        return repository.findByCwkidInAndStatus(cwkids, "生效");
+    }
 }

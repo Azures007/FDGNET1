@@ -26,4 +26,8 @@ public class NcOrganizationServiceImpl implements NcOrganizationService {
     public List<NcOrganization> findAll() {
         return repository.findByStatus("生效");
     }
+    @Override
+    public List<NcOrganization> findAllByPkOrgs(List<String> pkOrg) {
+        return repository.findByPkOrgInAndStatus(pkOrg, "生效");
+    }
 }

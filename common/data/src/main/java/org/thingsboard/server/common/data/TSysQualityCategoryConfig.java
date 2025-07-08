@@ -33,6 +33,10 @@ public class TSysQualityCategoryConfig {
     @Column(name = "material_id")
     private Integer materialId;
 
+    @ApiModelProperty("品名")
+    @Column(name = "material_Name")
+    private String materialName;
+
     @ApiModelProperty("字段名称")
     @Column(name = "field_name")
     private String fieldName;

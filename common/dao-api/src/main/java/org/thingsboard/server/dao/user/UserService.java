@@ -23,6 +23,8 @@ import org.thingsboard.server.common.data.id.CustomerId;
 import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.id.UserCredentialsId;
 import org.thingsboard.server.common.data.id.UserId;
+import org.thingsboard.server.common.data.nc_org.NcOrganization;
+import org.thingsboard.server.common.data.nc_workline.NcWorkline;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.security.UserCredentials;
@@ -157,4 +159,41 @@ public interface UserService {
 	 * @return
 	 */
 	List<TSysUserDetail> listUserDetail(String userId);
+
+	/**
+	 * 获取用户的基地列表
+	 * @param username
+	 * @return
+	 */
+	List<NcOrganization> findBaseListByUserName(String username);
+
+	/**
+	 * 获取用户在某基地下的产线列表
+	 * @param username
+	 * @param pkOrg
+	 * @return
+	 */
+	List<NcWorkline> findLineListByUserNameAndPkOrg(String username, String pkOrg);
+
+	/**
+	 * 保存当前用户的基地和产线到redis
+	 * @param userId
+	 * @param pkOrg
+	 * @param cwkid
+	 */
+	void saveUserCurrentOrgLine(String userId, String pkOrg, String cwkid);
+
+	/**
+	 * 获取当前用户的基地
+	 * @param userId
+	 * @return
+	 */
+	String getUserCurrentPkOrg(String userId);
+
+	/**
+	 * 获取当前用户的产线
+	 * @param userId
+	 * @return
+	 */
+	String getUserCurrentCwkid(String userId);
 }

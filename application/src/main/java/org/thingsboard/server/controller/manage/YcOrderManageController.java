@@ -6,14 +6,17 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
+import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.dto.TBusOrderDto;
 import org.thingsboard.server.dao.order.OrderHeadService;
 import org.thingsboard.server.dao.vo.OrderDetailSimpleVo;
 import org.thingsboard.server.dao.vo.OrderSimpleListVo;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.service.order.OrderHeadExcelService;
+import org.thingsboard.server.service.security.model.SecurityUser;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,7 +24,7 @@ import java.io.IOException;
 @Api(value = "YC订单接口", tags = "YC订单接口")
 @RequestMapping("/api/manage/orderhead")
 @RestController
-public class YcOrderManageController {
+public class YcOrderManageController extends BaseController {
     @Autowired
     protected OrderHeadService orderHeadService;
     @Autowired
@@ -34,7 +37,8 @@ public class YcOrderManageController {
     @PostMapping("/query")
     public ResponseResult<PageVo<OrderSimpleListVo>> query(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                           @RequestBody TBusOrderDto orderDto) {
+                                                           @RequestBody TBusOrderDto orderDto) throws ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
         return ResultUtil.success(orderHeadService.getSimpleOrderList(current, size, orderDto));
     }
     @ApiOperation("订单详情")

@@ -27,10 +27,19 @@ public class LoginRequest {
 
     private String password;
 
+    private String pkOrg;
+
+    private String cwkid;
+
     @JsonCreator
-    public LoginRequest(@JsonProperty("username") String username, @JsonProperty("password") String password) {
+    public LoginRequest(@JsonProperty("username") String username,
+                        @JsonProperty("password") String password,
+                        @JsonProperty("pkOrg") String pkOrg,
+                        @JsonProperty("cwkid") String cwkid) {
         this.username = username;
         this.password = password;
+        this.pkOrg = pkOrg;
+        this.cwkid = cwkid;
     }
 
     @ApiModelProperty(position = 1, required = true, value = "User email", example = "tenant@thingsboard.org")
@@ -41,5 +50,13 @@ public class LoginRequest {
     @ApiModelProperty(position = 2, required = true, value = "User password", example = "tenant")
     public String getPassword() {
         return password;
+    }
+
+    public String getPkOrg() {
+        return pkOrg;
+    }
+
+    public String getCwkid() {
+        return cwkid;
     }
 }

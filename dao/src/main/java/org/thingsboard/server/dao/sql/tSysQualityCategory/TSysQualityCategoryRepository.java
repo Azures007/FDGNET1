@@ -23,7 +23,7 @@ public interface TSysQualityCategoryRepository extends JpaRepository<TSysQuality
             "FROM t_sys_quality_category t \n" +
             "where 1=1 " +
             "and (t.is_enabled like %:#{#tSysQualityCategory.isEnabled}% or :#{#tSysQualityCategory.isEnabled} is null or :#{#tSysQualityCategory.isEnabled} ='')\n" +
-            "and (t.ininspection_item like %:#{#tSysQualityCategory.inspectionItem}% or :#{#tSysQualityCategory.inspectionItem} is null or :#{#tSysQualityCategory.inspectionItem} ='')\n" +
+            "and (t.inspection_item like %:#{#tSysQualityCategory.inspectionItem}% or :#{#tSysQualityCategory.inspectionItem} is null or :#{#tSysQualityCategory.inspectionItem} ='')\n" +
             "and (t.key_process like %:#{#tSysQualityCategory.keyProcess}% or :#{#tSysQualityCategory.keyProcess} is null or :#{#tSysQualityCategory.keyProcess} ='')\n" +
             "and (t.product_name=:#{#tSysQualityCategory.productName} or :#{#tSysQualityCategory.productName} is null or :#{#tSysQualityCategory.productName} ='')",nativeQuery = true)
     Page<TSysQualityCategory> findAllBy(@Param("tSysQualityCategory") TSysQualityCategory tSysQualityCategory, Pageable pageable);

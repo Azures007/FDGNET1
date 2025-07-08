@@ -110,6 +110,11 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
                 throw new InsufficientAuthenticationException("User has no authority assigned");
 
             SecurityUser securityUser = new SecurityUser(user, userCredentials.isEnabled(), userPrincipal);
+            if (authentication.getDetails() instanceof LoginRequest) {
+                LoginRequest loginRequest = (LoginRequest) authentication.getDetails();
+                securityUser.setPkOrg(loginRequest.getPkOrg());
+                securityUser.setCwkid(loginRequest.getCwkid());
+            }
             logLoginAction(user, authentication, ActionType.LOGIN, null);
             return new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
         } catch (Exception e) {

@@ -91,7 +91,8 @@ public class JwtTokenFactory {
         if (securityUser.getCustomerId() != null) {
             claims.put(CUSTOMER_ID, securityUser.getCustomerId().getId().toString());
         }
-
+        claims.put("pkOrg", securityUser.getPkOrg());
+        claims.put("cwkid", securityUser.getCwkid());
         ZonedDateTime currentTime = ZonedDateTime.now();
 
         String token = Jwts.builder()
@@ -132,7 +133,8 @@ public class JwtTokenFactory {
         if (customerId != null) {
             securityUser.setCustomerId(new CustomerId(UUID.fromString(customerId)));
         }
-
+        securityUser.setPkOrg(claims.get("pkOrg", String.class));
+        securityUser.setCwkid(claims.get("cwkid", String.class));
         return securityUser;
     }
 
