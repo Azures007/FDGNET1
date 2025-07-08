@@ -94,10 +94,10 @@ public class TSysQualityCategoryController extends BaseController {
 
     @ApiOperation("禁用控制接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "categoryId", value = "班别ID", required = true),
+            @ApiImplicitParam(name = "categoryId", value = "类目ID", required = true),
             @ApiImplicitParam(name = "enabledSt", value = "禁用标识 0：禁用 1：启用", required = true)
     })
-    @GetMapping("/isEnabled")
+    @PostMapping("/isEnabled")
     public ResponseResult isEnabled(@RequestParam("categoryId") Integer categoryId, @RequestParam("enabledSt") Integer isEnabled) throws Exception {
         TSysQualityCategoryVo tSysQualityCategoryVo = tSysQualityCategoryService.getQualityCategoryById(categoryId);
         tSysQualityCategoryVo.setIsEnabled(isEnabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);

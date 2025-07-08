@@ -88,12 +88,12 @@ public class TSysQualityPlanController extends BaseController {
 
     @ApiOperation("禁用控制接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "categoryId", value = "班别ID", required = true),
+            @ApiImplicitParam(name = "planId", value = "方案ID", required = true),
             @ApiImplicitParam(name = "enabledSt", value = "禁用标识 0：禁用 1：启用", required = true)
     })
-    @GetMapping("/isEnabled")
-    public ResponseResult isEnabled(@RequestParam("categoryId") Integer categoryId, @RequestParam("enabledSt") Integer isEnabled) throws Exception {
-        TSysQualityPlanVo tSysQualityPlanVo = tSysQualityPlanService.getQualityPlanById(categoryId);
+    @PostMapping("/isEnabled")
+    public ResponseResult isEnabled(@RequestParam("planId") Integer planId, @RequestParam("enabledSt") Integer isEnabled) throws Exception {
+        TSysQualityPlanVo tSysQualityPlanVo = tSysQualityPlanService.getQualityPlanById(planId);
         tSysQualityPlanVo.setIsEnabled(isEnabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
 //        this.saveClass(tSysClass);
         SecurityUser currentUser = getCurrentUser();
