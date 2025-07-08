@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.*;
 import org.thingsboard.server.dao.dto.TSysQualityCategoryDto;
 import org.thingsboard.server.dao.dto.TSysQualityPlanDto;
@@ -60,7 +61,6 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 
 
 //        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
-        //todo 这里要改成联查模糊搜索
         //产品名称
         tSysQualityPlan.setPlanName(StringUtils.isNotBlank(tSysQualityPlan.getPlanName())?tSysQualityPlan.getPlanName():"");
         //部门名称
@@ -82,6 +82,7 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
     }
 
     @Override
+    @Transactional
     public void saveTSysQualityPlanDetail(TSysQualityPlan tSysQualityPlan, List<TSysQualityPlanJudgment> tSysQualityPlanJudgmentList, List<TSysQualityPlanConfig> tSysQualityPlanConfigList) {
         this.saveTSysQualityPlan(tSysQualityPlan);
         this.saveTSysQualityPlanJudgment(tSysQualityPlan.getId(),tSysQualityPlanJudgmentList);
@@ -128,6 +129,7 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
     }
 
     @Override
+    @Transactional
     public void deleteTSysQualityPlan(Integer categoryId) {
         tSysQualityPlanRepository.deleteById(categoryId);
         tSysQualityPlanConfigRepository.deleteByPlanId(categoryId);

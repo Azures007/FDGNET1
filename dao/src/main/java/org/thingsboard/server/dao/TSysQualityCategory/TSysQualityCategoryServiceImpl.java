@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.TSysClass;
 import org.thingsboard.server.common.data.TSysQualityCategory;
 import org.thingsboard.server.common.data.TSysQualityCategoryConfig;
@@ -106,7 +107,9 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
 //        }
     }
 
+
     @Override
+    @Transactional
     public void saveTSysQualityCategoryConfig(Integer categoryId, List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList) {
         tSysQualityCategoryConfigRepository.deleteByCategoryId(categoryId);
         tSysQualityCategoryConfigList.forEach(tSysQualityCategoryConfig -> tSysQualityCategoryConfig.setCategoryId(categoryId));
