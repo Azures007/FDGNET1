@@ -118,6 +118,7 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
     }
 
     @Override
+    @Transactional
     public void deleteTSysQualityCategory(Integer categoryId) {
         tSysQualityCategoryRepository.deleteById(categoryId);
         tSysQualityCategoryConfigRepository.deleteByCategoryId(categoryId);
