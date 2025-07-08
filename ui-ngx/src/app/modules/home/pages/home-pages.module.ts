@@ -52,6 +52,7 @@ import { ClassModule } from '@home/pages/class/class.module';
 import { BasketModule } from '@home/pages/basket/basket.module';
 import { SpecificationModule } from '@home/pages/specification/specification.module';
 import { MenuModule } from '@home/pages/menu/menu.module';
+import { QualityModule } from '@home/pages/quality/quality.module';
 
 @NgModule({
   exports: [
@@ -85,7 +86,8 @@ import { MenuModule } from '@home/pages/menu/menu.module';
     BasketModule,
     PickingModule,
     SpecificationModule,
-    MenuModule
+    MenuModule,
+    QualityModule
   ],
   providers: [
     {

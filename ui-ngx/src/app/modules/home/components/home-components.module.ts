@@ -172,6 +172,7 @@ import { SpecAddComponent } from './spec/spec-add.component';
 import { MenuAddComponent } from './menu-admin/menu-add.component';
 import { ChooseBaseComponent } from '@home/components/account/pick/choose-base.component';
 import { CraftDetailComponent } from '@home/components/order/craft-detail.component';
+import { AddCateComponent } from './quality/add-cate.component';
 
 
 
@@ -323,6 +324,7 @@ import { CraftDetailComponent } from '@home/components/order/craft-detail.compon
       AddFingerComponent,
       SpecAddComponent,
       MenuAddComponent,
+      AddCateComponent
     ],
   imports: [
     CommonModule,
