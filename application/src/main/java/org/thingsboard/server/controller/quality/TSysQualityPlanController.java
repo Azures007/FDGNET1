@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ import java.util.Date;
  * @date 2025/6/27 15:12:11
  */
 @Api(value = "质检方案接口", tags = "质检方案接口")
-@RequestMapping("/api/tSysQualityPlanConfig")
+@RequestMapping("/api/tSysQualityPlan")
 @RestController
 public class TSysQualityPlanController extends BaseController {
 
@@ -92,12 +93,15 @@ public class TSysQualityPlanController extends BaseController {
     })
     @GetMapping("/isEnabled")
     public ResponseResult isEnabled(@RequestParam("categoryId") Integer categoryId, @RequestParam("enabledSt") Integer isEnabled) throws Exception {
-        TSysQualityPlan tSysQualityPlan = tSysQualityPlanService.getQualityPlanById(categoryId);
-        tSysQualityPlan.setIsEnabled(isEnabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
+        TSysQualityPlanVo tSysQualityPlanVo = tSysQualityPlanService.getQualityPlanById(categoryId);
+        tSysQualityPlanVo.setIsEnabled(isEnabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
 //        this.saveClass(tSysClass);
         SecurityUser currentUser = getCurrentUser();
-        tSysQualityPlan.setUpdateUser(currentUser.getName());
-        tSysQualityPlan.setUpdateTime(new Date());
+        tSysQualityPlanVo.setUpdateUser(currentUser.getName());
+        tSysQualityPlanVo.setUpdateTime(new Date());
+
+        TSysQualityPlan tSysQualityPlan = new TSysQualityPlan();
+        BeanUtils.copyProperties(tSysQualityPlanVo,tSysQualityPlan);
         tSysQualityPlanService.saveTSysQualityPlan(tSysQualityPlan);
         return ResultUtil.success();
     }

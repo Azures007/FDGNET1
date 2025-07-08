@@ -38,6 +38,8 @@ public class TSysQualityPlan {
     @Column(name = "production_line_id")
     private Integer productionLineId;
 
+    @ApiModelProperty("生产线名称")
+    @Column(name = "production_line_name")
     private String productionLineName;
 
     @ApiModelProperty("备注")

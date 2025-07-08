@@ -99,12 +99,15 @@ public class TSysQualityCategoryController extends BaseController {
     })
     @GetMapping("/isEnabled")
     public ResponseResult isEnabled(@RequestParam("categoryId") Integer categoryId, @RequestParam("enabledSt") Integer isEnabled) throws Exception {
-        TSysQualityCategory tSysQualityCategory = tSysQualityCategoryService.getQualityCategoryById(categoryId);
-        tSysQualityCategory.setIsEnabled(isEnabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
+        TSysQualityCategoryVo tSysQualityCategoryVo = tSysQualityCategoryService.getQualityCategoryById(categoryId);
+        tSysQualityCategoryVo.setIsEnabled(isEnabled == 1 ? GlobalConstant.enableTrue : GlobalConstant.enableFalse);
 //        this.saveClass(tSysClass);
         SecurityUser currentUser = getCurrentUser();
-        tSysQualityCategory.setUpdateUser(currentUser.getName());
-        tSysQualityCategory.setUpdateTime(new Date());
+        tSysQualityCategoryVo.setUpdateUser(currentUser.getName());
+        tSysQualityCategoryVo.setUpdateTime(new Date());
+
+        TSysQualityCategory tSysQualityCategory = new TSysQualityCategory();
+        BeanUtils.copyProperties(tSysQualityCategoryVo,tSysQualityCategory);
         tSysQualityCategoryService.saveTSysQualityCategory(tSysQualityCategory);
         return ResultUtil.success();
     }
