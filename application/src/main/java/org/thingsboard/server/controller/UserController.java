@@ -667,8 +667,12 @@ public class UserController extends BaseController {
     @PostMapping("/user/switchOrgLine")
     public ResponseResult<Void> switchOrgLine(@RequestParam("pkOrg") String pkOrg,
                                               @RequestParam("cwkid") String cwkid) throws ThingsboardException {
-        SecurityUser user = getCurrentUser();
-        userService.saveUserCurrentOrgLine(user.getId().toString(), pkOrg, cwkid);
+        SecurityUser securityUser = getCurrentUser();
+        if(securityUser != null&& securityUser.getPkOrg()!=null&&securityUser.getCwkid()!=null) {
+            // 保存基地和产线到redis
+            userService.saveUserCurrentOrgLine(securityUser.getId().toString(), pkOrg, cwkid);
+        }
+
         return ResultUtil.success();
     }
     @ApiOperation("获取当前用户的基地和产线")
