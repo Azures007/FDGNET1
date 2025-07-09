@@ -14,21 +14,20 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ClassService } from '@app/core/http/class.service';
 import { MatSort } from '@angular/material/sort';
-import { AddCateComponent } from '../../components/quality/add-cate.component';
+import { AddPlanComponent } from '../../components/quality/add-plan.component';
 
 
 @Component({
-  selector: 'tb-quality-cate',
-  templateUrl: './quality-cate.html',
-  styleUrls: ['./quality-cate.scss', './quality.component.scss']
+  selector: 'tb-quality-plan',
+  templateUrl: './quality-plan.html',
+  styleUrls: ['./quality-plan.scss', './quality.component.scss']
 })
-export class QualityCateComponent implements OnInit {
+export class QualityPlanComponent implements OnInit {
 
   @ViewChild(MatSort) sort: MatSort;
   searchData = {
-    inspectionItem: '',
-    keyProcess: '',
-    productName: '',
+    planName: '',
+    productionLineName: '',
     current: 0,
     size: 50,
   }
@@ -43,8 +42,7 @@ export class QualityCateComponent implements OnInit {
   tableData: any[] = [];
   dataSource = new MatTableDataSource<any>(this.tableData);
 
-  displayedColumns: string[] = ['no', 'inspectionItem', 'keyProcess', 'monitoringMethod', 'productName', 'remarks', 'isEnabled',
-    'customColumn1',];
+  displayedColumns: string[] = ['no', 'planName', 'productionLineName', 'remarks', 'isEnabled', 'customColumn1'];
 
   btns = JSON.parse(localStorage.getItem('btns'));
   set = new Set(this.btns);
@@ -116,9 +114,8 @@ export class QualityCateComponent implements OnInit {
   }
   resetQuery() {
     this.searchData = {
-      inspectionItem: '',
-      keyProcess: '',
-      productName: '',
+      planName: '',
+      productionLineName: '',
       current: 0,
       size: 50,
     }
@@ -137,14 +134,13 @@ export class QualityCateComponent implements OnInit {
       sortField: this.sort?.active,
       sortOrder: this.sort?.direction,
       body: {
-        inspectionItem: this.searchData.inspectionItem,
-        keyProcess: this.searchData.keyProcess,
-        productName: this.searchData.productName,
+        planName: this.searchData.planName,
+        productionLineName: this.searchData.productionLineName,
       }
     }
 
 
-    this.qualityService.fetchGetTableList(params).subscribe(res => {
+    this.qualityService.fetchGetPlanList(params).subscribe(res => {
 
       if (res.errcode === 200) {
 
@@ -232,7 +228,7 @@ export class QualityCateComponent implements OnInit {
     if (data.type) {
       this.qualityService.fetchGetDetails(data.data.id).subscribe(res => {
         data.data = res.data;
-        let dialogRef = this.dialog.open(AddCateComponent, {
+        let dialogRef = this.dialog.open(AddPlanComponent, {
           width: "1400px",
           height: "auto",
           panelClass: 'custom-modalbox',
@@ -243,14 +239,14 @@ export class QualityCateComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result && result === 'refresh') {
             this.searchList();
-            const msg = data.type ? (data.type === 'details' ? '查看质检' : '编辑质检') : '新增质检';
+            const msg = data.type ? (data.type === 'details' ? '查看方案' : '编辑方案') : '新增方案';
             this.utils.showMessage(`${msg}成功`, 'success');
           }
         });
       })
       return;
     }
-    let dialogRef = this.dialog.open(AddCateComponent, {
+    let dialogRef = this.dialog.open(AddPlanComponent, {
       width: "1400px",
       height: "auto",
       panelClass: 'custom-modalbox',
@@ -261,7 +257,7 @@ export class QualityCateComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result === 'refresh') {
         this.searchList();
-        const msg = data.type ? (data.type === 'details' ? '查看质检' : '编辑质检') : '新增质检';
+        const msg = data.type ? (data.type === 'details' ? '查看方案' : '编辑方案') : '新增方案';
         this.utils.showMessage(`${msg}成功`, 'success');
       }
     });

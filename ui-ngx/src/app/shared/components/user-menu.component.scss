@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 :host {
+  .change-org {
+    font-size: 14px;
+    cursor: pointer;
+    color: #ff993c;
+    margin-right: 10px;
+  }
   div.tb-user-info {
     line-height: 1.5;
 

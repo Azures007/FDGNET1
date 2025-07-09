@@ -7,6 +7,7 @@ import { HomeComponentsModule } from '@modules/home/components/home-components.m
 
 import { QualityComponent } from './quality.component';
 import { QualityCateComponent } from './quality-cate.component';
+import { QualityPlanComponent } from './quality-plan.component';
 import { QualityRoutingModule } from './quality-routing.module';
 
 
@@ -30,7 +31,7 @@ const COMMISSION_DATE_FORMATS = {
 };
 
 @NgModule({
-  declarations: [QualityComponent, QualityCateComponent],
+  declarations: [QualityComponent, QualityCateComponent, QualityPlanComponent],
   imports: [
     CommonModule,
     SharedModule,

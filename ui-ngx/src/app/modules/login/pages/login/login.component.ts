@@ -19,11 +19,12 @@ import { AuthService } from '@core/auth/auth.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '@core/core.state';
 import { PageComponent } from '@shared/components/page.component';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Constants } from '@shared/models/constants';
 import { Router } from '@angular/router';
 import { OAuth2ClientInfo } from '@shared/models/oauth2.models';
+import { Utils } from '@app/modules/home/pages/order-management/w-utils';
 
 @Component({
   selector: 'tb-login',
@@ -33,14 +34,19 @@ import { OAuth2ClientInfo } from '@shared/models/oauth2.models';
 export class LoginComponent extends PageComponent implements OnInit {
 
   loginFormGroup = this.fb.group({
-    username: '',
-    password: ''
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required]],
+    pkOrg: ['', [Validators.required]],
+    cwkid: ['', [Validators.required]],
   });
   oauth2Clients: Array<OAuth2ClientInfo> = null;
-
+  orgList = [];
+  lineList = [];
+  userNameComplete = false;
   constructor(protected store: Store<AppState>,
               private authService: AuthService,
               public fb: FormBuilder,
+              private utils: Utils,
               private router: Router) {
     super(store);
   }
@@ -48,10 +54,31 @@ export class LoginComponent extends PageComponent implements OnInit {
   ngOnInit() {
     this.oauth2Clients = this.authService.oauth2Clients;
   }
-
+  changeOrg(e) {
+    this.authService.getLineList(this.loginFormGroup.value.username, this.loginFormGroup.value.pkOrg).subscribe(
+      (res: any) => {
+        this.lineList = res.data || [];
+      }
+    )
+  }
   login(): void {
+    if (!this.userNameComplete) {
+      if(!this.loginFormGroup.value.username) {
+        this.utils.showMessage('请输入账号', 'error');
+        return;
+      }
+      this.authService.getOrgList(this.loginFormGroup.value.username).subscribe(
+        (res: any) => {
+          this.orgList = res.data || [];
+          if(this.orgList.length) {
+            this.userNameComplete = true;
+          }
+        }
+      );
+      return;
+    }
     if (this.loginFormGroup.valid) {
-      
+
       this.authService.login(this.loginFormGroup.value).subscribe(
         () => {},
         (error: HttpErrorResponse) => {
