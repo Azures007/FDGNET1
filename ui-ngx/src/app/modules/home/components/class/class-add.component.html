@@ -30,7 +30,14 @@
             <span (click)="handleTeamLeader()" *ngIf="data.edit">选择</span>
         </div>
     </div>
-
+    <div class="item bind_item">
+        <div class="label">车间主任:</div>
+        <div class="right">
+            <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.tSysClass.workshopDirector"
+                placeholder="请选择">
+            <span (click)="handleWorkshopDirector()" *ngIf="data.edit">选择</span>
+        </div>
+    </div>
     <div class="item">
         <div class="label">排班:</div>
         <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.scheduling" required
