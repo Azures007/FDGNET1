@@ -1,11 +1,13 @@
 package org.thingsboard.server.dao.ImportParam;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import org.thingsboard.server.common.data.TSysClass;
 import org.thingsboard.server.common.data.TSysClassGroupLeaderRel;
 
 import java.util.List;
 
+@Data
 public class TSysClassImportParam {
 
     @ApiModelProperty("班别类")

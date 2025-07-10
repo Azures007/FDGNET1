@@ -81,4 +81,12 @@ public class TSysClass {
     @Column(name = "class_team_number")
     private String classTeamNumber;
 
+    @ApiModelProperty("车间主任id")
+    @Column(name = "workshop_director_id")
+    private Integer workshopDirectorId;
+
+    @ApiModelProperty("车间主任")
+    @Column(name = "workshop_director")
+    private String workshopDirector;
+
 }
