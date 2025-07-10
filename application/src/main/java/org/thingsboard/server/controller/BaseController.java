@@ -78,6 +78,7 @@ import org.thingsboard.server.dao.orderProcess.AppOrderProcessRecordDeleteServic
 import org.thingsboard.server.dao.orderProcess.AppOrderProcessRecordSubmitService;
 import org.thingsboard.server.dao.orderProcess.OrderProcessRecordService;
 import org.thingsboard.server.dao.ota.OtaPackageService;
+import org.thingsboard.server.dao.pd.YcPdService;
 import org.thingsboard.server.dao.relation.RelationService;
 import org.thingsboard.server.dao.role.RoleService;
 import org.thingsboard.server.dao.rpc.RpcService;
@@ -152,6 +153,9 @@ public abstract class BaseController {
 
     @Autowired
     ChargingBasketService chargingBasketService;
+
+    @Autowired
+    protected YcPdService ycPdService;
 
     @Autowired
     MenuService menuService;

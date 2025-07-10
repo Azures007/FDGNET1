@@ -1440,3 +1440,66 @@ COMMENT ON COLUMN public.t_bus_order_head.mid_mo_customer_type IS '客户类型'
 
 ALTER TABLE public.t_bus_order_head ADD mid_mo_desc varchar NULL;
 COMMENT ON COLUMN public.t_bus_order_head.mid_mo_desc IS '订单备注';
+
+-- 2025-7-9
+CREATE TABLE t_sys_pd_record(
+    pd_record_id serial NOT NULL,
+    pd_time timestamp NOT NULL,
+    material_number VARCHAR(255),
+    material_name VARCHAR(255),
+    material_specifications VARCHAR(255),
+    pd_unit VARCHAR(255),
+    pd_unit_str VARCHAR(255),
+    pd_qty NUMERIC(24,6),
+    pd_created_name VARCHAR(255),
+    pd_created_id VARCHAR(255),
+    pd_workshop_name VARCHAR(255),
+    pd_workshop_number VARCHAR(255),
+    pd_workshop_leader_name VARCHAR(255),
+    pd_workshop_leader_id VARCHAR(255),
+    pd_class_name VARCHAR(255),
+    pd_class_number VARCHAR(255),
+    by_deteled VARCHAR(1),
+    created_time timestamp NOT NULL,
+    created_name VARCHAR(255) NOT NULL,
+    by_fp VARCHAR(1) NOT NULL,
+    pd_type VARCHAR(1) NOT NULL,
+    pd_br VARCHAR(9999),
+    PRIMARY KEY (pd_record_id)
+);
+
+COMMENT ON TABLE t_sys_pd_record IS '友臣盘点记录表';
+COMMENT ON COLUMN t_sys_pd_record.pd_record_id IS 'id';
+COMMENT ON COLUMN t_sys_pd_record.pd_time IS '盘点时间';
+COMMENT ON COLUMN t_sys_pd_record.material_number IS '材料编码';
+COMMENT ON COLUMN t_sys_pd_record.material_name IS '材料名称';
+COMMENT ON COLUMN t_sys_pd_record.material_specifications IS '材料规格';
+COMMENT ON COLUMN t_sys_pd_record.pd_unit IS '单位';
+COMMENT ON COLUMN t_sys_pd_record.pd_unit_str IS '单位名称';
+COMMENT ON COLUMN t_sys_pd_record.pd_qty IS '盘点数量';
+COMMENT ON COLUMN t_sys_pd_record.pd_created_name IS '盘点人姓名';
+COMMENT ON COLUMN t_sys_pd_record.pd_created_id IS '盘点人id';
+COMMENT ON COLUMN t_sys_pd_record.pd_workshop_name IS '盘点车间名称';
+COMMENT ON COLUMN t_sys_pd_record.pd_workshop_number IS '盘点车间编码';
+COMMENT ON COLUMN t_sys_pd_record.pd_workshop_leader_name IS '盘点车间主任名称';
+COMMENT ON COLUMN t_sys_pd_record.pd_workshop_leader_id IS '盘点车间主任id';
+COMMENT ON COLUMN t_sys_pd_record.pd_class_name IS '盘点班组名称';
+COMMENT ON COLUMN t_sys_pd_record.pd_class_number IS '盘点班组编码';
+COMMENT ON COLUMN t_sys_pd_record.by_deteled IS '是否删除 0：否 1：是';
+COMMENT ON COLUMN t_sys_pd_record.created_time IS '创建时间';
+COMMENT ON COLUMN t_sys_pd_record.created_name IS '创建人（用户名）';
+COMMENT ON COLUMN t_sys_pd_record.by_fp IS '是否已复盘 0:否 1：是';
+COMMENT ON COLUMN t_sys_pd_record.pd_type IS '盘点类型 0：盘点 1：复盘';
+COMMENT ON COLUMN t_sys_pd_record.pd_br IS '备注';
+
+CREATE INDEX idx_pd_type ON t_sys_pd_record(pd_type);
+CREATE INDEX idx_pd_time ON t_sys_pd_record(pd_time);
+
+ALTER TABLE public.t_sys_pd_record ADD re_pd_record_id int4 NULL;
+COMMENT ON COLUMN public.t_sys_pd_record.re_pd_record_id IS ' 原盘点记录id';
+
+-- 2025-7-10
+ALTER TABLE public.t_sys_pd_record ADD pd_time_str varchar NULL;
+COMMENT ON COLUMN public.t_sys_pd_record.pd_time_str IS '盘点日期（格式yyyy-MM-dd）';
+
+ALTER TABLE public.t_sys_pd_record RENAME COLUMN by_deteled TO by_deleted;
