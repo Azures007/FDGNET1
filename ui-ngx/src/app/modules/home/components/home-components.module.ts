@@ -175,6 +175,7 @@ import { CraftDetailComponent } from '@home/components/order/craft-detail.compon
 import { AddCateComponent } from './quality/add-cate.component';
 import { AddPlanComponent } from './quality/add-plan.component';
 import { ChangeOrgComponent } from './account/change-org.component';
+import { ChooseDirectorComponent } from '@home/components/class/choose-director.component';
 
 
 @NgModule({
@@ -328,6 +329,7 @@ import { ChangeOrgComponent } from './account/change-org.component';
       AddCateComponent,
       AddPlanComponent,
       ChangeOrgComponent,
+      ChooseDirectorComponent,
     ],
   imports: [
     CommonModule,
