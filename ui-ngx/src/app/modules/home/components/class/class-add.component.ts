@@ -6,6 +6,7 @@ import { RoleService } from '@app/core/http/role.service';
 import { ClassService } from '@app/core/http/class.service';
 import { DialogService } from '@app/core/public-api';
 import { F } from '@angular/cdk/keycodes';
+import { ChooseDirectorComponent } from './choose-director.component';
 
 @Component({
   selector: 'tb-class-add',
@@ -113,7 +114,21 @@ export class ClassAddComponent implements OnInit {
       }
     })
   }
+  handleWorkshopDirector() {
+    let dialogRef = this._dialog.open(ChooseDirectorComponent, {
 
+      width: "1400px",
+      height: "800px",
+      panelClass: 'custom-modalbox',
+      data: {}
+    })
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.data.params.tSysClass.workshopDirector = result.name;
+        this.data.params.tSysClass.workshopDirectorId = result.personnelId;
+      }
+    });
+  }
   //提交
   submit(type) {
     console.log(this.data)
@@ -127,6 +142,10 @@ export class ClassAddComponent implements OnInit {
     }
     if (this.data.params.tSysClass.groupLeader == "") {
       this.utils.showMessage("组长不能为空", 'error');
+      return
+    }
+    if (this.data.params.tSysClass.workshopDirector == "") {
+      this.utils.showMessage("车间主任不能为空", 'error');
       return
     }
     if (this.data.params.tSysClass.scheduling == "") {

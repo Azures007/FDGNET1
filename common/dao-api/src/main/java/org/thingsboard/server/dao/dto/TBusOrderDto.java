@@ -30,14 +30,14 @@ public class TBusOrderDto {
     private Integer classId=0;*/
 
     @ApiModelProperty("单据日期-开始")
-    private String billDateStart;
+    private Date billDateStart;
     @ApiModelProperty("单据日期-结束")
-    private String billDateEnd;
+    private Date billDateEnd;
 
     @ApiModelProperty("nc_开工时间-开始")
-    private String ncReceiveTimeStart;
+    private Date ncReceiveTimeStart;
     @ApiModelProperty("nc_开工时间-结束")
-    private String ncReceiveTimeEnd;
+    private Date ncReceiveTimeEnd;
 
     /*@ApiModelProperty("计划开始时间-开始")
     private String planStartDateStart;

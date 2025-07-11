@@ -41,7 +41,7 @@ public class MesController extends BaseController{
         SecurityUser currentUser = getCurrentUser();
         String userId=String.valueOf(currentUser.getId().getId());
         MessageSizeVo messageSizeVo=messageService.getMessageSizeVo(userId);
-        GetOrderSizeVo getOrderSizeVo= orderHeadService.getOrderSize(currentUser.getId().getId().toString());
+        GetOrderSizeVo getOrderSizeVo= appOrderTaskService.getOrderSize(currentUser.getId().getId().toString());
         messageSizeVo.setGetOrderSizeVo(getOrderSizeVo);
         return ResultUtil.success(messageSizeVo);
     }

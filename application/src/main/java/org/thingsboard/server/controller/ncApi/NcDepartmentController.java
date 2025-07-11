@@ -31,4 +31,4 @@ public class NcDepartmentController {
         service.saveOrUpdateBatchByCdeptid(entitys);
         return ResultUtil.success("同步成功");
     }
-} 
+}

@@ -214,7 +214,7 @@ export class AddMaterialComponent implements OnInit {
   }
   addMaterial() {
     let dialogRef = this._dialog.open(ChooseMaterialComponent, {
-      width: "950px",
+      width: "1400px",
       height: "800px",
       panelClass: 'custom-modalbox',
       data: {}

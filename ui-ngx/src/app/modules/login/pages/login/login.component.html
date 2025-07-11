@@ -15,7 +15,7 @@
     limitations under the License.
 
 -->
-<div class="tb-login-content mat-app-background tb-dark" fxFlex>
+<div class="tb-login-content mat-app-background tb-default" fxFlex>
   <div class="login-title">
     <div class="title-ZH">
       工业物联网平台
@@ -93,11 +93,11 @@
             <mat-label translate>login.account</mat-label>
             <input id="username-input" matInput autofocus formControlName="username" placeholder="请输入账号"/>
             <mat-icon matPrefix>account_circle</mat-icon>
-            <!-- <mat-error *ngIf="loginFormGroup.get('username').invalid">
-              {{ 'user.invalid-email-format' | translate }}
-            </mat-error> -->
+            <mat-error *ngIf="loginFormGroup.hasError('required','username')">
+              请输入<strong>账号</strong>
+            </mat-error>
           </mat-form-field>
-       
+
 
           <!-- 密码 -->
           <mat-form-field style="width: 392px;padding-bottom: 0;">
@@ -105,8 +105,34 @@
             <input id="password-input" matInput type="password" formControlName="password" />
             <tb-toggle-password matSuffix></tb-toggle-password>
             <mat-icon matPrefix>lock</mat-icon>
+            <mat-error *ngIf="loginFormGroup.hasError('required','password')">
+              请输入<strong>密码</strong>
+            </mat-error>
           </mat-form-field>
-
+          <!-- 选择基地 -->
+          <mat-form-field style="width: 392px;padding-bottom: 0;">
+            <mat-label >选择基地</mat-label>
+            <mat-select formControlName="pkOrg" (ngModelChange)="changeOrg($event)">
+              <mat-option *ngFor="let item of orgList" [value]="item.pk_org">
+                {{item.org_name}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="loginFormGroup.hasError('required','pkOrg')">
+              请选择<strong>基地</strong>
+            </mat-error>
+          </mat-form-field>
+          <!-- 选择产线 -->
+          <mat-form-field style="width: 392px;padding-bottom: 0;">
+            <mat-label >选择产线</mat-label>
+            <mat-select formControlName="cwkid">
+              <mat-option *ngFor="let item of lineList" [value]="item.cwkid">
+                {{item.vwkname}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="loginFormGroup.hasError('required','cwkid')">
+              请选择<strong>产线</strong>
+            </mat-error>
+          </mat-form-field>
           <!-- 提交 -->
           <!-- <div fxLayoutAlign="end center" class="forgot-password">
             <button class="tb-reset-password" mat-button type="button" routerLink="/login/resetPasswordRequest">{{
@@ -118,8 +144,7 @@
             height: 60px;
             background: #ff993c;
             border-radius: 4px;
-            font-size: 20px;font-weight: 500;" [disabled]="(isLoading$ | async)" type="submit">{{ 'login.login' |
-              translate }}</button>
+            font-size: 20px;font-weight: 500;" [disabled]="(isLoading$ | async)" type="submit">{{ userNameComplete ? '登录' : '获取基地' }}</button>
           </div>
         </div>
 

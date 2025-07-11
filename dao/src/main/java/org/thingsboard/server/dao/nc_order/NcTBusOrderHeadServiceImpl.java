@@ -79,8 +79,9 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
         if (existingOrder != null) {
             // 先删除原有 bomList
             Integer orderId = existingOrder.getOrderId();
-            bomRepository.deleteAllByOrderId(orderId);
             bomRepository.deleteAllLinkByOrderId(orderId);
+            bomRepository.deleteAllByOrderId(cmoid);
+
             // 保留原有ID
             entity.setOrderId(orderId);
             // 确保cmoid一致
@@ -119,8 +120,8 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             NcTBusOrderHead existingOrder = repository.findByCmoid(entity.getCmoid());
             if (existingOrder != null) {
                 Integer orderId = existingOrder.getOrderId();
-                bomRepository.deleteAllByOrderId(orderId);
                 bomRepository.deleteAllLinkByOrderId(orderId);
+                bomRepository.deleteAllByOrderId(entity.getCmoid());
                 entity.setOrderId(orderId);
                 entity.setCmoid(existingOrder.getCmoid());
             }
@@ -143,20 +144,17 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
 
     @Override
     @Transactional
-    public void deleteBatchByCmoids(List<String> cmoids) {
-        if (cmoids == null || cmoids.isEmpty()) {
+    public void softDeleteBatchByCpmohids(List<String> cpmohids) {
+        if (cpmohids == null || cpmohids.isEmpty()) {
             return;
         }
-        List<NcTBusOrderHead> ordersToDelete = new ArrayList<>();
-        for (String cmoid : cmoids) {
-            NcTBusOrderHead order = repository.findByCmoid(cmoid);
-            if (order != null) {
-                order.setIsDeleted("1"); // 设置为删除状态
-                ordersToDelete.add(order);
-            }
+        List<String> vbillcodes = repository.findVbillcodeByCpmohids(cpmohids);
+
+        if(vbillcodes!=null && !vbillcodes.isEmpty()){
+            //逗号拼接vbillcodes
+            String vbillcodeStr = String.join(",", vbillcodes);
+            throw new IllegalArgumentException("订单已开工，请勿删除(单号："+vbillcodeStr+")");
         }
-        if (!ordersToDelete.isEmpty()) {
-            repository.saveAll(ordersToDelete);
-        }
+        repository.deleteByCpmohids(cpmohids);
     }
 }

@@ -41,8 +41,12 @@ public class NcTBusOrderPPBom {
     private String name;
 
     @Column(name = "material_specification")
-    @ApiModelProperty("规格型号")
+    @ApiModelProperty("规格")
     private String materialspec;
+
+    @Column(name = "nc_material_model")
+    @ApiModelProperty("型号")
+    private String materialModel;
 
     @Column(name = "unit")
     @ApiModelProperty("单位")
@@ -50,5 +54,5 @@ public class NcTBusOrderPPBom {
 
     @Column(name = "must_qty")
     @ApiModelProperty("需求数量")
-    private float nnum;
+    private double nnum;
 }

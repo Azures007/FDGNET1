@@ -5,4 +5,4 @@ import java.util.List;
 
 public interface NcDepartmentService {
     void saveOrUpdateBatchByCdeptid(List<NcDepartment> entitys);
-} 
+}

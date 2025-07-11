@@ -31,14 +31,6 @@ public interface UserDetailRepository extends JpaRepository<TSysUserDetail, Inte
     List<TSysUserDetail> findByNcPkOrg(@Param("ncPkOrg") String ncPkOrg);
 
     /**
-     * 根据部门ID查询用户详细信息列表
-     * @param ncCdeptid 部门ID
-     * @return 用户详细信息列表
-     */
-    @Query("SELECT t FROM TSysUserDetail t WHERE t.ncCdeptid = :ncCdeptid")
-    List<TSysUserDetail> findByNcCdeptid(@Param("ncCdeptid") String ncCdeptid);
-
-    /**
      * 根据产线ID查询用户详细信息列表
      * @param ncCwkid 产线ID
      * @return 用户详细信息列表
@@ -47,8 +39,25 @@ public interface UserDetailRepository extends JpaRepository<TSysUserDetail, Inte
     List<TSysUserDetail> findByNcCwkid(@Param("ncCwkid") String ncCwkid);
 
     /**
+     * 根据部门ID查询用户详细信息列表
+     * @param ncCdeptid 部门ID
+     * @return 用户详细信息列表
+     */
+    @Query("SELECT t FROM TSysUserDetail t WHERE t.ncCdeptid = :ncCdeptid")
+    List<TSysUserDetail> findByNcCdeptid(@Param("ncCdeptid") String ncCdeptid);
+
+    /**
      * 删除指定用户的详细信息
      * @param userId 用户ID
      */
     void deleteByUserId(String userId);
+
+    /**
+     * 根据用户ID和基地ID查询用户详细信息
+     * @param userId 用户ID
+     * @param ncPkOrg 基地ID
+     * @return 用户详细信息
+     */
+    @Query("SELECT t FROM TSysUserDetail t WHERE t.userId = :userId AND t.ncPkOrg = :ncPkOrg")
+    List<TSysUserDetail> findByUserIdAndNcPkOrg(@Param("userId") String userId, @Param("ncPkOrg") String ncPkOrg);
 }

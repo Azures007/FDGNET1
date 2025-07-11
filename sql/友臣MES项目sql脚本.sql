@@ -162,3 +162,55 @@ COMMENT ON COLUMN public.t_sys_user_detail.nc_cwkid IS '产线ID';
 COMMENT ON COLUMN public.t_sys_user_detail.nc_vwkname IS '产线名称';
 COMMENT ON COLUMN public.t_sys_user_detail.nc_cdeptid IS '部门ID';
 COMMENT ON COLUMN public.t_sys_user_detail.nc_cdeptname IS '部门名称';
+
+ALTER TABLE t_bus_order_head
+    ADD COLUMN nc_note VARCHAR(255);
+COMMENT ON COLUMN public.t_bus_order_head.nc_note IS '备注';
+
+ALTER TABLE t_bus_order_ppbom ADD COLUMN nc_material_model VARCHAR(255);
+COMMENT ON COLUMN public.t_bus_order_ppbom.nc_material_model IS '型号';
+
+ALTER TABLE t_sys_department ADD COLUMN is_delete VARCHAR(1) DEFAULT '0';
+COMMENT  ON COLUMN t_sys_department.is_delete IS '0:未删除 1:已删除';
+ALTER TABLE t_sys_warehouse ADD COLUMN is_delete VARCHAR(1) DEFAULT '0';
+COMMENT  ON COLUMN t_sys_warehouse.is_delete IS '0:未删除 1:已删除';
+ALTER TABLE t_sys_workline ADD COLUMN is_delete VARCHAR(1) DEFAULT '0';
+COMMENT  ON COLUMN t_sys_workline.is_delete IS '0:未删除 1:已删除';
+ALTER TABLE t_sys_organization ADD COLUMN is_delete VARCHAR(1) DEFAULT '0';
+COMMENT  ON COLUMN t_sys_organization.is_delete IS '0:未删除 1:已删除';
+ALTER TABLE t_bus_order_head ALTER COLUMN is_deleted SET DEFAULT '0';
+
+ALTER TABLE "public"."t_sys_workline" RENAME COLUMN "is_delete" TO "nc_status";
+
+ALTER TABLE "public"."t_sys_workline"
+ALTER COLUMN "nc_status" TYPE varchar(16) COLLATE "pg_catalog"."default";
+
+COMMENT ON COLUMN "public"."t_sys_workline"."nc_status" IS '状态：生效;失效';
+
+ALTER TABLE "public"."t_sys_organization" RENAME COLUMN "is_delete" TO "nc_status";
+
+ALTER TABLE "public"."t_sys_organization"
+ALTER COLUMN "nc_status" TYPE varchar(16) COLLATE "pg_catalog"."default";
+
+COMMENT ON COLUMN "public"."t_sys_organization"."nc_status" IS '状态：生效;失效';
+
+ALTER TABLE "public"."t_sys_warehouse" RENAME COLUMN "is_delete" TO "nc_status";
+
+ALTER TABLE "public"."t_sys_warehouse"
+ALTER COLUMN "nc_status" TYPE varchar(16) COLLATE "pg_catalog"."default";
+
+COMMENT ON COLUMN "public"."t_sys_warehouse"."nc_status" IS '状态：生效;失效';
+
+ALTER TABLE "public"."t_sys_department" RENAME COLUMN "is_delete" TO "nc_status";
+
+ALTER TABLE "public"."t_sys_department"
+ALTER COLUMN "nc_status" TYPE varchar(16) COLLATE "pg_catalog"."default";
+
+COMMENT ON COLUMN "public"."t_sys_department"."nc_status" IS '状态：生效;失效';
+
+-- 2025-07-01 班别 增加车间主任
+ALTER TABLE t_sys_class ADD COLUMN workshop_director_id int4;
+COMMENT ON COLUMN t_sys_class.workshop_director_id IS '车间主任id';
+
+ALTER TABLE t_sys_class ADD COLUMN workshop_director varchar(255);
+COMMENT ON COLUMN t_sys_class.workshop_director IS '车间主任';

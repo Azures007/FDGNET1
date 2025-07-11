@@ -119,7 +119,7 @@ public class TSysProcessInventoryController extends BaseController {
             List<String> processStatusList = new ArrayList<>();
             processStatusList.add("1");
             processStatusList.add("2");
-            PageVo<TaskListHandOverVo> taskListVoPageVo = orderHeadService.getTaskHandOverListByPersonIdAndProcessStatus(current, size, processStatusList, currentUser.getId().getId().toString(), sort);
+            PageVo<TaskListHandOverVo> taskListVoPageVo = appOrderTaskService.getTaskHandOverListByPersonIdAndProcessStatus(current, size, processStatusList, currentUser.getId().getId().toString(), sort);
             return ResultUtil.success(taskListVoPageVo);
         } else {
             return ResultUtil.error("排序参数值错误！");

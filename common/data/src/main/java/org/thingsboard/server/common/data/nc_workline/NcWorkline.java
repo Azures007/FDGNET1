@@ -13,16 +13,11 @@ import javax.persistence.*;
 @Table(name = "t_sys_workline")
 @ApiModel("生产线")
 public class NcWorkline {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    @ApiModelProperty("主键ID")
-    @JsonIgnore
-    private Integer id;
 
-    @Column(name = "nc_cwkid")
+    @Id
+    @Column(name = "nc_cwkid", nullable = false)
     @JsonProperty("cwkid")
-    @ApiModelProperty("产线id")
+    @ApiModelProperty(name="产线id", required = true)
     private String cwkid;
 
     @Column(name = "nc_vwkname")
@@ -54,4 +49,8 @@ public class NcWorkline {
     @JsonProperty("dept_name")
     @ApiModelProperty("生产部门名称")
     private String cdeptname;
+
+    @ApiModelProperty(name = "状态：生效；失效", required = true)
+    @Column(name = "nc_status", nullable = false)
+    private String status;
 }

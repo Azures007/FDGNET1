@@ -19,6 +19,9 @@
 	display: flex;
 	flex: 1 1 0;
 	.tb-login-content {
+    .mat-error {
+      margin-top: 14px;
+    }
 		background-image: url('../../../../../static/img/login/login_bg.png');
 		background-size: cover;
 		.login-title {
@@ -148,7 +151,7 @@
 					caret-color: #000 !important;
 					color: #000 !important;
 				}
-			
+
 			}
 		}
 		// .login-card

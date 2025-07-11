@@ -189,6 +189,14 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
                 TSysClass tSysClass = classRepository.findById(classRel.getClassId()).orElse(null);
                 className.append(tSysClass == null ? "" : tSysClass.getName());
                 className.append(",");
+                // 新增：组长
+                if (tSysClass != null && tSysClass.getGroupLeader() != null) {
+                    if (processInfoDto.getGroupLeader() == null) {
+                        processInfoDto.setGroupLeader(tSysClass.getGroupLeader());
+                    } else {
+                        processInfoDto.setGroupLeader(processInfoDto.getGroupLeader() + "," + tSysClass.getGroupLeader());
+                    }
+                }
             }
             if (className.length() > 0) {
                 processInfoDto.setClassName(className.toString().substring(0, className.length() - 1));
@@ -263,7 +271,7 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
                 rel.setCrtUser(name);
                 rel.setCraftId(craftId);
                 rel.setMaterialCode(materialCode.get("materialCode").toString());
-                rel.setMaterialId(Integer.parseInt(String.valueOf(materialCode.get("materialId").toString())));
+                //rel.setMaterialId(Integer.parseInt(String.valueOf(materialCode.get("materialId").toString())));
                 rel.setCrtTime(new Date());
                 rels.add(rel);
             }

@@ -82,6 +82,8 @@ export class ClassComponent implements OnInit {
       kdDeptId: "",//生产车间
       kdOrgId: "",//生产组织
       classTeamNumber: "",//erp班别编码
+      workshopDirector: "",//车间主任
+      workshopDirectorId: "",//车间主任id
     },
     tsysClassGroupLeaderRelLits: []
   }
@@ -213,7 +215,7 @@ export class ClassComponent implements OnInit {
     const blob = new Blob([data], { type: contentType });
     const url = window.URL.createObjectURL(blob);
     // 打开新窗口方式进行下载
-    // window.open(url); 
+    // window.open(url);
     // 以动态创建a标签进行下载
     const a = document.createElement("a");
     a.href = url;

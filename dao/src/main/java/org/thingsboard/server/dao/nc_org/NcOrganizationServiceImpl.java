@@ -16,17 +16,18 @@ public class NcOrganizationServiceImpl implements NcOrganizationService {
     @Override
     @Transactional
     public void saveOrUpdateBatchByPkOrg(List<NcOrganization> entitys) {
-        for (NcOrganization entity : entitys) {
-            NcOrganization old = repository.findByPkOrg(entity.getPkOrg());
-            if (old != null) {
-                entity.setId(old.getId());
-            }
-            repository.save(entity);
+        if (entitys == null || entitys.isEmpty()) {
+            return;
         }
+        repository.saveAll(entitys);
     }
 
     @Override
     public List<NcOrganization> findAll() {
-        return repository.findAll();
+        return repository.findByStatus("生效");
     }
-} 
+    @Override
+    public List<NcOrganization> findAllByPkOrgs(List<String> pkOrg) {
+        return repository.findByPkOrgInAndStatus(pkOrg, "生效");
+    }
+}

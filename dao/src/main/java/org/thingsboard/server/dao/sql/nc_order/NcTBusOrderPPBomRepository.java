@@ -16,11 +16,11 @@ public interface NcTBusOrderPPBomRepository extends JpaRepository<NcTBusOrderPPB
     // 根据 orderId 删除所有 bom 及关联
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM t_bus_order_ppbom WHERE order_ppbom_id IN (SELECT order_ppbom_id FROM t_bus_order_ppbom_lk WHERE order_id = ?1)", nativeQuery = true)
-    void deleteAllByOrderId(Integer orderId);
+    @Query(value = "DELETE FROM t_bus_order_ppbom WHERE nc_cmoid = ?1", nativeQuery = true)
+    void deleteAllByOrderId(String cmoid);
 
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM t_bus_order_ppbom_lk WHERE order_id = ?1", nativeQuery = true)
     void deleteAllLinkByOrderId(Integer orderId);
-} 
+}

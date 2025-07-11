@@ -36,19 +36,18 @@ public interface TSysClassRepository extends JpaRepository<TSysClass,Integer> {
 
     TSysClass getByGroupLeaderID(String userId);
 
-    @Query(value = "select a.class_id ,name,process,group_leader ,scheduling ,crt_time ,crt_user " +
-            ",update_time ,update_user ,enabled_st ,group_leader_id ,scheduling_code_dsc ,b.cou as team_num, " +
-            "a.class_number, a.belong_process_id, a.kd_org_id, a.kd_dept_id \n" +
-            " from t_sys_class a join (select a.class_id ,count(b.process_id) as cou \n" +
-            "from t_sys_class a join t_sys_process_class_rel b on a.class_id =b.class_id \n" +
-            "group by a.class_id ) as b on a.class_id =b.class_id " +
-            "where a.class_id in(:classIds)",nativeQuery = true)
-    List<TSysClass> findAllByIds(@Param("classIds") List<Integer> classIds);
+//    @Query(value = "select a.class_id ,name,process,group_leader ,scheduling ,crt_time ,crt_user " +
+//            ",update_time ,update_user ,enabled_st ,group_leader_id ,scheduling_code_dsc ,b.cou as team_num, " +
+//            "a.class_number, a.belong_process_id, a.kd_org_id, a.kd_dept_id \n" +
+//            " from t_sys_class a join (select a.class_id ,count(b.process_id) as cou \n" +
+//            "from t_sys_class a join t_sys_process_class_rel b on a.class_id =b.class_id \n" +
+//            "group by a.class_id ) as b on a.class_id =b.class_id " +
+//            "where a.class_id in(:classIds)",nativeQuery = true)
+//    List<TSysClass> findAllByIds(@Param("classIds") List<Integer> classIds);
 
-    @Query(value = "select a.class_id ,name,process,group_leader ,scheduling ,crt_time ,crt_user ,update_time ,update_user ,\n" +
-            "enabled_st ,group_leader_id ,scheduling_code_dsc ,COALESCE (b.cou,0) as team_num, " +
-            "a.class_number, a.belong_process_id, a.kd_org_id, a.kd_dept_id, a.class_team_number \n" +
-            "from t_sys_class a left join (select a.class_id ,count(b.class_personnel_id) as cou \n" +
+    @Query(value = "select a.*, COALESCE (b.cou,0) as team_num \n" +
+            "from t_sys_class a \n" +
+            "left join (select a.class_id ,count(b.class_personnel_id) as cou \n" +
             "from t_sys_class a join t_sys_class_personnel_rel b on a.class_id =b.class_id \n" +
             "group by a.class_id ) as b on a.class_id =b.class_id\n" +
             "where 1=1 \n" +

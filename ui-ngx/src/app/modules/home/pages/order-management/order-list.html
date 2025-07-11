@@ -1,7 +1,7 @@
 <div class="page-container flex-column">
   <div class="page-header">
 
-    <div class="row-block cols3">
+    <div class="row-block cols4">
       <label class="label">下单日期：</label>
       <mat-form-field appearance="fill" class="dateRange">
         <mat-date-range-input [formGroup]="orderBillRange" [rangePicker]="picker" [min]="minDate">
@@ -13,34 +13,20 @@
       </mat-form-field>
     </div>
 
-    <div class="row-block cols3">
-      <label class="label">单据编号：</label>
+    <div class="row-block cols4">
+      <label class="label">订单号：</label>
       <input class="input" [(ngModel)]="searchFormGroup.value.billNo" />
     </div>
-
-    <div class="row-block cols3">
-      <label class="label">当前工序：</label>
-      <!-- <mat-form-field appearance="fill">
-        <mat-select [(value)]="searchFormGroup.value.currentProcess">
-          <mat-option *ngFor="let food of processOptions" [value]="food.value">
-            {{food.label}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field> -->
-
-      <select required [(ngModel)]="searchFormGroup.value.currentProcess">
-        <option *ngFor="let item of processOptions" [value]="item.value">
-          {{item.label}}
-        </option>
-      </select>
+    <div class="row-block cols4">
+      <label class="label">产品编码</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.ncMaterialCode" />
     </div>
-
-
-
-
-
-    <div class="row-block cols3">
-      <label class="label">计划完工日期：</label>
+    <div class="row-block cols4">
+      <label class="label">产品名称</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.ncMaterialName" />
+    </div>
+    <div class="row-block cols4">
+      <label class="label">开工日期：</label>
       <mat-form-field appearance="fill" class="dateRange">
         <mat-date-range-input [formGroup]="orderPlanRange" [rangePicker]="picker2" [min]="minDate">
           <input readonly formControlName="start" matStartDate placeholder="开始日期">
@@ -53,64 +39,26 @@
     </div>
 
 
-    <div class="row-block cols3">
-      <label class="label">订单状态：</label>
-      <select required [(ngModel)]="searchFormGroup.value.orderStatus">
-        <option *ngFor="let item of orderSelect" [value]="item.value">
-          {{item.label}}
+    <div class="row-block cols4">
+      <label class="label">生产线：</label>
+      <select required [(ngModel)]="searchFormGroup.value.cwkid">
+        <option *ngFor="let item of cwkList" [value]="item.cwkid">
+          {{item.vwkname}}
         </option>
       </select>
     </div>
-
-    <div class="row-block cols3">
-      <label class="label">工艺匹配：</label>
-      <select required [(ngModel)]="searchFormGroup.value.orderMatching">
-        <option *ngFor="let item of orderMatchingStasus" [value]="item.value">
-          {{item.label}}
-        </option>
-      </select>
-    </div>
-
-    <div class="row-block cols3">
-      <label class="label">处理班别：</label>
-      <!-- <mat-form-field appearance="fill">
-        <mat-select [(value)]="searchFormGroup.value.classId">
-          <mat-option *ngFor="let shift of shiftSelect" [value]="shift.value">
-            {{shift.label}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field> -->
-
-      <select required [(ngModel)]="searchFormGroup.value.classId">
-        <option *ngFor="let shift of shiftSelect" [value]="shift.value">
-          {{shift.label}}
-        </option>
-      </select>
-
-    </div>
-
-    <div class="row-block cols3"></div>
-    <div class="row-block cols3"></div>
-    <div class="row-block row-right">
+    <div class="row-block cols4">
       <label class="label"></label>
       <div class="btn-group">
-        <!-- <button mat-raised-button color="primary" class="search-btn btn" (click)="searchList()">
-          <mat-icon class="material-icons svgIcon">search</mat-icon>
-          <span>查询</span>
-        </button>
-        <button mat-raised-button color="primary" class="btn" (click)="export()">
-          <mat-icon class="material-icons svgIcon">vertical_align_bottom</mat-icon>
-          <span>导出</span>
-        </button> -->
         <button class="search_btn" (click)="searchList()">
           <mat-icon class="material-icons svgIcon">search</mat-icon>查询
+        </button>
+        <button class="search_btn" (click)="resetQuery()">
+          <mat-icon class="material-icons svgIcon">search</mat-icon>重置
         </button>
         <button *ngIf="set.has('/order/list/up')" class="search_btn" (click)="export()">
           <mat-icon class="material-icons svgIcon">vertical_align_bottom</mat-icon>
           导出
-        </button>
-        <button *ngIf="set.has('/order/list/moreStart')" class="search_btn pl_btn" (click)="listStart()">
-          <mat-icon class="material-icons svgIcon">search</mat-icon>批量接单
         </button>
       </div>
 
@@ -118,102 +66,71 @@
 
 
   </div>
-
+  <div class="tags">
+    <div class="tag" *ngFor="let item of getOrderStatusList" (click)="changeStatus(item.value)"
+      [ngClass]="{'active': item.value === searchFormGroup.value.orderStatus}">
+      {{item.label}}({{item.total === '' ? '-' : item.total}})
+    </div>
+  </div>
   <div class="page-content">
     <table mat-table [dataSource]="dataSource" class="table-warp">
-
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? toggleAllRows() : null" [checked]="selection.hasValue() && isAllSelected()"
-            [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-            [checked]="selection.isSelected(row)" [disabled]="row.orderStatus != 0" [aria-label]="checkboxLabel(row)">
-          </mat-checkbox>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="no" sticky="true">
+      <ng-container matColumnDef="index" sticky="true">
         <th mat-header-cell *matHeaderCellDef> 序号 </th>
         <td mat-cell *matCellDef="let element"> {{element.no}} </td>
       </ng-container>
       <ng-container matColumnDef="billNo">
-        <th mat-header-cell *matHeaderCellDef> 单据编号 </th>
+        <th mat-header-cell *matHeaderCellDef> 订单号</th>
         <td mat-cell *matCellDef="let element"> {{element.billNo}} </td>
       </ng-container>
-
-      <ng-container matColumnDef="bodyLot">
-        <th mat-header-cell *matHeaderCellDef> 订单批号 </th>
-        <td mat-cell *matCellDef="let element"> {{element.bodyLot}} </td>
-      </ng-container>
-
-
       <ng-container matColumnDef="billDate">
         <th mat-header-cell *matHeaderCellDef> 下单时间 </th>
-        <td mat-cell *matCellDef="let element"> {{element.billDate | date:'yyyy-MM-dd'}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.billDate}} </td>
       </ng-container>
-
-
-      <ng-container matColumnDef="bodyPrdDept">
-        <th mat-header-cell *matHeaderCellDef> 生产车间 </th>
-        <td mat-cell *matCellDef="let element"> {{element.bodyPrdDept}} </td>
+      <ng-container matColumnDef="billType">
+        <th mat-header-cell *matHeaderCellDef> 订单类型 </th>
+        <td mat-cell *matCellDef="let element"> {{element.billType}} </td>
       </ng-container>
-
-      <ng-container matColumnDef="midMoEntryTeamName">
-        <th mat-header-cell *matHeaderCellDef> 班组 </th>
-        <td mat-cell *matCellDef="let element"> {{element.midMoEntryTeamName?element.midMoEntryTeamName:'无'}} </td>
+      <ng-container matColumnDef="vwkname">
+        <th mat-header-cell *matHeaderCellDef> 订单线 </th>
+        <td mat-cell *matCellDef="let element"> {{element.vwkname}} </td>
       </ng-container>
-
-
-
-      <ng-container matColumnDef="bodyPlanPrdQty">
-        <th mat-header-cell *matHeaderCellDef> 计划产量</th>
-        <td mat-cell *matCellDef="let element"> {{element.bodyPlanPrdQty}}{{handleUnit(element.bodyUnit)}} </td>
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef> 产品编码 </th>
+        <td mat-cell *matCellDef="let element"> {{element.code}} </td>
       </ng-container>
-      <ng-container matColumnDef="bodyPlanFinishDate">
-        <th mat-header-cell *matHeaderCellDef> 计划完工时间 </th>
-        <td mat-cell *matCellDef="let element"> {{element.bodyPlanFinishDate}} </td>
-      </ng-container>
-      <ng-container matColumnDef="bodyMaterialSpecification">
+      <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> 产品名称 </th>
-        <td mat-cell *matCellDef="let element"> {{element.bodyMaterialName}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
       </ng-container>
-      <ng-container matColumnDef="statusStr">
+      <ng-container matColumnDef="materialspec">
+        <th mat-header-cell *matHeaderCellDef> 规格 </th>
+        <td mat-cell *matCellDef="let element"> {{element.materialspec}} </td>
+      </ng-container>
+      <ng-container matColumnDef="nnum">
+        <th mat-header-cell *matHeaderCellDef> 计划产量（件） </th>
+        <td mat-cell *matCellDef="let element"> {{element.nnum}} </td>
+      </ng-container>
+      <ng-container matColumnDef="tplanstarttime">
+        <th mat-header-cell *matHeaderCellDef> 计划开工日期 </th>
+        <td mat-cell *matCellDef="let element"> {{element.tplanstarttime}} </td>
+      </ng-container>
+      <ng-container matColumnDef="craftName">
+        <th mat-header-cell *matHeaderCellDef> 工艺路线 </th>
+        <td mat-cell *matCellDef="let element" class="link" (click)="toCraftDetails(element)"> {{element.craftName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="orderStatus">
         <th mat-header-cell *matHeaderCellDef> 订单状态</th>
-        <td mat-cell *matCellDef="let element"> {{element.statusStr}} </td>
+        <td mat-cell *matCellDef="let element"> {{getOrderStatus(element.orderStatus)}} </td>
       </ng-container>
-      <ng-container matColumnDef="processStr">
-        <th mat-header-cell *matHeaderCellDef> 当前工序 </th>
-        <td mat-cell *matCellDef="let element"> {{element.processStr}} </td>
-      </ng-container>
-
-
-      <ng-container matColumnDef="classId">
-        <th mat-header-cell *matHeaderCellDef> 处理班别 </th>
-        <td mat-cell *matCellDef="let element"> {{element.classId?.name || ''}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="orderMatching">
-        <th mat-header-cell *matHeaderCellDef> 匹配工艺路线</th>
-        <td mat-cell *matCellDef="let element"
-          [ngClass]="{'enabled':element.orderMatching == 1,'disabled':element.orderMatching == -1}">
-          {{ handleMatch(element.orderMatching)}} </td>
-
-      </ng-container>
-
       <ng-container matColumnDef="customColumn1">
         <th mat-header-cell *matHeaderCellDef> 操作 </th>
         <td mat-cell *matCellDef="let element">
           <div class="opera-group">
-            <!--  -->
             <button class="mini_btn edit_btn" (click)="handleEvent(element,'start')"
-              *ngIf="element.orderStatus == 0 && set.has('/order/list/start')">接单开工</button>
+              *ngIf="!element.craftName && set.has('/order/list/start')">接单</button>
             <button class="mini_btn look_btn" (click)="handleEvent(element,'details')">详情</button>
-            <button class="mini_btn look_btn" (click)="handleEvent(element,'change')"
-              *ngIf="element.tbusOrderProcessSet.length == 1 && element.tbusOrderProcessSet[0].processStatus == '0'">班别变更</button>
-
+            <!-- <button class="mini_btn look_btn" (click)="handleEvent(element,'change')"
+              *ngIf="element.tbusOrderProcessSet.length == 1 && element.tbusOrderProcessSet[0].processStatus == '0'">班别变更</button> -->
           </div>
         </td>
       </ng-container>

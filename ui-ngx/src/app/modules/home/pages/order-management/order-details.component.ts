@@ -7,6 +7,8 @@ import { ActivatedRoute } from '@angular/router';
 import { Utils } from './w-utils';
 import { OrderService } from "@core/http/order.service";
 import { DictionaryService } from '@app/core/http/dictionary.service';
+import { CraftDetailComponent } from '../../components/order/craft-detail.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'tb-order-details',
@@ -18,21 +20,15 @@ export class OrderDetailsComponent implements OnInit {
   maxDate: Date;
 
   dataParams = {
-    orderNo: '',
     billNo: '',
-    bodyPrdDept: '',
-    planner: '',
+    orderNo: '',
+    billType: '',
+    vwkname: '',
     orderStatus: '',
     billDate: '',
-    craftName: '',
-    currentProcessName: '',
-    personName:'', 
-    billType:"",
-    prdOrg:"",
-    bodyPotQty:"",
-    bodyClassGroup:"",
-    bodyOnePotQty:"",
-    midMoEntryTeamName:"",
+    creatorName: '',
+    remark: '',
+    craftName: ''
   };
 
   materialList = [];
@@ -43,6 +39,7 @@ export class OrderDetailsComponent implements OnInit {
   // 工序
   processList = [];
 
+  craftDetail = [];
   //单位列表
   allUnits = [];
 
@@ -51,7 +48,7 @@ export class OrderDetailsComponent implements OnInit {
     let res = 0;
 
     this.materialList.forEach(item => {
-      res += Number(item.bodyPlanPrdQty);
+      res += Number(item.planQty);
     })
 
     return res
@@ -59,7 +56,7 @@ export class OrderDetailsComponent implements OnInit {
 
   bodyUnit = "";
 
-  detailData:any;
+  detailData: any;
 
 
   constructor(
@@ -67,7 +64,8 @@ export class OrderDetailsComponent implements OnInit {
     public fb: FormBuilder,
     private DictionaryService: DictionaryService,
     private activeRoute: ActivatedRoute,
-    private apiOrder: OrderService
+    private apiOrder: OrderService,
+    public _dialog: MatDialog,
   ) {
 
   }
@@ -87,7 +85,20 @@ export class OrderDetailsComponent implements OnInit {
     })
 
   }
+  openCraftDetail(){
+    let dialogRef = this._dialog.open(CraftDetailComponent, {
+      width: "500px",
+      height: "auto",
+      panelClass: 'custom-modalbox',
+      data: {
+        title: this.dataParams.craftName,
+        dataSource: this.craftDetail
+      }
+    })
+    dialogRef.afterClosed().subscribe(result => {
 
+    });
+  }
   // 数据查询
   init(data) {
     this.apiOrder.fetchGetOrderDetails({
@@ -95,20 +106,17 @@ export class OrderDetailsComponent implements OnInit {
     }).subscribe(res => {
       if (res.errcode === 200) {
         const allData = res.data;
-        console.log(allData,'alldada')
-        this.bodyUnit = res.data.bodyUnit;
-        this.detailData = allData;
-        this.dataParams.billType = allData.billType;
-        this.dataParams.prdOrg = allData.prdOrg;
-        this.dataParams.bodyPotQty = allData.bodyPotQty;
-        this.dataParams.bodyOnePotQty = allData.bodyOnePotQty;
-        this.dataParams.bodyClassGroup = allData.bodyClassGroup;
-        this.dataParams.midMoEntryTeamName = allData.midMoEntryTeamName;
-        
-
+        this.dataParams.remark = allData.remark;
         this.dataParams.billNo = allData.billNo;
         this.dataParams.orderNo = allData.orderNo;
-        this.dataParams.currentProcessName = allData.currentProcess?.processName;
+        this.dataParams.billType = allData.billType;
+        this.dataParams.vwkname = allData.vwkname;
+        this.dataParams.orderStatus = allData.orderStatus;
+        this.dataParams.billDate = allData.billDate;
+        this.dataParams.creatorName = allData.creatorName;
+        this.dataParams.craftName = allData.craftName;
+        this.craftDetail = allData.craftProcesses || [];
+
         let statusStr = '';
         switch (allData.orderStatus) {
           case '1':
@@ -117,7 +125,7 @@ export class OrderDetailsComponent implements OnInit {
           case '2':
             statusStr = '暂停';
             break;
-          case '4':
+          case '3':
             statusStr = '已完工';
             break;
           case '0':
@@ -125,61 +133,14 @@ export class OrderDetailsComponent implements OnInit {
             break;
         }
         this.dataParams.orderStatus = statusStr;
-        this.dataParams.bodyPrdDept = allData.bodyPrdDept;
-        this.dataParams.planner = allData.planner;
-        this.dataParams.billDate = allData.billDate;
-        this.dataParams.craftName = allData.craftId?.craftName;
-        // this.dataParams.currentProcessName = allData?.currentProcessName;
 
 
         // 默认只显示一行
-        this.materialList = [{
-          no: '1',
-          bodyLot: allData.bodyLot,
-          bodyMaterialNumber: allData.bodyMaterialNumber,
-          bodyMaterialName: allData.bodyMaterialName,
-          bodyPlanPrdQty: allData.bodyPlanPrdQty,
-          bodyPlanStartDate: allData.bodyPlanStartDate,
-          bodyPlanFinishDate: allData.bodyPlanFinishDate
-        }];
+        this.materialList = allData.product ? [allData.product] : [];
 
-        this.userMaterialList = allData.tbusOrderPPBomSet || [];
+        this.userMaterialList = allData.materials || [];
 
-        this.apiOrder.fetchGetProcessInfo({
-          orderId: data.orderId
-        }).subscribe(result => {
-          if (result.errcode === 200) {
-            this.processList = result.data || [];
-
-            this.processList.forEach(item => {
-              item.statusStr = '';
-              item.classArray = [];
-              item.classArray.push(item.classId)
-              if (item.processStatus) {
-                switch (item.processStatus) {
-                  case '1':
-                    item.statusStr = '已开工';
-                    break;
-                  case '2':
-                    item.statusStr = '暂停';
-                    break;
-                  case '4':
-                    item.statusStr = '已完工';
-                    break;
-                  case '0':
-                    item.statusStr = '未开工';
-                    break;
-                }
-              }
-            });
-
-            console.log(this.processList)
-          } else {
-            this.utils.showMessage(result.errmsg, 'error');
-          }
-        });
-
-
+        this.processList = allData.processExecutes || [];
 
       } else {
         this.utils.showMessage(res.errmsg, 'error');
@@ -187,12 +148,12 @@ export class OrderDetailsComponent implements OnInit {
     });
   }
 
-  
+
   //处理单位
   handleUnit(code) {
     let str = '';
     for (let i = 0; i < this.allUnits.length; i++) {
-      if(code == this.allUnits[i].codeValue){
+      if (code == this.allUnits[i].codeValue) {
         str = this.allUnits[i].codeDsc
         return str
       }

@@ -49,6 +49,62 @@
         </select>
     </div>
 </div>
+<div class="setting-warp">
+  <div class="set-title">基地
+    <button class="add_btn btn_color_primary" *ngIf="data.isEdit" (click)="addBase()"
+      style="margin-left: 10px;">
+      <mat-icon>add</mat-icon> 新增
+    </button>
+  </div>
+  <div class="setting-panl">
+    <table class="table">
+      <tr>
+        <th class="class-handle">基地</th>
+        <th class="class-handle">产线</th>
+        <th class="class-handle">仓库</th>
+        <th>操作</th>
+      </tr>
+      <tr *ngFor="let item of baseList; let i = index">
+        <td class="class-handle">
+          <div class="join-content ">
+            <div class="standard-chip-warp">
+              <div class="standard-chip">
+                <span>{{item.ncOrgName}}</span>
+              </div>
+            </div>
+            <div class="addbtn" *ngIf="data.isEdit" (click)="showBasePick(item,i)">+选择</div>
+          </div>
+        </td>
+        <td class="class-handle">
+          <div class="join-content ">
+            <div class="standard-chip-warp">
+              <div class="standard-chip">
+                <span>{{item.ncVwkname}}</span>
+              </div>
+            </div>
+            <div class="addbtn" *ngIf="data.isEdit" (click)="showLinePick(item,i)">+选择</div>
+          </div>
+        </td>
+        <td class="class-handle">
+          <div class="join-content ">
+            <div class="standard-chip-warp">
+              <div class="standard-chip">
+                <span>{{item.ncWarehouseName}}</span>
+              </div>
+            </div>
+            <div class="addbtn" *ngIf="data.isEdit" (click)="showWarehousePick(item,i)">+选择</div>
+          </div>
+        </td>
+        <td>
+          <div class="group-btn">
+            <!-- <button class="mini_btn edit_btn" (click)="selectBase(i)">选择</button> -->
+            <button class="mini_btn del_btn" *ngIf="data.isEdit" (click)="delBase(i)">删除</button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
 <div class="footer">
     <button (click)="DialogClose()" *ngIf="!data.isEdit">关闭</button>
     <button (click)="DialogSaveClose()" cdkFocusInitial *ngIf="data.isEdit">保存</button>

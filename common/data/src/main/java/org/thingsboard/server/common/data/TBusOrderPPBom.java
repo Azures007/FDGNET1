@@ -41,9 +41,13 @@ public class TBusOrderPPBom {
     @Column(name = "material_name")
     private String materialName;
 
-    @ApiModelProperty("规格型号")
+    @ApiModelProperty("规格")
     @Column(name = "material_specification")
     private String materialSpecification;
+
+    @Column(name = "nc_material_model")
+    @ApiModelProperty("型号")
+    private String materialModel;
 
     @ApiModelProperty("单位")
     @Column(name = "unit")

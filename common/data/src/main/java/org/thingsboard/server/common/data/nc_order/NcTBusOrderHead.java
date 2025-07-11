@@ -29,9 +29,9 @@ public class NcTBusOrderHead {
 
     @ApiModelProperty("单据类型")
     @Column(name = "bill_type")
-    @JsonProperty("billtypename") 
+    @JsonProperty("billtypename")
     private String billType;
-    
+
     @ApiModelProperty("订单状态：0=未开工、1=已开工、2=暂停、3=已完工、4=已挂起")
     @JsonIgnore
     @Column(name = "order_status")
@@ -109,6 +109,15 @@ public class NcTBusOrderHead {
     @Temporal(TemporalType.TIMESTAMP)
     @ApiModelProperty("计划完工日期")
     private Date tplanendtime;
+
+    @ApiModelProperty("开工时间")
+    @Column(name = "nc_receive_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ncReceiveTime;
+
+    @Column(name = "nc_note")
+    @ApiModelProperty("备注")
+    private String ncNote;
 
     @ApiModelProperty("明细-用料清单")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -13,16 +13,11 @@ import javax.persistence.*;
 @Table(name = "t_sys_warehouse")
 @ApiModel("仓库")
 public class NcWarehouse {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    @ApiModelProperty("主键ID")
-    @JsonIgnore
-    private Integer id;
 
-    @Column(name = "nc_pk_stordoc")
+    @Id
+    @Column(name = "nc_pk_stordoc", nullable = false)
     @JsonProperty("pk_stordoc")
-    @ApiModelProperty("仓库pk")
+    @ApiModelProperty(name="仓库pk", required = true)
     private String pkStordoc;
 
     @Column(name = "nc_pk_org")
@@ -39,4 +34,8 @@ public class NcWarehouse {
     @JsonProperty("code")
     @ApiModelProperty("仓库编码")
     private String code;
-} 
+
+    @ApiModelProperty(name = "状态：生效；失效", required = true)
+    @Column(name = "nc_status", nullable = false)
+    private String status;
+}

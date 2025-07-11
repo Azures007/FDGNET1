@@ -44,10 +44,19 @@ public class TSysUserDetail {
     private String ncVwkname;
 
     @Column(name = "nc_cdeptid")
-    @ApiModelProperty("部门ID")
+    @ApiModelProperty("部门ID-废弃")
     private String ncCdeptid;
 
     @Column(name = "nc_cdeptname")
-    @ApiModelProperty("部门名称")
+    @ApiModelProperty("部门名称-废弃")
     private String ncCdeptname;
+
+    @Column(name = "nc_warehouse_id")
+    @ApiModelProperty("仓库ID")
+    private String ncWarehouseId;
+
+    @Column(name = "nc_warehouse_name")
+    @ApiModelProperty("仓库名称")
+    private String ncWarehouseName;
+
 }

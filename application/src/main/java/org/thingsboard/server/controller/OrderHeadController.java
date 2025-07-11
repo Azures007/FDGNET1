@@ -31,7 +31,8 @@ import java.util.List;
 public class OrderHeadController extends BaseController {
 
     @Autowired
-    OrderHeadExcelService orderHeadExcelService;@Autowired
+    OrderHeadExcelService orderHeadExcelService;
+    @Autowired
     OrderBackendService orderBackendService;
 
 
@@ -95,17 +96,7 @@ public class OrderHeadController extends BaseController {
         return ResultUtil.success(pageVo);
     }
 
-    @ApiOperation("查询订单列表(后台)")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false)
-    })
-    @PostMapping("/query")
-    public ResponseResult<PageVo<OrderSimpleListVo>> query(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                       @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                       @RequestBody TBusOrderDto orderDto) {
-        return ResultUtil.success(orderHeadService.getSimpleOrderList(current, size, orderDto));
-    }
+
 
     @ApiOperation("保存/修改订单（id为空则表示新增，id不为空表示修改）")
     @PostMapping("/save")
@@ -115,13 +106,6 @@ public class OrderHeadController extends BaseController {
         tBusOrderHead.setUpdatedTime(new Date());
         orderHeadService.saveTBusOrderHead(tBusOrderHead);
         return ResultUtil.success();
-    }
-
-    @ApiOperation("订单详情")
-    @GetMapping("/get")
-    public ResponseResult<TBusOrderHead> getTBusOrderHead(@RequestParam(value = "orderId") Integer orderId) throws Exception {
-        TBusOrderHead tBusOrderHead = orderHeadService.getTBusOrderHead(orderId);
-        return ResultUtil.success(tBusOrderHead);
     }
 
     @ApiOperation("订单详情信息")
@@ -200,12 +184,7 @@ public class OrderHeadController extends BaseController {
         orderHeadExcelService.download(current, size, tBusOrderHeadDto, response);
     }
 
-    @ApiOperation("excel导出")
-    @PostMapping("/exportorder")
-    public void download(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                         @RequestParam(value = "size", defaultValue = "10") Integer size, @RequestBody TBusOrderDto tBusOrderDto, HttpServletResponse response) throws IOException {
-        orderHeadExcelService.download(current, size, tBusOrderDto, response);
-    }
+
 
 //    @ApiOperation("excel导出(废弃)")
 //    @PostMapping("/exportorder")

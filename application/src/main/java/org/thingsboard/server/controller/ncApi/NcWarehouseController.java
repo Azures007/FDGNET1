@@ -31,4 +31,4 @@ public class NcWarehouseController {
         service.saveOrUpdateBatchByPkStordoc(entitys);
         return ResultUtil.success("同步成功");
     }
-} 
+}

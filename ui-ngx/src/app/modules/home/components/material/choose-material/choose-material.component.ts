@@ -18,11 +18,15 @@ export class ChooseMaterialComponent implements OnInit {
     private MaterialService: MaterialService,
   ) { }
   dataSource = [];
-  displayedColumns: string[] = ['materialName', 'customColumn1'];
+  displayedColumns: string[] = ['ncMaterialCategory', 'materialName', 'materialCode', 'customColumn1'];
   total = 0;
   searchFormGroup = this.fb.group({
     current: 0,
     size: 10,
+    ncMaterialCategory: '',
+    materialCode: '',
+    materialName: '',
+    materialStatus: '',
   });
   pageSizeOptions: number[] = [10, 50, 100, 200, 500];
   ngOnInit(): void {
@@ -33,6 +37,10 @@ export class ChooseMaterialComponent implements OnInit {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
       body: {
+        ncMaterialCategory: this.searchFormGroup.value.ncMaterialCategory,
+        materialCode: this.searchFormGroup.value.materialCode,
+        materialName: this.searchFormGroup.value.materialName,
+        materialStatus: this.searchFormGroup.value.materialStatus,
       }
     }
     this.MaterialService.fetchGetTableList(par).subscribe(res => {
@@ -48,7 +56,13 @@ export class ChooseMaterialComponent implements OnInit {
   addDialogClose() {
     this.dialogRef.close();
   }
-
+  reset() {
+    this.searchFormGroup.controls['ncMaterialCategory'].setValue('');
+    this.searchFormGroup.controls['materialCode'].setValue('');
+    this.searchFormGroup.controls['materialName'].setValue('');
+    this.searchFormGroup.controls['materialStatus'].setValue('');
+    this.getTableData();
+  }
   submit() {
 
   }

@@ -169,7 +169,13 @@ import { ShowCodeComponent } from './basket/show-code.component';
 import { EnterDiaComponent } from './basket/enter-dia.component';
 import { AddFingerComponent } from './staff/add-finger.component';
 import { SpecAddComponent } from './spec/spec-add.component';
-import { MenuAddComponent } from './menu-admin/menu-add.component'
+import { MenuAddComponent } from './menu-admin/menu-add.component';
+import { ChooseBaseComponent } from '@home/components/account/pick/choose-base.component';
+import { CraftDetailComponent } from '@home/components/order/craft-detail.component';
+import { AddCateComponent } from './quality/add-cate.component';
+import { AddPlanComponent } from './quality/add-plan.component';
+import { ChangeOrgComponent } from './account/change-org.component';
+import { ChooseDirectorComponent } from '@home/components/class/choose-director.component';
 
 
 @NgModule({
@@ -312,12 +318,18 @@ import { MenuAddComponent } from './menu-admin/menu-add.component'
       ClassLeaderComponent,
       AddMaterialComponent,
       ChooseMaterialComponent,
+      ChooseBaseComponent,
+      CraftDetailComponent,
       AddBasketComponent,
       ShowCodeComponent,
       EnterDiaComponent,
       AddFingerComponent,
       SpecAddComponent,
       MenuAddComponent,
+      AddCateComponent,
+      AddPlanComponent,
+      ChangeOrgComponent,
+      ChooseDirectorComponent,
     ],
   imports: [
     CommonModule,

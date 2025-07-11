@@ -37,14 +37,6 @@ public interface OrderProcessRecordService {
     //工序报工校验
     OrderRecordCheckVo submitCheck(OrderRecordCheckDto saveDto);
 
-    //工序报工提交
-    @Transactional
-    Integer submit(OrderRecordSaveDto saveDto, String userId) throws ParseException;
-
-    //工序报工批量提交
-    @Transactional
-    void mulSubmit(OrderRecordSaveListDto saveListDto, String userId) throws ParseException;
-
     @Transactional
     ResponseResult submitAndBindCode(String userId, List<OrderBindCodeDto> tBusOrderBindCodeList) throws ParseException;
 
@@ -197,13 +189,6 @@ public interface OrderProcessRecordService {
     List<TBusOrderProcessRecord> findAllByOrderProcessIdAndBusType(Integer orderProcessId, String busType);
 
     List<TBusOrderProcessRecord> findAllByOrderProcessIdAndBusTypeAndRecordTypePd(Integer orderProcessId, String busType, String recordTypePd);
-
-    /**
-     * 删除报工记录
-     * @param orderProcessHistoryId
-     */
-//    void deleteRecord(Integer orderProcessHistoryId);
-    void deleteRecord(Integer orderProcessHistoryId, Boolean checkRecordTypeBg);
 
     ChopAndMixTotalVo chopAndMixTotal(ChopAndMixTotalSearchDto searchDto, String toString);
 

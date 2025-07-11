@@ -73,12 +73,12 @@ import org.thingsboard.server.dao.message.MessageService;
 import org.thingsboard.server.dao.model.ModelConstants;
 import org.thingsboard.server.dao.oauth2.OAuth2ConfigTemplateService;
 import org.thingsboard.server.dao.oauth2.OAuth2Service;
-import org.thingsboard.server.dao.order.OrderHeadService;
-import org.thingsboard.server.dao.order.OrderPPBomService;
-import org.thingsboard.server.dao.order.OrderProcessHistoryService;
-import org.thingsboard.server.dao.order.OrderProcessService;
+import org.thingsboard.server.dao.order.*;
+import org.thingsboard.server.dao.orderProcess.AppOrderProcessRecordDeleteService;
+import org.thingsboard.server.dao.orderProcess.AppOrderProcessRecordSubmitService;
 import org.thingsboard.server.dao.orderProcess.OrderProcessRecordService;
 import org.thingsboard.server.dao.ota.OtaPackageService;
+import org.thingsboard.server.dao.pd.YcPdService;
 import org.thingsboard.server.dao.relation.RelationService;
 import org.thingsboard.server.dao.role.RoleService;
 import org.thingsboard.server.dao.rpc.RpcService;
@@ -153,6 +153,9 @@ public abstract class BaseController {
 
     @Autowired
     ChargingBasketService chargingBasketService;
+
+    @Autowired
+    protected YcPdService ycPdService;
 
     @Autowired
     MenuService menuService;
@@ -290,6 +293,12 @@ public abstract class BaseController {
     protected OrderProcessRecordService orderProcessRecordService;
     @Autowired
     protected OrderProcessService orderProcessService;
+    @Autowired
+    protected AppOrderTaskService appOrderTaskService;
+    @Autowired
+    protected AppOrderProcessRecordSubmitService appOrderProcessRecordSubmitService;
+    @Autowired
+    protected AppOrderProcessRecordDeleteService appOrderProcessRecordDeleteService;
 
     @Autowired
     TSysCodeDscService sysCodeDscService;

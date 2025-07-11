@@ -34,7 +34,7 @@ public class OrderTaskController extends BaseController {
     @GetMapping("/listBodyIot")
     public ResponseResult<List<String>> listBodyIot(@RequestParam("type") String type) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
-        return ResultUtil.success(orderHeadService.listBodyIot(currentUser.getId().getId().toString(),type));
+        return ResultUtil.success(appOrderTaskService.listBodyIot(currentUser.getId().getId().toString(),type));
     }
 
     @ApiOperation("任务工序列表")
@@ -46,7 +46,7 @@ public class OrderTaskController extends BaseController {
     @ApiOperation("获取任务列表详情")
     @GetMapping("/getOrderTaskVo")
     public ResponseResult<TaskListVo> getTaskListVo(@RequestParam("orderProcessId") Integer orderProcessId){
-        return ResultUtil.success(orderHeadService.getTaskListVo(orderProcessId));
+        return ResultUtil.success(appOrderTaskService.getTaskListVo(orderProcessId));
     }
 
     @ApiOperation("获取今日任务")
@@ -62,7 +62,7 @@ public class OrderTaskController extends BaseController {
                                                    @RequestBody(required = false) OrderTaskSelectDto selectDto) throws Exception{
         if ("desc".equals(sort) || "asc".equals(sort)){
             SecurityUser currentUser = getCurrentUser();
-            PageVo<TaskListVo> classList = orderHeadService.getTodayTaskList(current,size,currentUser.getId().getId().toString(),sort,selectDto);
+            PageVo<TaskListVo> classList = appOrderTaskService.getTodayTaskList(current,size,currentUser.getId().getId().toString(),sort,selectDto);
             return ResultUtil.success(classList);
         }else {
             return ResultUtil.error("排序参数值错误！");
@@ -85,7 +85,7 @@ public class OrderTaskController extends BaseController {
             SecurityUser currentUser = getCurrentUser();
             List<String> processStatusList = new ArrayList<>();
             processStatusList.add("0");
-            PageVo<TaskListVo> classList = orderHeadService.getWaitTaskUserId2(current, size, processStatusList, currentUser.getId().getId().toString(), sort,selectDto);
+            PageVo<TaskListVo> classList = appOrderTaskService.getWaitTaskUserId2(current, size, processStatusList, currentUser.getId().getId().toString(), sort,selectDto);
             return ResultUtil.success(classList);
         } else {
             return ResultUtil.error("排序参数值错误！");
@@ -118,7 +118,7 @@ public class OrderTaskController extends BaseController {
             processStatusList.add("1");
             processStatusList.add("2");
             String orderProcessType = LichengConstants.ORDER_PROCESS_TYPE_1;
-            PageVo<TaskListVo> classList = orderHeadService.getTaskListByPersonIdAndProcessStatus(current,size,processStatusList,orderProcessType,currentUser.getId().getId().toString(),sort,selectDto);
+            PageVo<TaskListVo> classList = appOrderTaskService.getTaskListByPersonIdAndProcessStatus(current,size,processStatusList,orderProcessType,currentUser.getId().getId().toString(),sort,selectDto);
             return ResultUtil.success(classList);
         }else {
             return ResultUtil.error("排序参数值错误！");
@@ -155,7 +155,7 @@ public class OrderTaskController extends BaseController {
                                                                  @RequestBody(required = false) OrderTaskSelectDto selectDto) throws Exception {
         if ("desc".equals(sort) || "asc".equals(sort)) {
             SecurityUser currentUser = getCurrentUser();
-            PageVo<TaskListVo> taskListVoPageVo = orderHeadService.getUnStartTaskList(current, size, currentUser.getId().getId().toString(), sort,selectDto);
+            PageVo<TaskListVo> taskListVoPageVo = appOrderTaskService.getUnStartTaskList(current, size, currentUser.getId().getId().toString(), sort,selectDto);
             return ResultUtil.success(taskListVoPageVo);
         } else {
             return ResultUtil.error("排序参数值错误！");
@@ -214,7 +214,7 @@ public class OrderTaskController extends BaseController {
                                                                         @RequestParam(value = "sort", defaultValue = "desc") String sort,
                                                                         @RequestParam("orderProcessId") Integer orderProcessId) {
         if ("desc".equals(sort) || "asc".equals(sort)) {
-            PageVo<TaskListVo> taskListVoPageVo = orderHeadService.listFinishProcessTaskList(current, size ,sort,orderProcessId);
+            PageVo<TaskListVo> taskListVoPageVo = appOrderTaskService.listFinishProcessTaskList(current, size ,sort,orderProcessId);
             return ResultUtil.success(taskListVoPageVo);
         } else {
             return ResultUtil.error("排序参数值错误！");
@@ -237,7 +237,7 @@ public class OrderTaskController extends BaseController {
             SecurityUser currentUser = getCurrentUser();
             List<String> processStatusList = new ArrayList<>();
             processStatusList.add("3");
-            PageVo<TaskListFinishVo> taskListVoPageVo = orderHeadService.getTaskListByPersonIdAndProcessStatus(current, size, processStatusList, currentUser.getId().getId().toString(), sort,selectDto);
+            PageVo<TaskListFinishVo> taskListVoPageVo = appOrderTaskService.getTaskListByPersonIdAndProcessStatus(current, size, processStatusList, currentUser.getId().getId().toString(), sort,selectDto);
             return ResultUtil.success(taskListVoPageVo);
         } else {
             return ResultUtil.error("排序参数值错误！");
@@ -257,7 +257,7 @@ public class OrderTaskController extends BaseController {
                                                                     @RequestBody(required = false) OrderTaskSelectDto selectDto) throws ThingsboardException {
         if ("desc".equals(sort) || "asc".equals(sort)) {
             SecurityUser currentUser = getCurrentUser();
-            PageVo<TaskListVo> taskListVoPageVo = orderHeadService.getWaithandOverVerify(current, size, currentUser.getId().getId().toString(), sort,selectDto);
+            PageVo<TaskListVo> taskListVoPageVo = appOrderTaskService.getWaithandOverVerify(current, size, currentUser.getId().getId().toString(), sort,selectDto);
             return ResultUtil.success(taskListVoPageVo);
         } else {
             return ResultUtil.error("排序参数值错误！");
@@ -281,7 +281,7 @@ public class OrderTaskController extends BaseController {
             processStatusList.add("1");
             processStatusList.add("2");
             String orderProcessType = LichengConstants.ORDER_PROCESS_TYPE_2;
-            PageVo<TaskListVo> classList = orderHeadService.getTaskListByPersonIdAndProcessStatus(current, size, processStatusList, orderProcessType, currentUser.getId().getId().toString(), sort,selectDto);
+            PageVo<TaskListVo> classList = appOrderTaskService.getTaskListByPersonIdAndProcessStatus(current, size, processStatusList, orderProcessType, currentUser.getId().getId().toString(), sort,selectDto);
             return ResultUtil.success(classList);
         } else {
             return ResultUtil.error("排序参数值错误！");
@@ -301,7 +301,7 @@ public class OrderTaskController extends BaseController {
                                                                  @RequestBody(required = false) OrderTaskSelectDto selectDto) throws Exception {
         if ("desc".equals(sort) || "asc".equals(sort)) {
             SecurityUser currentUser = getCurrentUser();
-            PageVo<TaskListVo> taskListVoPageVo = orderHeadService.getNextDayTaskList(current, size, currentUser.getId().getId().toString(), sort,selectDto);
+            PageVo<TaskListVo> taskListVoPageVo = appOrderTaskService.getNextDayTaskList(current, size, currentUser.getId().getId().toString(), sort,selectDto);
             return ResultUtil.success(taskListVoPageVo);
         } else {
             return ResultUtil.error("排序参数值错误！");

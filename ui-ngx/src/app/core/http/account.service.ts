@@ -54,4 +54,22 @@ export class AccountService {
         let url = "/api/user/setRole"
         return this.http.get(url + `?roleId=${params.roleId}&userId=${params.userId}`, defaultHttpOptionsFromConfig(config))
     }
+
+    public fetchBaseList(params): Observable<any> {
+        let url = ""
+        if(params.type == 'base'){
+            url = "/api/manage/org/list"
+        } else if(params.type == 'line'){
+            url = "/api/manage/workline/byOrg?pkOrg=" + params.id
+        } else {
+            url = "/api/manage/warehouse/byOrg?pkOrg=" + params.id
+        }
+        return this.http.get(url)
+    }
+
+    // 获取用户详情
+    public fetchUserDetail(id): Observable<any> {
+        let url = "/api/user/listUserDetail"
+        return this.http.get(url + `?userId=${id}`)
+    }
 }

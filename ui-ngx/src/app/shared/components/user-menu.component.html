@@ -16,8 +16,10 @@
 
 -->
 <section fxLayout="row">
-
   <div fxHide.lt-lg *ngIf="displayUserInfo" class="tb-user-info" fxLayout="row">
+    <div fxLayout="column" fxLayoutAlign="center">
+      <span class="change-org" (click)="changeOrg()">切换账套</span>
+    </div>
     <div fxLayout="column" fxLayoutAlign="center">
       <span *ngIf="authorityName$ | async; let authorityName" class="tb-user-authority">{{ authorityName | translate }}</span>
     </div>
