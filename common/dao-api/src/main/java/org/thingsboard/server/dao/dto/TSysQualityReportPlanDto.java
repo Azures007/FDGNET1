@@ -21,7 +21,6 @@ import java.util.List;
  * @Description:
  */
 @Data
-@ApiModel("日报方案")
 public class TSysQualityReportPlanDto {
 
     @Id

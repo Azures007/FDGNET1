@@ -45,7 +45,7 @@ public class TSysQualityReportCategoryController extends BaseController{
         return ResultUtil.success();
     }
 
-    @ApiOperation("工序详情")
+    @ApiOperation("报检查项信息")
     @GetMapping("/categoryDetail")
     public ResponseResult<SysQualityReportCategoryDto> processDetail(@RequestParam Integer id) throws Exception {
         SysQualityReportCategoryDto categoryDetail=sysQualityReportCategoryService.categoryDetail(id);
@@ -53,16 +53,16 @@ public class TSysQualityReportCategoryController extends BaseController{
     }
 
 
-    @ApiOperation("工序删除")
+    @ApiOperation("报检查项信息删除")
     @GetMapping("/delete")
     public ResponseResult delete(@RequestParam Integer id) throws Exception {
         sysQualityReportCategoryService.delete(id);
         return ResultUtil.success();
     }
 
-    @ApiOperation("工序列表")
-    @GetMapping("/list")
-    public ResponseResult<PageVo<TSysProcessInfo>> getCategoryList(@RequestParam(value = "current",defaultValue = "0") Integer current,
+    @ApiOperation("报检查项信息列表")
+    @PostMapping("/list")
+    public ResponseResult<PageVo<SysQualityReportCategoryDto>> getCategoryList(@RequestParam(value = "current",defaultValue = "0") Integer current,
                                     @RequestParam(value = "size",defaultValue = "10") Integer size,@RequestBody TSysQualityReportCategorySearchDto searchDto) throws Exception {
         PageVo<SysQualityReportCategoryDto> categoryList =sysQualityReportCategoryService.getCategoryList(current,size,searchDto);
         return ResultUtil.success(categoryList);

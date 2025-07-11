@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.*;
-import org.thingsboard.server.dao.dto.SysQualityReportCategoryDto;
-import org.thingsboard.server.dao.dto.TSysQualityReportCategorySearchDto;
-import org.thingsboard.server.dao.dto.TSysQualityReportPlanDto;
-import org.thingsboard.server.dao.dto.TSysQualityReportPlanSearchDto;
+import org.thingsboard.server.dao.dto.*;
 import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportCategoryRepository;
 import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportItemRepository;
 import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportPlanRelRepository;
@@ -35,6 +32,9 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
     TSysQualityReportPlanRepository reportPlanRepository;
     @Autowired
     TSysQualityReportPlanRelRepository reportPlanRelRepository;
+
+    @Autowired
+    TSysQualityReportCategoryService sysQualityReportCategoryService;
 
 
     @Override
@@ -68,12 +68,17 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
     }
 
     @Override
-    public TSysQualityReportPlanDto planDetail(Integer id) {
-        TSysQualityReportPlanDto saveDto = new TSysQualityReportPlanDto();
+    public TSysQualityReportPlanVo planDetail(Integer id) {
+        TSysQualityReportPlanVo saveDto = new TSysQualityReportPlanVo();
         TSysQualityReportPlan plan = reportPlanRepository.findById(id).orElse(null);
         BeanUtils.copyProperties(plan, saveDto);
         List<TSysQualityReportPlanRel> items = reportPlanRelRepository.findByCategoryId(id, Sort.by(Sort.Direction.ASC, "sort"));
-        saveDto.setItemList(items);
+        List<SysQualityReportCategoryDto> dtoList=new ArrayList<>();
+        for (TSysQualityReportPlanRel item : items) {
+            SysQualityReportCategoryDto dto=sysQualityReportCategoryService.categoryDetail(item.getCategoryId());
+            dtoList.add(dto);
+        }
+        saveDto.setItemList(dtoList);
         return saveDto;
     }
 
