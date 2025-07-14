@@ -121,7 +121,7 @@ export class RoleComponent implements OnInit {
       width: "695px",
       height: "auto",
       panelClass: 'custom-modalbox',
-      data: this.roleData,
+      data: JSON.parse(JSON.stringify(this.roleData)),
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result != undefined) {
@@ -153,7 +153,7 @@ export class RoleComponent implements OnInit {
       panelClass: 'custom-modalbox',
       data: {
         isEdit: flag,
-        roleDetail: JSON.parse(JSON.stringify(value)) 
+        roleDetail: JSON.parse(JSON.stringify(value))
       },
     })
     dialogRef.afterClosed().subscribe(result => {
@@ -327,6 +327,12 @@ export class RoleComponent implements OnInit {
     // 点击paginator事件，获取pageIndex，重新加载页面
     this.searchFormGroup.value.current= $event.pageIndex;
     this.searchFormGroup.value.size = $event.pageSize;
+    this.getTableData();
+  }
+  reset() {
+    this.searchFormGroup.value.roleName = '';
+    this.searchFormGroup.value.roleCode = '';
+    this.searchFormGroup.value.enabled = '';
     this.getTableData();
   }
 }

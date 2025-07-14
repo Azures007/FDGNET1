@@ -1,0 +1,80 @@
+<div class="page-container flex-column">
+  <div class="page-header">
+    <div class="row-block cols4">
+      <label class="label">方案名称</label>
+      <input class="input" [(ngModel)]="searchData.planName" />
+    </div>
+    <div class="row-block cols4">
+      <label class="label">生产线：</label>
+      <input class="input" [(ngModel)]="searchData.productionLineName" />
+    </div>
+    <div class="row-block cols4">
+      <label class="label"></label>
+      <div class="btn-group">
+        <button class="search_btn" (click)="searchList()">
+          <mat-icon class="material-icons svgIcon">search</mat-icon>查询
+        </button>
+        <button class="search_btn" (click)="resetQuery()">
+          <mat-icon class="material-icons svgIcon">search</mat-icon>重置
+        </button>
+      </div>
+    </div>
+    <div class="row-block cols4"></div>
+    <div class="row-block cols4">
+      <label class="label"></label>
+      <div class="btn-group">
+        <button class="search_btn" (click)="showAddVisibilly({})">
+          <mat-icon class="material-icons svgIcon">add</mat-icon>新增
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="page-content">
+    <table mat-table [dataSource]="dataSource" class="table-warp">
+      <ng-container matColumnDef="no" sticky="true">
+        <th mat-header-cell *matHeaderCellDef> 序号 </th>
+        <td mat-cell *matCellDef="let element"> {{element.no}} </td>
+      </ng-container>
+      <ng-container matColumnDef="planName">
+        <th mat-header-cell *matHeaderCellDef> 方案名称</th>
+        <td mat-cell *matCellDef="let element"> {{element.planName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="productionLineName">
+        <th mat-header-cell *matHeaderCellDef> 生产线 </th>
+        <td mat-cell *matCellDef="let element"> {{element.productionLineName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="remarks">
+        <th mat-header-cell *matHeaderCellDef> 备注 </th>
+        <td mat-cell *matCellDef="let element"> {{element.remarks}} </td>
+      </ng-container>
+      <ng-container matColumnDef="isEnabled">
+        <th mat-header-cell *matHeaderCellDef> 状态 </th>
+        <td mat-cell *matCellDef="let element" [ngClass]="{'enabled':element.isEnabled == 1,'disabled':element.isEnabled == 0}"> {{getStatus(element.isEnabled)}} </td>
+      </ng-container>
+      <ng-container matColumnDef="customColumn1">
+        <th mat-header-cell *matHeaderCellDef> 操作 </th>
+        <td mat-cell *matCellDef="let element">
+          <button class="mini_btn edit_btn"
+            (click)="handleEvent(element,'edit')">编辑</button>
+          <button class="mini_btn look_btn" (click)="handleEvent(element,'details')">详情</button>
+          <button *ngIf="element.isEnabled == 0" class="mini_btn del_btn"
+            (click)="handleEvent(element,'del')">删除</button>
+          <button *ngIf="element.isEnabled == 0"
+            class="mini_btn enter_btn" (click)="handleEvent(element,'enable')">启用</button>
+          <button *ngIf="element.isEnabled == 1"
+            class="mini_btn disable_btn" (click)="handleEvent(element,'disable')">禁用</button>
+        </td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <mat-paginator [length]="total" [pageSize]="searchData.size" [pageSizeOptions]="pageSizeOptions"
+      aria-label="选择要跳转的页面" (page)="getNotices($event)">
+    </mat-paginator>
+  </div>
+</div>

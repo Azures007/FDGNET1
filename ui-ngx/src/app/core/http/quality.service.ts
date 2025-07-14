@@ -45,4 +45,29 @@ export class QualityService {
   public fetchBaseList(): Observable<any> {
     return this.http.get('/api/manage/workline/list')
   }
+
+  // 获取日报检查项维护列表
+  public fetchGetDailyList(data): Observable<any> {
+    return this.http.post(`/api/category/list?current=${data.current}&size=${data.size}`, data.body);
+  }
+
+  // 保存日报检查项维护
+  public fetchSaveDaily(data): Observable<any> {
+    return this.http.post(`/api/category/saveCategory`, data);
+  }
+
+  // 获取日报检查项维护详情
+  public fetchGetDailyDetails(data): Observable<any> {
+    return this.http.get(`/api/category/categoryDetail?id=${data}`);
+  }
+
+  // 启用禁用检查项维护
+  public fetchDisableDaily(data): Observable<any> {
+    return this.http.get(`/api/category/enableProcess?id=${data.id}&enable=${data.enable}`);
+  }
+
+  // 删除检查项维护
+  public fetchDelDaily(data): Observable<any> {
+    return this.http.get(`/api/category/delete?id=${data}`);
+  }
 }

@@ -26,7 +26,7 @@ export class ChooseMaterialComponent implements OnInit {
     ncMaterialCategory: '',
     materialCode: '',
     materialName: '',
-    materialStatus: '',
+    materialStatus: '1',
   });
   pageSizeOptions: number[] = [10, 50, 100, 200, 500];
   ngOnInit(): void {
@@ -60,7 +60,7 @@ export class ChooseMaterialComponent implements OnInit {
     this.searchFormGroup.controls['ncMaterialCategory'].setValue('');
     this.searchFormGroup.controls['materialCode'].setValue('');
     this.searchFormGroup.controls['materialName'].setValue('');
-    this.searchFormGroup.controls['materialStatus'].setValue('');
+    this.searchFormGroup.controls['materialStatus'].setValue('1');
     this.getTableData();
   }
   submit() {

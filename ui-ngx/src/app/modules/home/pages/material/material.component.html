@@ -23,8 +23,11 @@
         <option value="0">禁用</option>
       </select>
     </div>
-    <button class="search_btn" (click)="getTableData()">
+    <button class="search_btn" (click)="getTableData()" style="margin-right: 10px;">
       <mat-icon>search</mat-icon> 查询
+    </button>
+    <button class="search_btn" (click)="reset()">
+      <mat-icon>clear</mat-icon> 重置
     </button>
   </div>
   <div class="info_container">
@@ -38,7 +41,6 @@
         <button *ngIf="set.has('/material/sync')" class="add_btn btn_color_primary" (click)="showSync()">
           <mat-icon>sync</mat-icon> 同步
         </button>
-        <span>温馨提示：该模块对ERP主产品物料信息进行维护，用于工艺路线绑定</span>
       </div>
       <div class="info_tip">总共<span class="text_color_primary">{{total}}</span>个物料</div>
     </div>
