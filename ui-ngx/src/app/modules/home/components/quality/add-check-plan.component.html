@@ -1,0 +1,130 @@
+<div class="title">
+  {{modalTitle}}
+  <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+<div class="cate-content">
+  <form [formGroup]="dataForm" class="content page-container two-col">
+    <div class="row-block">
+      <label class="label"><span class="red-star">*</span>方案名称：</label>
+      <mat-form-field class="example-full-width" appearance="fill">
+        <div class="relative">
+          <input autocomplete="off" class="input" readonly formControlName="productName" type="text" matInput
+            placeholder="请选择方案">
+          <span class="absolute" (click)="selectProduct()" *ngIf="formType !== 'details'">选择</span>
+        </div>
+        <mat-error *ngIf="dataForm.hasError('required','productName')">
+          方案名称为<strong>必填</strong>
+        </mat-error>
+      </mat-form-field>
+
+    </div>
+    <div class="row-block">
+      <label class="label"><span class="red-star">*</span>生产线：</label>
+      <mat-form-field appearance="fill" class="select">
+        <mat-select formControlName="productionLineId">
+          <mat-option *ngFor="let item of baseList" [value]="item.cwkid">
+            {{item.vwkname}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="dataForm.hasError('required','productionLineId')">
+          请选择<strong>生产线</strong>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="row-block">
+      <div class="label"><span class="red-star">*</span>状态:</div>
+      <mat-form-field appearance="fill" class="select">
+        <mat-select formControlName="isEnabled">
+          <mat-option *ngFor="let item of status" [value]="item.value">
+            {{item.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="dataForm.hasError('required','isEnabled')">
+          请选择<strong>状态</strong>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="row-block">
+      <div class="label">备注:</div>
+      <mat-form-field class="example-full-width" appearance="fill">
+        <textarea matInput class="textarea" formControlName="remarks" placeholder="请输入备注"></textarea>
+      </mat-form-field>
+    </div>
+
+  </form>
+  <div class="setting-warp">
+    <div class="set-title">判定信息</div>
+    <div class="setting-panl">
+      <table class="table">
+        <tr>
+          <th>序号</th>
+          <th>字段名称</th>
+          <th>是否启用</th>
+          <th>字段类型</th>
+          <th>下拉框字段</th>
+          <th>单位</th>
+          <th>是否必填</th>
+        </tr>
+        <tr *ngFor="let item of judgeList; let i = index">
+          <td>
+            <div>{{i + 1}}</div>
+          </td>
+          <td>
+            <div>{{ item.fieldName }}</div>
+          </td>
+          <td>
+            <div>
+              <select required [(ngModel)]="item.isEnabled" [disabled]="formType === 'details'">
+                <option value="1">是</option>
+                <option value="0">否</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div>
+              <select required [(ngModel)]="item.fieldType" [disabled]="formType === 'details'">
+                <option *ngFor="let type of fieldTypes" [value]="type.codeValue">
+                  {{type.codeDsc}}
+                </option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div>
+              <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
+                [(ngModel)]="item.dropdownFields">
+            </div>
+          </td>
+          <td>
+            <div>
+              <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off" [(ngModel)]="item.unit">
+            </div>
+          </td>
+          <td>
+            <div>
+              <select required [(ngModel)]="item.isRequired" [disabled]="formType === 'details'">
+                <option value="1">是</option>
+                <option value="0">否</option>
+              </select>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<div class="footer">
+  <button *ngIf="formType !== 'details'" (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>提交</span>
+  </button>
+
+  <button *ngIf="formType === 'details'" (click)="addDialogClose()" mat-raised-button color="primary"
+    class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>关闭</span>
+  </button>
+</div>

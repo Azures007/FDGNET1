@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Utils } from '../../order-management/w-utils';
 
@@ -20,6 +20,7 @@ export class TransferComponent implements OnInit {
     private utils: Utils,
     private api: TechnologicalService,
     private classService: ClassService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   completeColumns = [];
@@ -98,18 +99,17 @@ export class TransferComponent implements OnInit {
     this.classService.fetchGetTableList(par).subscribe(res => {
       if (res.errcode === 200) {
         const allData = res.data.list;
-        this.listLeft = [];
-        allData.forEach((item, index) => {
-          this.listLeft.push({
+        this.listLeft = allData.map(item => {
+          return {
             label: item.name,
             classId: item.classId,
             leader: item.groupLeader,
             teamNum: item.teamNum,
             direction: 'left',
             checked: false
-          });
-        });
-
+          }
+        })
+        this.cd.detectChanges();
       }
     })
   }

@@ -374,5 +374,11 @@ export class MaterialComponent implements OnInit {
     this.searchFormGroup.value.size = $event.pageSize;
     this.getTableData();
   }
-
+  reset() {
+    this.searchFormGroup.controls['ncMaterialCategory'].setValue('');
+    this.searchFormGroup.controls['materialCode'].setValue('');
+    this.searchFormGroup.controls['materialName'].setValue('');
+    this.searchFormGroup.controls['materialStatus'].setValue('');
+    this.getTableData();
+  }
 }

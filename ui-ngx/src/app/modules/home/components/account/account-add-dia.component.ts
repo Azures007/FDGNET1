@@ -120,6 +120,9 @@ export class AccountAddDiaComponent implements OnInit {
   }
 
   addSubmitDialogClose() {
+    this.data.username = this.data.username.replace(/[\W]/g,'');
+    this.data.password=this.data.password.replace(/[\W]/g,'');
+    this.checkWord=this.checkWord.replace(/[\W]/g,'')
     let message = "";
     if (this.data.first_name == "") {
       message = "请输入用户名"
