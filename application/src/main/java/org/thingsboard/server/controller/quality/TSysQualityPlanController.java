@@ -8,13 +8,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.thingsboard.server.common.data.TSysQualityCategory;
 import org.thingsboard.server.common.data.TSysQualityPlan;
+import org.thingsboard.server.common.data.TSysQualityPlanConfig;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.ImportParam.TSysQualityPlanImportParam;
 import org.thingsboard.server.dao.constant.GlobalConstant;
+import org.thingsboard.server.dao.dto.TSysQualityCategoryDto;
 import org.thingsboard.server.dao.dto.TSysQualityPlanDto;
+import org.thingsboard.server.dao.tSysQualityCategory.TSysQualityCategoryService;
 import org.thingsboard.server.dao.tSysQualityPlan.TSysQualityPlanService;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.dao.vo.TSysQualityPlanVo;
@@ -36,17 +40,24 @@ public class TSysQualityPlanController extends BaseController {
     @Autowired
     private TSysQualityPlanService tSysQualityPlanService;
 
+    @Autowired
+    private TSysQualityCategoryService tSysQualityCategoryService;
+
     @ApiOperation("查询质检方案列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false)
+            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+            @ApiImplicitParam(name = "sortField", value = "排序字段", readOnly = false),
+            @ApiImplicitParam(name = "sortOrder", value = "排序方式（asc/desc）", readOnly = false)
 
     })
     @PostMapping("/qualityPlanList")
     public ResponseResult<PageVo<TSysQualityPlan>> qualityPlanList(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                                           @RequestBody TSysQualityPlanDto tSysQualityPlanDto) {
-        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(current, size, tSysQualityPlanDto);
+                                                                   @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                   @RequestParam(value = "sortField", defaultValue = "") String sortField,
+                                                                   @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
+                                                                   @RequestBody TSysQualityPlanDto tSysQualityPlanDto) {
+        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(current, size,sortField,sortOrder, tSysQualityPlanDto);
         PageVo<TSysQualityPlan> pageVo = new PageVo<>(qualityPlanList);
         return ResultUtil.success(pageVo);
     }
@@ -105,4 +116,33 @@ public class TSysQualityPlanController extends BaseController {
         tSysQualityPlanService.saveTSysQualityPlan(tSysQualityPlan);
         return ResultUtil.success();
     }
+
+
+
+    @ApiOperation("查询质检类目列表（新增配置表数据使用）")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+//            @ApiImplicitParam(name = "sortField", value = "排序字段", readOnly = false),
+//            @ApiImplicitParam(name = "sortOrder", value = "排序方式（asc/desc）", readOnly = false)
+
+    })
+    @PostMapping("/qualityCategoryList")
+    public ResponseResult<PageVo<TSysQualityCategory>> qualityCategoryList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
+//                                                                           @RequestParam(value = "sortField", defaultValue = "") String sortField,
+//                                                                           @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
+                                                                           @RequestBody TSysQualityCategoryDto tSysQualityCategoryDto) {
+        tSysQualityCategoryDto.setIsEnabled("1");
+
+        //todo  查询类目信息之后将其转换成json串返回
+
+
+        Page<TSysQualityPlanConfig> qualityCategoryList =
+                tSysQualityCategoryService.getTSysQualityCategoryListToPlan(current, size,tSysQualityCategoryDto);
+        PageVo<TSysQualityPlanConfig> pageVo = new PageVo<>(qualityCategoryList);
+        return ResultUtil.success(pageVo);
+//        return null;
+    }
+
 }

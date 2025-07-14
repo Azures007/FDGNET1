@@ -4,24 +4,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.TSysClass;
 import org.thingsboard.server.common.data.TSysQualityCategory;
 import org.thingsboard.server.common.data.TSysQualityCategoryConfig;
-import org.thingsboard.server.dao.constant.GlobalConstant;
+import org.thingsboard.server.common.data.TSysQualityPlanConfig;
 import org.thingsboard.server.dao.dto.TSysQualityCategoryDto;
-import org.thingsboard.server.dao.sql.tSysClass.TSysClassRepository;
 import org.thingsboard.server.dao.sql.tSysQualityCategory.TSysQualityCategoryConfigRepository;
 import org.thingsboard.server.dao.sql.tSysQualityCategory.TSysQualityCategoryRepository;
 import org.thingsboard.server.dao.tSysQualityCategory.TSysQualityCategoryService;
+import org.thingsboard.server.dao.util.JsonUtil;
 import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 
+import org.thingsboard.server.dao.util.StringConverterUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author 陈懋燊
@@ -42,9 +44,18 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
 
 
     @Override
-    public Page<TSysQualityCategory> tSysQualityCategoryList(Integer current, Integer size, TSysQualityCategoryDto tSysQualityCategoryDto) {
+    public Page<TSysQualityCategory> tSysQualityCategoryList(Integer current,
+                                                             Integer size,
+                                                             String sortField,
+                                                             String sortOrder,
+                                                             TSysQualityCategoryDto tSysQualityCategoryDto) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+        if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
+            String converterSortField = StringConverterUtil.camelToSnake(sortField);
+            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
+        }
+
         Pageable pageable = PageRequest.of(current, size, sort);
 //        ExampleMatcher matcher = ExampleMatcher.matching()
 //                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -74,6 +85,100 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
 //            tSysQualityCategory1.setSchedulingCodeDsc(GlobalConstant.getCodeDscName(code, tSysQualityCategory1.getScheduling()));
 //        });
         return tSysQualityCategoryPage;
+    }
+
+    @Override
+    public Page<TSysQualityPlanConfig> getTSysQualityCategoryListToPlan(Integer current, Integer size, TSysQualityCategoryDto tSysQualityCategoryDto) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+        Pageable pageable = PageRequest.of(current, size, sort);
+//        ExampleMatcher matcher = ExampleMatcher.matching()
+//                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
+//                .withMatcher("enabledSt", ExampleMatcher.GenericPropertyMatchers.exact());
+        TSysQualityCategory tSysQualityCategory = new TSysQualityCategory();
+        BeanUtils.copyProperties(tSysQualityCategoryDto, tSysQualityCategory);
+        //检测项目
+        tSysQualityCategory.setInspectionItem(StringUtils.isNotBlank(tSysQualityCategory.getInspectionItem())?tSysQualityCategory.getInspectionItem():"");
+        //关键工序
+        tSysQualityCategory.setKeyProcess(StringUtils.isNotBlank(tSysQualityCategory.getKeyProcess())?tSysQualityCategory.getKeyProcess():"");
+        //产品名称
+        tSysQualityCategory.setProductName(StringUtils.isNotBlank(tSysQualityCategory.getProductName())?tSysQualityCategory.getProductName():"");
+        //启停状态
+        tSysQualityCategory.setIsEnabled(StringUtils.isNotBlank(tSysQualityCategory.getIsEnabled()) ? tSysQualityCategory.getIsEnabled() : "");
+        //先查出分页的质检类目信息，再组装json串
+        Page<TSysQualityCategory> tSysQualityCategoryPage = tSysQualityCategoryRepository.findAllBy(tSysQualityCategory, pageable);
+
+        List<TSysQualityCategory> processedContent = tSysQualityCategoryPage.getContent();
+        // 处理内容列表
+
+
+        //提取ID的合集
+        List<Integer> categoryIdList = processedContent.stream().map(TSysQualityCategory::getId).collect(Collectors.toList());
+
+        //根据ID合集查询所有的类目配置
+        List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList =tSysQualityCategoryConfigRepository.findByCategoryIdIn(categoryIdList);
+        //根据CategoryId对类目配置信息进行分组
+        Map<Integer, List<TSysQualityCategoryConfig>> configMap = tSysQualityCategoryConfigList.stream()
+                .collect(Collectors.groupingBy(TSysQualityCategoryConfig::getCategoryId));
+
+        //用于装载数据的list
+        List<TSysQualityPlanConfig> returnPlanConfigList = new ArrayList<>();
+        //循环整理数据
+        for (TSysQualityCategory item:
+        processedContent) {
+            Integer categoryId = item.getId();
+            List<TSysQualityCategoryConfig> relatedConfigs = configMap.getOrDefault(categoryId, Collections.emptyList());
+
+            //转换Json串
+            List<List<String>> tableData = new ArrayList<>();
+            for (TSysQualityCategoryConfig categoryConfig:
+            relatedConfigs) {
+
+                List<String> l = JsonUtil.beanToListStrConverter(StringUtils.defaultString(categoryConfig.getMaterialName()),
+                        StringUtils.defaultString(categoryConfig.getFieldName()),
+                        "",
+                        StringUtils.defaultString(categoryConfig.getIsEnabled()),
+                        StringUtils.defaultString(categoryConfig.getFieldType()),
+                        StringUtils.defaultString(categoryConfig.getParameterRange()),
+                        StringUtils.defaultString(categoryConfig.getDropdownFields()),
+                        StringUtils.defaultString(categoryConfig.getUnit()),
+                        StringUtils.defaultString(categoryConfig.getIsRequired()));
+                tableData.add(l);
+            }
+            String json = JsonUtil.tableToJsonConverter(tableData);
+
+            //组装新的数据
+            TSysQualityPlanConfig planConfig = new TSysQualityPlanConfig();
+            BeanUtils.copyProperties(item,planConfig);
+            planConfig.setCategoryId(item.getId());
+            planConfig.setId(null);
+            planConfig.setConfigData(json);
+
+            returnPlanConfigList.add(planConfig);
+
+
+        }
+
+
+
+
+
+
+//        List<TSysQualityCategory> processedContent = tSysQualityCategoryPage.getContent().stream()
+//                .map(item -> {
+//                    // 处理每条数据
+//                    item.setStandard(processStandard(item.getStandard()));
+//                    return item;
+//                })
+////                .filter(item -> item.getIsEnabled().equals("1")) // 示例：过滤已启用的项
+//                .collect(Collectors.toList());
+//
+//        // 重新封装为 Page 对象（保持分页元数据不变）
+        return new PageImpl<TSysQualityPlanConfig>(returnPlanConfigList, tSysQualityCategoryPage.getPageable(), tSysQualityCategoryPage.getTotalElements());
+
+
+
+//        return null;
+//        return tSysQualityCategoryPage;
     }
 
     @Override
