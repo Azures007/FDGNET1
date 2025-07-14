@@ -32,7 +32,9 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
      * @param materialCode
      * @return
      */
-    @Query(value = "select a.* from t_sync_material a  where material_code not in (select material_code from t_sys_craft_material_rel group by material_code)",nativeQuery = true)
+    @Query(value = "select a.* from t_sync_material a  where 1=1 \n" +
+            "and (material_code like %?1% or material_name like %?1% )\n" +
+            "and material_code not in (select material_code from t_sys_craft_material_rel group by material_code)",nativeQuery = true)
     Page<TSyncMaterial> listMaterialFiter(String materialCode, PageRequest pageRequest);
 
     /**
