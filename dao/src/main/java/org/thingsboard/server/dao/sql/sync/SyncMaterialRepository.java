@@ -111,10 +111,12 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
                          @Param("current") Integer current,
                          @Param("size") Integer size);
 
-    @Query(value = "select count(1) from t_sync_material \n" +
-            "            where (material_code like %:#{#tSyncMaterialTo.materialCode}%\n" +
-            "             or material_name like %:#{#tSyncMaterialTo.materialName}%) \n" +
-            "            and (material_status =:#{#tSyncMaterialTo.materialStatus} or :#{#tSyncMaterialTo.materialStatus} is null or :#{#tSyncMaterialTo.materialStatus} ='')",nativeQuery = true)
+    @Query(value = "select count(1) from t_sync_material a \n" +
+            " where 1=1 \n" +
+            "and (a.material_code like %:#{#tSyncMaterialTo.materialCode}% or :#{#tSyncMaterialTo.materialCode} is null or :#{#tSyncMaterialTo.materialCode} ='') \n" +
+            "and (material_name like %:#{#tSyncMaterialTo.materialName}% or :#{#tSyncMaterialTo.materialName} is null or :#{#tSyncMaterialTo.materialName} = '') \n" +
+            "and (a.nc_material_category like %:#{#tSyncMaterialTo.ncMaterialCategory}% or :#{#tSyncMaterialTo.ncMaterialCategory} is null or :#{#tSyncMaterialTo.ncMaterialCategory} ='') \n" +
+            " and (material_status =:#{#tSyncMaterialTo.materialStatus} or :#{#tSyncMaterialTo.materialStatus} is null or :#{#tSyncMaterialTo.materialStatus} ='') \n", nativeQuery = true)
     int finAllAndTotal(@Param("tSyncMaterialTo") TSyncMaterial tSyncMaterialTo);
 
 }
