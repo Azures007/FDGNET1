@@ -1,9 +1,8 @@
 package org.thingsboard.server.dao.dto;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysQualityReportItem;
+import org.thingsboard.server.common.data.TSysQualityReportPlanRel;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -20,43 +19,53 @@ import java.util.List;
  * @Description:
  */
 @Data
-//@ApiModel("日报检查项")
-public class SysQualityReportCategoryDto {
+public class TSysQualityReportPlanVo {
 
+    @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ApiModelProperty("频次，字典")
-    private String frequency;
+    @ApiModelProperty("品名")
+    @Column(name = "product_name")
+    private String product_name;
 
-    @ApiModelProperty("频次，字典")
-    private String frequencyValue;
+    @ApiModelProperty("生产部门id")
+    @Column(name = "prod_dept_id")
+    private String prod_dept_id;
 
-    @ApiModelProperty("重点项目")
-    private String importantItem;
+    @ApiModelProperty("生产线id")
+    @Column(name = "prod_line_id")
+    private String prod_line_id;
 
 
 
     @ApiModelProperty("启用/禁用")
-    private String enabled;
+    @Column(name = "enabled")
+    private Integer enabled;
 
 
     @ApiModelProperty("创建人")
-    private String createdName;
+    @Column(name = "created_name")
+    private String createdMame;
 
     @ApiModelProperty("创建时间")
+    @Column(name = "created_time")
     private Date createdTime;
 
     @ApiModelProperty("修改人")
+    @Column(name = "updated_name")
     private String updatedName;
 
     @ApiModelProperty("修改日期")
+    @Column(name = "updated_time")
     private Date updatedTime;
 
     @ApiModelProperty("备注")
+    @Column(name = "remark")
     private String remark;
 
     @ApiModelProperty("配置信息")
-    private List<TSysQualityReportItem> itemList;
+    private List<SysQualityReportCategoryDto> itemList;
 
 }

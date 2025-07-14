@@ -15,7 +15,6 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "t_sys_quality_report_item")
-@ApiModel("质检日报类目详细检查项")
 public class TSysQualityReportItem {
     @Id
     @Column(name = "id")

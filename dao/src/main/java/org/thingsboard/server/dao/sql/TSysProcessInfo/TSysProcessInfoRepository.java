@@ -6,6 +6,8 @@ import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.TSysProcessInfo;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @Auther: l
@@ -22,7 +24,19 @@ public interface TSysProcessInfoRepository extends JpaRepository<TSysProcessInfo
             " )",nativeQuery = true)
     List<TSysProcessInfo> getProcessInfos(@Param("midMoSaleOrderNo") String midMoSaleOrderNo);
 
-    TSysProcessInfo getByProcessNumber(String processNumber);
+    /**
+     * @param processSet
+     * @return
+     */
+    @Query(value = "select process_id,process_name from t_sys_process_info where process_id in (?1) group by process_id,process_name",nativeQuery = true)
+    Set<Map<String,Object>> listBySetIds(Set<Integer> processSet);
+
+    TSysProcessInfo findByProcessId(Integer processId);
+
+    // 废弃方法
+//    TSysProcessInfo getByProcessNumber(String processNumber);
+
+    List<TSysProcessInfo> findByProcessNumber(String processNumber);
 
     /**
      * 通过工序执行id获取工序编码
@@ -33,4 +47,12 @@ public interface TSysProcessInfoRepository extends JpaRepository<TSysProcessInfo
             "join t_sys_process_info b on a.process_id =b.process_id \n" +
             "where a.order_process_id =?1",nativeQuery = true)
     String findProcessNumberByOrderProcessId(Integer orderProcessId);
+    /**
+     * 通过工序工序名称获取enable=1的工序，如果有多个取第一个
+     * @param processName
+     * @return
+     */
+    @Query(value = "select * from t_sys_process_info where process_name=?1 and enabled=1 limit 1",nativeQuery = true)
+    TSysProcessInfo findByProcessName(String processName);
 }
+

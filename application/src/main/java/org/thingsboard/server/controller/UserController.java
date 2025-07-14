@@ -616,7 +616,7 @@ public class UserController extends BaseController {
         UpdateAndSaveDto updateAndSaveDto = new UpdateAndSaveDto();
         updateAndSaveDto.setUser_id(userId);
         updateAndSaveDto.setUser_status(enabled == 0 ? GlobalConstant.enableFalse : GlobalConstant.enableTrue);
-        this.updateAndSave(updateAndSaveDto, response, request);
+        this.update(updateAndSaveDto);
         return ResultUtil.success();
     }
 
@@ -643,7 +643,7 @@ public class UserController extends BaseController {
         UpdateAndSaveDto updateAndSaveDto = new UpdateAndSaveDto();
         updateAndSaveDto.setUser_id(userId);
         updateAndSaveDto.setRole_id(roleId);
-        updateAndSave(updateAndSaveDto, response, request);
+        this.update(updateAndSaveDto);
         return ResultUtil.success();
     }
 
@@ -686,5 +686,19 @@ public class UserController extends BaseController {
         result.put("pkOrg", pkOrg);
         result.put("cwkid", cwkid);
         return ResultUtil.success(result);
+    }
+
+    public ResponseResult update(@RequestBody UpdateAndSaveDto updateAndSaveDto) throws ThingsboardException, JsonProcessingException {
+        SecurityUser currentUser = getCurrentUser();
+        currentUser.setAuthority(Authority.TENANT_ADMIN);
+        if (StringUtils.isBlank(updateAndSaveDto.getUser_id())) {
+            // 禁止为空，报错处理
+            return ResultUtil.error("更新用户，用户id不能为空");
+        } else {
+            updateAndSaveDto.setUpdated_name(currentUser.getName());
+            updateAndSaveDto.setUpdated_time(new Date());
+            userService.update(updateAndSaveDto);
+        }
+        return ResultUtil.success();
     }
 }

@@ -12,10 +12,7 @@ import org.thingsboard.server.common.data.TSysQualityReportCategory;
 import org.thingsboard.server.common.data.TSysQualityReportPlan;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.dto.SysQualityReportCategoryDto;
-import org.thingsboard.server.dao.dto.TSysQualityReportCategorySearchDto;
-import org.thingsboard.server.dao.dto.TSysQualityReportPlanDto;
-import org.thingsboard.server.dao.dto.TSysQualityReportPlanSearchDto;
+import org.thingsboard.server.dao.dto.*;
 import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportPlanService;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
@@ -46,8 +43,8 @@ public class TSysQualityReportPlanController extends BaseController{
 
     @ApiOperation("方案详情")
     @GetMapping("/detail")
-    public ResponseResult<TSysQualityReportPlanDto> planDetail(@RequestParam Integer id) throws Exception {
-        TSysQualityReportPlanDto planDetail= tSysQualityReportPlanService.planDetail(id);
+    public ResponseResult<TSysQualityReportPlanVo> planDetail(@RequestParam Integer id) throws Exception {
+        TSysQualityReportPlanVo planDetail= tSysQualityReportPlanService.planDetail(id);
         return ResultUtil.success(planDetail);
     }
 
