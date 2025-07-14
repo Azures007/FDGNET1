@@ -29,11 +29,11 @@ public class TSysQualityReportPlan {
 
     @ApiModelProperty("生产部门id")
     @Column(name = "prod_dept_id")
-    private String prodDeptId;
+    private Integer prodDeptId;
 
     @ApiModelProperty("生产线id")
     @Column(name = "prod_line_id")
-    private String prodLineId;
+    private Integer prodLineId;
 
 
 

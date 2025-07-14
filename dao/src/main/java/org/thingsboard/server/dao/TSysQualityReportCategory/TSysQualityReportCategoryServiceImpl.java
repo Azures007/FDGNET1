@@ -40,7 +40,7 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
         TSysQualityReportCategory category = new TSysQualityReportCategory();
         BeanUtils.copyProperties(categoryDto, category);
         if (category.getId() == null) {
-            category.setCreatedMame(category.getCreatedMame());
+            category.setCreatedMame(category.getUpdatedName());
             category.setCreatedTime(category.getUpdatedTime());
         } else {
             if (reportCategoryRepository.findById(category.getId()).isEmpty()) {
@@ -49,6 +49,7 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
                 category.setCreatedMame(category.getCreatedMame());
             }
         }
+        category.setEnabled(1);
         category = reportCategoryRepository.saveAndFlush(category);
         //插入明细
         List<TSysQualityReportItem> items = categoryDto.getItemList();
@@ -69,8 +70,11 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
     public SysQualityReportCategoryDto categoryDetail(Integer id) {
         SysQualityReportCategoryDto saveDto = new SysQualityReportCategoryDto();
         TSysQualityReportCategory category = reportCategoryRepository.findById(id).orElse(null);
+        if(category==null){
+            return null;
+        }
         BeanUtils.copyProperties(category, saveDto);
-        List<TSysQualityReportItem> items = reportItemRepository.findByCategoryId(id, Sort.by(Sort.Direction.ASC, "sort"));
+        List<TSysQualityReportItem> items = reportItemRepository.findByCategoryId(id, Sort.by(Sort.Direction.ASC, "id"));
         saveDto.setItemList(items);
         return saveDto;
     }
@@ -87,8 +91,7 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
         Pageable pageable = PageRequest.of(current, size, sort);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("frequency", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("importantItem", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact());
+                .withMatcher("importantItem", ExampleMatcher.GenericPropertyMatchers.contains());
         TSysQualityReportCategory category = new TSysQualityReportCategory();
         if (StringUtils.isEmpty(searchDto.getFrequency())) {
             searchDto.setFrequency(null);
@@ -98,14 +101,16 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
         }
         BeanUtils.copyProperties(searchDto, category);
 
+        category.setEnabled(null);
         Example<TSysQualityReportCategory> example = Example.of(category, matcher);
         Page<TSysQualityReportCategory> craftInfos = reportCategoryRepository.findAll(example, pageable);
         List<SysQualityReportCategoryDto> dtos = new ArrayList<>();
         for (TSysQualityReportCategory info : craftInfos) {
             SysQualityReportCategoryDto categoryDto = new SysQualityReportCategoryDto();
             BeanUtils.copyProperties(info, categoryDto);
-            List<TSysQualityReportItem> itemList = reportItemRepository.findByCategoryId(info.getId(), Sort.by(Sort.Direction.ASC, "sort"));
+            List<TSysQualityReportItem> itemList = reportItemRepository.findByCategoryId(info.getId(), Sort.by(Sort.Direction.ASC, "createdTime"));
             categoryDto.setItemList(itemList);
+            categoryDto.setEnabled(info.getEnabled());
             dtos.add(categoryDto);
         }
         PageVo<SysQualityReportCategoryDto> pageVo = new PageVo<>();

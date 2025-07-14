@@ -5,10 +5,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.*;
 import org.thingsboard.server.dao.dto.*;
-import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportCategoryRepository;
-import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportItemRepository;
 import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportPlanRelRepository;
 import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportPlanRepository;
 import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportCategoryService;
@@ -38,6 +37,7 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
 
 
     @Override
+    @Transactional
     public void savePlan(TSysQualityReportPlanDto tSysQualityReportPlanDto) {
         TSysQualityReportPlan reportPlan = new TSysQualityReportPlan();
         BeanUtils.copyProperties(tSysQualityReportPlanDto, reportPlan);
@@ -51,15 +51,17 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
                 reportPlan.setCreatedMame(reportPlan.getCreatedMame());
             }
         }
+        reportPlan.setEnabled(1);
         reportPlan = reportPlanRepository.saveAndFlush(reportPlan);
         //插入明细
         List<TSysQualityReportPlanRel> items = tSysQualityReportPlanDto.getItemList();
         List<TSysQualityReportPlanRel> rels = new ArrayList<>();
-        reportPlanRelRepository.deleteByCategoryId(reportPlan.getId());
+        reportPlanRelRepository.deleteByPlanId(reportPlan.getId());
         for (TSysQualityReportPlanRel item : items) {
             TSysQualityReportPlanRel rel = new TSysQualityReportPlanRel();
             BeanUtils.copyProperties(item,rel);
             rel.setCategoryId(reportPlan.getId());
+            rel.setPlanId(reportPlan.getId());
             rels.add(rel);
         }
         reportPlanRelRepository.saveAll(rels);
@@ -72,7 +74,7 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
         TSysQualityReportPlanVo saveDto = new TSysQualityReportPlanVo();
         TSysQualityReportPlan plan = reportPlanRepository.findById(id).orElse(null);
         BeanUtils.copyProperties(plan, saveDto);
-        List<TSysQualityReportPlanRel> items = reportPlanRelRepository.findByCategoryId(id, Sort.by(Sort.Direction.ASC, "sort"));
+        List<TSysQualityReportPlanRel> items = reportPlanRelRepository.findByPlanId(id, Sort.by(Sort.Direction.ASC, "id"));
         List<SysQualityReportCategoryDto> dtoList=new ArrayList<>();
         for (TSysQualityReportPlanRel item : items) {
             SysQualityReportCategoryDto dto=sysQualityReportCategoryService.categoryDetail(item.getCategoryId());
@@ -85,7 +87,7 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
     @Override
     public void delete(Integer id) {
         reportPlanRepository.deleteById(id);
-        reportPlanRelRepository.deleteByCategoryId(id);
+        reportPlanRelRepository.deleteByPlanId(id);
     }
 
     @Override
@@ -94,24 +96,24 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
         Pageable pageable = PageRequest.of(current, size, sort);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("prodDeptId", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact());
+                .withMatcher("prodDeptName", ExampleMatcher.GenericPropertyMatchers.contains());
         TSysQualityReportPlan plan = new TSysQualityReportPlan();
         if (StringUtils.isEmpty(searchDto.getProductName())) {
             searchDto.setEnabled(null);
         }
-        if (StringUtils.isEmpty(searchDto.getProdDeptId())) {
-            searchDto.setProdDeptId(null);
+        if (StringUtils.isEmpty(searchDto.getProdDeptName())) {
+            searchDto.setProdDeptName(null);
         }
         BeanUtils.copyProperties(searchDto, plan);
 
+        plan.setEnabled(null);
         Example<TSysQualityReportPlan> example = Example.of(plan, matcher);
         Page<TSysQualityReportPlan> craftInfos = reportPlanRepository.findAll(example, pageable);
         List<TSysQualityReportPlanDto> dtos = new ArrayList<>();
         for (TSysQualityReportPlan info : craftInfos) {
             TSysQualityReportPlanDto categoryDto = new TSysQualityReportPlanDto();
             BeanUtils.copyProperties(info, categoryDto);
-            List<TSysQualityReportPlanRel> itemList = reportPlanRelRepository.findByCategoryId(info.getId(), Sort.by(Sort.Direction.ASC, "sort"));
+            List<TSysQualityReportPlanRel> itemList = reportPlanRelRepository.findByPlanId(info.getId(), Sort.by(Sort.Direction.ASC, "id"));
             categoryDto.setItemList(itemList);
             dtos.add(categoryDto);
         }

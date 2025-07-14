@@ -57,7 +57,7 @@ public class TSysQualityReportPlanController extends BaseController{
     }
 
     @ApiOperation("方案列表")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public ResponseResult<PageVo<TSysQualityReportPlanDto>> getPlanList(@RequestParam(value = "current",defaultValue = "0") Integer current,
                                     @RequestParam(value = "size",defaultValue = "10") Integer size,@RequestBody TSysQualityReportPlanSearchDto searchDto) throws Exception {
         PageVo<TSysQualityReportPlanDto> categoryList = tSysQualityReportPlanService.getPlanList(current,size,searchDto);

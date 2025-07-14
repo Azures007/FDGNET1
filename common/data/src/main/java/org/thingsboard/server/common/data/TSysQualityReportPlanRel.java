@@ -23,7 +23,7 @@ public class TSysQualityReportPlanRel {
     private Integer id;
 
     @ApiModelProperty("质检日报方案id")
-    @Column(name = "product_name")
+    @Column(name = "plan_id")
     private Integer planId;
 
     @ApiModelProperty("质检日报类目id")
