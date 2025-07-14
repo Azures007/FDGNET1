@@ -74,7 +74,7 @@ export class ProcessRouteComponent implements OnInit {
       this.orgMap = this.putHash(new Map(), this.midOrgList, 'org', 'kdOrgId');
       this.searchList();
     }
-  
+
     //哈希表存储
     putHash(map, arr, str, key) {
       for (let i = 0; i < arr.length; i++) {
@@ -83,7 +83,7 @@ export class ProcessRouteComponent implements OnInit {
       // console.log(arr[0],str,key);
       return map;
     }
-  
+
     //从哈希表获取数据
     handleHash(n, value) {
       let str = '';
@@ -99,7 +99,7 @@ export class ProcessRouteComponent implements OnInit {
       } else {
         return str = "未绑定";
       }
-  
+
     }
 
   // 新增弹窗
@@ -255,5 +255,10 @@ export class ProcessRouteComponent implements OnInit {
     this.searchFormGroup.value.size = $event.pageSize;
     this.searchList();
   }
-
+  reset(){
+    this.searchFormGroup.value.craftName = "";
+    this.searchFormGroup.value.craftNumber = "";
+    this.searchFormGroup.value.enabled = "";
+    this.searchList();
+  }
 }

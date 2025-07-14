@@ -265,7 +265,7 @@ export class AccountComponent implements OnInit {
       current: 0,
       size: 999,
       body: {
-        enabled: "",
+        enabled: "0",
         roleCode: "",
         roleName: "",
       }
