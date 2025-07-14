@@ -9,17 +9,17 @@
     </div>
     <div class="item">
         <div class="label">账号:</div>
-        <input type="text" maxlength="11" onkeyup="this.value=this.value.replace(/[\W]/g,'')"
+        <input type="text" maxlength="11"
             [(ngModel)]="data.username" placeholder="请请输入登录账号(11位字母或数字组合)" autocomplete="false">
     </div>
     <div class="item">
         <div class="label">登录密码:</div>
-        <input type="text" maxlength="6" onkeyup="this.value=this.value.replace(/[\W]/g,'')" [(ngModel)]="data.password"
+        <input type="text" maxlength="6" [(ngModel)]="data.password"
             placeholder="请输入登录密码(6位字母或数字)" autocomplete="false" onfocus="this.type='password'">
     </div>
     <div class="item">
         <div class="label">确认密码:</div>
-        <input type="text" onkeyup="this.value=this.value.replace(/[\W]/g,'')" maxlength="6" [(ngModel)]="checkWord"
+        <input type="text" maxlength="6" [(ngModel)]="checkWord"
             placeholder="再次输入登录密码(6位字母或数字)" onfocus="this.type='password'">
     </div>
 </div>

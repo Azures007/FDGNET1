@@ -120,6 +120,26 @@ export class AuthService {
       ));
   }
 
+  // 获取基地列表
+  getOrgList(username) {
+    return this.http.get('/api/noauth/user/orgList?username=' + username);
+  }
+
+  // 根据基地ID获取产线
+  getLineList(userName, pkOrg ) {
+    return this.http.get('/api/noauth/user/worklineList?username=' + userName + '&pkOrg=' + pkOrg);
+  }
+
+  // 获取当前登录用户所选择的基地产线
+  getCurrentLine() {
+    return this.http.get('/api/user/currentOrgLine');
+  }
+
+  // 切换账套
+  changeOrg(data) {
+    return this.http.post('/api/user/switchOrgLine?pkOrg=' + data.pkOrg + '&cwkid=' + data.cwkid, {});
+  }
+
   public publicLogin(publicId: string): Observable<LoginResponse> {
     const publicLoginRequest: PublicLoginRequest = {
       publicId
@@ -290,7 +310,7 @@ export class AuthService {
       if (publicId) {
         return this.publicLogin(publicId).pipe(
           mergeMap((response) => {
-        
+
             this.updateAndValidateTokens(response.token, response.refreshToken, false);
             return this.procceedJwtTokenValidate();
           }),
@@ -326,7 +346,7 @@ export class AuthService {
         };
         return this.http.post<LoginResponse>('/api/auth/login', loginRequest, defaultHttpOptions()).pipe(
           mergeMap((loginResponse: LoginResponse) => {
-            
+
               this.updateAndValidateTokens(loginResponse.token, loginResponse.refreshToken, false);
               return this.procceedJwtTokenValidate();
             }

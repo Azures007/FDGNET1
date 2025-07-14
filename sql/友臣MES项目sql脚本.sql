@@ -207,3 +207,10 @@ ALTER TABLE "public"."t_sys_department"
 ALTER COLUMN "nc_status" TYPE varchar(16) COLLATE "pg_catalog"."default";
 
 COMMENT ON COLUMN "public"."t_sys_department"."nc_status" IS '状态：生效;失效';
+
+-- 2025-07-01 班别 增加车间主任
+ALTER TABLE t_sys_class ADD COLUMN workshop_director_id int4;
+COMMENT ON COLUMN t_sys_class.workshop_director_id IS '车间主任id';
+
+ALTER TABLE t_sys_class ADD COLUMN workshop_director varchar(255);
+COMMENT ON COLUMN t_sys_class.workshop_director IS '车间主任';

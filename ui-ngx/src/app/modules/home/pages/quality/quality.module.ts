@@ -7,8 +7,9 @@ import { HomeComponentsModule } from '@modules/home/components/home-components.m
 
 import { QualityComponent } from './quality.component';
 import { QualityCateComponent } from './quality-cate.component';
+import { QualityPlanComponent } from './quality-plan.component';
 import { QualityRoutingModule } from './quality-routing.module';
-
+import { QualityCheckPlanComponent } from './quality-check-plan.component';
 
 
 
@@ -16,6 +17,7 @@ import { QualityRoutingModule } from './quality-routing.module';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 
 import { Utils } from '../order-management/w-utils';
+import { QualityCheckCateComponent } from './quality-check-cate.component';
 
 const COMMISSION_DATE_FORMATS = {
   parse: {
@@ -30,7 +32,7 @@ const COMMISSION_DATE_FORMATS = {
 };
 
 @NgModule({
-  declarations: [QualityComponent, QualityCateComponent],
+  declarations: [QualityComponent, QualityCateComponent, QualityPlanComponent, QualityCheckCateComponent, QualityCheckPlanComponent],
   imports: [
     CommonModule,
     SharedModule,

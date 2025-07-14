@@ -126,7 +126,7 @@ export class QualityCateComponent implements OnInit {
 
   }
   resetPaging() {
-    console.log(this.sort);
+    this.searchList();
   }
 
   searchList() {
@@ -134,6 +134,8 @@ export class QualityCateComponent implements OnInit {
     params = {
       current: this.searchData.current,
       size: this.searchData.size,
+      sortField: this.sort?.active,
+      sortOrder: this.sort?.direction,
       body: {
         inspectionItem: this.searchData.inspectionItem,
         keyProcess: this.searchData.keyProcess,

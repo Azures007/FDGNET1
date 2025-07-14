@@ -173,8 +173,11 @@ import { MenuAddComponent } from './menu-admin/menu-add.component';
 import { ChooseBaseComponent } from '@home/components/account/pick/choose-base.component';
 import { CraftDetailComponent } from '@home/components/order/craft-detail.component';
 import { AddCateComponent } from './quality/add-cate.component';
-
-
+import { AddPlanComponent } from './quality/add-plan.component';
+import { ChangeOrgComponent } from './account/change-org.component';
+import { ChooseDirectorComponent } from '@home/components/class/choose-director.component';
+import { AddCheckCateComponent } from './quality/add-check-cate.component';
+import { AddCheckPlanComponent } from './quality/add-check-plan.component';
 
 @NgModule({
   declarations:
@@ -324,7 +327,12 @@ import { AddCateComponent } from './quality/add-cate.component';
       AddFingerComponent,
       SpecAddComponent,
       MenuAddComponent,
-      AddCateComponent
+      AddCateComponent,
+      AddPlanComponent,
+      ChangeOrgComponent,
+      ChooseDirectorComponent,
+      AddCheckCateComponent,
+      AddCheckPlanComponent
     ],
   imports: [
     CommonModule,

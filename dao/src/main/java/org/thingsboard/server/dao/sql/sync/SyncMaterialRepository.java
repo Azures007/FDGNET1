@@ -32,7 +32,9 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
      * @param materialCode
      * @return
      */
-    @Query(value = "select a.* from t_sync_material a  where material_code not in (select material_code from t_sys_craft_material_rel group by material_code)",nativeQuery = true)
+    @Query(value = "select a.* from t_sync_material a  where 1=1 \n" +
+            "and (material_code like %?1% or material_name like %?1% )\n" +
+            "and material_code not in (select material_code from t_sys_craft_material_rel group by material_code)",nativeQuery = true)
     Page<TSyncMaterial> listMaterialFiter(String materialCode, PageRequest pageRequest);
 
     /**
@@ -111,10 +113,12 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
                          @Param("current") Integer current,
                          @Param("size") Integer size);
 
-    @Query(value = "select count(1) from t_sync_material \n" +
-            "            where (material_code like %:#{#tSyncMaterialTo.materialCode}%\n" +
-            "             or material_name like %:#{#tSyncMaterialTo.materialName}%) \n" +
-            "            and (material_status =:#{#tSyncMaterialTo.materialStatus} or :#{#tSyncMaterialTo.materialStatus} is null or :#{#tSyncMaterialTo.materialStatus} ='')",nativeQuery = true)
+    @Query(value = "select count(1) from t_sync_material a \n" +
+            " where 1=1 \n" +
+            "and (a.material_code like %:#{#tSyncMaterialTo.materialCode}% or :#{#tSyncMaterialTo.materialCode} is null or :#{#tSyncMaterialTo.materialCode} ='') \n" +
+            "and (material_name like %:#{#tSyncMaterialTo.materialName}% or :#{#tSyncMaterialTo.materialName} is null or :#{#tSyncMaterialTo.materialName} = '') \n" +
+            "and (a.nc_material_category like %:#{#tSyncMaterialTo.ncMaterialCategory}% or :#{#tSyncMaterialTo.ncMaterialCategory} is null or :#{#tSyncMaterialTo.ncMaterialCategory} ='') \n" +
+            " and (material_status =:#{#tSyncMaterialTo.materialStatus} or :#{#tSyncMaterialTo.materialStatus} is null or :#{#tSyncMaterialTo.materialStatus} ='') \n", nativeQuery = true)
     int finAllAndTotal(@Param("tSyncMaterialTo") TSyncMaterial tSyncMaterialTo);
 
 }

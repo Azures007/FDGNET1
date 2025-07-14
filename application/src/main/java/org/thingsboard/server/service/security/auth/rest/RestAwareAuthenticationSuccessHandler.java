@@ -74,8 +74,11 @@ public class RestAwareAuthenticationSuccessHandler implements AuthenticationSucc
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
-        // 登录时保存基地和产线到redis
-        userService.saveUserCurrentOrgLine(securityUser.getId().toString(), securityUser.getPkOrg(), securityUser.getCwkid());
+        if(securityUser != null&& securityUser.getPkOrg()!=null&&securityUser.getCwkid()!=null) {
+            // 登录时保存基地和产线到redis
+            userService.saveUserCurrentOrgLine(securityUser.getId().toString(), securityUser.getPkOrg(), securityUser.getCwkid());
+        }
+
         JwtToken accessToken = tokenFactory.createAccessJwtToken(securityUser);
         JwtToken refreshToken = refreshTokenRepository.requestRefreshToken(securityUser);
 

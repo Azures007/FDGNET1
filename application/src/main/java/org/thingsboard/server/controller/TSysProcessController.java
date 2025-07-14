@@ -63,7 +63,7 @@ public class TSysProcessController extends BaseController{
     @ApiOperation("工序列表")
     @GetMapping("/getProcessList")
     public ResponseResult<Page<TSysProcessInfo>> getProcessList(@RequestParam(value = "current",defaultValue = "0") Integer current,
-                                    @RequestParam(value = "size",defaultValue = "10") Integer size) throws Exception {
+                                                                @RequestParam(value = "size",defaultValue = "10") Integer size) throws Exception {
         Page<TSysProcessInfo> processList =tSysProcessInfoService.getProcessList(current,size);
         return ResultUtil.success(processList);
     }
@@ -71,8 +71,8 @@ public class TSysProcessController extends BaseController{
     @ApiOperation("工序列表")
     @PostMapping("/getProcessInfoList")
     public ResponseResult<Page<TSysProcessInfo>> getProcessInfoList(@RequestParam(value = "current",defaultValue = "0") Integer current,
-                                                                @RequestParam(value = "size",defaultValue = "10") Integer size,
-                                                                 @RequestBody TSysProcessInfoDto tSysProcessInfoDto) throws Exception {
+                                                                    @RequestParam(value = "size",defaultValue = "10") Integer size,
+                                                                    @RequestBody TSysProcessInfoDto tSysProcessInfoDto) throws Exception {
         Page<TSysProcessInfo> processList =tSysProcessInfoService.getProcessList(current,size,tSysProcessInfoDto);
         return ResultUtil.success(processList);
     }

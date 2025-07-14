@@ -23,6 +23,8 @@ import { selectAuthUser, selectUserDetails } from '@core/auth/auth.selectors';
 import { map } from 'rxjs/operators';
 import { AuthService } from '@core/auth/auth.service';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ChangeOrgComponent } from '@app/modules/home/components/account/change-org.component';
 
 @Component({
   selector: 'tb-user-menu',
@@ -35,7 +37,7 @@ export class UserMenuComponent implements OnInit, OnDestroy {
   @Input() displayUserInfo: boolean;
 
   authorities = Authority;
-
+  user = {} as User;
   authority$ = this.store.pipe(
     select(selectAuthUser),
     map((authUser) => authUser ? authUser.authority : Authority.ANONYMOUS)
@@ -52,8 +54,9 @@ export class UserMenuComponent implements OnInit, OnDestroy {
   );
 
   constructor(private store: Store<AppState>,
-              private router: Router,
-              private authService: AuthService) {
+    private router: Router,
+    public dialog: MatDialog,
+    private authService: AuthService) {
   }
 
   ngOnInit(): void {
@@ -98,6 +101,7 @@ export class UserMenuComponent implements OnInit, OnDestroy {
       } else {
         name = user.email;
       }
+      this.user = user;
     }
     return name;
   }
@@ -109,5 +113,12 @@ export class UserMenuComponent implements OnInit, OnDestroy {
   logout(): void {
     this.authService.logout();
   }
-
+  changeOrg() {
+    this.dialog.open(ChangeOrgComponent, {
+      width: "400px",
+      height: "auto",
+      panelClass: 'custom-modalbox',
+      data: this.user
+    })
+  }
 }

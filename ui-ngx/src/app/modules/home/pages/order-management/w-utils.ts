@@ -10,7 +10,9 @@ import {DialogService} from '@core/services/dialog.service';
  * Utils类存放和业务无关的公共方法
  * @description
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class Utils {
 
 
