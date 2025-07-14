@@ -102,7 +102,7 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
             searchDto.setEnabled(null);
         }
         if (StringUtils.isEmpty(searchDto.getProdLineName())) {
-            searchDto.getProdLineName(null);
+            searchDto.setProdLineName(null);
         }
         BeanUtils.copyProperties(searchDto, plan);
 
