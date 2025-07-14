@@ -96,13 +96,13 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
         Pageable pageable = PageRequest.of(current, size, sort);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("prodDeptName", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("prodLineName", ExampleMatcher.GenericPropertyMatchers.contains());
         TSysQualityReportPlan plan = new TSysQualityReportPlan();
         if (StringUtils.isEmpty(searchDto.getProductName())) {
             searchDto.setEnabled(null);
         }
-        if (StringUtils.isEmpty(searchDto.getProdDeptName())) {
-            searchDto.setProdDeptName(null);
+        if (StringUtils.isEmpty(searchDto.getProdLineName())) {
+            searchDto.getProdLineName(null);
         }
         BeanUtils.copyProperties(searchDto, plan);
 

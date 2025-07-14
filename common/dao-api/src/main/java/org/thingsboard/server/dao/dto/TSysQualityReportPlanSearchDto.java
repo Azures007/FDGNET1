@@ -26,8 +26,8 @@ public class TSysQualityReportPlanSearchDto {
     @Column(name = "product_name")
     private String productName;
 
-    @ApiModelProperty("生产部门")
-    private String prodDeptName;
+    @ApiModelProperty("生产线")
+    private String prodLineName;
 
     @ApiModelProperty("是否启用 0：启用 1：禁用")
     private Integer enabled=0;
