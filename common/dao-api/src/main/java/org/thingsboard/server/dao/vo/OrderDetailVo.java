@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.util.Date;
 import java.util.List;
 
@@ -14,10 +15,10 @@ public class OrderDetailVo {
     @ApiModelProperty("订单ID")
     private Integer orderId;
 
-    @ApiModelProperty("订单号")
+    @ApiModelProperty("生产订单号")
     private String orderNo;
 
-    @ApiModelProperty("单据编号(下单时间)")
+    @ApiModelProperty("下单时间")
     private Date billDate;
 
     @ApiModelProperty("计划员")
@@ -28,7 +29,7 @@ public class OrderDetailVo {
     @ApiModelProperty("订单状态(字典描述)")
     private String orderStatusDsc;
 
-    @ApiModelProperty("明细-生产车间")
+    @ApiModelProperty("生产部门")
     private String bodyPrdDept;
 
     @ApiModelProperty("预期产量（废弃）")
@@ -58,13 +59,13 @@ public class OrderDetailVo {
     @ApiModelProperty("明细-物料ID")
     private Integer bodyMaterialId;
 
-    @ApiModelProperty("明细-物料编码")
+    @ApiModelProperty("产品编码")
     private String bodyMaterialNumber;
 
-    @ApiModelProperty("明细-物料名称")
+    @ApiModelProperty("产品名称")
     private String bodyMaterialName;
 
-    @ApiModelProperty("明细-规格型号")
+    @ApiModelProperty("规格型号")
     private String bodyMaterialSpecification;
 
     @ApiModelProperty("是否有工序详情")
@@ -79,7 +80,7 @@ public class OrderDetailVo {
     @ApiModelProperty("计划完成时间")
     private Date bodyPlanFinishDate;
 
-    @ApiModelProperty("明细-计划生产数量(计划产量)")
+    @ApiModelProperty("计划产量（件）")
     private Float bodyPlanPrdQty;
 
     @ApiModelProperty("明细-单位-编码")
@@ -105,9 +106,12 @@ public class OrderDetailVo {
     @ApiModelProperty("bom编号")
     private String midMoEntryBomNumber;
 
-    @ApiModelProperty("完工时间")
+    @ApiModelProperty("完成时间")
     private String orderFinishDate;
 
     @ApiModelProperty("挂起时间")
     private String orderPendingDate;
+
+    @ApiModelProperty("生产线")
+    private String vwkname;
 }

@@ -58,7 +58,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_personnel_info f on e.personnel_id =f.personnel_id \n" +
             "where TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD')=?2 " +
             "and (f.user_id =?1 or ?1='') " +
-            "and a.is_deleted='1' " +
+            "and a.is_deleted='0' " +
             "and (c.process_number=?3 or ?3='' or ?3 is null) " +
             "and (a.body_lot=?4 or ?4='' or ?4 is null)" +
             "",nativeQuery = true)
@@ -74,7 +74,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_personnel_info f on e.personnel_id =f.personnel_id \n" +
             "where TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD')=?2 " +
             "and (f.user_id =?1 or ?1='') " +
-            "and a.is_deleted='1' " +
+            "and a.is_deleted='0' " +
             "and (c.process_number=?3 or ?3='' or ?3 is null) " +
             "and (a.body_lot=?4 or ?4='' or ?4 is null)" +
             "",nativeQuery = true)
@@ -98,7 +98,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ") " +
-            "and (c.type='1' or c.type is null) and a.is_deleted='1' \n" +
+            "and (c.type='1' or c.type is null) and a.is_deleted='0' \n" +
             "and (d.process_number=?2 or ?2='' or ?2 is null)" +
             "and (a.body_lot=?3 or ?3='' or ?3 is null) \n" +
             "and (?4='' or a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%')) \n" +
@@ -119,7 +119,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a.is_deleted='1'\n" +
+            "and a.is_deleted='0'\n" +
             "and (f.process_number=?2 or ?2='' or ?2 is null)" +
             "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
             "and (?4='' or a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%')) \n" +
@@ -130,6 +130,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     @Query(value = "select * from (\n" +
             "select a.order_id as orderId,\n" +
             "a.craft_id as craftId, \n" +
+            "t1.craft_name as craftName, \n" +
             "a.order_no as orderNo, \n" +
             "a.body_lot as bodyLot,\n" +
             "a.body_pot_qty as bodyPotQty,\n" +
@@ -163,6 +164,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             ",null executeRecordTypePd \n" +
             ",null recordTypePd \n" +
             "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a\n" +
+            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_bus_order_process_lk b on a.order_id=b.order_id \n" +
             "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
             "join t_sys_process_info d on c.process_id =d.process_id \n" +
@@ -178,7 +180,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ") " +
-            "and (c.type='1' or c.type is null) and a.is_deleted='1'\n" +
+            "and (c.type='1' or c.type is null) and a.is_deleted='0'\n" +
             "and (d.process_number=?2 or ?2='' or ?2 is null) \n" +
             "and (a.body_lot=?3 or ?3='' or ?3 is null) \n" +
             "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
@@ -186,6 +188,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "select " +
             "a.order_id as orderId,\n" +
             "a.craft_id as craftId, \n" +
+            "t1.craft_name as craftName, \n" +
             "a.order_no as orderNo, \n" +
             "a.body_lot as bodyLot,\n" +
             "a.body_pot_qty as bodyPotQty,\n" +
@@ -219,6 +222,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             ",null executeRecordTypePd \n" +
             ",null recordTypePd " +
             "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a\n" +
+            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
             "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
             "join t_sys_process_info d on c.process_id =d.process_id \n" +
@@ -235,7 +239,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")\n" +
-            "and a.is_deleted='1'\n" +
+            "and a.is_deleted='0'\n" +
             "and (d.process_number=?2 or ?2='' or ?2 is null)" +
             "and (a.body_lot=?3 or ?3='' or ?3 is null) \n" +
             "and (a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='')" +
@@ -259,7 +263,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
             "where b.user_id =?1) as t\n" +
             "group by class_id)  " +
-            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='1' " +
+            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='0' " +
             "and (g.process_number=?4 or ?4='' or ?4 is null) " +
             "and (a.body_lot=?5 or ?5='' or ?5 is null) \n" +
             "and (a.order_no like CONCAT('%',?6,'%') or a.body_lot like CONCAT('%',?6,'%') or a.body_material_name like CONCAT('%',?6,'%') or a.bill_no like CONCAT('%',?6,'%') or ?6='')" +
@@ -319,7 +323,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
             "where b.user_id =?1) as t\n" +
             "group by class_id)  " +
-            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='1'\n" +
+            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='0'\n" +
             "and (d.process_number=?4 or ?4='' or ?4 is null) " +
             "and (a.body_lot=?5 or ?5='' or ?5 is null) \n" +
             "and (a.order_no like CONCAT('%',?6,'%') or a.body_lot like CONCAT('%',?6,'%') or a.body_material_name like CONCAT('%',?6,'%') or a.bill_no like CONCAT('%',?6,'%') or ?6='')" +
@@ -333,7 +337,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
             "join t_sys_personnel_info b on a2.person_id =b.personnel_id \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h on a2.old_order_process_id = h.order_process_id \n" +
-            "where b.user_id =?1 and a2.process_status in (?2) and a.is_deleted='1' and h.record_type_pd is not null",nativeQuery = true)
+            "where b.user_id =?1 and a2.process_status in (?2) and a.is_deleted='0' and h.record_type_pd is not null",nativeQuery = true)
     int getTaskListHandOverCountByPersonIdAndProcessStatus(String userId, List<String> processStatus);
 
     /* 获取未生产任务 行数 */
@@ -362,7 +366,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a.is_deleted='1' and p.order_process_id is null \n" +
+            "and a.is_deleted='0' and p.order_process_id is null \n" +
             "and (c.process_number=?2 or ?2='' or ?2 is null)\n" +
             "and (a.body_lot=?3 or ?3='' or ?3 is null)" +
             "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
@@ -428,7 +432,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a.is_deleted='1' and p.order_process_id is null \n" +
+            "and a.is_deleted='0' and p.order_process_id is null \n" +
             "and (c.process_number=?2 or ?2='' or ?2 is null)\n" +
             "and (a.body_lot=?3 or ?3='' or ?3 is null)\n" +
             "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
@@ -485,7 +489,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "on a.class_id =b.class_id\n" +
             "where b.user_id is not null and b.user_id <> '' and a.user_id=?1\n" +
             "group by b.user_id ) )\n" +
-            "and a2.process_status in (?2) and a.is_deleted='1'",nativeQuery = true)
+            "and a2.process_status in (?2) and a.is_deleted='0'",nativeQuery = true)
     List<Map> getTaskListHandOverByPersonIdAndProcessStatus(String userId, List<String> processStatusList, PageRequest of);
 
     /* 已完工任务 行数 */
@@ -511,7 +515,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a2.process_status in (?2) and a.is_deleted='1'\n" +
+            "and a2.process_status in (?2) and a.is_deleted='0'\n" +
             "and (d.process_number=?3 or ?3='' or ?3 is null) \n" +
             "and (a.body_lot=?4 or ?4='' or ?4 is null) " +
             "and ( a.order_no like CONCAT('%',?5,'%') or a.body_lot like CONCAT('%',?5,'%') or a.body_material_name like CONCAT('%',?5,'%') or a.bill_no like CONCAT('%',?5,'%') or ?5='') \n" +
@@ -590,7 +594,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a2.process_status in (?2) and a.is_deleted='1'\n" +
+            "and a2.process_status in (?2) and a.is_deleted='0'\n" +
             "and (d.process_number=?3 or ?3='' or ?3 is null) \n" +
             "and (a.body_lot=?4 or ?4='' or ?4 is null) " +
             "and ( a.order_no like CONCAT('%',?5,'%') or a.body_lot like CONCAT('%',?5,'%') or a.body_material_name like CONCAT('%',?5,'%') or a.bill_no like CONCAT('%',?5,'%') or ?5='') \n" +
@@ -599,7 +603,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
 
     /* 获取明日任务 行数 */
     @Query(value = "select count(1) from t_bus_order_head a \n" +
-            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?1 and a.is_deleted='1' " +
+            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?1 and a.is_deleted='0' " +
             "and (body_lot=?2 or ?2='' or ?2 is null)" +
             "", nativeQuery = true)
     Integer getCountNextDayTask(String currentDateStr,String bodyIot);
@@ -635,7 +639,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             ",null executeRecordTypePd \n" +
             ",null recordTypePd \n" +
             "from t_bus_order_head a \n" +
-            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?1 and a.is_deleted='1' " +
+            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?1 and a.is_deleted='0' " +
             "and (a.body_lot=?2 or ?2='' or ?2 is null) " +
             "", nativeQuery = true)
     List<Map> getNextDayTaskList(String currentDateStr,String bodyLot, PageRequest sort);
@@ -659,7 +663,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a.is_deleted='1'\n" +
+            "and a.is_deleted='0'\n" +
             "and (f.process_number=?2 or ?2='' or ?2 is null) " +
             "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
             "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
@@ -719,7 +723,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a.is_deleted='1'\n" +
+            "and a.is_deleted='0'\n" +
             "and (f.process_number=?2 or ?2='' or ?2 is null) " +
             "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
             "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
@@ -932,7 +936,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "left join t_sys_process_info g on g.process_id = a.current_process \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h2 on a2.order_process_id = h2.order_process_id \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h on a2.old_order_process_id = h.order_process_id \n" +
-            "where b.user_id =?1  and a.is_deleted='1'  \n" +
+            "where b.user_id =?1  and a.is_deleted='0'  \n" +
             "and a2.type='2' ",nativeQuery = true)
     List<Map> getHandOverRecordsByPersonId(String userId, PageRequest of);
 
@@ -946,7 +950,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "left join t_sys_process_info g on g.process_id = a.current_process \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h2 on a2.order_process_id = h2.order_process_id \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h on a2.old_order_process_id = h.order_process_id \n" +
-            "where b.user_id =?1  and a.is_deleted='1'  \n" +
+            "where b.user_id =?1  and a.is_deleted='0'  \n" +
             "and a2.type='2' ",nativeQuery = true)
     int getHandOverRecordsByPersonId(String userId);
 
@@ -1012,7 +1016,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
             "join t_sys_class_group_leader_rel e on d.class_id =e.class_id \n" +
             "join t_sys_personnel_info f on e.personnel_id =f.personnel_id \n" +
-            "where TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD')=?2 and f.user_id =?1 and a.is_deleted='1' and  body_lot is not null \n" +
+            "where TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD')=?2 and f.user_id =?1 and a.is_deleted='0' and  body_lot is not null \n" +
             "group by body_lot order by body_lot desc",nativeQuery = true)
     List<String> listTaskType1(String userId, String currentDateStr);
 
@@ -1034,7 +1038,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ") " +
-            "and (c.type='1' or c.type is null) and a.is_deleted='1'\n" +
+            "and (c.type='1' or c.type is null) and a.is_deleted='0'\n" +
             "union \n" +
             "select body_lot \n" +
             "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a\n" +
@@ -1054,7 +1058,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")\n" +
-            "and a.is_deleted='1'\n" +
+            "and a.is_deleted='0'\n" +
             ") as a  group by body_lot  order by body_lot desc",nativeQuery = true)
     List<String> listTaskType2(String userId);
 
@@ -1077,7 +1081,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
             "where b.user_id =?1) as t\n" +
             "group by class_id)  " +
-            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='1' \n" +
+            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='0' \n" +
             "group by body_lot order by  body_lot desc" +
             "",nativeQuery = true)
     List<String> listTaskType3(String userId, List<String> processStatusList, String orderProcessType);
@@ -1106,7 +1110,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a.is_deleted='1' and p.order_process_id is null \n" +
+            "and a.is_deleted='0' and p.order_process_id is null \n" +
             "",nativeQuery = true)
     List<String> listTaskType4(String userId);
     @Query(value = "select body_lot \n" +
@@ -1138,7 +1142,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a2.process_status in (?2) and a.is_deleted='1' group by body_lot  order by body_lot desc\n" +
+            "and a2.process_status in (?2) and a.is_deleted='0' group by body_lot  order by body_lot desc\n" +
             "",nativeQuery = true)
     List<String> listTaskType5(String userId, List<String> processStatusList2);
     @Query(value = "select body_lot \n" +
@@ -1161,7 +1165,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "where b.user_id =?1) as t\n" +
             "group by class_id\n" +
             ")" +
-            "and a.is_deleted='1'  group by body_lot order by body_lot desc\n" +
+            "and a.is_deleted='0'  group by body_lot order by body_lot desc\n" +
             "",nativeQuery = true)
     List<String> listTaskType6(String userId);
     @Query(value = "select body_lot \n" +
@@ -1183,13 +1187,13 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
             "where b.user_id =?1) as t\n" +
             "group by class_id)  " +
-            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='1'\n" +
+            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='0'\n" +
             "group by body_lot order by  body_lot desc" +
             "",nativeQuery = true)
     List<String> listTaskType7(String s, List<String> processStatusList,String type);
     @Query(value = "select body_lot " +
             "from t_bus_order_head a \n" +
-            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?1 and a.is_deleted='1' and  body_lot is not null " +
+            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?1 and a.is_deleted='0' and  body_lot is not null " +
             "group by body_lot order by body_lot desc", nativeQuery = true)
     List<String> listTaskType8(String format);
 }
