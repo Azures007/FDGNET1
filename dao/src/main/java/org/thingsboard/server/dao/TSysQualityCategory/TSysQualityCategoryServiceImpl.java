@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.TSysQualityCategory;
-import org.thingsboard.server.common.data.TSysQualityCategoryConfig;
-import org.thingsboard.server.common.data.TSysQualityPlanConfig;
+import org.thingsboard.server.common.data.*;
 import org.thingsboard.server.dao.dto.TSysQualityCategoryDto;
+import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscRepository;
+import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscVersionRelRepository;
+import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscVersionRepository;
 import org.thingsboard.server.dao.sql.tSysQualityCategory.TSysQualityCategoryConfigRepository;
 import org.thingsboard.server.dao.sql.tSysQualityCategory.TSysQualityCategoryRepository;
 import org.thingsboard.server.dao.tSysQualityCategory.TSysQualityCategoryService;
@@ -19,10 +20,7 @@ import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 
 import org.thingsboard.server.dao.util.StringConverterUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +39,17 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
 
     @Autowired
     TSysQualityCategoryConfigRepository tSysQualityCategoryConfigRepository;
+
+    @Autowired
+    TSysCodeDscVersionRelRepository tSysCodeDscVersionRelRepository;
+
+    @Autowired
+    TSysCodeDscRepository tSysCodeDscRepository;
+
+    @Autowired
+    TSysCodeDscVersionRepository tSysCodeDscVersionRepository;
+
+
 
 
     @Override
@@ -182,9 +191,64 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
     }
 
     @Override
+    @Transactional
     public void saveTSysQualityCategoryAndConfig(TSysQualityCategory tSysQualityCategory, List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList) {
         this.saveTSysQualityCategory(tSysQualityCategory);
         this.saveTSysQualityCategoryConfig(tSysQualityCategory.getId(),tSysQualityCategoryConfigList);
+
+        List<TSysCodeDscVersionRel> versionRels = tSysCodeDscVersionRelRepository.findByRelId(tSysQualityCategory.getId());
+        //如果没有查询到历史版本则保存一份
+        if (versionRels.size()==0){
+            this.saveCodeVersionAndRel(tSysQualityCategory.getId(),"QCCF0000","1");
+        }
+
+
+    }
+
+    private void saveCodeVersionAndRel(Integer relId,String codeClId, String enabledSt) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "crtTime");
+        Pageable pageable = PageRequest.of(0, 999, sort);
+        TSysCodeDsc tSysCodeDsc = new TSysCodeDsc();
+        tSysCodeDsc.setCodeClId(codeClId);
+        ExampleMatcher matcher = ExampleMatcher.matching() //构建对象
+                .withMatcher("codeClId", ExampleMatcher.GenericPropertyMatchers.exact());
+        if (StringUtils.isNotBlank(enabledSt)) {
+            tSysCodeDsc.setEnabledSt(enabledSt);
+            matcher.withMatcher("enabledSt", ExampleMatcher.GenericPropertyMatchers.exact());
+        }
+        Example<TSysCodeDsc> example = Example.of(tSysCodeDsc, matcher);
+        Page<TSysCodeDsc> tSysCodeDscPage = tSysCodeDscRepository.findAll(example, pageable);
+
+        List<TSysCodeDsc> tSysCodeDscList = tSysCodeDscPage.getContent();
+
+
+        //生成UUID，一份保存的字典版本号是一致的
+        UUID uuid = UUID.randomUUID();
+        String compactUuid = uuid.toString().replace("-", "");
+
+        //todo 做重复校验，如果重复引用重复的版本号
+
+
+        //保存整个合集同时要生成UUID的版本编号，
+        List<TSysCodeDscVersion> codeDscVersionList = new ArrayList<>();
+        for (TSysCodeDsc codeDsc:
+                tSysCodeDscList) {
+            TSysCodeDscVersion codeDscVersion = new TSysCodeDscVersion();
+            BeanUtils.copyProperties(codeDsc,codeDscVersion);
+            codeDscVersion.setCodeId(null);
+            codeDscVersion.setVersionNo(compactUuid);
+            codeDscVersion.setVersionCrtTime(new Date());
+
+            codeDscVersionList.add(codeDscVersion);
+        }
+        tSysCodeDscVersionRepository.saveAll(codeDscVersionList);
+        //同时建立版本号关系表
+        TSysCodeDscVersionRel rel = new TSysCodeDscVersionRel();
+        rel.setRelId(relId);
+        rel.setVersionNo(compactUuid);
+        rel.setCrtTime(new Date());
+        tSysCodeDscVersionRelRepository.saveAndFlush(rel);
+
     }
 
     @Override
@@ -238,6 +302,11 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
         BeanUtils.copyProperties(tSysQualityCategory, vo);
         List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList =tSysQualityCategoryConfigRepository.findByCategoryId(categoryId);
         vo.settSysQualityCategoryConfigList(tSysQualityCategoryConfigList);
+
+        List<TSysCodeDscVersionRel> versionRels = tSysCodeDscVersionRelRepository.findByRelId(tSysQualityCategory.getId());
+        if (versionRels.size()>1){
+            vo.setCodeVersionNo(versionRels.get(0).getVersionNo());
+        }
 
         if (null == tSysQualityCategory){
             return null;

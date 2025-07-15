@@ -81,7 +81,7 @@ public class JsonUtil {
 //            }
             String productName = row.get(0);
             String fieldName = row.get(1);
-            String fillValue = ""; // 若有填写值，可从其他地方获取（比如前端输入、额外列），这里先空着
+            String fielValue = ""; // 若有填写值，可从其他地方获取（比如前端输入、额外列），这里先空着
             String isEnabled = row.get(3);
             String fieldType = row.get(4);
             String paramRange = row.get(5);
@@ -95,7 +95,7 @@ public class JsonUtil {
 
             // 构建字段配置
             TSysFieldConfig config = TSysFieldConfig.build(
-                    fieldName, fillValue,
+                    fieldName, fielValue,
                     isEnabled, fieldType,
                     paramRange, dropdownField,
                     unit, isRequired
