@@ -33,10 +33,10 @@ public class OrderProcessVo {
 
     @ApiModelProperty("接单时间")
     private String receiveTime;
-    @ApiModelProperty("完工时间")
+    @ApiModelProperty("完成时间")
     private String finishTime;
 
-    @ApiModelProperty("耗时:完工时间-接单时间")
+    @ApiModelProperty("耗时:完成时间-接单时间")
     private Integer elapsedTime;
 
     @ApiModelProperty("未完成数量：计划生产数量-工序实际产量")

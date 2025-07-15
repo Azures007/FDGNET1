@@ -471,4 +471,10 @@ export class ClassComponent implements OnInit {
     }
     return total;
   }
+  reset() {
+    this.searchFormGroup.value.name = null;
+    this.searchFormGroup.value.enabledSt = '';
+    this.searchFormGroup.value.classNumber = '';
+    this.getTableData();
+  }
 }

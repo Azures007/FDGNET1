@@ -109,6 +109,36 @@
       </table>
     </div>
   </div>
+  <div class="setting-warp">
+    <div class="set-title">配置信息
+      <button *ngIf="formType !== 'details'" class="add_btn btn_color_primary btn" (click)="addConfig()"
+        style="margin-left: 10px;">
+        <mat-icon>add</mat-icon> 新增
+      </button>
+      <button *ngIf="formType !== 'details' && configs.length" class="add_btn btn_color_primary btn" (click)="delConfig()"
+
+        style="margin-left: 10px;">
+        <mat-icon>delete</mat-icon> 删除
+      </button>
+    </div>
+    <div class="setting-panl">
+      <table class="table">
+        <tr>
+          <th>选择</th>
+          <th>序号</th>
+          <th>检查项目</th>
+          <th>关键工序</th>
+          <th>监控方法</th>
+          <th>品名</th>
+        </tr>
+        <tr *ngFor="let item of configs; let i = index">
+          <!-- <td [rowSpan]="fieldNames.length">
+            <div>{{i/fieldNames.length + 1}}</div>
+          </td> -->
+        </tr>
+      </table>
+    </div>
+  </div>
 </div>
 
 

@@ -5,6 +5,7 @@ import { Utils } from '../../pages/order-management/w-utils';
 import { QualityService } from '@app/core/http/quality.service';
 import { DictionaryService } from '@app/core/http/dictionary.service';
 import { ChooseMaterialComponent } from '../material/choose-material/choose-material.component';
+import { ChooseCheckCateComponent } from './choose-check-cate.component';
 
 @Component({
   selector: 'tb-add-check-plan',
@@ -31,14 +32,16 @@ export class AddCheckPlanComponent implements OnInit {
   addParams = {
     id: "",
     productName: '',
-    materialId: '',
-    productionLineId: '',
-    isEnabled: '',
-    remarks: ''
+    productId: '',
+    prodLineId: '',
+    prodLineName: '',
+    enabled: '',
+    remark: ''
   }
+  configs = [];
   productItem = {
     productName: '',
-    materialId: ''
+    productId: ''
   }
   dataForm: FormGroup;
 
@@ -52,9 +55,7 @@ export class AddCheckPlanComponent implements OnInit {
     label: '禁用',
     value: '0',
   }];
-  fieldTypes = [];
-  judgeList = [];
-
+  frequencyList = [];
   get modalTitle() {
     return this.formType ? (this.formType === 'details' ? '查看方案' : '编辑方案') : '新增方案';
   }
@@ -66,104 +67,55 @@ export class AddCheckPlanComponent implements OnInit {
     let par = {
       current: 0,
       size: 999,
-      codeClId: 'QPJ0000',
+      codeClId: 'FREQUENCY000',
       enabledSt: 1
     }
     if (this.utils.isEmpty(this.injectData.data)) {
       this.dataForm = this.fb.group({
         productName: ['', [Validators.required]],
-        productionLineId: ['', [Validators.required]],
-        isEnabled: ['', [Validators.required]],
-        remarks: [''],
+        prodLineId: ['', [Validators.required]],
+        enabled: ['', [Validators.required]],
+        remark: [''],
       });
     } else {
       this.formType = this.injectData.data.type;
       const obj = {
         id: "",
         productName: '',
-        materialId: '',
-        productionLineId: '',
-        isEnabled: '',
-        remarks: ''
+        productId: '',
+        prodLineId: '',
+        enabled: '',
+        remark: ''
       }
 
       Object.keys(this.injectData.data.data).forEach(key => {
         obj[key] = this.injectData.data.data[key];
       });
       this.productItem.productName = this.injectData.data.data.productName;
-      this.productItem.materialId = this.injectData.data.data.materialId;
+      this.productItem.productId = this.injectData.data.data.productId;
+      if(this.injectData.data.data.itemList) {
+        this.configs = this.injectData.data.data.itemList
+      }
       if (this.formType === 'details') {
         this.dataForm = this.fb.group({
           productName: [{ value: obj.productName, disabled: true }],
-          productionLineId: [{ value: obj.productionLineId, disabled: true }],
-          isEnabled: [{ value: obj.isEnabled, disabled: true }],
-          remarks: [{ value: obj.remarks, disabled: true }],
+          prodLineId: [{ value: obj.prodLineId, disabled: true }],
+          enabled: [{ value: '' + obj.enabled, disabled: true }],
+          remark: [{ value: obj.remark, disabled: true }],
         });
       } else {
         this.addParams.id = this.injectData.data.data.id;
+        this.addParams.prodLineName = this.injectData.data.data.prodLineName;
         this.dataForm = this.fb.group({
           productName: [{ value: obj.productName, disabled: false }, [Validators.required]],
-          productionLineId: [{ value: obj.productionLineId, disabled: false }, [Validators.required]],
-          isEnabled: [{ value: obj.isEnabled, disabled: false }, [Validators.required]],
-          remarks: [{ value: obj.remarks, disabled: false }],
+          prodLineId: [{ value: obj.prodLineId, disabled: false }, [Validators.required]],
+          enabled: [{ value: '' + obj.enabled, disabled: false }, [Validators.required]],
+          remark: [{ value: obj.remark, disabled: false }],
         });
       }
     }
     this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {
-      this.judgeList = res.data.list?.map(item => {
-        let obj = {
-            fieldName: item.codeDsc,
-            isEnabled: '1',
-            fieldType: 'ZDLX0001',
-            dropdownFields: '',
-            unit: '',
-            isRequired: '1'
-          }
-        if(item.codeValue == 'QPJ0001') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0002',
-          }
-        }
-        if(item.codeValue == 'QPJ0002') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0001',
-          }
-        }
-        if(item.codeValue == 'QPJ0003') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0004',
-            dropdownFields: '合格，不合格'
-          }
-        }
-        if(item.codeValue == 'QPJ0004') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0002',
-          }
-        }
-        if(item.codeValue == 'QPJ0005') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0001',
-          }
-        }
-        if(item.codeValue == 'QPJ0006') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0004',
-            dropdownFields: '合格，不合格'
-          }
-        }
-      });
-    })
-    this.DictionaryService.fetchGetTypeTableList({
-      ...par,
-      codeClId: 'ZDLX0000',
-    }).subscribe(res => {
-      this.fieldTypes = res.data.list;
+      this.frequencyList = res.data.list;
     })
   }
   //关闭弹窗
@@ -179,14 +131,21 @@ export class AddCheckPlanComponent implements OnInit {
       if (this.injectData.data?.data?.id) {
         this.addParams['id'] = this.injectData.data.data.id;
       }
-      this.addParams['materialId'] = this.productItem.materialId;
-      const params = {
-        tSysQualityCategory: {
-          ...this.addParams,
-
-        },
+      this.addParams['prodLineName'] = this.baseList.find(item => item.cwkid === this.addParams.prodLineId)?.vwkname;
+      this.addParams['productId'] = this.productItem.productId;
+      if (!this.configs.length) {
+        this.utils.showMessage('请新增配置信息', 'error');
+        return;
       }
-      this.qualityService.fetchSave(params).subscribe(res => {
+      const params = {
+        ...this.addParams,
+        itemList: this.configs.map(item => {
+          return {
+            categoryId: item.id,
+          }
+        })
+      }
+      this.qualityService.fetchSaveDailyPlan(params).subscribe(res => {
         if (res.errcode === 200) {
           this.dialogRef.close('refresh');
         } else {
@@ -213,10 +172,44 @@ export class AddCheckPlanComponent implements OnInit {
         this.dataForm.setControl('productName', new FormControl(result.materialName, [Validators.required]));
         this.productItem = {
           productName: result.materialName,
-          materialId: result.id
+          productId: result.id
         }
       }
     });
   }
+  addConfig() {
+    let dialogRef = this._dialog.open(ChooseCheckCateComponent, {
+      width: "1400px",
+      height: "800px",
+      panelClass: 'custom-modalbox',
+      data: {
+        frequencyList: this.frequencyList,
+      }
+    })
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.configs.push({
+          ...result,
+          categoryId: result.id,
+          isChecked: false,
+        });
 
+      }
+    });
+  }
+  delConfig() {
+    this.configs = this.configs.filter(item => !item.isChecked);
+  }
+  checkChange(event, item) {
+
+  }
+  getFrequency(value) {
+    let label = '';
+    this.frequencyList?.forEach(item => {
+      if (item.codeValue === value) {
+        label = item.codeDsc;
+      }
+    })
+    return label;
+  }
 }

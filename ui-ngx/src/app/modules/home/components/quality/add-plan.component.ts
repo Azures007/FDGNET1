@@ -5,6 +5,7 @@ import { Utils } from '../../pages/order-management/w-utils';
 import { QualityService } from '@app/core/http/quality.service';
 import { DictionaryService } from '@app/core/http/dictionary.service';
 import { ChooseMaterialComponent } from '../material/choose-material/choose-material.component';
+import { ChooseCateComponent } from './choose-cate.component';
 
 @Component({
   selector: 'tb-add-plan',
@@ -24,13 +25,14 @@ export class AddPlanComponent implements OnInit {
   ) { }
   // 基础列表
   baseList = [];
-  // 还原材料列表
-  materialBoms = [];
+
+  configs = [];
   // 新增材料参数
   addParams = {
     id: "",
     planName: '',
     productionLineId: '',
+    productionLineName: '',
     isEnabled: '',
     remarks: ''
   }
@@ -170,11 +172,10 @@ export class AddPlanComponent implements OnInit {
       if (this.injectData.data?.data?.id) {
         this.addParams['id'] = this.injectData.data.data.id;
       }
+      this.addParams['productionLineName'] = this.baseList.find(item => item.cwkid === this.addParams['productionLineId'])?.vwkname;
       const params = {
-        tSysQualityCategory: {
-          ...this.addParams,
-
-        },
+        tSysQualityPlan: this.addParams,
+        tSysQualityPlanJudgmentList: this.judgeList
       }
       this.qualityService.fetchSave(params).subscribe(res => {
         if (res.errcode === 200) {
@@ -191,5 +192,20 @@ export class AddPlanComponent implements OnInit {
       }
     }
   }
+  addConfig() {
+    let dialogRef = this._dialog.open(ChooseCateComponent, {
+      width: "1400px",
+      height: "800px",
+      panelClass: 'custom-modalbox',
+      data: {}
+    })
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
 
+      }
+    });
+  }
+  delConfig() {
+
+  }
 }

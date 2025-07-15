@@ -119,6 +119,16 @@ public class NcTBusOrderHead {
     @ApiModelProperty("备注")
     private String ncNote;
 
+    @ApiModelProperty("创建人")
+    @Column(name = "created_name")
+    @JsonIgnore
+    private String createdName;
+
+    @ApiModelProperty("创建时间")
+    @JsonIgnore
+    @Column(name = "created_time")
+    private Date createdTime;
+
     @ApiModelProperty("明细-用料清单")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "t_bus_order_ppbom_lk", joinColumns = {@JoinColumn(name = "order_id")}

@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.thingsboard.server.common.data.TBusOrderHead;
 import org.thingsboard.server.common.data.TSysCraftInfo;
 import org.thingsboard.server.common.data.TSysCraftMaterialRel;
@@ -116,7 +118,9 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             String orderNo = vbillcode + "-" + String.format("%02d", seq);
             entity.setOrderNo(orderNo);
             entity.setOrderStatus("0");
-            entity.setIsDeleted(GlobalConstant.enableTrue);
+            entity.setIsDeleted("0");
+            entity.setCreatedName("system");
+            entity.setCreatedTime(new java.util.Date());
             NcTBusOrderHead existingOrder = repository.findByCmoid(entity.getCmoid());
             if (existingOrder != null) {
                 Integer orderId = existingOrder.getOrderId();
@@ -128,18 +132,31 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             toSave.add(entity);
         }
         entitys=repository.saveAll(toSave);
-        List<NcTBusOrderHead> finalEntitys = entitys;
-        new Thread(() -> {
-            //订单自动绑定工艺路线
-            for (NcTBusOrderHead entity : finalEntitys) {
-                try {
-                    TSysCraftInfo craft=orderBackendService.getCraftInfoByMaterial(entity.getCode());
-                    orderBackendService.startOrder(entity.getOrderId(),craft.getCraftId(),craft.getCraftDetail());
-                } catch (Exception e) {
-                    log.info("订单自动绑定工艺路线失败OrderId："+entity.getOrderId()+"," + e.getMessage());
+        final List<NcTBusOrderHead> finalEntitys = entitys;
+        // 注册事务同步回调
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        // 在事务提交后启动新线程
+                        new Thread(() -> {
+                            for (NcTBusOrderHead entity : finalEntitys) {
+                                try {
+                                    TSysCraftInfo craft = orderBackendService.getCraftInfoByMaterial(entity.getCode());
+                                    orderBackendService.startOrder(
+                                            entity.getOrderId(),
+                                            craft.getCraftId(),
+                                            craft.getCraftDetail()
+                                    );
+                                } catch (Exception e) {
+                                    log.error("订单自动绑定工艺路线失败 OrderId: {}, 错误: {}",
+                                            entity.getOrderId(), e.getMessage(), e);
+                                }
+                            }
+                        }).start();
+                    }
                 }
-            }
-        }).start();
+        );
     }
 
     @Override

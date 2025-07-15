@@ -20,6 +20,9 @@
         <button class="search_btn" (click)="getTableData()">
             <mat-icon>search</mat-icon> 查询
         </button>
+        <button class="search_btn" (click)="reset()">
+          <mat-icon>clear</mat-icon> 重置
+        </button>
         <button  *ngIf="set.has('/class/down')" class="search_btn" (click)="hadnleExportTable()">
             <mat-icon svgIcon="daochu" aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon>
             导出

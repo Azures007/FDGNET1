@@ -44,7 +44,7 @@ public class TSysCraftInfo {
 
     @ApiModelProperty("是否启用 0：禁用 1：启用")
     @Column(name = "enabled")
-    private Integer enabled=0;
+    private Integer enabled=1;
 
     @ApiModelProperty("创建人")
     @Column(name = "created_user")

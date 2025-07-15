@@ -19,12 +19,13 @@ export class ChooseBaseComponent implements OnInit {
   ) { }
   name = '';
   dataSource = [];
+  dataSourceTemp = [];
   displayedColumns: string[] = ['name', 'customColumn1'];
   ngOnInit(): void {
     this.getTableData();
   }
   search() {
-    this.dataSource = this.dataSource.filter(item => item.name.indexOf(this.name) != -1);
+    this.dataSource = this.dataSourceTemp.filter(item => item.name.indexOf(this.name) != -1);
   }
   getTableData(): void {
     let par = {
@@ -50,6 +51,7 @@ export class ChooseBaseComponent implements OnInit {
           }
         }
       });
+      this.dataSourceTemp = JSON.parse(JSON.stringify(this.dataSource));
     })
   }
   handleChoose(item: any) {

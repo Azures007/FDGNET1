@@ -21,12 +21,12 @@
     <div class="row-block">
       <label class="label"><span class="red-star">*</span>生产线：</label>
       <mat-form-field appearance="fill" class="select">
-        <mat-select formControlName="productionLineId">
+        <mat-select formControlName="prodLineId">
           <mat-option *ngFor="let item of baseList" [value]="item.cwkid">
             {{item.vwkname}}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="dataForm.hasError('required','productionLineId')">
+        <mat-error *ngIf="dataForm.hasError('required','prodLineId')">
           请选择<strong>生产线</strong>
         </mat-error>
       </mat-form-field>
@@ -35,12 +35,12 @@
     <div class="row-block">
       <div class="label"><span class="red-star">*</span>状态:</div>
       <mat-form-field appearance="fill" class="select">
-        <mat-select formControlName="isEnabled">
+        <mat-select formControlName="enabled">
           <mat-option *ngFor="let item of status" [value]="item.value">
             {{item.label}}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="dataForm.hasError('required','isEnabled')">
+        <mat-error *ngIf="dataForm.hasError('required','enabled')">
           请选择<strong>状态</strong>
         </mat-error>
       </mat-form-field>
@@ -48,66 +48,50 @@
     <div class="row-block">
       <div class="label">备注:</div>
       <mat-form-field class="example-full-width" appearance="fill">
-        <textarea matInput class="textarea" formControlName="remarks" placeholder="请输入备注"></textarea>
+        <textarea matInput class="textarea" formControlName="remark" placeholder="请输入备注"></textarea>
       </mat-form-field>
     </div>
 
   </form>
   <div class="setting-warp">
-    <div class="set-title">判定信息</div>
+    <div class="set-title">配置信息
+      <button *ngIf="formType !== 'details'" class="add_btn btn_color_primary btn" (click)="addConfig()"
+        style="margin-left: 10px;">
+        <mat-icon>add</mat-icon> 新增
+      </button>
+      <button *ngIf="formType !== 'details' && configs.length" class="add_btn btn_color_primary btn" (click)="delConfig()"
+
+        style="margin-left: 10px;">
+        <mat-icon>delete</mat-icon> 删除
+      </button>
+    </div>
     <div class="setting-panl">
       <table class="table">
         <tr>
+          <th>选择</th>
           <th>序号</th>
-          <th>字段名称</th>
-          <th>是否启用</th>
-          <th>字段类型</th>
-          <th>下拉框字段</th>
-          <th>单位</th>
-          <th>是否必填</th>
+          <th>频次</th>
+          <th>重点项目</th>
+          <th>达成（异常）情况描述</th>
         </tr>
-        <tr *ngFor="let item of judgeList; let i = index">
-          <td>
+        <tr *ngFor="let item of configs; let i = index">
+          <td >
+            <div>
+              <mat-checkbox [(ngModel)]="item.isChecked" (change)="checkChange($event, item)"
+                [disabled]="formType === 'details'"></mat-checkbox>
+            </div>
+          </td>
+          <td >
             <div>{{i + 1}}</div>
           </td>
-          <td>
-            <div>{{ item.fieldName }}</div>
+          <td >
+            <div>{{ getFrequency(item.frequency) }}</div>
           </td>
           <td>
-            <div>
-              <select required [(ngModel)]="item.isEnabled" [disabled]="formType === 'details'">
-                <option value="1">是</option>
-                <option value="0">否</option>
-              </select>
-            </div>
+            <div>{{ item.importantItem }}</div>
           </td>
           <td>
-            <div>
-              <select required [(ngModel)]="item.fieldType" [disabled]="formType === 'details'">
-                <option *ngFor="let type of fieldTypes" [value]="type.codeValue">
-                  {{type.codeDsc}}
-                </option>
-              </select>
-            </div>
-          </td>
-          <td>
-            <div>
-              <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
-                [(ngModel)]="item.dropdownFields">
-            </div>
-          </td>
-          <td>
-            <div>
-              <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off" [(ngModel)]="item.unit">
-            </div>
-          </td>
-          <td>
-            <div>
-              <select required [(ngModel)]="item.isRequired" [disabled]="formType === 'details'">
-                <option value="1">是</option>
-                <option value="0">否</option>
-              </select>
-            </div>
+            <div *ngFor="let subItem of item.itemList;">{{ subItem.fieldName }}</div>
           </td>
         </tr>
       </table>

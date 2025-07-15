@@ -1340,6 +1340,8 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             orderProcessService.saveTBusOrderProcess(tBusOrderProcess);
             TBusOrderHead orderHead = this.getTBusOrderHead(orderId);
             orderHead.setCurrentPersonId(tSysPersonnelInfo);
+            orderHead.setNcReceiveTime(receiveTime);
+            orderHead.setOrderStatus(LichengConstants.ORDERSTATUS_1);
             this.saveTBusOrderHead(orderHead);
             return ResultUtil.success();
         } else {

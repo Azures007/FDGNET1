@@ -33,6 +33,14 @@ export class DictionaryService {
         return this.http.get(url, defaultHttpOptionsFromConfig(config))
     }
 
+    // 根据字典分类和版本获取字典列表
+    public fetchGetTypeTableListByVersion(params, config?: RequestConfig): Observable<any> {
+        let status = '';
+        params.enabledSt == undefined ? status = "" : status = params.enabledSt;
+        let url = `/api/tSysCodeDsc/getCodeByCodeClAndVersion?current=${params.current}&size=${params.size}&codeClId=${params.codeClId}&versionNo=${params.version}&enabledSt=${status}`
+        return this.http.get(url, defaultHttpOptionsFromConfig(config))
+    }
+
     //新建或编辑保存字典类型
     public fetchSaveDicType(data): Observable<any> {
         let url = "/api/tSysCodeDsc/saveCodeCl"
