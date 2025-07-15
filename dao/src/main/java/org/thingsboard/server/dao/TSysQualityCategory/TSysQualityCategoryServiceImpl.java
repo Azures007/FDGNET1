@@ -195,12 +195,12 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
     public void saveTSysQualityCategoryAndConfig(TSysQualityCategory tSysQualityCategory, List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList) {
         this.saveTSysQualityCategory(tSysQualityCategory);
         this.saveTSysQualityCategoryConfig(tSysQualityCategory.getId(),tSysQualityCategoryConfigList);
-
-        List<TSysCodeDscVersionRel> versionRels = tSysCodeDscVersionRelRepository.findByRelId(tSysQualityCategory.getId());
-        //如果没有查询到历史版本则保存一份
-        if (versionRels.size()==0){
-            this.saveCodeVersionAndRel(tSysQualityCategory.getId(),"QCCF0000","1");
-        }
+        //暂时去除版本控制
+//        List<TSysCodeDscVersionRel> versionRels = tSysCodeDscVersionRelRepository.findByRelId(tSysQualityCategory.getId());
+//        //如果没有查询到历史版本则保存一份
+//        if (versionRels.size()==0){
+//            this.saveCodeVersionAndRel(tSysQualityCategory.getId(),"QCCF0000","1");
+//        }
 
 
     }
@@ -303,10 +303,10 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
         List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList =tSysQualityCategoryConfigRepository.findByCategoryId(categoryId);
         vo.settSysQualityCategoryConfigList(tSysQualityCategoryConfigList);
 
-        List<TSysCodeDscVersionRel> versionRels = tSysCodeDscVersionRelRepository.findByRelId(tSysQualityCategory.getId());
-        if (versionRels.size()>1){
-            vo.setCodeVersionNo(versionRels.get(0).getVersionNo());
-        }
+//        List<TSysCodeDscVersionRel> versionRels = tSysCodeDscVersionRelRepository.findByRelId(tSysQualityCategory.getId());
+//        if (versionRels.size()>=1){
+//            vo.setCodeVersionNo(versionRels.get(0).getVersionNo());
+//        }
 
         if (null == tSysQualityCategory){
             return null;

@@ -157,6 +157,21 @@ public class TSysCodeDscServiceImpl implements TSysCodeDscService {
     }
 
     @Override
+    public Page<TSysCodeDsc> getCodeByCodeClNotJudEt(Integer current, Integer size, String codeClId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "crtTime");
+        Pageable pageable = PageRequest.of(current, size, sort);
+        TSysCodeDsc tSysCodeDsc = new TSysCodeDsc();
+        tSysCodeDsc.setCodeClId(codeClId);
+        ExampleMatcher matcher = ExampleMatcher.matching() //构建对象
+                .withMatcher("codeClId", ExampleMatcher.GenericPropertyMatchers.exact());
+        Example<TSysCodeDsc> example = Example.of(tSysCodeDsc, matcher);
+        Page<TSysCodeDsc> tSysCodeDscList = tSysCodeDscRepository.findAll(example, pageable);
+        return tSysCodeDscList;
+    }
+
+
+
+    @Override
     public TSysCodeDsc getCodeById(Integer codeId) {
         return tSysCodeDscRepository.findById(codeId).orElse(null);
     }
