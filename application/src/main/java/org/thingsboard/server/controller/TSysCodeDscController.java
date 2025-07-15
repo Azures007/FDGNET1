@@ -67,7 +67,7 @@ public class TSysCodeDscController extends BaseController {
     }
 
     @ApiOperation("根据字典分类编码获取字典列表（不过滤启停状态）")
-    @GetMapping("/getCodeByCodeCl")
+    @GetMapping("/getCodeByCodeClNotJudEt")
     public ResponseResult<PageVo<TSysCodeDsc>> getCodeByCodeClNotJudEt(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                                @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                @RequestParam("codeClId") String codeClId) throws Exception {
