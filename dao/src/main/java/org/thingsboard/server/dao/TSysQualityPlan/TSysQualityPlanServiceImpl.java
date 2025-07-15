@@ -56,7 +56,7 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
 
-        if (StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder)){
+        if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
             String converterSortField = StringConverterUtil.camelToSnake(sortField);
             sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
         }
