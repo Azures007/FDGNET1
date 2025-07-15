@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.TSysClass;
 import org.thingsboard.server.common.data.TSysQualityCategory;
+import org.thingsboard.server.common.data.TSysQualityPlanConfig;
 
 import java.util.List;
 
@@ -18,8 +19,8 @@ import java.util.List;
  */
 public interface TSysQualityCategoryRepository extends JpaRepository<TSysQualityCategory,Integer> {
 
-    @Query(value = "SELECT t.id, t.inspection_item, t.key_process, t.monitoring_method, t.material_id, t.product_name, t.standard, t.remarks, " +
-            "t.is_enabled, t.create_time, t.create_user, t.update_time, t.update_user\n" +
+    @Query(value = "SELECT t.id, t.inspection_item, t.key_process, t.monitoring_method, t.material_id, t.product_name, t.standard, t.remarks, t.is_enabled, \n" +
+            "t.create_time, t.create_user, t.update_time, t.update_user, t.key_process_name, t.monitoring_method_name \n" +
             "FROM t_sys_quality_category t \n" +
             "where 1=1 " +
             "and (t.is_enabled like %:#{#tSysQualityCategory.isEnabled}% or :#{#tSysQualityCategory.isEnabled} is null or :#{#tSysQualityCategory.isEnabled} ='')\n" +
@@ -29,4 +30,8 @@ public interface TSysQualityCategoryRepository extends JpaRepository<TSysQuality
     Page<TSysQualityCategory> findAllBy(@Param("tSysQualityCategory") TSysQualityCategory tSysQualityCategory, Pageable pageable);
 
     List<TSysQualityCategory> findByInspectionItem(String inspectionItem);
+
+
+
+
 }

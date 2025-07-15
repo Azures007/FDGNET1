@@ -30,15 +30,23 @@ public class TSysQualityReportPlanDto {
 
     @ApiModelProperty("品名")
     @Column(name = "product_name")
-    private String product_name;
+    private String productName;
 
     @ApiModelProperty("生产部门id")
     @Column(name = "prod_dept_id")
-    private String prod_dept_id;
+    private String prodDeptId;
+
+    @ApiModelProperty("生产部门名称")
+    @Column(name = "prod_dept_name")
+    private String prodDeptName;
 
     @ApiModelProperty("生产线id")
     @Column(name = "prod_line_id")
-    private String prod_line_id;
+    private String prodLineId;
+
+    @ApiModelProperty("生产线名称")
+    @Column(name = "prod_line_name")
+    private String prodLineName;
 
 
 

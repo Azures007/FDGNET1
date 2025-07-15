@@ -28,15 +28,20 @@ public class TSysQualityReportPlanVo {
 
     @ApiModelProperty("品名")
     @Column(name = "product_name")
-    private String product_name;
+    private String productName;
 
     @ApiModelProperty("生产部门id")
     @Column(name = "prod_dept_id")
-    private String prod_dept_id;
+    private String prodDeptId;
+
+    @ApiModelProperty("生产部门")
+    private String prodDeptName;
 
     @ApiModelProperty("生产线id")
     @Column(name = "prod_line_id")
-    private String prod_line_id;
+    private String prodLineId;
+    @ApiModelProperty("生产线")
+    private String prodLineName;
 
 
 

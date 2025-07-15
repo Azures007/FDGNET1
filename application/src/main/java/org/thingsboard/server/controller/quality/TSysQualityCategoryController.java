@@ -45,14 +45,19 @@ public class TSysQualityCategoryController extends BaseController {
     @ApiOperation("查询质检类目列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false)
+            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+            @ApiImplicitParam(name = "sortField", value = "排序字段", readOnly = false),
+            @ApiImplicitParam(name = "sortOrder", value = "排序方式（asc/desc）", readOnly = false)
 
     })
     @PostMapping("/qualityCategoryList")
     public ResponseResult<PageVo<TSysQualityCategory>> qualityCategoryList(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                                  @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                 @RequestParam(value = "sortField", defaultValue = "") String sortField,
+                                                                 @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                  @RequestBody TSysQualityCategoryDto tSysQualityCategoryDto) {
-        Page<TSysQualityCategory> qualityCategoryList = tSysQualityCategoryService.tSysQualityCategoryList(current, size, tSysQualityCategoryDto);
+        Page<TSysQualityCategory> qualityCategoryList =
+                tSysQualityCategoryService.tSysQualityCategoryList(current, size,sortField,sortOrder, tSysQualityCategoryDto);
         PageVo<TSysQualityCategory> pageVo = new PageVo<>(qualityCategoryList);
         return ResultUtil.success(pageVo);
     }
@@ -111,6 +116,8 @@ public class TSysQualityCategoryController extends BaseController {
         tSysQualityCategoryService.saveTSysQualityCategory(tSysQualityCategory);
         return ResultUtil.success();
     }
+
+
 
 
 

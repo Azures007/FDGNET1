@@ -38,7 +38,7 @@ public class SysQualityReportCategoryDto {
 
 
     @ApiModelProperty("启用/禁用")
-    private String enabled;
+    private Integer enabled;
 
 
     @ApiModelProperty("创建人")

@@ -87,6 +87,7 @@ import org.thingsboard.server.dao.sync.MaterialService;
 import org.thingsboard.server.dao.tSysAbrasiveSpecification.TSysAbrasiveSpecificationService;
 import org.thingsboard.server.dao.tSysClass.TSysClassService;
 import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscService;
+import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscVersionService;
 import org.thingsboard.server.dao.tSysPersonnelInfo.TSysPersonnelInfoService;
 import org.thingsboard.server.dao.tenant.TbTenantProfileCache;
 import org.thingsboard.server.dao.tenant.TenantProfileService;
@@ -147,6 +148,9 @@ public abstract class BaseController {
 
     @Autowired
     protected TSysCodeDscService tSysCodeDscService;
+
+    @Autowired
+    protected TSysCodeDscVersionService tSysCodeDscVersionService;
 
     @Autowired
     protected TSysPersonnelInfoService tSysPersonnelInfoService;

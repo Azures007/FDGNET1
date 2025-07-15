@@ -19,7 +19,7 @@ public class TSysQualityCategoryImportParam {
     @ApiModelProperty("质检类目")
     TSysQualityCategory tSysQualityCategory;
 
-    @ApiModelProperty("班别和组长关系")
+    @ApiModelProperty("质检类目配置表")
     List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList;
 
     public TSysQualityCategory gettSysQualityCategory() {

@@ -20,6 +20,7 @@ import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanConfigRepos
 import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
 import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanRepository;
 import org.thingsboard.server.dao.tSysQualityPlan.TSysQualityPlanService;
+import org.thingsboard.server.dao.util.StringConverterUtil;
 import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 import org.thingsboard.server.dao.vo.TSysQualityPlanVo;
 
@@ -47,9 +48,19 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 
 
     @Override
-    public Page<TSysQualityPlan> tSysQualityPlanList(Integer current, Integer size, TSysQualityPlanDto tSysQualityPlanDto) {
+    public Page<TSysQualityPlan> tSysQualityPlanList(Integer current,
+                                                     Integer size,
+                                                     String sortField,
+                                                     String sortOrder,
+                                                     TSysQualityPlanDto tSysQualityPlanDto) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+
+        if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
+            String converterSortField = StringConverterUtil.camelToSnake(sortField);
+            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
+        }
+
         Pageable pageable = PageRequest.of(current, size, sort);
 //        ExampleMatcher matcher = ExampleMatcher.matching()
 //                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
