@@ -13,7 +13,6 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { MatTableDataSource } from '@angular/material/table';
 import { ClassService } from '@app/core/http/class.service';
-import { MatSort } from '@angular/material/sort';
 import { AddCheckPlanComponent } from '../../components/quality/add-check-plan.component';
 
 
@@ -24,10 +23,9 @@ import { AddCheckPlanComponent } from '../../components/quality/add-check-plan.c
 })
 export class QualityCheckPlanComponent implements OnInit {
 
-  @ViewChild(MatSort) sort: MatSort;
   searchData = {
-    planName: '',
-    productionLineName: '',
+    productName: '',
+    prodLineName: '',
     current: 0,
     size: 50,
   }
@@ -42,12 +40,10 @@ export class QualityCheckPlanComponent implements OnInit {
   tableData: any[] = [];
   dataSource = new MatTableDataSource<any>(this.tableData);
 
-  displayedColumns: string[] = ['no', 'planName', 'productionLineName', 'remarks', 'isEnabled', 'customColumn1'];
+  displayedColumns: string[] = ['no', 'productName', 'prodLineName', 'remark', 'enabled', 'customColumn1'];
 
   btns = JSON.parse(localStorage.getItem('btns'));
   set = new Set(this.btns);
-  process = [];
-  methods = [];
   status = [{
     label: '启用',
     value: '1',
@@ -58,27 +54,8 @@ export class QualityCheckPlanComponent implements OnInit {
   getStatus(value) {
     let label = '';
     this.status.forEach(item => {
-      if (item.value === value) {
+      if (item.value == value) {
         label = item.label;
-      }
-    })
-    return label;
-  }
-  getProcess(value) {
-    let label = '';
-    this.process.forEach(item => {
-      if (item.codeValue === value) {
-        label = item.codeDsc;
-      }
-    })
-    return label;
-  }
-  getMethod(value) {
-    const arr = value.split(',');
-    let label = '';
-    this.methods.forEach(item => {
-      if (arr.indexOf(item.codeValue) !== -1) {
-        label += item.codeDsc + ',';
       }
     })
     return label;
@@ -95,35 +72,29 @@ export class QualityCheckPlanComponent implements OnInit {
   }
 
   ngOnInit() {
-    let par = {
-      current: 0,
-      size: 999,
-      codeClId: 'GJGX0000',
-      enabledSt: 1
-    }
-    this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {
-      this.process = res.data.list;
-    })
-    this.DictionaryService.fetchGetTypeTableList({
-      ...par,
-      codeClId: 'JKFF0000',
-    }).subscribe(res => {
-      this.methods = res.data.list;
-    })
+    // let par = {
+    //   current: 0,
+    //   size: 999,
+    //   codeClId: 'GJGX0000',
+    //   enabledSt: 1
+    // }
+    // this.DictionaryService.fetchGetTypeTableList({
+    //   ...par,
+    //   codeClId: 'JKFF0000',
+    // }).subscribe(res => {
+    //   this.methods = res.data.list;
+    // })
     this.searchList();
   }
   resetQuery() {
     this.searchData = {
-      planName: '',
-      productionLineName: '',
+      productName: '',
+      prodLineName: '',
       current: 0,
       size: 50,
     }
     this.searchList();
 
-  }
-  resetPaging() {
-    this.searchList();
   }
 
   searchList() {
@@ -131,16 +102,14 @@ export class QualityCheckPlanComponent implements OnInit {
     params = {
       current: this.searchData.current,
       size: this.searchData.size,
-      sortField: this.sort?.active,
-      sortOrder: this.sort?.direction,
       body: {
-        planName: this.searchData.planName,
-        productionLineName: this.searchData.productionLineName,
+        productName: this.searchData.productName,
+        prodLineName: this.searchData.prodLineName,
       }
     }
 
 
-    this.qualityService.fetchGetPlanList(params).subscribe(res => {
+    this.qualityService.fetchGetDailyPlanList(params).subscribe(res => {
 
       if (res.errcode === 200) {
 
@@ -158,9 +127,6 @@ export class QualityCheckPlanComponent implements OnInit {
 
 
     });
-  }
-  add() {
-
   }
 
   handleEvent(data, type) {
@@ -182,9 +148,9 @@ export class QualityCheckPlanComponent implements OnInit {
       case 'disable':
         let params = {
           id: data.id,
-          isEnabled: '0',
+          enable: '0',
         }
-        this.qualityService.fetchDisable(params).subscribe(res => {
+        this.qualityService.fetchDisableDailyPlan(params).subscribe(res => {
           if (res.errcode === 200) {
             this.utils.showMessage('禁用成功', 'success');
             this.searchList();
@@ -196,9 +162,9 @@ export class QualityCheckPlanComponent implements OnInit {
       case 'enable':
         params = {
           id: data.id,
-          isEnabled: '1',
+          enable: '1',
         }
-        this.qualityService.fetchDisable(params).subscribe(res => {
+        this.qualityService.fetchDisableDailyPlan(params).subscribe(res => {
           if (res.errcode === 200) {
             this.utils.showMessage('启用成功', 'success');
             this.searchList();
@@ -209,7 +175,7 @@ export class QualityCheckPlanComponent implements OnInit {
         break;
       case 'del':
         this.utils.confirm('温馨提示', `是否确认删除?`, () => {
-          this.qualityService.fetchDel(data.id).subscribe(res => {
+          this.qualityService.fetchDelDailyPlan(data.id).subscribe(res => {
             if (res.errcode === 200) {
               this.utils.showMessage('删除成功', 'success');
               this.searchList();
@@ -226,7 +192,7 @@ export class QualityCheckPlanComponent implements OnInit {
   // 接单开工弹窗
   showAddVisibilly(data) {
     if (data.type) {
-      this.qualityService.fetchGetDetails(data.data.id).subscribe(res => {
+      this.qualityService.fetchGetDailyPlanDetails(data.data.id).subscribe(res => {
         data.data = res.data;
         let dialogRef = this.dialog.open(AddCheckPlanComponent, {
           width: "1400px",

@@ -70,4 +70,35 @@ export class QualityService {
   public fetchDelDaily(data): Observable<any> {
     return this.http.get(`/api/category/delete?id=${data}`);
   }
+
+  // 获取检查项方案列表
+  public fetchGetDailyPlanList(data): Observable<any> {
+    return this.http.post(`/api/plan/list?current=${data.current}&size=${data.size}`, data.body);
+  }
+
+  // 保存检查项方案
+  public fetchSaveDailyPlan(data): Observable<any> {
+    return this.http.post(`/api/plan/savePlan`, data);
+  }
+
+  // 启用禁用检查项方案
+  public fetchDisableDailyPlan(data): Observable<any> {
+    return this.http.get(`/api/plan/enable?id=${data.id}&enable=${data.enable}`);
+  }
+
+  // 删除检查项方案
+  public fetchDelDailyPlan(data): Observable<any> {
+    return this.http.get(`/api/plan/delete?id=${data}`);
+  }
+
+  // 获取检查项方案详情
+  public fetchGetDailyPlanDetails(data): Observable<any> {
+    return this.http.get(`/api/plan/detail?id=${data}`);
+  }
+
+  // 查询质检类目列表（新增配置表数据使用）
+  public fetchGetQualityCategoryList(data): Observable<any> {
+    return this.http.post(`/api/tSysQualityPlan/qualityCategoryList?current=${data.current}&size=${data.size}`, data.body);
+  }
+
 }
