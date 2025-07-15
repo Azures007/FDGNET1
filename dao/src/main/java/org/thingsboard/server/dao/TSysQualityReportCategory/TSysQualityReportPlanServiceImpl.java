@@ -60,7 +60,6 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
         for (TSysQualityReportPlanRel item : items) {
             TSysQualityReportPlanRel rel = new TSysQualityReportPlanRel();
             BeanUtils.copyProperties(item,rel);
-            rel.setCategoryId(reportPlan.getId());
             rel.setPlanId(reportPlan.getId());
             rels.add(rel);
         }

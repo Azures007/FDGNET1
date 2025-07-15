@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @Entity
-@Table(name = "t_sys_quality_report_plan")
+@Table(name = "t_sys_quality_report_plan_new")
 @ApiModel("质检日报方案表")
 public class TSysQualityReportPlan {
     @Id
@@ -29,11 +29,13 @@ public class TSysQualityReportPlan {
 
     @ApiModelProperty("生产部门id")
     @Column(name = "prod_dept_id")
-    private Integer prodDeptId;
+    private String prodDeptId;
+    private String prodDeptName;
 
     @ApiModelProperty("生产线id")
     @Column(name = "prod_line_id")
-    private Integer prodLineId;
+    private String prodLineId;
+    private String prodLineName;
 
 
 
