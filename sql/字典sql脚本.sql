@@ -663,3 +663,174 @@ VALUES('ERPCLASS0000', 'ERP班别', 'BZ018', '乙班', '1', '2022-11-18 17:32:36
 INSERT INTO public.t_sys_code_dsc
 (code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
 VALUES('GROUPCODE0000', '字典分类', 'MATERIALSYNCHEADER', '物料同步表头', '1', '2022-11-18 17:30:50.355', 'tenant@thingsboard.org', '2022-11-18 17:30:50.355', 'tenant@thingsboard.org', 1);
+
+
+--  新增质检相关字典
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(242, 'GROUPCODE0000', '字典分类', 'QCCF0000', '品质类目配置表检查项字段', '1', '2025-07-04 11:23:19.484', 'tenant@thingsboard.org', '2025-07-04 11:23:19.484', 'tenant@thingsboard.org', 1);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(243, 'QCCF0000', '品质类目配置表检查项字段', 'QCCF0001', '每锅用量标准(kg)', '1', '2025-07-04 15:07:43.400', 'tenant@thingsboard.org', '2025-07-04 15:07:43.400', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(244, 'QCCF0000', '品质类目配置表检查项字段', 'QCCF0002', '每锅用量(kg)', '1', '2025-07-04 15:07:43.400', 'tenant@thingsboard.org', '2025-07-04 15:07:43.400', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(245, 'QCCF0000', '品质类目配置表检查项字段', 'QCCF0003', '原料批次', '1', '2025-07-04 15:07:43.400', 'tenant@thingsboard.org', '2025-07-04 15:07:43.400', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(247, 'GROUPCODE0000', '字典分类', 'QPJ0000', '品质方案判定信息字段', '1', '2025-07-04 16:07:36.917', 'tenant@thingsboard.org', '2025-07-04 16:07:36.917', 'tenant@thingsboard.org', 1);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(249, 'QPJ0000', '品质方案判定信息字段', 'QPJ0002', '实际值（首检）', '1', '2025-07-04 16:08:40.700', 'tenant@thingsboard.org', '2025-07-04 16:08:40.700', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(258, 'GJGX0000', '关键工序（质检）', 'GJGX0004', '面皮搅拌', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-10 08:25:28.360', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(252, 'QPJ0000', '品质方案判定信息字段', 'QPJ0005', '实际值(末值)', '1', '2025-07-04 16:10:21.503', 'tenant@thingsboard.org', '2025-07-04 16:10:21.503', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(248, 'QPJ0000', '品质方案判定信息字段', 'QPJ0001', '检测时间（首检）', '1', '2025-07-04 16:08:14.455', 'tenant@thingsboard.org', '2025-07-04 16:10:55.610', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(250, 'QPJ0000', '品质方案判定信息字段', 'QPJ0003', '判定（首检）', '1', '2025-07-04 16:09:28.066', 'tenant@thingsboard.org', '2025-07-04 16:11:01.226', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(251, 'QPJ0000', '品质方案判定信息字段', 'QPJ0004', '检测时间(末值)', '1', '2025-07-04 16:09:51.725', 'tenant@thingsboard.org', '2025-07-04 16:11:11.572', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(253, 'QPJ0000', '品质方案判定信息字段', 'QPJ0006', '判定(末值)', '1', '2025-07-04 16:10:36.293', 'tenant@thingsboard.org', '2025-07-04 16:11:15.424', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(254, 'GROUPCODE0000', '字典分类', 'GJGX0000', '关键工序（质检）', '1', '2025-07-07 15:43:52.531', 'tenant@thingsboard.org', '2025-07-07 15:43:52.531', 'tenant@thingsboard.org', 1);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(255, 'GJGX0000', '关键工序（质检）', 'GJGX0001', '产前检验', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(259, 'GJGX0000', '关键工序（质检）', 'GJGX0005', '排出后料温测量', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(260, 'GJGX0000', '关键工序（质检）', 'GJGX0006', '品温搅拌', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(261, 'GJGX0000', '关键工序（质检）', 'GJGX0007', '搅拌速度', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(262, 'GJGX0000', '关键工序（质检）', 'GJGX0008', '检查时间', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(263, 'GJGX0000', '关键工序（质检）', 'GJGX0009', '第一张、第四张、使用杀菌水', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(264, 'GJGX0000', '关键工序（质检）', 'GJGX0010', '成型速度', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(265, 'GJGX0000', '关键工序（质检）', 'GJGX0011', '探针直径', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(266, 'GJGX0000', '关键工序（质检）', 'GJGX0012', '烘烤温度', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(267, 'GJGX0000', '关键工序（质检）', 'GJGX0013', '烘烤时间', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(268, 'GJGX0000', '关键工序（质检）', 'GJGX0014', '烘烤效果', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(269, 'GJGX0000', '关键工序（质检）', 'GJGX0015', '水冷前盖量温度', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(270, 'GJGX0000', '关键工序（质检）', 'GJGX0016', '水冷时间', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(271, 'GJGX0000', '关键工序（质检）', 'GJGX0017', '检瓶外观', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(272, 'GJGX0000', '关键工序（质检）', 'GJGX0018', '内容器温度', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(273, 'GJGX0000', '关键工序（质检）', 'GJGX0019', '物料及外袋日期打印', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(274, 'GJGX0000', '关键工序（质检）', 'GJGX0020', '净重', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(246, 'QCCF0000', '品质类目配置表检查项字段', 'QCCF0004', '是否超保质期', '1', '2025-07-04 15:07:43.400', 'tenant@thingsboard.org', '2025-07-09 15:17:37.123', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(275, 'GJGX0000', '关键工序（质检）', 'GJGX0021', '加量水比例', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(276, 'GJGX0000', '关键工序（质检）', 'GJGX0022', '硫磺水比例', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(277, 'GJGX0000', '关键工序（质检）', 'GJGX0023', '外气温度', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(279, 'GJGX0000', '关键工序（质检）', 'GJGX0025', '压差', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(281, 'GROUPCODE0000', '字典分类', 'JKFF0000', '监控方法（质检）', '1', '2025-07-07 16:03:39.347', 'tenant@thingsboard.org', '2025-07-07 16:03:39.347', 'tenant@thingsboard.org', 1);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(282, 'JKFF0000', '监控方法（质检）', 'JKFF0001', '电子台秤', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(283, 'JKFF0000', '监控方法（质检）', 'JKFF0002', '钢尺', '1', '2025-07-07 16:04:34.326', 'tenant@thingsboard.org', '2025-07-07 16:04:34.326', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(284, 'JKFF0000', '监控方法（质检）', 'JKFF0003', '红外线测温仪', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(285, 'JKFF0000', '监控方法（质检）', 'JKFF0004', '机台控制屏幕', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(286, 'JKFF0000', '监控方法（质检）', 'JKFF0005', '计时器', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(287, 'JKFF0000', '监控方法（质检）', 'JKFF0006', '目测', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(288, 'JKFF0000', '监控方法（质检）', 'JKFF0007', '目测/品尝', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(289, 'JKFF0000', '监控方法（质检）', 'JKFF0008', '目视/记录', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(290, 'JKFF0000', '监控方法（质检）', 'JKFF0009', '设定值', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(291, 'JKFF0000', '监控方法（质检）', 'JKFF0010', '温度计', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(292, 'JKFF0000', '监控方法（质检）', 'JKFF0011', '温湿度计', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(293, 'JKFF0000', '监控方法（质检）', 'JKFF0012', '压差计', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(294, 'JKFF0000', '监控方法（质检）', 'JKFF0013', '针式温度计', '1', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', '2025-07-07 16:04:08.973', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(295, 'GROUPCODE0000', '字典分类', 'ZDLX0000', '字段类型', '1', '2025-07-08 10:22:04.616', 'tenant@thingsboard.org', '2025-07-08 10:22:04.616', 'tenant@thingsboard.org', 1);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(296, 'ZDLX0000', '字段类型', 'ZDLX0001', '文本', '1', '2025-07-08 10:22:38.748', 'tenant@thingsboard.org', '2025-07-08 10:22:38.748', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(298, 'ZDLX0000', '字段类型', 'ZDLX0003', '数值', '1', '2025-07-08 10:23:14.177', 'tenant@thingsboard.org', '2025-07-08 10:23:14.177', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(297, 'ZDLX0000', '字段类型', 'ZDLX0002', '日期', '1', '2025-07-08 10:22:56.553', 'tenant@thingsboard.org', '2025-07-08 10:23:29.901', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(299, 'ZDLX0000', '字段类型', 'ZDLX0004', '下拉框', '1', '2025-07-08 10:23:54.000', 'tenant@thingsboard.org', '2025-07-08 10:23:54.000', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(280, 'GJGX0000', '关键工序（质检）', 'GJGX0026', '残氧', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-10 08:21:37.922', 'tenant@thingsboard.org', 0);
+INSERT INTO public.t_sys_code_dsc
+(code_id, code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group)
+VALUES(278, 'GJGX0000', '关键工序（质检）', 'GJGX0024', '外箱喷码', '1', '2025-07-07 15:46:33.439', 'tenant@thingsboard.org', '2025-07-10 08:22:11.523', 'tenant@thingsboard.org', 0);
