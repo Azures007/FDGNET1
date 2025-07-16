@@ -12,7 +12,7 @@ import lombok.Data;
 public class TSysFieldConfig {
 
     private String fieldName;
-    private String fillValue;
+    private String fielValue;
     private String isEnabled;
     private String fieldType;
     private String paramRange;
@@ -21,13 +21,26 @@ public class TSysFieldConfig {
     private String isRequired;
 
     // 快速构建方法，方便填充数据
+
+    /**
+     *
+     * @param fieldName
+     * @param fillValue
+     * @param isEnabled
+     * @param fieldType
+     * @param paramRange
+     * @param dropdownField
+     * @param unit
+     * @param isRequired
+     * @return
+     */
     public static TSysFieldConfig build(String fieldName, String fillValue,
                                     String isEnabled, String fieldType,
                                     String paramRange, String dropdownField,
                                     String unit, String isRequired) {
         TSysFieldConfig config = new TSysFieldConfig();
         config.setFieldName(fieldName);
-        config.setFillValue(fillValue);
+        config.setFielValue(fillValue);
         config.setIsEnabled(isEnabled);
         config.setFieldType(fieldType);
         config.setParamRange(paramRange);

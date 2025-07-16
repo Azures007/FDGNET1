@@ -153,7 +153,7 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
                         StringUtils.defaultString(categoryConfig.getIsRequired()));
                 tableData.add(l);
             }
-            String json = JsonUtil.tableToJsonConverter(tableData);
+            String json = JsonUtil.tableToJsonConverter2(tableData);
 
             //组装新的数据
             TSysQualityPlanConfig planConfig = new TSysQualityPlanConfig();
@@ -167,11 +167,6 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
 
         }
 
-
-
-
-
-
 //        List<TSysQualityCategory> processedContent = tSysQualityCategoryPage.getContent().stream()
 //                .map(item -> {
 //                    // 处理每条数据
@@ -183,11 +178,6 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
 //
 //        // 重新封装为 Page 对象（保持分页元数据不变）
         return new PageImpl<TSysQualityPlanConfig>(returnPlanConfigList, tSysQualityCategoryPage.getPageable(), tSysQualityCategoryPage.getTotalElements());
-
-
-
-//        return null;
-//        return tSysQualityCategoryPage;
     }
 
     @Override
