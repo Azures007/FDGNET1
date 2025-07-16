@@ -337,3 +337,4 @@ CREATE TABLE public.t_sys_quality_plan_judgment (
 );
 
 
+ALTER TABLE public.t_sys_quality_plan ALTER COLUMN production_line_id TYPE varchar(255) USING production_line_id::varchar(255);
