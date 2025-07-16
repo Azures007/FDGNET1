@@ -78,8 +78,8 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
 //        tSysQualityCategory.setIsEnabled(StringUtils.isNotBlank(tSysQualityCategory.getIsEnabled()) ? tSysQualityCategory.getIsEnabled() : "");
         //检测项目
         tSysQualityCategory.setInspectionItem(StringUtils.isNotBlank(tSysQualityCategory.getInspectionItem())?tSysQualityCategory.getInspectionItem():"");
-        //关键工序
-        tSysQualityCategory.setKeyProcess(StringUtils.isNotBlank(tSysQualityCategory.getKeyProcess())?tSysQualityCategory.getKeyProcess():"");
+        //关键工序名称
+        tSysQualityCategory.setKeyProcessName(StringUtils.isNotBlank(tSysQualityCategory.getKeyProcessName())?tSysQualityCategory.getKeyProcessName():"");
         //产品名称
         tSysQualityCategory.setProductName(StringUtils.isNotBlank(tSysQualityCategory.getProductName())?tSysQualityCategory.getProductName():"");
         //启停状态
@@ -108,7 +108,7 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
         //检测项目
         tSysQualityCategory.setInspectionItem(StringUtils.isNotBlank(tSysQualityCategory.getInspectionItem())?tSysQualityCategory.getInspectionItem():"");
         //关键工序
-        tSysQualityCategory.setKeyProcess(StringUtils.isNotBlank(tSysQualityCategory.getKeyProcess())?tSysQualityCategory.getKeyProcess():"");
+        tSysQualityCategory.setKeyProcessName(StringUtils.isNotBlank(tSysQualityCategory.getKeyProcessName())?tSysQualityCategory.getKeyProcessName():"");
         //产品名称
         tSysQualityCategory.setProductName(StringUtils.isNotBlank(tSysQualityCategory.getProductName())?tSysQualityCategory.getProductName():"");
         //启停状态
