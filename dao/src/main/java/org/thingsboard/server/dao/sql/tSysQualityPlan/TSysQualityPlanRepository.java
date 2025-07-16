@@ -19,10 +19,10 @@ import java.util.List;
 public interface TSysQualityPlanRepository extends JpaRepository<TSysQualityPlan,Integer> {
 
     @Query(value = "SELECT t.id, t.plan_name, t.production_line_id, t.remarks, \n" +
-            "t.is_enabled, t.create_time, t.create_user, t.update_time, t.update_user \n" +
+            "t.is_enabled, t.create_time, t.create_user, t.update_time, t.update_user,t.production_line_name \n" +
             "FROM t_sys_quality_plan t \n" +
             "left join t_sys_workline t1 \n" +
-            "on t.production_line_id =t1.id \n" +
+            "on t.production_line_id =t1.nc_cwkid \n" +
             "where 1=1 \n" +
             "and (t.plan_name like %:#{#tSysQualityPlan.planName}% or :#{#tSysQualityPlan.planName} is null or :#{#tSysQualityPlan.planName} ='') \n" +
             "and (t1.nc_vwkname like %:#{#tSysQualityPlan.productionLineName}% or :#{#tSysQualityPlan.productionLineName} is null or :#{#tSysQualityPlan.productionLineName} ='') \n" +
