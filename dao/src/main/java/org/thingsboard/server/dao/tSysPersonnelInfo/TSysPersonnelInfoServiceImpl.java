@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.tSysPersonnelInfo;
 
 import com.alibaba.fastjson.JSON;
-import com.natrotech.fpJni.FpAPI;
+//import com.natrotech.fpJni.FpAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -147,35 +147,36 @@ public class TSysPersonnelInfoServiceImpl implements TSysPersonnelInfoService {
     @Override
     public Boolean verifyDevices(VerifyDevicesDto verifyDevicesDto) {
         boolean flag = false;
-        //获取指纹信息
-        TSysUserDevices tSysUserDevices = new TSysUserDevices();
-        tSysUserDevices.setEnabled(GlobalConstant.enableTrue);
-        tSysUserDevices.setDevicesType("1");
-        tSysUserDevices.setPersonnelId(verifyDevicesDto.getPersonnelId());
-        ExampleMatcher matcher = ExampleMatcher.matching() //构建对象
-                .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact())
-                .withMatcher("personnelId", ExampleMatcher.GenericPropertyMatchers.exact())
-                .withMatcher("devicesType", ExampleMatcher.GenericPropertyMatchers.exact());
-        Example<TSysUserDevices> example = Example.of(tSysUserDevices, matcher);
-        List<TSysUserDevices> tSysUserDevicesList = tSysUserDevicesRepository.findAll(example);
-        if (tSysUserDevicesList.isEmpty()) {
-            throw new RuntimeException("当前人员未采集指纹信息，请先采集指纹信息");
-        }
-        String currentKey = verifyDevicesDto.getDevicesKey();
-        if (currentKey.length() <= 300) {
-            throw new RuntimeException("指纹信息不合法，请重新录入");
-        }
-        int[] score = new int[1];
-        FpAPI inst = FpAPI.getInst();
-        for (TSysUserDevices sysUserDevices : tSysUserDevicesList) {
-            if (sysUserDevices.getDevicesKey().length() < 300) {
-                continue;
-            }
-            int nRet = inst.match(sysUserDevices.getDevicesKey().getBytes(), currentKey.getBytes(), 3, score);
-            if ((nRet == 0) && (score[0] > 0)) {
-                return true;
-            }
-        }
+        // 友臣不需要指纹识别，注释 2025-07-16
+//        //获取指纹信息
+//        TSysUserDevices tSysUserDevices = new TSysUserDevices();
+//        tSysUserDevices.setEnabled(GlobalConstant.enableTrue);
+//        tSysUserDevices.setDevicesType("1");
+//        tSysUserDevices.setPersonnelId(verifyDevicesDto.getPersonnelId());
+//        ExampleMatcher matcher = ExampleMatcher.matching() //构建对象
+//                .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact())
+//                .withMatcher("personnelId", ExampleMatcher.GenericPropertyMatchers.exact())
+//                .withMatcher("devicesType", ExampleMatcher.GenericPropertyMatchers.exact());
+//        Example<TSysUserDevices> example = Example.of(tSysUserDevices, matcher);
+//        List<TSysUserDevices> tSysUserDevicesList = tSysUserDevicesRepository.findAll(example);
+//        if (tSysUserDevicesList.isEmpty()) {
+//            throw new RuntimeException("当前人员未采集指纹信息，请先采集指纹信息");
+//        }
+//        String currentKey = verifyDevicesDto.getDevicesKey();
+//        if (currentKey.length() <= 300) {
+//            throw new RuntimeException("指纹信息不合法，请重新录入");
+//        }
+//        int[] score = new int[1];
+//        FpAPI inst = FpAPI.getInst();
+//        for (TSysUserDevices sysUserDevices : tSysUserDevicesList) {
+//            if (sysUserDevices.getDevicesKey().length() < 300) {
+//                continue;
+//            }
+//            int nRet = inst.match(sysUserDevices.getDevicesKey().getBytes(), currentKey.getBytes(), 3, score);
+//            if ((nRet == 0) && (score[0] > 0)) {
+//                return true;
+//            }
+//        }
         return flag;
     }
 
@@ -228,12 +229,13 @@ public class TSysPersonnelInfoServiceImpl implements TSysPersonnelInfoService {
      * @return
      */
     private int mateKey(String devicesKey, String content) {
-        int[] score = new int[1];
-        FpAPI inst = FpAPI.getInst();
-        int nRet = inst.match(devicesKey.getBytes(), content.getBytes(), 3, score);
-        if ((nRet == 0) && (score[0] > 0)) {
-            return score[0];
-        }
+        // 友臣不需要指纹识别，注释 2025-07-16
+//        int[] score = new int[1];
+//        FpAPI inst = FpAPI.getInst();
+//        int nRet = inst.match(devicesKey.getBytes(), content.getBytes(), 3, score);
+//        if ((nRet == 0) && (score[0] > 0)) {
+//            return score[0];
+//        }
         return 0;
     }
 

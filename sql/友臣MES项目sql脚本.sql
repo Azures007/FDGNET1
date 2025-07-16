@@ -214,3 +214,127 @@ COMMENT ON COLUMN t_sys_class.workshop_director_id IS '车间主任id';
 
 ALTER TABLE t_sys_class ADD COLUMN workshop_director varchar(255);
 COMMENT ON COLUMN t_sys_class.workshop_director IS '车间主任';
+
+
+-- 2025-7-16  质检类目和质检方案表
+-- public.t_sys_quality_category definition
+
+-- Drop table
+
+-- DROP TABLE public.t_sys_quality_category;
+
+CREATE TABLE public.t_sys_quality_category (
+                                               id serial4 NOT NULL,
+                                               inspection_item varchar(255) NULL,
+                                               key_process varchar(255) NULL,
+                                               monitoring_method varchar(255) NULL,
+                                               material_id int4 NULL,
+                                               product_name varchar(255) NULL,
+                                               standard text NULL,
+                                               remarks text NULL,
+                                               is_enabled varchar(255) NULL,
+                                               create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                               create_user varchar(255) NULL,
+                                               update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                               update_user varchar(255) NULL,
+                                               key_process_name varchar(255) NULL,
+                                               monitoring_method_name varchar(255) NULL,
+                                               CONSTRAINT t_sys_quality_category_pkey PRIMARY KEY (id)
+);
+
+
+-- public.t_sys_quality_category_config definition
+
+-- Drop table
+
+-- DROP TABLE public.t_sys_quality_category_config;
+
+CREATE TABLE public.t_sys_quality_category_config (
+                                                      id serial4 NOT NULL,
+                                                      category_id int4 NULL,
+                                                      material_id int4 NULL,
+                                                      field_name varchar(255) NULL,
+                                                      is_enabled varchar(255) NULL,
+                                                      field_type varchar(255) NULL,
+                                                      parameter_range varchar(255) NULL,
+                                                      dropdown_fields varchar(255) NULL,
+                                                      unit varchar(255) NULL,
+                                                      is_required varchar(255) NULL,
+                                                      create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                                      create_user varchar(255) NULL,
+                                                      update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                                      update_user varchar(255) NULL,
+                                                      material_name varchar(255) NULL,
+                                                      CONSTRAINT t_sys_quality_category_config_pkey PRIMARY KEY (id)
+);
+
+
+-- public.t_sys_quality_plan definition
+
+-- Drop table
+
+-- DROP TABLE public.t_sys_quality_plan;
+
+CREATE TABLE public.t_sys_quality_plan (
+                                           id serial4 NOT NULL,
+                                           plan_name varchar(255) NULL,
+                                           production_line_id int4 NULL,
+                                           remarks varchar(255) NULL,
+                                           is_enabled varchar(255) NULL,
+                                           create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                           create_user varchar(255) NULL,
+                                           update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                           update_user varchar(255) NULL,
+                                           production_line_name varchar(255) NULL,
+                                           CONSTRAINT t_sys_quality_plan_pkey PRIMARY KEY (id)
+);
+
+
+-- public.t_sys_quality_plan_config definition
+
+-- Drop table
+
+-- DROP TABLE public.t_sys_quality_plan_config;
+
+CREATE TABLE public.t_sys_quality_plan_config (
+                                                  id serial4 NOT NULL,
+                                                  plan_id int4 NULL,
+                                                  category_id int4 NULL,
+                                                  config_data text NULL,
+                                                  create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                                  create_user varchar(255) NULL,
+                                                  update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                                  update_user varchar(255) NULL,
+                                                  inspection_item varchar(255) NULL,
+                                                  key_process varchar(255) NULL,
+                                                  key_process_name varchar(255) NULL,
+                                                  monitoring_method varchar(255) NULL,
+                                                  monitoring_method_name varchar(255) NULL,
+                                                  CONSTRAINT t_sys_quality_plan_config_pkey PRIMARY KEY (id)
+);
+
+
+-- public.t_sys_quality_plan_judgment definition
+
+-- Drop table
+
+-- DROP TABLE public.t_sys_quality_plan_judgment;
+
+CREATE TABLE public.t_sys_quality_plan_judgment (
+                                                    id serial4 NOT NULL,
+                                                    plan_id int4 NULL,
+                                                    field_name varchar(255) NULL,
+                                                    is_enabled varchar(255) NULL,
+                                                    field_type varchar(255) NULL,
+                                                    dropdown_fields varchar(255) NULL,
+                                                    unit varchar(255) NULL,
+                                                    is_required varchar(255) NULL,
+                                                    create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                                    create_user varchar(255) NULL,
+                                                    update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                                    update_user varchar(255) NULL,
+                                                    CONSTRAINT t_sys_quality_plan_judgment_pkey PRIMARY KEY (id)
+);
+
+
+ALTER TABLE public.t_sys_quality_plan ALTER COLUMN production_line_id TYPE varchar(255) USING production_line_id::varchar(255);

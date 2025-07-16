@@ -203,7 +203,7 @@ public class ExcelUtil {
         fileName = fileName + ".xls";
 
         try {
-            String utf8Filename = new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
+            //String utf8Filename = new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
             response.setHeader("Content-Disposition", URLEncoder.encode(fileName, StandardCharsets.UTF_8));
 
             return response.getOutputStream();

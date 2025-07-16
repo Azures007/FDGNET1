@@ -8,7 +8,6 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.util.Date;
-import org.thingsboard.server.common.data.json.JsonStringType;
 
 /**
  * @author 陈懋燊
@@ -19,7 +18,7 @@ import org.thingsboard.server.common.data.json.JsonStringType;
 @Data
 @Entity
 @Table(name = "t_sys_quality_plan_config")
-@TypeDef(name = "jsonb", typeClass = JsonStringType.class)
+//@TypeDef(name = "json", typeClass = JsonStringType.class)
 @ApiModel("质检方案配置类")
 public class TSysQualityPlanConfig {
 
@@ -60,8 +59,9 @@ public class TSysQualityPlanConfig {
 
 
     @ApiModelProperty("配置数据，存储动态配置信息")
-    @Type(type = "jsonb")
-    @Column(name = "config_data", columnDefinition = "jsonb")
+//    @Type(type = "json")
+//    @Column(name = "config_data", columnDefinition = "json")
+    @Column(name = "config_data")
     private String configData;
 
     @ApiModelProperty("创建时间")

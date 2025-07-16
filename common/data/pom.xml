@@ -124,6 +124,14 @@
             <artifactId>gson</artifactId>
         </dependency>
 
+<!--        试验jsonb数据格式用-->
+        <!-- https://mvnrepository.com/artifact/io.hypersistence/hypersistence-utils-hibernate-52 -->
+<!--        <dependency>-->
+<!--            <groupId>io.hypersistence</groupId>-->
+<!--            <artifactId>hypersistence-utils-hibernate-52</artifactId>-->
+<!--            <version>3.7.6</version>-->
+<!--        </dependency>-->
+
         <!--        <dependency>-->
 <!--            <groupId>org.hibernate</groupId>-->
 <!--            <artifactId>hibernate-core</artifactId>-->
