@@ -56,7 +56,9 @@ public class TSysQualityPlanConfig {
     @Column(name = "monitoring_method_name")
     private String monitoringMethodName;
 
-
+    @ApiModelProperty("质检标准")
+    @Column(name = "standard")
+    private String standard;
 
     @ApiModelProperty("配置数据，存储动态配置信息")
 //    @Type(type = "json")
