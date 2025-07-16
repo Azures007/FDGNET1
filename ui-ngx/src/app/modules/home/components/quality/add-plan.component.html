@@ -7,8 +7,7 @@
     <div class="row-block">
       <label class="label"><span class="red-star">*</span>方案名称：</label>
       <mat-form-field class="example-full-width" appearance="fill">
-        <input autocomplete="off" class="input" formControlName="planName" type="text" matInput
-          placeholder="请输入方案名称">
+        <input autocomplete="off" class="input" formControlName="planName" type="text" matInput placeholder="请输入方案名称">
         <mat-error *ngIf="dataForm.hasError('required','planName')">
           方案名称为<strong>必填</strong>
         </mat-error>
@@ -115,9 +114,8 @@
         style="margin-left: 10px;">
         <mat-icon>add</mat-icon> 新增
       </button>
-      <button *ngIf="formType !== 'details' && configs.length" class="add_btn btn_color_primary btn" (click)="delConfig()"
-
-        style="margin-left: 10px;">
+      <button *ngIf="formType !== 'details' && configs.length" class="add_btn btn_color_primary btn"
+        (click)="delConfig()" style="margin-left: 10px;">
         <mat-icon>delete</mat-icon> 删除
       </button>
     </div>
@@ -130,11 +128,43 @@
           <th>关键工序</th>
           <th>监控方法</th>
           <th>品名</th>
+          <th *ngFor="let item of fieldNames">{{item.codeDsc}}</th>
         </tr>
         <tr *ngFor="let item of configs; let i = index">
-          <!-- <td [rowSpan]="fieldNames.length">
-            <div>{{i/fieldNames.length + 1}}</div>
-          </td> -->
+          <td>
+            <div>
+              <mat-checkbox [(ngModel)]="item.isChecked"></mat-checkbox>
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ i + 1 }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.inspectionItem }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.keyProcessName }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.monitoringMethodName }}
+            </div>
+          </td>
+          <td *ngFor="let arrItem of getArray(); let n = index">
+            <tr *ngFor="let subItem of getFieldValue(item)" class="border-none">
+              <ng-container *ngFor="let listItem of subItem; let j = index">
+                <td *ngIf="n === j" class="border-none">
+                  {{ listItem }}
+                </td>
+              </ng-container>
+            </tr>
+          </td>
         </tr>
       </table>
     </div>

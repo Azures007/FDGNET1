@@ -69,15 +69,15 @@ export class AddCateComponent implements OnInit {
       current: 0,
       size: 999,
       codeClId: 'GJGX0000',
-      enabledSt: 1
+      // enabledSt: 1
     }
+    this.DictionaryService.fetchGetTypeTableList({
+      ...par,
+      codeClId: 'QCCF0000',
+    }).subscribe(res => {
+      this.fieldNames = res.data.list;
+    })
     if (this.utils.isEmpty(this.injectData.data)) {
-      this.DictionaryService.fetchGetTypeTableList({
-        ...par,
-        codeClId: 'QCCF0000',
-      }).subscribe(res => {
-        this.fieldNames = res.data.list;
-      })
       this.dataForm = this.fb.group({
         inspectionItem: ['', [Validators.required]],
         keyProcess: ['', [Validators.required]],
@@ -88,13 +88,6 @@ export class AddCateComponent implements OnInit {
         remarks: [''],
       });
     } else {
-      this.DictionaryService.fetchGetTypeTableListByVersion({
-        ...par,
-        codeClId: 'QCCF0000',
-        version: this.injectData.data.data.codeVersionNo || ''
-      }).subscribe(res => {
-        this.fieldNames = res.data.list;
-      })
       this.formType = this.injectData.data.type;
       const obj = {
         id: "",

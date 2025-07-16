@@ -42,6 +42,27 @@ export class QualityService {
   public fetchGetPlanList(data): Observable<any> {
     return this.http.post(`/api/tSysQualityPlan/qualityPlanList?current=${data.current}&size=${data.size}&sortField=${data.sortField || ''}&sortOrder=${data.sortOrder || ''}`, data.body);
   }
+
+  // 保存方案
+  public fetchSavePlan(data): Observable<any> {
+    return this.http.post(`/api/tSysQualityPlan/saveQualityPlan`, data);
+  }
+
+  // 启用禁用方案
+  public fetchDisablePlan(data): Observable<any> {
+    return this.http.post(`/api/tSysQualityPlan/isEnabled?planId=${data.id}&enabledSt=${data.isEnabled}`, {});
+  }
+
+  // 删除方案
+  public fetchDelPlan(data): Observable<any> {
+    return this.http.get(`/api/tSysQualityPlan/deleteQualityPlan?categoryId=${data}`);
+  }
+
+  // 获取方案详情
+  public fetchGetPlanDetails(data): Observable<any> {
+    return this.http.get(`/api/tSysQualityPlan/getQualityPlanById?categoryId=${data}`);
+  }
+
   public fetchBaseList(): Observable<any> {
     return this.http.get('/api/manage/workline/list')
   }

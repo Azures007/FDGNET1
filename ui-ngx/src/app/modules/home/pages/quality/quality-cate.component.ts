@@ -27,7 +27,7 @@ export class QualityCateComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   searchData = {
     inspectionItem: '',
-    keyProcess: '',
+    keyProcessName: '',
     productName: '',
     current: 0,
     size: 50,
@@ -117,7 +117,7 @@ export class QualityCateComponent implements OnInit {
   resetQuery() {
     this.searchData = {
       inspectionItem: '',
-      keyProcess: '',
+      keyProcessName: '',
       productName: '',
       current: 0,
       size: 50,
@@ -138,7 +138,7 @@ export class QualityCateComponent implements OnInit {
       sortOrder: this.sort?.direction,
       body: {
         inspectionItem: this.searchData.inspectionItem,
-        keyProcess: this.searchData.keyProcess,
+        keyProcessName: this.searchData.keyProcessName,
         productName: this.searchData.productName,
       }
     }
