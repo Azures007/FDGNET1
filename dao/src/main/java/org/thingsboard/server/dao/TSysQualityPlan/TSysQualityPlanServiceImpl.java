@@ -141,19 +141,23 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 
     @Override
     @Transactional
-    public void deleteTSysQualityPlan(Integer categoryId) {
-        tSysQualityPlanRepository.deleteById(categoryId);
-        tSysQualityPlanConfigRepository.deleteByPlanId(categoryId);
+    public void deleteTSysQualityPlan(Integer planId) {
+        tSysQualityPlanRepository.deleteById(planId);
+        tSysQualityPlanConfigRepository.deleteByPlanId(planId);
     }
 
     @Override
-    public TSysQualityPlanVo getQualityPlanById(Integer categoryId) {
+    public TSysQualityPlanVo getQualityPlanById(Integer planId) {
         TSysQualityPlanVo vo = new TSysQualityPlanVo();
 
 
-        TSysQualityPlan tSysQualityPlan = tSysQualityPlanRepository.findById(categoryId).orElse(null);
+        TSysQualityPlan tSysQualityPlan = tSysQualityPlanRepository.findById(planId).orElse(null);
         BeanUtils.copyProperties(tSysQualityPlan, vo);
-        List<TSysQualityPlanConfig> tSysQualityPlanConfigList =tSysQualityPlanConfigRepository.findByPlanId(categoryId);
+
+        List<TSysQualityPlanJudgment> tSysQualityPlanJudgmentList =tSysQualityPlanJudgmentRepository.findByPlanId(planId);
+        vo.settSysQualityPlanJudgmentList(tSysQualityPlanJudgmentList);
+
+        List<TSysQualityPlanConfig> tSysQualityPlanConfigList =tSysQualityPlanConfigRepository.findByPlanId(planId);
         vo.settSysQualityPlanConfigList(tSysQualityPlanConfigList);
 
         if (null == tSysQualityPlan){
