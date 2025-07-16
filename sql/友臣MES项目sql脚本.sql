@@ -300,7 +300,7 @@ CREATE TABLE public.t_sys_quality_plan_config (
                                                   id serial4 NOT NULL,
                                                   plan_id int4 NULL,
                                                   category_id int4 NULL,
-                                                  config_data jsonb NULL,
+                                                  config_data text NULL,
                                                   create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
                                                   create_user varchar(255) NULL,
                                                   update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
