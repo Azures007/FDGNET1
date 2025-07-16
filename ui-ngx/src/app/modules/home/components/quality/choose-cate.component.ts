@@ -2,6 +2,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { QualityService } from '@app/core/http/quality.service';
+import { DictionaryService } from '@app/core/http/dictionary.service';
+import { Utils } from '../../pages/order-management/w-utils';
 
 @Component({
   selector: 'tb-choose-cate',
@@ -16,19 +18,32 @@ export class ChooseCateComponent implements OnInit {
     public _dialog: MatDialog,
     public fb: FormBuilder,
     private qualityService: QualityService,
+    private dictionaryService: DictionaryService,
+    private utils: Utils,
   ) { }
+  fieldNames = [];
   dataSource = [];
-  displayedColumns: string[] = ['no', 'frequency', 'importantItem', 'remark', 'customColumn1'];
   total = 0;
   searchFormGroup = this.fb.group({
     current: 0,
     size: 10,
     inspectionItem: '',
-    keyProcess: '',
+    keyProcessName: '',
     productName: ''
   });
   pageSizeOptions: number[] = [10, 50, 100, 200, 500];
   ngOnInit(): void {
+    let par = {
+      current: 0,
+      size: 999,
+      codeClId: 'QCCF0000',
+      // enabledSt: 1
+    }
+    this.dictionaryService.fetchGetTypeTableList({
+      ...par,
+    }).subscribe(res => {
+      this.fieldNames = res.data.list;
+    })
     this.getTableData();
   }
   getTableData(): void {
@@ -37,7 +52,7 @@ export class ChooseCateComponent implements OnInit {
       size: this.searchFormGroup.value.size,
       body: {
         inspectionItem: this.searchFormGroup.value.inspectionItem,
-        keyProcess: this.searchFormGroup.value.keyProcess,
+        keyProcessName: this.searchFormGroup.value.keyProcessName,
         productName: this.searchFormGroup.value.productName,
         isEnabled: '1',
       }
@@ -46,18 +61,33 @@ export class ChooseCateComponent implements OnInit {
       const temp = res.data.list.map(item => {
         return {
           ...item,
+          isChecked: false,
           configData: JSON.parse(item.configData),
         }
       })
       console.log(temp);
-      // this.dataSource = res.data.list?.map((item, index) => {
-      //   return {
-      //     ...item,
-      //     no: index + 1,
-      //   }
-      // });
-      // this.total = res.data.total;
+      this.dataSource = temp;
+      this.total = res.data.total;
     })
+  }
+  getFieldValue(item) {
+    const arr = [];
+    item.configData.forEach(subItem => {
+      const arr1 = [];
+      arr1.push(subItem.productName);
+      this.fieldNames.forEach(fieldItem => {
+        const itemTemp = subItem.fieldList.find(item1 => item1.fieldName == fieldItem.codeValue);
+        if (fieldItem.codeValue == itemTemp.fieldName) {
+          arr1.push(itemTemp.isEnabled == '1' ? '已启用' : '未启用');
+        }
+
+      })
+      arr.push(arr1);
+    })
+    return arr;
+  }
+  getArray() {
+    return new Array(this.fieldNames.length + 1);
   }
   getFrequency(value) {
     let label = '';
@@ -73,12 +103,21 @@ export class ChooseCateComponent implements OnInit {
   }
 
   //关闭弹窗
-  addDialogClose() {
-    this.dialogRef.close();
+  addDialogClose(isSubmit: boolean) {
+    if(isSubmit) {
+      const list = this.dataSource.filter(item => item.isChecked);
+      if(!list.length) {
+        this.utils.showMessage('请选择要提交的项目', 'error');
+        return;
+      }
+      this.dialogRef.close(list);
+    } else {
+      this.dialogRef.close();
+    }
   }
   reset() {
     this.searchFormGroup.controls['inspectionItem'].setValue('');
-    this.searchFormGroup.controls['keyProcess'].setValue('');
+    this.searchFormGroup.controls['keyProcessName'].setValue('');
     this.searchFormGroup.controls['productName'].setValue('');
     this.getTableData();
   }

@@ -184,7 +184,7 @@ export class QualityPlanComponent implements OnInit {
           id: data.id,
           isEnabled: '0',
         }
-        this.qualityService.fetchDisable(params).subscribe(res => {
+        this.qualityService.fetchDisablePlan(params).subscribe(res => {
           if (res.errcode === 200) {
             this.utils.showMessage('禁用成功', 'success');
             this.searchList();
@@ -198,7 +198,7 @@ export class QualityPlanComponent implements OnInit {
           id: data.id,
           isEnabled: '1',
         }
-        this.qualityService.fetchDisable(params).subscribe(res => {
+        this.qualityService.fetchDisablePlan(params).subscribe(res => {
           if (res.errcode === 200) {
             this.utils.showMessage('启用成功', 'success');
             this.searchList();
@@ -209,7 +209,7 @@ export class QualityPlanComponent implements OnInit {
         break;
       case 'del':
         this.utils.confirm('温馨提示', `是否确认删除?`, () => {
-          this.qualityService.fetchDel(data.id).subscribe(res => {
+          this.qualityService.fetchDelPlan(data.id).subscribe(res => {
             if (res.errcode === 200) {
               this.utils.showMessage('删除成功', 'success');
               this.searchList();
@@ -226,7 +226,7 @@ export class QualityPlanComponent implements OnInit {
   // 接单开工弹窗
   showAddVisibilly(data) {
     if (data.type) {
-      this.qualityService.fetchGetDetails(data.data.id).subscribe(res => {
+      this.qualityService.fetchGetPlanDetails(data.data.id).subscribe(res => {
         data.data = res.data;
         let dialogRef = this.dialog.open(AddPlanComponent, {
           width: "1400px",

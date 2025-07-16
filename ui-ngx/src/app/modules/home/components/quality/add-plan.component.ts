@@ -37,7 +37,7 @@ export class AddPlanComponent implements OnInit {
     remarks: ''
   }
   dataForm: FormGroup;
-
+  fieldNames = [];
   formType = '';
 
   // 状态下拉
@@ -66,6 +66,56 @@ export class AddPlanComponent implements OnInit {
       enabledSt: 1
     }
     if (this.utils.isEmpty(this.injectData.data)) {
+      this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {
+        this.judgeList = res.data.list?.map(item => {
+          let obj = {
+            fieldName: item.codeDsc,
+            isEnabled: '1',
+            fieldType: 'ZDLX0001',
+            dropdownFields: '',
+            unit: '',
+            isRequired: '1'
+          }
+          if (item.codeValue == 'QPJ0001') {
+            return {
+              ...obj,
+              fieldType: 'ZDLX0002',
+            }
+          }
+          if (item.codeValue == 'QPJ0002') {
+            return {
+              ...obj,
+              fieldType: 'ZDLX0001',
+            }
+          }
+          if (item.codeValue == 'QPJ0003') {
+            return {
+              ...obj,
+              fieldType: 'ZDLX0004',
+              dropdownFields: '合格，不合格'
+            }
+          }
+          if (item.codeValue == 'QPJ0004') {
+            return {
+              ...obj,
+              fieldType: 'ZDLX0002',
+            }
+          }
+          if (item.codeValue == 'QPJ0005') {
+            return {
+              ...obj,
+              fieldType: 'ZDLX0001',
+            }
+          }
+          if (item.codeValue == 'QPJ0006') {
+            return {
+              ...obj,
+              fieldType: 'ZDLX0004',
+              dropdownFields: '合格，不合格'
+            }
+          }
+        });
+      })
       this.dataForm = this.fb.group({
         planName: ['', [Validators.required]],
         productionLineId: ['', [Validators.required]],
@@ -85,6 +135,18 @@ export class AddPlanComponent implements OnInit {
       Object.keys(this.injectData.data.data).forEach(key => {
         obj[key] = this.injectData.data.data[key];
       });
+      if (this.injectData.data.data.tSysQualityPlanJudgmentList) {
+        this.judgeList = this.injectData.data.data.tSysQualityPlanJudgmentList;
+      }
+      if (this.injectData.data.data.tSysQualityPlanConfigList) {
+        this.configs = this.injectData.data.data.tSysQualityPlanConfigList.map(item => {
+          return {
+            ...item,
+            configData: JSON.parse(item.configData)
+          }
+        });
+
+      }
       if (this.formType === 'details') {
         this.dataForm = this.fb.group({
           planName: [{ value: obj.planName, disabled: true }],
@@ -102,70 +164,55 @@ export class AddPlanComponent implements OnInit {
         });
       }
     }
-    this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {
-      this.judgeList = res.data.list?.map(item => {
-        let obj = {
-            fieldName: item.codeDsc,
-            isEnabled: '1',
-            fieldType: 'ZDLX0001',
-            dropdownFields: '',
-            unit: '',
-            isRequired: '1'
-          }
-        if(item.codeValue == 'QPJ0001') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0002',
-          }
-        }
-        if(item.codeValue == 'QPJ0002') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0001',
-          }
-        }
-        if(item.codeValue == 'QPJ0003') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0004',
-            dropdownFields: '合格，不合格'
-          }
-        }
-        if(item.codeValue == 'QPJ0004') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0002',
-          }
-        }
-        if(item.codeValue == 'QPJ0005') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0001',
-          }
-        }
-        if(item.codeValue == 'QPJ0006') {
-          return {
-            ...obj,
-            fieldType: 'ZDLX0004',
-            dropdownFields: '合格，不合格'
-          }
-        }
-      });
-    })
+
     this.DictionaryService.fetchGetTypeTableList({
       ...par,
       codeClId: 'ZDLX0000',
     }).subscribe(res => {
       this.fieldTypes = res.data.list;
     })
+    this.DictionaryService.fetchGetTypeTableList({
+      ...par,
+      codeClId: 'QCCF0000',
+      enabledSt: undefined
+    }).subscribe(res => {
+      this.fieldNames = res.data.list;
+    })
   }
   //关闭弹窗
   addDialogClose() {
     this.dialogRef.close();
   }
+  getArray() {
+    return new Array(this.fieldNames.length + 1);
+  }
+  getFieldValue(item) {
+    const arr = [];
+    item.configData.forEach(subItem => {
+      const arr1 = [];
+      arr1.push(subItem.productName);
+      this.fieldNames.forEach(fieldItem => {
+        const itemTemp = subItem.fieldList.find(item1 => item1.fieldName == fieldItem.codeValue);
+        if (fieldItem.codeValue == itemTemp.fieldName) {
+          arr1.push(itemTemp.isEnabled == '1' ? '已启用' : '未启用');
+        }
 
+      })
+      arr.push(arr1);
+    })
+    return arr;
+  }
   submit() {
     if (this.dataForm.valid) {
+      const judgeListFlag = this.judgeList.find(item => item.fieldType == 'ZDLX0004' && !item.dropdownFields);
+      if (judgeListFlag) {
+        this.utils.showMessage('请填写下拉框字段', 'error');
+        return;
+      }
+      if (!this.configs.length) {
+        this.utils.showMessage('请新增配置项', 'error');
+        return;
+      }
       Object.keys(this.dataForm.value).forEach(key => {
         this.addParams[key] = this.dataForm.value[key];
       });
@@ -173,11 +220,18 @@ export class AddPlanComponent implements OnInit {
         this.addParams['id'] = this.injectData.data.data.id;
       }
       this.addParams['productionLineName'] = this.baseList.find(item => item.cwkid === this.addParams['productionLineId'])?.vwkname;
+      const configs = this.configs.map(item => {
+        return {
+          ...item,
+          configData: JSON.stringify(item.configData),
+        }
+      })
       const params = {
         tSysQualityPlan: this.addParams,
-        tSysQualityPlanJudgmentList: this.judgeList
+        tSysQualityPlanJudgmentList: this.judgeList,
+        tSysQualityPlanConfigList: configs,
       }
-      this.qualityService.fetchSave(params).subscribe(res => {
+      this.qualityService.fetchSavePlan(params).subscribe(res => {
         if (res.errcode === 200) {
           this.dialogRef.close('refresh');
         } else {
@@ -201,11 +255,17 @@ export class AddPlanComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-
+        const tmp = JSON.parse(JSON.stringify(result)).map(item => {
+          return {
+            ...item,
+            isChecked: false,
+          }
+        })
+        this.configs.push(...tmp);
       }
     });
   }
   delConfig() {
-
+    this.configs = this.configs.filter(item => !item.isChecked);
   }
 }

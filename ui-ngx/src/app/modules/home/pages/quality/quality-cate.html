@@ -7,7 +7,7 @@
     </div>
     <div class="row-block cols4">
       <label class="label">关键工序</label>
-      <input class="input" [(ngModel)]="searchData.keyProcess" />
+      <input class="input" [(ngModel)]="searchData.keyProcessName" />
     </div>
     <div class="row-block cols4">
       <label class="label">产品名称</label>
@@ -27,6 +27,7 @@
     <div class="row-block cols4">
       <label class="label"></label>
       <div class="btn-group">
+        <!-- *ngIf="set.has('/quality/cate/add1')" -->
         <button class="search_btn" (click)="showAddVisibilly({})">
           <mat-icon class="material-icons svgIcon">add</mat-icon>新增
         </button>

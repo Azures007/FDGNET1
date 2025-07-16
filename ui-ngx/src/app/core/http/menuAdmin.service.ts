@@ -33,7 +33,7 @@ export class MenuAdminService {
     //删除
     public fetchDelete(params, config?: RequestConfig): Observable<any> {
         let url = "/api/menu/delete"
-        return this.http.get(url + `?id=${params.id}`, defaultHttpOptionsFromConfig(config))
+        return this.http.get(url + `?menuId=${params.id}`, defaultHttpOptionsFromConfig(config))
     }
 
     //状态控制
