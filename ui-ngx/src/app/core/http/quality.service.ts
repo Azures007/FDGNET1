@@ -55,12 +55,12 @@ export class QualityService {
 
   // 删除方案
   public fetchDelPlan(data): Observable<any> {
-    return this.http.get(`/api/tSysQualityPlan/deleteQualityPlan?categoryId=${data}`);
+    return this.http.get(`/api/tSysQualityPlan/deleteQualityPlan?planId=${data}`);
   }
 
   // 获取方案详情
   public fetchGetPlanDetails(data): Observable<any> {
-    return this.http.get(`/api/tSysQualityPlan/getQualityPlanById?categoryId=${data}`);
+    return this.http.get(`/api/tSysQualityPlan/getQualityPlanById?planId=${data}`);
   }
 
   public fetchBaseList(): Observable<any> {
