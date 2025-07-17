@@ -66,7 +66,7 @@ export class StaffComponent implements OnInit {
   dataSource = [];
 
   //表格列参数
-  displayedColumns: string[] = ['name', 'sex', 'phone', 'station', 'class','enabledSt', 'customColumn1']
+  displayedColumns: string[] = ['name', 'sex', 'phone', 'class','enabledSt', 'customColumn1']
 
   //岗位列表
   stationList = [];
@@ -80,7 +80,7 @@ export class StaffComponent implements OnInit {
     name: "",
     phone: "",
     sex: "",
-    station: "",
+    // station: "",
     userId: "",
     userEmail: "",
     personnelId: "",

@@ -251,7 +251,9 @@ export class AddPlanComponent implements OnInit {
       width: "1400px",
       height: "800px",
       panelClass: 'custom-modalbox',
-      data: {}
+      data: {
+        configs: this.configs,
+      }
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

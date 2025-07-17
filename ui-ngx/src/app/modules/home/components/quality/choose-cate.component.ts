@@ -59,10 +59,12 @@ export class ChooseCateComponent implements OnInit {
     }
     this.qualityService.fetchGetQualityCategoryList(par).subscribe(res => {
       const temp = res.data.list.map(item => {
+        const disabled = this.injectData.configs.findIndex(i => i.categoryId === item.categoryId) !== -1;
         return {
           ...item,
           isChecked: false,
           configData: JSON.parse(item.configData),
+          disabled,
         }
       })
       console.log(temp);

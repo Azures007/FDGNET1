@@ -184,16 +184,19 @@ export class AddCheckPlanComponent implements OnInit {
       panelClass: 'custom-modalbox',
       data: {
         frequencyList: this.frequencyList,
+        configs: this.configs,
       }
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.configs.push({
-          ...result,
-          categoryId: result.id,
-          isChecked: false,
-        });
-
+        const arr = result.map(item => {
+          return {
+            ...item,
+            categoryId: item.id,
+            isChecked: false,
+          }
+        })
+        this.configs.push(...arr);
       }
     });
   }

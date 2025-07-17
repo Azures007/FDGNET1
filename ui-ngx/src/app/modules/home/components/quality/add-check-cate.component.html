@@ -82,7 +82,7 @@
             <div>{{i + 1}}</div>
           </td>
           <td>
-            <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
+            <input style="width: 400px;" [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
                 [(ngModel)]="item.fieldName">
           </td>
           <td>
@@ -96,7 +96,7 @@
           </td>
           <td>
             <div>
-              <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
+              <input style="width: 200px;" [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
                 [(ngModel)]="item.dropdownFields">
             </div>
           </td>

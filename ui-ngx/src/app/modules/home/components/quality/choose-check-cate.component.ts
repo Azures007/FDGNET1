@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { QualityService } from '@app/core/http/quality.service';
+import { Utils } from '../../pages/order-management/w-utils';
 
 @Component({
   selector: 'tb-choose-check-cate',
@@ -16,6 +17,7 @@ export class ChooseCheckCateComponent implements OnInit {
     public _dialog: MatDialog,
     public fb: FormBuilder,
     private qualityService: QualityService,
+    private utils: Utils,
   ) { }
   dataSource = [];
   displayedColumns: string[] = ['no', 'frequency', 'importantItem', 'remark', 'customColumn1'];
@@ -37,14 +39,17 @@ export class ChooseCheckCateComponent implements OnInit {
       body: {
         frequency: this.searchFormGroup.value.frequency,
         importantItem: this.searchFormGroup.value.importantItem,
-        enable: 1,
+        enabled: 1,
       }
     }
     this.qualityService.fetchGetDailyList(par).subscribe(res => {
       this.dataSource = res.data.list?.map((item, index) => {
+        const disabled = this.injectData.configs.findIndex(i => i.id === item.id) !== -1;
         return {
           ...item,
           no: index + 1,
+          isChecked: false,
+          disabled,
         }
       });
       this.total = res.data.total;
@@ -59,8 +64,13 @@ export class ChooseCheckCateComponent implements OnInit {
     })
     return label;
   }
-  handleChoose(item: any) {
-    this.dialogRef.close(item);
+  handleChoose() {
+    const list = this.dataSource.filter(item => item.isChecked);
+    if (!list.length) {
+      this.utils.showMessage('请选择配置项', 'error');
+      return;
+    }
+    this.dialogRef.close(list);
   }
 
   //关闭弹窗
