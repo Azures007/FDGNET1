@@ -32,9 +32,9 @@ export class ProcessManagementComponent implements OnInit {
   searchFormGroup = this.fb.group({
     current: 0,
     size: 50,
-    name: '',
-    username: '',
-    userStatus: '',
+    processName: '',
+    processNumber: '',
+    enabled: '',
   });
 
   btns = JSON.parse(localStorage.getItem('btns'));
@@ -43,6 +43,11 @@ export class ProcessManagementComponent implements OnInit {
   erpProcess = JSON.parse(localStorage.getItem('erpProcess'));
   erpProcessMap : any;
 
+  orderSelect = [
+    { value: '', label: '全部' },
+    { value: 1, label: '启用' },
+    { value: 0, label: '禁用' },
+  ];
 
 
 
@@ -56,7 +61,7 @@ export class ProcessManagementComponent implements OnInit {
   ngOnInit() {
     this.setMyMap();
   }
-  
+
 
   //创建哈希表
   setMyMap() {
@@ -91,6 +96,11 @@ export class ProcessManagementComponent implements OnInit {
     const params = {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
+      body: {
+        processName: this.searchFormGroup.value.processName,
+        processNumber: this.searchFormGroup.value.processNumber,
+        enabled: this.searchFormGroup.value.enabled,
+      }
     }
     this.api.fetchGetTableList(params).subscribe(res => {
       const allData = res.data.content;
@@ -100,6 +110,17 @@ export class ProcessManagementComponent implements OnInit {
       this.dataSource = allData;
       this.total = res.data.totalElements;
     });
+  }
+
+  resetSearch() {
+    this.searchFormGroup.reset({
+      current: 0,
+      size: 50,
+      processName: '',
+      processNumber: '',
+      enabled: '',
+    });
+    this.searchList();
   }
 
   // 表格操作

@@ -1,6 +1,35 @@
 <div class="page-container flex-column">
   <div class="page-header">
+    <div class="row-block cols4">
+      <label class="label">工序名称：</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.processName" />
+    </div>
 
+    <div class="row-block cols4">
+      <label class="label">工序编号：</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.processNumber" />
+    </div>
+
+    <div class="row-block cols4">
+      <label class="label">状态：</label>
+      <select required [(ngModel)]="searchFormGroup.value.enabled">
+        <option *ngFor="let item of orderSelect" [value]="item.value">
+          {{item.label}}
+        </option>
+      </select>
+    </div>
+    <div class="row-block cols4">
+      <button class="search-btn btn" (click)="searchList()">
+        <mat-icon class="material-icons svgIcon">search</mat-icon>
+        <span>查询</span>
+      </button>
+      <button class="search-btn btn" (click)="resetSearch()">
+        重置
+      </button>
+    </div>
+
+  </div>
+  <div class="page-header">
     <button *ngIf="set.has('/technological/processManage/add')" class="search-btn btn" (click)="showAddVisibilly({})">
       <mat-icon class="material-icons svgIcon">control_point</mat-icon>
       <span>新增工序</span>
