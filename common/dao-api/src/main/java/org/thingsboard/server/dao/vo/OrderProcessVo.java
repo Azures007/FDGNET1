@@ -26,9 +26,9 @@ public class OrderProcessVo {
     @ApiModelProperty("暂停原因")
     private String suspendReason;
 
-    @ApiModelProperty(value = "处理人")
+    @ApiModelProperty(value = "责任人id")
     private TSysPersonnelInfo personId;
-    @ApiModelProperty(value = "处理人名称")
+    @ApiModelProperty(value = "责任人名称")
     private String personName;
 
     @ApiModelProperty("接单时间")

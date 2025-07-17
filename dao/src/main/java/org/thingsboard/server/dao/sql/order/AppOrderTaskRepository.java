@@ -20,6 +20,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     /* 获取账号今日任务列表 */
     @Query(value = "select a.order_id as orderId,\n" +
             "a.craft_id as craftId, \n" +
+            "t1.craft_name as craftName, \n" +
             "a.order_no as orderNo,\n" +
             "a.body_lot as bodyLot,\n" +
             "a.material_id as materialId,\n" +
@@ -51,6 +52,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "c.process_number executeProcessNumber, \n" +
             "null executeProcessStatus \n" +
             "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process=m2.process_id ) as a\n" +
+            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_sys_craft_process_rel b on a.craft_id =b.craft_id \n" +
             "join t_sys_process_info c on b.process_id =c.process_id \n" +
             "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
