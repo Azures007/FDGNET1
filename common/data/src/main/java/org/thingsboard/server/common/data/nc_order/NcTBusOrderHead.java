@@ -1,5 +1,6 @@
 package org.thingsboard.server.common.data.nc_order;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -60,6 +61,7 @@ public class NcTBusOrderHead {
 
     @Column(name = "bill_date")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @ApiModelProperty("下单日期")
     private Date dbilldate;
 
@@ -102,17 +104,20 @@ public class NcTBusOrderHead {
 
     @Column(name = "body_plan_start_date")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @ApiModelProperty("计划开工日期")
     private Date tplanstarttime;
 
     @Column(name = "body_plan_finish_date")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @ApiModelProperty("计划完工日期")
     private Date tplanendtime;
 
     @ApiModelProperty("开工时间")
     @Column(name = "nc_receive_time")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date ncReceiveTime;
 
     @Column(name = "nc_note")
@@ -127,6 +132,7 @@ public class NcTBusOrderHead {
     @ApiModelProperty("创建时间")
     @JsonIgnore
     @Column(name = "created_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createdTime;
 
     @ApiModelProperty("明细-用料清单")

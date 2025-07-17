@@ -40,9 +40,9 @@ public class OrderDetailVo {
     @ApiModelProperty("当前工序-工序执行表")
     private String currentProcessName;
 
-    @ApiModelProperty("班别id（处理班别）")
+    @ApiModelProperty("班组id")
     private Integer classId;
-    @ApiModelProperty("班别名称（处理班别）-工序执行表")
+    @ApiModelProperty("班组")
     private String className;
 
     @ApiModelProperty(value = "处理人（操作人）")
@@ -53,7 +53,7 @@ public class OrderDetailVo {
     private String persionName;
 
     /*订单明细*/
-    @ApiModelProperty("明细-批号")
+    @ApiModelProperty("批次")
     private String bodyLot;
 
     @ApiModelProperty("明细-物料ID")
