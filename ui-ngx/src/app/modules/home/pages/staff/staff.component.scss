@@ -101,9 +101,9 @@
 					}
 				}
 				.mat-row {
-					.mat-cell:nth-of-type(1),
-					.mat-header-cell:nth-of-type(1) {
-						width: 8%;
+					.mat-cell,
+					.mat-header-cell {
+						width: 12%;
 					}
 					.mat-cell:last-of-type,
 					.mat-header-cell:last-of-type {
@@ -157,7 +157,7 @@
 					}
 					.enabled{
 						color: rgba(102, 204, 0, 1);
-					}   
+					}
 				}
 			}
 		}
