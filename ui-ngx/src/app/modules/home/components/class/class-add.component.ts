@@ -136,10 +136,10 @@ export class ClassAddComponent implements OnInit {
       this.utils.showMessage("班别名称不能为空", 'error');
       return
     }
-    if (this.data.params.tSysClass.process == "") {
-      this.utils.showMessage("班别说明不能为空", 'error');
-      return
-    }
+    // if (this.data.params.tSysClass.process == "") {
+    //   this.utils.showMessage("班别说明不能为空", 'error');
+    //   return
+    // }
     if (this.data.params.tSysClass.groupLeader == "") {
       this.utils.showMessage("组长不能为空", 'error');
       return

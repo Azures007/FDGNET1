@@ -17,16 +17,12 @@
                     <li class="list_header">
                         <span>物料名称</span>
                         <span>物料编码</span>
-                        <span>组织</span>
-                        <span>车间</span>
                     </li>
                     <li *ngFor="let personItem of dataSource;index as i"
                         [ngClass]="{'check_item':(checkData.id!=undefined  && personItem.id == checkData.id)}"
                         (click)="chooseCurrent(personItem,i)">
                         <span>{{personItem.materialName}}</span>
                         <span>{{personItem.materialCode}}</span>
-                        <span>{{personItem.kdMaterialUseOrgName}}</span>
-                        <span>{{personItem.kdMaterialWorkshopName==null?'无':personItem.kdMaterialWorkshopName}}</span>
                     </li>
                 </ul>
             </div>
@@ -58,15 +54,11 @@
                     <li class="list_header">
                         <span>物料名称</span>
                         <span>物料编码</span>
-                        <span>组织</span>
-                        <span>车间</span>
                         <span>11</span>
                     </li>
                     <li *ngFor="let personItem of dataCheck;index as i">
                         <span>{{personItem.materialName}}</span>
                         <span>{{personItem.materialCode}}</span>
-                        <span>{{personItem.kdMaterialUseOrgName}}</span>
-                        <span>{{personItem.kdMaterialWorkshopName==null?'无':personItem.kdMaterialWorkshopName}}</span>
                         <button class="remove_btn" (click)="remove(personItem)">移除</button>
                     </li>
                 </ul>
