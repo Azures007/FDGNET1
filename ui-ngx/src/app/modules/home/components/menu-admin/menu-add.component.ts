@@ -81,7 +81,7 @@ export class MenuAddComponent implements OnInit {
       this.dataForm = this.fb.group({
         menuId: "",
         menuName: ['', [Validators.required]],
-        parentId: [{ value: '-1', disabled: false }, [Validators.required]],
+        parentId: [{ value: this.injectData.menuId, disabled: false }, [Validators.required]],
         menuType: [{ value: null, disabled: false }],
         br: ['', [Validators.required]],
         sort: ['', [Validators.required]],

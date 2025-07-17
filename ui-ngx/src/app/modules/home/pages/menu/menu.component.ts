@@ -73,6 +73,7 @@ export class MenuComponent implements OnInit {
 
   // 当前选中的菜单
   curMenu = {
+    menuId: 0,
     parentId: -1,
     menuName: ''
   };
@@ -92,6 +93,7 @@ export class MenuComponent implements OnInit {
       if (arr[0]) {
         arr[0].select = true;
         this.curMenu = {
+          menuId: 0,
           parentId: -1,
           menuName: ''
         }
@@ -103,16 +105,20 @@ export class MenuComponent implements OnInit {
     })
   }
   choseNode(node: FoodNode, e?: MouseEvent) {
+    console.log(node, 'node')
+
     if (e) {
       e.stopPropagation();
     }
     if (node.parentId === undefined) {
       this.curMenu = {
+        menuId: 0,
         parentId: -1,
         menuName: ''
       }
     } else {
       this.curMenu = {
+        menuId: node.menuId,
         parentId: node.parentId,
         menuName: node.menuName
       }
@@ -163,7 +169,7 @@ export class MenuComponent implements OnInit {
       width: "695px",
       height: "auto",
       panelClass: 'custom-modalbox',
-      data: { data: JSON.parse(JSON.stringify(data)), }
+      data: { data: JSON.parse(JSON.stringify(data)), menuId: this.curMenu.menuId }
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result && result === 'refresh') {
