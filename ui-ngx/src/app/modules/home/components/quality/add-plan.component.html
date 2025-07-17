@@ -133,7 +133,7 @@
         <tr *ngFor="let item of configs; let i = index">
           <td>
             <div>
-              <mat-checkbox [(ngModel)]="item.isChecked"></mat-checkbox>
+              <mat-checkbox [(ngModel)]="item.isChecked" [disabled]="formType === 'details'"></mat-checkbox>
             </div>
           </td>
           <td>
