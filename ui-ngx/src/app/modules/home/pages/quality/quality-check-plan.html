@@ -23,7 +23,7 @@
     <div class="row-block cols4">
       <label class="label"></label>
       <div class="btn-group">
-        <button class="search_btn" (click)="showAddVisibilly({})">
+        <button class="search_btn" (click)="showAddVisibilly({})" *ngIf="set.has('/quality/check/plan/add')">
           <mat-icon class="material-icons svgIcon">add</mat-icon>新增
         </button>
       </div>
@@ -54,14 +54,14 @@
       <ng-container matColumnDef="customColumn1">
         <th mat-header-cell *matHeaderCellDef> 操作 </th>
         <td mat-cell *matCellDef="let element">
-          <button class="mini_btn edit_btn"
+          <button class="mini_btn edit_btn" *ngIf="set.has('/quality/check/plan/edit')"
             (click)="handleEvent(element,'edit')">编辑</button>
-          <button class="mini_btn look_btn" (click)="handleEvent(element,'details')">详情</button>
-          <button *ngIf="element.enabled == 0" class="mini_btn del_btn"
+          <button class="mini_btn look_btn" (click)="handleEvent(element,'details')" *ngIf="set.has('/quality/check/plan/detail')">详情</button>
+          <button *ngIf="element.enabled == 0 && set.has('/quality/check/plan/del')" class="mini_btn del_btn"
             (click)="handleEvent(element,'del')">删除</button>
-          <button *ngIf="element.enabled == 0"
+          <button *ngIf="element.enabled == 0 && set.has('/quality/check/plan/enabled')"
             class="mini_btn enter_btn" (click)="handleEvent(element,'enable')">启用</button>
-          <button *ngIf="element.enabled == 1"
+          <button *ngIf="element.enabled == 1 && set.has('/quality/check/plan/disable')"
             class="mini_btn disable_btn" (click)="handleEvent(element,'disable')">禁用</button>
         </td>
       </ng-container>
