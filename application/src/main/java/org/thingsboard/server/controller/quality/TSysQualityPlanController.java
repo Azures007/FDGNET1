@@ -78,16 +78,16 @@ public class TSysQualityPlanController extends BaseController {
 
     @ApiOperation("删除质检方案")
     @GetMapping("/deleteQualityPlan")
-    public ResponseResult deleteQualityPlan(@RequestParam("categoryId") Integer categoryId) {
-        tSysQualityPlanService.deleteTSysQualityPlan(categoryId);
+    public ResponseResult deleteQualityPlan(@RequestParam("planId") Integer planId) {
+        tSysQualityPlanService.deleteTSysQualityPlan(planId);
         return ResultUtil.success();
     }
 
     @ApiOperation("根据ID查询明细")
     @GetMapping("/getQualityPlanById")
-    public ResponseResult<TSysQualityPlanVo> getQualityPlanById(@RequestParam("categoryId") Integer categoryId) {
+    public ResponseResult<TSysQualityPlanVo> getQualityPlanById(@RequestParam("planId") Integer planId) {
 
-        TSysQualityPlanVo vo = tSysQualityPlanService.getQualityPlanById(categoryId);
+        TSysQualityPlanVo vo = tSysQualityPlanService.getQualityPlanById(planId);
 
         if (vo == null) {
             return ResultUtil.error("未找到该数据");

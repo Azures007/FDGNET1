@@ -12,10 +12,10 @@ import java.util.List;
  * @date 2025/7/1 17:53:24
  */
 public interface TSysQualityPlanConfigRepository extends JpaRepository<TSysQualityPlanConfig,Integer> {
-    
-    
+
+
 
     void deleteByPlanId(Integer planId);
 
-    List<TSysQualityPlanConfig> findByPlanId(Integer categoryId);
+    List<TSysQualityPlanConfig> findByPlanId(Integer planId);
 }
