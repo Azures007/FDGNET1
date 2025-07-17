@@ -1,7 +1,19 @@
-.search-btn{
+.search_btn,.search-btn{
   margin-right: 8px;
+  color: #fff;
+	background-color: #3399ff;
+	width: 80px;
+	height: 36px;
+	border: 1px solid #3399ff;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 16px;
+	margin-right: 10px;
 }
-
+.search-btn {
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
 .page-container{
   padding: 0!important;
 }
