@@ -51,4 +51,7 @@
 }
 .border-none {
   border: none !important;
+  display: flex;
+  justify-content: center;
+  min-height: 27px;
 }

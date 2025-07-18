@@ -8,9 +8,9 @@
       <label class="label"><span class="red-star">*</span>方案名称：</label>
       <mat-form-field class="example-full-width" appearance="fill">
         <div class="relative">
-          <input autocomplete="off" class="input" readonly formControlName="productName" type="text" matInput
+          <input autocomplete="off" class="input" formControlName="productName" type="text" matInput
             placeholder="请选择方案">
-          <span class="absolute" (click)="selectProduct()" *ngIf="formType !== 'details'">选择</span>
+          <!-- <span class="absolute" (click)="selectProduct()" *ngIf="formType !== 'details'">选择</span> -->
         </div>
         <mat-error *ngIf="dataForm.hasError('required','productName')">
           方案名称为<strong>必填</strong>

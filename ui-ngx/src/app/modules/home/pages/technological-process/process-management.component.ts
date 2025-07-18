@@ -26,7 +26,7 @@ export class ProcessManagementComponent implements OnInit {
   total = 0;
   dataSource = [];
 
-  displayedColumns: string[] = ['no', 'processName', 'processNumber', 'erpProcessNumber', 'processDetail','bySetImport', 'bySetExport','enabled', 'customColumn1',];
+  displayedColumns: string[] = ['no', 'processName', 'processNumber', 'processDetail','enabled', 'customColumn1',];
 
   // 搜索参数
   searchFormGroup = this.fb.group({

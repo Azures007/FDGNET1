@@ -91,8 +91,8 @@ export class AddCheckPlanComponent implements OnInit {
       Object.keys(this.injectData.data.data).forEach(key => {
         obj[key] = this.injectData.data.data[key];
       });
-      this.productItem.productName = this.injectData.data.data.productName;
-      this.productItem.productId = this.injectData.data.data.productId;
+      // this.productItem.productName = this.injectData.data.data.productName;
+      // this.productItem.productId = this.injectData.data.data.productId;
       if(this.injectData.data.data.itemList) {
         this.configs = this.injectData.data.data.itemList
       }
@@ -132,7 +132,7 @@ export class AddCheckPlanComponent implements OnInit {
         this.addParams['id'] = this.injectData.data.data.id;
       }
       this.addParams['prodLineName'] = this.baseList.find(item => item.cwkid === this.addParams.prodLineId)?.vwkname;
-      this.addParams['productId'] = this.productItem.productId;
+      // this.addParams['productId'] = this.productItem.productId;
       if (!this.configs.length) {
         this.utils.showMessage('请新增配置信息', 'error');
         return;

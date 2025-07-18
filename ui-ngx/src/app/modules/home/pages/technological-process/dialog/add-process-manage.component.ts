@@ -31,10 +31,10 @@ export class AddProcessManageComponent implements OnInit {
     processId: '',
     processName: '',
     processNumber: '',
-    erpProcessNumber: '',
+    // erpProcessNumber: '',
     updatedTime: '',
     updatedUser: '',
-    fingerprintAuthentication:""
+    // fingerprintAuthentication:""
   };
 
   dataForm;
@@ -63,11 +63,11 @@ export class AddProcessManageComponent implements OnInit {
       this.dataForm = this.fb.group({
         processName: ['', [Validators.required]],
         processNumber: ['', [Validators.required]],
-        erpProcessNumber: ['', [Validators.required]],
+        // erpProcessNumber: ['', [Validators.required]],
         enabled: ['', [Validators.required]],
-        bySetImport: [0, [Validators.required]],
-        bySetExport: [0, [Validators.required]],
-        fingerprintAuthentication: [0, [Validators.required]],
+        // bySetImport: [0, [Validators.required]],
+        // bySetExport: [0, [Validators.required]],
+        // fingerprintAuthentication: [0, [Validators.required]],
         processDetail: '',
       });
     } else {
@@ -76,12 +76,12 @@ export class AddProcessManageComponent implements OnInit {
       const obj = {
         processName: '',
         processNumber: "",
-        erpProcessNumber: "",
+        // erpProcessNumber: "",
         enabled: 0,
         processDetail: '',
-        bySetImport: 0,
-        bySetExport:0,
-        fingerprintAuthentication:0,
+        // bySetImport: 0,
+        // bySetExport:0,
+        // fingerprintAuthentication:0,
       };
 
       Object.keys(this.injectData.data).forEach(key => {
@@ -95,11 +95,11 @@ export class AddProcessManageComponent implements OnInit {
         this.dataForm = this.fb.group({
           processName: [{ value: obj.processName, disabled: true }, [Validators.required]],
           processNumber: [{ value: obj.processNumber, disabled: true }, [Validators.required]],
-          erpProcessNumber: [{ value: obj.erpProcessNumber, disabled: true }, [Validators.required]],
+          // erpProcessNumber: [{ value: obj.erpProcessNumber, disabled: true }, [Validators.required]],
           enabled: [{ value: obj.enabled, disabled: true }, [Validators.required]],
-          bySetImport: [{ value: obj.bySetImport ? Number(obj.bySetImport) : 0, disabled: true }, [Validators.required]],
-          bySetExport: [{ value: obj.bySetExport ? Number(obj.bySetExport) : 0, disabled: true }, [Validators.required]],
-          fingerprintAuthentication: [{ value: obj.fingerprintAuthentication ? Number(obj.fingerprintAuthentication) : 0, disabled: true }, [Validators.required]],
+          // bySetImport: [{ value: obj.bySetImport ? Number(obj.bySetImport) : 0, disabled: true }, [Validators.required]],
+          // bySetExport: [{ value: obj.bySetExport ? Number(obj.bySetExport) : 0, disabled: true }, [Validators.required]],
+          // fingerprintAuthentication: [{ value: obj.fingerprintAuthentication ? Number(obj.fingerprintAuthentication) : 0, disabled: true }, [Validators.required]],
           processDetail: [{ value: obj.processDetail, disabled: true }],
         });
       } else {
@@ -108,12 +108,12 @@ export class AddProcessManageComponent implements OnInit {
         this.dataForm = this.fb.group({
           processName: [{ value: obj.processName, disabled: false }, [Validators.required]],
           processNumber: [{ value: obj.processNumber, disabled: false }, [Validators.required]],
-          erpProcessNumber: [{ value: obj.erpProcessNumber, disabled: false }, [Validators.required]],
+          // erpProcessNumber: [{ value: obj.erpProcessNumber, disabled: false }, [Validators.required]],
           enabled: [{ value: obj.enabled, disabled: false }, [Validators.required]],
-          bySetImport: [{ value: obj.bySetImport ? Number(obj.bySetImport) : 0, disabled: false }, [Validators.required]],
-          bySetExport: [{ value: obj.bySetExport ? Number(obj.bySetExport) : 0, disabled: false }, [Validators.required]],
+          // bySetImport: [{ value: obj.bySetImport ? Number(obj.bySetImport) : 0, disabled: false }, [Validators.required]],
+          // bySetExport: [{ value: obj.bySetExport ? Number(obj.bySetExport) : 0, disabled: false }, [Validators.required]],
           processDetail: [{ value: obj.processDetail, disabled: false }],
-          fingerprintAuthentication: [{ value: obj.fingerprintAuthentication ? Number(obj.fingerprintAuthentication) : 0, disabled: false }, [Validators.required]],
+          // fingerprintAuthentication: [{ value: obj.fingerprintAuthentication ? Number(obj.fingerprintAuthentication) : 0, disabled: false }, [Validators.required]],
         });
       }
 
