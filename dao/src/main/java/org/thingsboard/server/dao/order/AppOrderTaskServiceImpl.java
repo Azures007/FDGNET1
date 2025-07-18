@@ -12,9 +12,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.LichengConstants;
+import org.thingsboard.server.common.data.TBusOrderHead;
+import org.thingsboard.server.common.data.TBusOrderPPBom;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.OrderTaskSelectDto;
 import org.thingsboard.server.dao.sql.order.AppOrderTaskRepository;
+import org.thingsboard.server.dao.sql.order.OrderHeadRepository;
 import org.thingsboard.server.dao.vo.*;
 
 import java.text.SimpleDateFormat;
@@ -32,6 +35,10 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
 
     @Autowired
     RedisTemplate redisTemplate;
+
+    @Autowired
+    private OrderHeadRepository orderHeadRepository;
+
 
     private static String ORDER_HEAD_HEADER_SIZE = "order:size:";
 
@@ -555,5 +562,56 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
         }
         return iots;
     }
+
+    /**
+     * 获取订单详情
+     * @param orderId
+     * @return
+     */
+    @Override
+    public AppOrderDetailSimpleVo getAppOrderDetailSimple(Integer orderId) {
+        // 通过订单ID获取订单信息
+        TBusOrderHead order = orderHeadRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return null;
+        }
+
+        // 创建返回对象
+        AppOrderDetailSimpleVo vo = new AppOrderDetailSimpleVo();
+
+        // 设置基础信息
+        vo.setBillNo(order.getBillNo());
+        vo.setOrderStatus(order.getOrderStatus());
+        vo.setBillDate(order.getBillDate() != null ? order.getBillDate().toString() : "");
+        vo.setCreatorName(order.getCreatedName());
+        vo.setVwkname(order.getVwkname());
+
+        // 设置产品信息（直接映射到顶层字段）
+        vo.setCode(order.getBodyMaterialNumber());
+        vo.setName(order.getBodyMaterialName());
+        vo.setPlanQty(order.getBodyPlanPrdQty());
+        vo.setSpec(order.getBodyMaterialSpecification());
+        vo.setPlanStartDate(order.getBodyPlanStartDate() != null ? order.getBodyPlanStartDate().toString() : "");
+        vo.setPlanFinishDate(order.getBodyPlanFinishDate() != null ? order.getBodyPlanFinishDate().toString() : "");
+
+        // 构建用料清单
+        List<AppOrderDetailSimpleVo.MaterialItem> materials = new ArrayList<>();
+        if (order.getTBusOrderPPBomSet() != null) {
+            for (TBusOrderPPBom bom : order.getTBusOrderPPBomSet()) {
+                AppOrderDetailSimpleVo.MaterialItem item = new AppOrderDetailSimpleVo.MaterialItem();
+                item.setName(bom.getMaterialName());
+                item.setCode(bom.getMaterialNumber());
+                item.setModel(bom.getMaterialModel());
+                item.setUnit(bom.getUnit());
+                item.setQty(bom.getMustQty().floatValue());
+                materials.add(item);
+            }
+        }
+        vo.setMaterials(materials);
+
+        return vo;
+    }
+
+
 
 }
