@@ -20,6 +20,9 @@ public class TaskListFinishVo {
     @ApiModelProperty("工艺路线id")
     private Integer craftId;
 
+    @ApiModelProperty("工艺路线名称")
+    private String craftName;
+
     @ApiModelProperty("订单编号")
     private String orderNo;
 

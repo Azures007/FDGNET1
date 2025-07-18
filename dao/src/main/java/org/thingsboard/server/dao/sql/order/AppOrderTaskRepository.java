@@ -275,6 +275,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     /* 获取生产中任务 */
     @Query(value = "select a.order_id as orderId,\n" +
             "a.craft_id as craftId, \n" +
+            "t1.craft_name as craftName, \n" +
             "a.order_no as orderNo, \n" +
             "a.body_lot as bodyLot,\n" +
             "a.material_id as materialId,\n" +
@@ -308,6 +309,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "h2.record_type_pd executeRecordTypePd, \n" +
             "a2.old_record_type_pd recordTypePd \n" +
             "from t_bus_order_head a \n" +
+            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
             "join t_sys_personnel_info b on a2.person_id =b.personnel_id  \n" +
@@ -527,6 +529,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     /* 订单列表（移交） */
     @Query(value = "select a.order_id as orderId,\n" +
             "a.craft_id as craftId, \n" +
+            "t1.craft_name as craftName, \n" +
             "a.order_no as orderNo, \n" +
             "a.body_lot as bodyLot,\n" +
             "a.body_pot_qty as bodyPotQty,\n" +
@@ -569,6 +572,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             ",b2.name as handOverPersonName \n" +
             ",TO_CHAR(a2.old_hand_over_time,'YYYY-MM-DD HH24:MI:SS') as transferTime \n" +
             "from t_bus_order_head a \n" +
+            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join (select a.*,b.order_process_id  to_order_process_id from t_bus_order_process a " +
             "left join (select order_process_id ,old_order_process_id from t_bus_order_process where type='3') as  b " +
@@ -614,6 +618,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     //查询订单表“计划开工时间”是明日日期（取系统日期）的订单
     @Query(value = "select a.order_id as orderId,\n" +
             "a.craft_id as craftId, \n" +
+            "t1.craft_name as craftName, \n" +
             "a.order_no as orderNo,\n" +
             "a.body_lot as bodyLot," +
             "a.material_id as materialId,\n" +
@@ -641,6 +646,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             ",null executeRecordTypePd \n" +
             ",null recordTypePd \n" +
             "from t_bus_order_head a \n" +
+            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?1 and a.is_deleted='0' " +
             "and (a.body_lot=?2 or ?2='' or ?2 is null) " +
             "", nativeQuery = true)
