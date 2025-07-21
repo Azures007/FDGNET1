@@ -194,7 +194,15 @@ export class AddPlanComponent implements OnInit {
       this.fieldNames.forEach(fieldItem => {
         const itemTemp = subItem.fieldList.find(item1 => item1.fieldName == fieldItem.codeValue);
         if (fieldItem.codeValue == itemTemp.fieldName) {
-          arr1.push(itemTemp.isEnabled == '1' ? '已启用' : '未启用');
+          if(itemTemp.fieldName=='QCCF0001') {
+            if(itemTemp.isEnabled != '1') {
+              arr1.push('/');
+            } else {
+              arr1.push(itemTemp.fielValue || itemTemp.fieldValue)
+            }
+          } else {
+            arr1.push(itemTemp.isEnabled == '1' ? '' : '/');
+          }
         }
 
       })

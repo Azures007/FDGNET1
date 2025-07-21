@@ -26,7 +26,7 @@
       <input class="input" [(ngModel)]="searchFormGroup.value.ncMaterialName" />
     </div>
     <div class="row-block cols4">
-      <label class="label">开工日期：</label>
+      <label class="label">计划开工日期：</label>
       <mat-form-field appearance="fill" class="dateRange">
         <mat-date-range-input [formGroup]="orderPlanRange" [rangePicker]="picker2" [min]="minDate">
           <input readonly formControlName="start" matStartDate placeholder="开始日期">
@@ -91,7 +91,7 @@
         <td mat-cell *matCellDef="let element"> {{element.billType}} </td>
       </ng-container>
       <ng-container matColumnDef="vwkname">
-        <th mat-header-cell *matHeaderCellDef> 订单线 </th>
+        <th mat-header-cell *matHeaderCellDef> 生产线 </th>
         <td mat-cell *matCellDef="let element"> {{element.vwkname}} </td>
       </ng-container>
       <ng-container matColumnDef="code">

@@ -77,13 +77,13 @@ export class QualityCateComponent implements OnInit {
   }
   getMethod(value) {
     const arr = value.split(',');
-    let label = '';
+    let label = [];
     this.methods.forEach(item => {
       if (arr.indexOf(item.codeValue) !== -1) {
-        label += item.codeDsc + ',';
+        label.push(item.codeDsc);
       }
     })
-    return label;
+    return label.join(',');
   }
   constructor(private utils: Utils,
     private DictionaryService: DictionaryService,

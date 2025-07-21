@@ -58,32 +58,32 @@
         <td mat-cell *matCellDef="let element"> {{element.processNumber}} </td>
       </ng-container>
 
-      <ng-container matColumnDef="erpProcessNumber">
+      <!-- <ng-container matColumnDef="erpProcessNumber">
         <th mat-header-cell *matHeaderCellDef> ERP工序标识 </th>
         <td mat-cell *matCellDef="let element"> {{element.erpProcessNumber?handleHash(element.erpProcessNumber):'未绑定'}}
         </td>
-      </ng-container>
+      </ng-container> -->
 
       <ng-container matColumnDef="processDetail">
         <th mat-header-cell *matHeaderCellDef> 工艺说明 </th>
         <td mat-cell *matCellDef="let element"> {{element.processDetail}} </td>
       </ng-container>
 
-      <ng-container matColumnDef="bySetImport">
+      <!-- <ng-container matColumnDef="bySetImport">
         <th mat-header-cell *matHeaderCellDef>投入设置属性 </th>
         <td mat-cell *matCellDef="let element">
           <span class="s-enable" *ngIf="element.bySetImport == 1">启用</span>
           <span class="s-disabled" *ngIf="element.bySetImport == 0">禁用</span>
         </td>
-      </ng-container>
+      </ng-container> -->
 
-      <ng-container matColumnDef="bySetExport">
+      <!-- <ng-container matColumnDef="bySetExport">
         <th mat-header-cell *matHeaderCellDef>投入产出控制 </th>
         <td mat-cell *matCellDef="let element">
           <span class="s-enable" *ngIf="element.bySetExport == 1">启用</span>
           <span class="s-disabled" *ngIf="element.bySetExport == 0">禁用</span>
         </td>
-      </ng-container>
+      </ng-container> -->
 
       <ng-container matColumnDef="enabled">
         <th mat-header-cell *matHeaderCellDef> 状态 </th>
