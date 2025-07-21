@@ -91,10 +91,4 @@ public interface AppOrderTaskService {
      */
     List<String> listBodyIot(String userId, String type);
 
-    /**
-     * 获取订单详情
-     * @param orderId
-     * @return
-     */
-    AppOrderDetailSimpleVo getAppOrderDetailSimple(Integer orderId);
 }
