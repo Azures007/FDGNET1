@@ -117,4 +117,7 @@ public class OrderDetailVo {
 
     @ApiModelProperty("生产线")
     private String vwkname;
+
+    @ApiModelProperty("创建人")
+    private String createdName;
 }
