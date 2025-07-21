@@ -1,4 +1,4 @@
-package org.thingsboard.server.dao.TSysQualityCategory;
+package org.thingsboard.server.dao.tSysQualityCategory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

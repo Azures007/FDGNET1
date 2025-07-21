@@ -128,7 +128,7 @@ public class TSysQualityPlanController extends BaseController {
 
     })
     @PostMapping("/qualityCategoryList")
-    public ResponseResult<PageVo<TSysQualityCategory>> qualityCategoryList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+    public ResponseResult<PageVo<TSysQualityPlanConfig>> qualityCategoryList(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
 //                                                                           @RequestParam(value = "sortField", defaultValue = "") String sortField,
 //                                                                           @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,

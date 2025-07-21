@@ -1,4 +1,4 @@
-package org.thingsboard.server.dao.TSysQualityPlan;
+package org.thingsboard.server.dao.tSysQualityPlan;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;

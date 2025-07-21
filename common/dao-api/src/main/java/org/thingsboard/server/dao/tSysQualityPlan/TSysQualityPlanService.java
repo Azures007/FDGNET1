@@ -46,9 +46,9 @@ public interface TSysQualityPlanService {
 
     /**
      * 根据ID删除质检方案
-     * @param categoryId
+     * @param planId
      */
-    void deleteTSysQualityPlan(Integer categoryId);
+    void deleteTSysQualityPlan(Integer planId);
 
     /**
      * 根据ID获取质检方案详情
