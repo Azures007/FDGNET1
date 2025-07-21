@@ -77,6 +77,9 @@ public class OrderDetailVo {
     @ApiModelProperty("工艺路线名称")
     private String craftName;
 
+    @ApiModelProperty("计划开工时间")
+    private Date bodyPlanStartDate;
+
     @ApiModelProperty("计划完成时间")
     private Date bodyPlanFinishDate;
 
