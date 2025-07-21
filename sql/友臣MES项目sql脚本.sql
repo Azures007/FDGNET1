@@ -224,23 +224,42 @@ COMMENT ON COLUMN t_sys_class.workshop_director IS '车间主任';
 -- DROP TABLE public.t_sys_quality_category;
 
 CREATE TABLE public.t_sys_quality_category (
-                                               id serial4 NOT NULL,
-                                               inspection_item varchar(255) NULL,
-                                               key_process varchar(255) NULL,
-                                               monitoring_method varchar(255) NULL,
-                                               material_id int4 NULL,
-                                               product_name varchar(255) NULL,
-                                               standard text NULL,
-                                               remarks text NULL,
-                                               is_enabled varchar(255) NULL,
-                                               create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                               create_user varchar(255) NULL,
-                                               update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                               update_user varchar(255) NULL,
-                                               key_process_name varchar(255) NULL,
-                                               monitoring_method_name varchar(255) NULL,
+                                               id serial4 NOT NULL, -- 质检类目ID，主键，自增
+                                               inspection_item varchar(255) NULL, -- 检查项目名称
+                                               key_process varchar(255) NULL, -- 关键工序,字典
+                                               monitoring_method varchar(255) NULL, -- 监控方法，字典值
+                                               material_id int4 NULL, -- 关联的物料ID
+                                               product_name varchar(255) NULL, -- 产品名称
+                                               standard text NULL, -- 质检标准，大文本类型
+                                               remarks text NULL, -- 备注信息
+                                               is_enabled varchar(255) NULL, -- 状态，字典值
+                                               create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 创建时间，自动记录
+                                               create_user varchar(255) NULL, -- 创建人
+                                               update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 更新时间，自动记录
+                                               update_user varchar(255) NULL, -- 更新人
+                                               key_process_name varchar(255) NULL, -- 关键工序名称
+                                               monitoring_method_name varchar(255) NULL, -- 监控方法名称
                                                CONSTRAINT t_sys_quality_category_pkey PRIMARY KEY (id)
 );
+COMMENT ON TABLE public.t_sys_quality_category IS '质检类目主表，存储质检类目的基本信息';
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_category.id IS '质检类目ID，主键，自增';
+COMMENT ON COLUMN public.t_sys_quality_category.inspection_item IS '检查项目名称';
+COMMENT ON COLUMN public.t_sys_quality_category.key_process IS '关键工序,字典';
+COMMENT ON COLUMN public.t_sys_quality_category.monitoring_method IS '监控方法，字典值';
+COMMENT ON COLUMN public.t_sys_quality_category.material_id IS '关联的物料ID';
+COMMENT ON COLUMN public.t_sys_quality_category.product_name IS '产品名称';
+COMMENT ON COLUMN public.t_sys_quality_category.standard IS '质检标准，大文本类型';
+COMMENT ON COLUMN public.t_sys_quality_category.remarks IS '备注信息';
+COMMENT ON COLUMN public.t_sys_quality_category.is_enabled IS '状态，字典值';
+COMMENT ON COLUMN public.t_sys_quality_category.create_time IS '创建时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_category.create_user IS '创建人';
+COMMENT ON COLUMN public.t_sys_quality_category.update_time IS '更新时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_category.update_user IS '更新人';
+COMMENT ON COLUMN public.t_sys_quality_category.key_process_name IS '关键工序名称';
+COMMENT ON COLUMN public.t_sys_quality_category.monitoring_method_name IS '监控方法名称';
 
 
 -- public.t_sys_quality_category_config definition
@@ -250,24 +269,42 @@ CREATE TABLE public.t_sys_quality_category (
 -- DROP TABLE public.t_sys_quality_category_config;
 
 CREATE TABLE public.t_sys_quality_category_config (
-                                                      id serial4 NOT NULL,
-                                                      category_id int4 NULL,
-                                                      material_id int4 NULL,
-                                                      field_name varchar(255) NULL,
-                                                      is_enabled varchar(255) NULL,
-                                                      field_type varchar(255) NULL,
-                                                      parameter_range varchar(255) NULL,
-                                                      dropdown_fields varchar(255) NULL,
-                                                      unit varchar(255) NULL,
-                                                      is_required varchar(255) NULL,
-                                                      create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                                      create_user varchar(255) NULL,
-                                                      update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                                      update_user varchar(255) NULL,
-                                                      material_name varchar(255) NULL,
+                                                      id serial4 NOT NULL, -- 配置信息ID，主键，自增
+                                                      category_id int4 NULL, -- 关联的质检类目ID
+                                                      material_id int4 NULL, -- 关联的物料ID
+                                                      field_name varchar(255) NULL, -- 字段名称，字典值，物料管理弹窗选择后自动带出
+                                                      is_enabled varchar(255) NULL, -- 是否启用，字典值：是/否
+                                                      field_type varchar(255) NULL, -- 字段类型，字典值：文本/日期/数值/下拉框
+                                                      parameter_range varchar(255) NULL, -- 参数范围，文本类型
+                                                      dropdown_fields varchar(255) NULL, -- 下拉框字段，多个字段用逗号间隔
+                                                      unit varchar(255) NULL, -- 单位，文本类型
+                                                      is_required varchar(255) NULL, -- 是否必填，字典值：是/否
+                                                      create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 创建时间，自动记录
+                                                      create_user varchar(255) NULL, -- 创建人
+                                                      update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 更新时间，自动记录
+                                                      update_user varchar(255) NULL, -- 更新人
+                                                      material_name varchar(255) NULL, -- 品名
                                                       CONSTRAINT t_sys_quality_category_config_pkey PRIMARY KEY (id)
 );
+COMMENT ON TABLE public.t_sys_quality_category_config IS '质检类目配置信息表，存储质检类目的字段配置信息';
 
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_category_config.id IS '配置信息ID，主键，自增';
+COMMENT ON COLUMN public.t_sys_quality_category_config.category_id IS '关联的质检类目ID';
+COMMENT ON COLUMN public.t_sys_quality_category_config.material_id IS '关联的物料ID';
+COMMENT ON COLUMN public.t_sys_quality_category_config.field_name IS '字段名称，字典值，物料管理弹窗选择后自动带出';
+COMMENT ON COLUMN public.t_sys_quality_category_config.is_enabled IS '是否启用，字典值：是/否';
+COMMENT ON COLUMN public.t_sys_quality_category_config.field_type IS '字段类型，字典值：文本/日期/数值/下拉框';
+COMMENT ON COLUMN public.t_sys_quality_category_config.parameter_range IS '参数范围，文本类型';
+COMMENT ON COLUMN public.t_sys_quality_category_config.dropdown_fields IS '下拉框字段，多个字段用逗号间隔';
+COMMENT ON COLUMN public.t_sys_quality_category_config.unit IS '单位，文本类型';
+COMMENT ON COLUMN public.t_sys_quality_category_config.is_required IS '是否必填，字典值：是/否';
+COMMENT ON COLUMN public.t_sys_quality_category_config.create_time IS '创建时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_category_config.create_user IS '创建人';
+COMMENT ON COLUMN public.t_sys_quality_category_config.update_time IS '更新时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_category_config.update_user IS '更新人';
+COMMENT ON COLUMN public.t_sys_quality_category_config.material_name IS '品名';
 
 -- public.t_sys_quality_plan definition
 
@@ -276,18 +313,32 @@ CREATE TABLE public.t_sys_quality_category_config (
 -- DROP TABLE public.t_sys_quality_plan;
 
 CREATE TABLE public.t_sys_quality_plan (
-                                           id serial4 NOT NULL,
-                                           plan_name varchar(255) NULL,
-                                           production_line_id int4 NULL,
-                                           remarks varchar(255) NULL,
-                                           is_enabled varchar(255) NULL,
-                                           create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                           create_user varchar(255) NULL,
-                                           update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                           update_user varchar(255) NULL,
-                                           production_line_name varchar(255) NULL,
+                                           id serial4 NOT NULL, -- 质检方案ID，主键，自增
+                                           plan_name varchar(255) NULL, -- 方案名称
+                                           production_line_id varchar(255) NULL, -- 生产线ID
+                                           remarks varchar(255) NULL, -- 备注信息
+                                           is_enabled varchar(255) NULL, -- 启停状态
+                                           create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 创建时间，自动记录
+                                           create_user varchar(255) NULL, -- 创建人
+                                           update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 更新时间，自动记录
+                                           update_user varchar(255) NULL, -- 更新人
+                                           production_line_name varchar(255) NULL, -- 生产线名称
                                            CONSTRAINT t_sys_quality_plan_pkey PRIMARY KEY (id)
 );
+COMMENT ON TABLE public.t_sys_quality_plan IS '质检方案主表，存储质检方案的基本信息';
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_plan.id IS '质检方案ID，主键，自增';
+COMMENT ON COLUMN public.t_sys_quality_plan.plan_name IS '方案名称';
+COMMENT ON COLUMN public.t_sys_quality_plan.production_line_id IS '生产线ID';
+COMMENT ON COLUMN public.t_sys_quality_plan.remarks IS '备注信息';
+COMMENT ON COLUMN public.t_sys_quality_plan.is_enabled IS '启停状态';
+COMMENT ON COLUMN public.t_sys_quality_plan.create_time IS '创建时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_plan.create_user IS '创建人';
+COMMENT ON COLUMN public.t_sys_quality_plan.update_time IS '更新时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_plan.update_user IS '更新人';
+COMMENT ON COLUMN public.t_sys_quality_plan.production_line_name IS '生产线名称';
 
 
 -- public.t_sys_quality_plan_config definition
@@ -297,21 +348,39 @@ CREATE TABLE public.t_sys_quality_plan (
 -- DROP TABLE public.t_sys_quality_plan_config;
 
 CREATE TABLE public.t_sys_quality_plan_config (
-                                                  id serial4 NOT NULL,
-                                                  plan_id int4 NULL,
-                                                  category_id int4 NULL,
-                                                  config_data text NULL,
-                                                  create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                                  create_user varchar(255) NULL,
-                                                  update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                                  update_user varchar(255) NULL,
-                                                  inspection_item varchar(255) NULL,
-                                                  key_process varchar(255) NULL,
-                                                  key_process_name varchar(255) NULL,
-                                                  monitoring_method varchar(255) NULL,
-                                                  monitoring_method_name varchar(255) NULL,
+                                                  id serial4 NOT NULL, -- 配置信息ID，主键，自增
+                                                  plan_id int4 NULL, -- 关联的质检方案ID
+                                                  category_id int4 NULL, -- 关联的质检类目ID
+                                                  config_data text NULL, -- 配置数据，JSONB类型，存储动态配置信息
+                                                  create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 创建时间，自动记录
+                                                  create_user varchar(255) NULL, -- 创建人
+                                                  update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 更新时间，自动记录
+                                                  update_user varchar(255) NULL, -- 更新人
+                                                  inspection_item varchar(255) NULL, -- 检查项目
+                                                  key_process varchar(255) NULL, -- 关键工序id
+                                                  key_process_name varchar(255) NULL, -- 关键工序名称
+                                                  monitoring_method varchar(255) NULL, -- 监控方法id
+                                                  monitoring_method_name varchar(255) NULL, -- 监控方法名称
+                                                  standard text NULL,
                                                   CONSTRAINT t_sys_quality_plan_config_pkey PRIMARY KEY (id)
 );
+COMMENT ON TABLE public.t_sys_quality_plan_config IS '质检方案配置信息表，存储质检方案的配置信息，包括关联的质检类目';
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_plan_config.id IS '配置信息ID，主键，自增';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.plan_id IS '关联的质检方案ID';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.category_id IS '关联的质检类目ID';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.config_data IS '配置数据，JSONB类型，存储动态配置信息';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.create_time IS '创建时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.create_user IS '创建人';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.update_time IS '更新时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.update_user IS '更新人';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.inspection_item IS '检查项目';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.key_process IS '关键工序id';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.key_process_name IS '关键工序名称';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.monitoring_method IS '监控方法id';
+COMMENT ON COLUMN public.t_sys_quality_plan_config.monitoring_method_name IS '监控方法名称';
 
 
 -- public.t_sys_quality_plan_judgment definition
@@ -321,23 +390,113 @@ CREATE TABLE public.t_sys_quality_plan_config (
 -- DROP TABLE public.t_sys_quality_plan_judgment;
 
 CREATE TABLE public.t_sys_quality_plan_judgment (
-                                                    id serial4 NOT NULL,
-                                                    plan_id int4 NULL,
-                                                    field_name varchar(255) NULL,
-                                                    is_enabled varchar(255) NULL,
-                                                    field_type varchar(255) NULL,
-                                                    dropdown_fields varchar(255) NULL,
-                                                    unit varchar(255) NULL,
-                                                    is_required varchar(255) NULL,
-                                                    create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                                    create_user varchar(255) NULL,
-                                                    update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-                                                    update_user varchar(255) NULL,
+                                                    id serial4 NOT NULL, -- 判定信息ID，主键，自增
+                                                    plan_id int4 NULL, -- 关联的质检方案ID
+                                                    field_name varchar(255) NULL, -- 字段名称，字典值
+                                                    is_enabled varchar(255) NULL, -- 是否启用，字典值：是/否
+                                                    field_type varchar(255) NULL, -- 字段类型，字典值：文本/日期/数值/下拉框
+                                                    dropdown_fields varchar(255) NULL, -- 下拉框字段，多个字段用逗号间隔
+                                                    unit varchar(255) NULL, -- 单位，文本类型
+                                                    is_required varchar(255) NULL, -- 是否必填，字典值：是/否
+                                                    create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 创建时间，自动记录
+                                                    create_user varchar(255) NULL, -- 创建人
+                                                    update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- 更新时间，自动记录
+                                                    update_user varchar(255) NULL, -- 更新人
                                                     CONSTRAINT t_sys_quality_plan_judgment_pkey PRIMARY KEY (id)
 );
+COMMENT ON TABLE public.t_sys_quality_plan_judgment IS '质检方案判定信息表，存储质检方案的判定字段信息';
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.id IS '判定信息ID，主键，自增';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.plan_id IS '关联的质检方案ID';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.field_name IS '字段名称，字典值';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.is_enabled IS '是否启用，字典值：是/否';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.field_type IS '字段类型，字典值：文本/日期/数值/下拉框';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.dropdown_fields IS '下拉框字段，多个字段用逗号间隔';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.unit IS '单位，文本类型';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.is_required IS '是否必填，字典值：是/否';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.create_time IS '创建时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.create_user IS '创建人';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.update_time IS '更新时间，自动记录';
+COMMENT ON COLUMN public.t_sys_quality_plan_judgment.update_user IS '更新人';
 
 
-ALTER TABLE public.t_sys_quality_plan ALTER COLUMN production_line_id TYPE varchar(255) USING production_line_id::varchar(255);
 
 
-ALTER TABLE public.t_sys_quality_plan_config ADD standard text NULL;
+-- public.t_sys_quality_ctrl definition
+
+-- Drop table
+
+-- DROP TABLE public.t_sys_quality_ctrl;
+
+CREATE TABLE public.t_sys_quality_ctrl (
+                                           id serial4 NOT NULL,
+                                           quality_ctrl_no varchar(255) NULL, -- 质检控制编号
+                                           material_id int4 NULL, -- 物料ID
+                                           material_name varchar(255) NULL, -- 物料名称
+                                           plan_id int4 NULL, -- 方案ID
+                                           plan_name varchar(255) NULL, -- 方案名称
+                                           production_line_id varchar(255) NULL, -- 生产线ID
+                                           production_line_name varchar(255) NULL, -- 生产线名称
+                                           remarks varchar(255) NULL, -- 备注
+                                           create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                           create_user varchar(255) NULL,
+                                           update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                           update_user varchar(255) NULL,
+                                           inspection_date timestamp NULL, -- 质检时间
+                                           status varchar(10) NULL, -- 状态
+                                           CONSTRAINT t_sys_quality_ctrl_pkey PRIMARY KEY (id)
+);
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_ctrl.quality_ctrl_no IS '质检控制编号';
+COMMENT ON COLUMN public.t_sys_quality_ctrl.material_id IS '物料ID';
+COMMENT ON COLUMN public.t_sys_quality_ctrl.material_name IS '物料名称';
+COMMENT ON COLUMN public.t_sys_quality_ctrl.plan_id IS '方案ID';
+COMMENT ON COLUMN public.t_sys_quality_ctrl.plan_name IS '方案名称';
+COMMENT ON COLUMN public.t_sys_quality_ctrl.production_line_id IS '生产线ID';
+COMMENT ON COLUMN public.t_sys_quality_ctrl.production_line_name IS '生产线名称';
+COMMENT ON COLUMN public.t_sys_quality_ctrl.remarks IS '备注';
+COMMENT ON COLUMN public.t_sys_quality_ctrl.inspection_date IS '质检时间';
+COMMENT ON COLUMN public.t_sys_quality_ctrl.status IS '状态';
+
+
+-- public.t_sys_quality_ctrl_detail definition
+
+-- Drop table
+
+-- DROP TABLE public.t_sys_quality_ctrl_detail;
+
+CREATE TABLE public.t_sys_quality_ctrl_detail (
+                                                  id int4 DEFAULT nextval('t_sys_quality_ctrl_detil_id_seq'::regclass) NOT NULL,
+                                                  ctrl_id int4 NULL, -- 主表ID
+                                                  category_id int4 NULL, -- 分类ID
+                                                  inspection_item varchar(255) NULL, -- 检查项目
+                                                  key_process varchar(255) NULL, -- 关键工序
+                                                  key_process_name varchar(255) NULL, -- 关键工序名称
+                                                  monitoring_method varchar(255) NULL, -- 监控方法
+                                                  monitoring_method_name varchar(255) NULL, -- 监控方法名称
+                                                  standard text NULL, -- 质检标准
+                                                  judgment_data text NULL, -- 判定配置数据存储动态配置信息
+                                                  config_data text NULL, -- 分类配置数据存储动态配置信息
+                                                  create_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                                  create_user varchar(255) NULL,
+                                                  update_time timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                                  update_user varchar(255) NULL,
+                                                  CONSTRAINT t_sys_quality_ctrl_detil_pkey PRIMARY KEY (id)
+);
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.ctrl_id IS '主表ID';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.category_id IS '分类ID';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.inspection_item IS '检查项目';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.key_process IS '关键工序';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.key_process_name IS '关键工序名称';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.monitoring_method IS '监控方法';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.monitoring_method_name IS '监控方法名称';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.standard IS '质检标准';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.judgment_data IS '判定配置数据存储动态配置信息';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.config_data IS '分类配置数据存储动态配置信息';
