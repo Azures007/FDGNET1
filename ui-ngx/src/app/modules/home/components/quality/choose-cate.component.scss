@@ -50,8 +50,14 @@
   min-height: 411px;
 }
 .border-none {
-  border: none !important;
+  // border: none !important;
   display: flex;
   justify-content: center;
-  min-height: 27px;
+  align-items: center;
+  min-height: 34px;
+  width: 100%;
+}
+.padding-none {
+  padding: 0 !important;
+  border: none !important;
 }

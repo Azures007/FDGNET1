@@ -90,8 +90,8 @@
           <td>
             <div>{{ item.importantItem }}</div>
           </td>
-          <td>
-            <div *ngFor="let subItem of item.itemList;">{{ subItem.fieldName }}</div>
+          <td class="padding-none">
+            <div class="border-none" *ngFor="let subItem of item.itemList;">{{ subItem.fieldName }}</div>
           </td>
         </tr>
       </table>

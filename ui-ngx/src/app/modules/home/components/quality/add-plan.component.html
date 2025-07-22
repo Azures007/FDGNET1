@@ -156,7 +156,7 @@
               {{ item.monitoringMethodName }}
             </div>
           </td>
-          <td *ngFor="let arrItem of getArray(); let n = index">
+          <td *ngFor="let arrItem of getArray(); let n = index" class="padding-none">
             <tr *ngFor="let subItem of getFieldValue(item)" class="border-none">
               <ng-container *ngFor="let listItem of subItem; let j = index">
                 <td *ngIf="n === j" class="border-none">

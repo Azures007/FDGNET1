@@ -16,6 +16,7 @@ import { DictionaryService } from '@app/core/http/dictionary.service';
 
 import { DicTypeAddComponent } from '@home/components/dictionary/dic-type-add.component';
 import { DicAddComponent } from '../../components/dictionary/dic-add.component';
+import { Utils } from '../order-management/w-utils';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class DictionaryComponent implements OnInit {
     public fb: FormBuilder,
     private translate: TranslateService,
     public _dialog: MatDialog,
+    private utils: Utils,
   ) { }
 
   //类型类表
@@ -383,7 +385,7 @@ export class DictionaryComponent implements OnInit {
     }
     if (enbled == 1) {
       this.dialogService.confirm(
-        '是否要启用该字典?',
+        value.codeClId === 'QCCF0000' ? `本次操作会修改所有【品质类目管理】中配置信息对应内容，是否要启用该字典?` : '是否要启用该字典?',
         '确定后,该字典将启用',
         this.translate.instant('action.no'),
         this.translate.instant('action.yes'),
@@ -408,7 +410,7 @@ export class DictionaryComponent implements OnInit {
       );
     } else {
       this.dialogService.confirm(
-        "是否要禁用该字典?",
+        value.codeClId === 'QCCF0000' ? `本次操作会修改所有【品质类目管理】中配置信息对应内容，是否要禁用该字典?` : "是否要禁用该字典?",
         '确定后,该字典将禁用',
         this.translate.instant('action.no'),
         this.translate.instant('action.yes'),
@@ -437,7 +439,7 @@ export class DictionaryComponent implements OnInit {
   //删除字典
   delDia(value) {
     this.dialogService.confirm(
-      '确定要删除字典吗？',
+      value.codeClId === 'QCCF0000' ? `本次操作会修改所有【品质类目管理】中配置信息对应内容，是否要删除该字典？` : '是否要删除该字典？',
       '删除该字典后不可恢复',
       this.translate.instant('action.no'),
       this.translate.instant('action.yes'),

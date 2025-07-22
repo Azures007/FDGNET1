@@ -84,7 +84,7 @@ export class ChooseCateComponent implements OnInit {
             if(itemTemp.isEnabled != '1') {
               arr1.push('/');
             } else {
-              arr1.push(itemTemp.fielValue || itemTemp.fieldValue)
+              arr1.push(itemTemp.paramRange)
             }
           } else {
             arr1.push(itemTemp.isEnabled == '1' ? '' : '/');

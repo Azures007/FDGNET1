@@ -166,8 +166,8 @@ export class AddCateComponent implements OnInit {
       }
       this.addParams['materialId'] = this.productItem.materialId;
       if(!this.configs.length) {
-        this.utils.showMessage('请添加配置项', 'error');
-        return;
+        // this.utils.showMessage('请添加配置项', 'error');
+        // return;
       } else {
         const materialNameFlag = this.configs.filter(item => {
           return !item.materialName;
