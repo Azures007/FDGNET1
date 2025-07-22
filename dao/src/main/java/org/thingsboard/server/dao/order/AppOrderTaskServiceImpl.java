@@ -118,7 +118,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
         }
 //        Sort sort1 = Sort.by("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
         Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
+        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "order_no");
         List<Sort.Order> orders = new ArrayList<>();
         orders.add(order1);
         orders.add(order2);
@@ -133,10 +133,10 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
         try {
             PageVo<TaskListVo> pageVo = new PageVo(size, current);
             List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
+            /*castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-            int total = appOrderTaskRepository.getCountCurrentTask2(userId, currentDateStr, selectDto.getProcessNumber(), selectDto.getBodyLot());
+            });*/
+            int total = select.size();//appOrderTaskRepository.getCountCurrentTask2(userId, currentDateStr, selectDto.getProcessNumber(), selectDto.getBodyLot());
             pageVo.setTotal(total);
             pageVo.setList(castEntity);
             return pageVo;
@@ -184,7 +184,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
             castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
             });
-            int total = appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, orderProcessType, selectDto.getProcessNumber(), selectDto.getBodyLot(), selectDto.getSelectOrField());
+            int total = select.size();//appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, orderProcessType, selectDto.getProcessNumber(), selectDto.getBodyLot(), selectDto.getSelectOrField());
             pageVo.setTotal(total);
             pageVo.setList(castEntity);
             return pageVo;
@@ -293,9 +293,9 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
             PageVo<TaskListVo> pageVo = new PageVo(size, current);
 //            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
             List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
+            /*castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
+            });*/
             int total = appOrderTaskRepository.getCountNextDayTask(nextDayDateStr, selectDto.getBodyLot());
             pageVo.setTotal(total);
             pageVo.setList(castEntity);
@@ -355,31 +355,23 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
         if (null == selectDto) {
             selectDto = new OrderTaskSelectDto();
         }
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "billDate");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
+        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
+        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "order_no");
         List<Sort.Order> orders = new ArrayList<>();
         orders.add(order1);
         orders.add(order2);
         Sort sort1 = Sort.by(orders);
         PageRequest of = PageRequest.of(current, size, sort1);
-//        current = current * size;
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        String currentDateStr = sdf1.format(new Date());
-        taskVerify(selectDto);
-//        TSysRole role = roleRepository.getByUserId(userId);
-//        userId = role.getByFactory().equals("0") ? "" : userId;
-//        System.out.println("-----");
-//        List<Object[]> select = orderHeadRepository.getWaitTaskUserId2(userId, of);
         List<Map> select = appOrderTaskRepository.getWaitTaskUserId2(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), selectDto.getSelectOrField(), of);
 //        System.out.println("-----");
         try {
             PageVo<TaskListVo> pageVo = new PageVo(size, current);
 //            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
             List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
+            /*castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
-            int total = appOrderTaskRepository.getWaitTaskCountByUserId2(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), selectDto.getSelectOrField());
+            });*/
+            int total = select.size();//appOrderTaskRepository.getWaitTaskCountByUserId2(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), selectDto.getSelectOrField());
             pageVo.setTotal(total);
             pageVo.setList(castEntity);
             return pageVo;
@@ -422,7 +414,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
             PageVo<TaskListFinishVo> pageVo = new PageVo(size, current);
 //            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
             List<TaskListFinishVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListFinishVo.class);
-            castEntity.stream().forEach(order -> {
+            /*castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
 
 //                TBusOrderProcess tBusOrderProcess = orderProcessRepository.findById(order.getOrderProcessId()).orElse(null);
@@ -439,8 +431,8 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
                 } else {
                     order.setRecordT3ManualQty(-1f);
                 }
-            });
-            int total = appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatus(userId, processStatusList, selectDto.getProcessNumber(), selectDto.getBodyLot(), selectDto.getSelectOrField());
+            });*/
+            int total = select.size();//appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatus(userId, processStatusList, selectDto.getProcessNumber(), selectDto.getBodyLot(), selectDto.getSelectOrField());
             pageVo.setTotal(total);
             pageVo.setList(castEntity);
             return pageVo;

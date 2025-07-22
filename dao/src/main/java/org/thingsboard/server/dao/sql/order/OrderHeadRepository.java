@@ -122,13 +122,9 @@ public interface OrderHeadRepository extends JpaRepository<TBusOrderHead,Integer
             " from t_bus_order_head  h left join t_bus_order_ppbom_lk lk on h.order_id=lk.order_id" +
             " left join t_bus_order_ppbom pp on lk.order_ppbom_id=pp.order_ppbom_id " +
             " left join mid_material mm on pp.material_id=mm.kd_material_id " +
-            " where h.order_id=:orderId AND pp.mid_ppbom_entry_is_into=1 \n" +
-            "AND pp.mid_ppbom_entry_input_process=:midPpbomEntryInputProcess and h.is_deleted='1'\n " +
-            "and (:midPpbomEntryHandleGroup is null or :midPpbomEntryHandleGroup=-1 or mid_ppbom_entry_handle_group=:midPpbomEntryHandleGroup)" +
-            "order by mid_ppbom_entry_handle_sort asc,mid_ppbom_entry_replace_group asc", nativeQuery = true)
-    List<Map> getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(@Param("orderId") Integer orderId,
-                                                                 @Param("midPpbomEntryInputProcess") String midPpbomEntryInputProcess,
-                                                                 @Param("midPpbomEntryHandleGroup") Integer midPpbomEntryHandleGroup);
+            " where h.order_id=:orderId \n" +
+            "and h.is_deleted='0'\n ", nativeQuery = true)
+    List<Map> getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(@Param("orderId") Integer orderId);
 
     /**
      * 报工获取拉伸膜的用料清单

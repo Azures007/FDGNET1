@@ -320,33 +320,13 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                 return ppbomGroupVos;
             }
             switch (tSysProcessInfo.getProcessNumber()) {
-                case LichengConstants.PROCESS_NUMBER_ZHANBAN: {
-                    //斩拌工序
-                    ppbomGroupVos = getZB(tSysProcessInfo, orderId, orderProcessId);
-                }
-                break;
-                case LichengConstants.PROCESS_NUMBER_BANLIAO: {
-                    //拌料工序
-                    ppbomGroupVo = new PpbomGroupVo();
-                    orderPPbomResults = getBL(tSysProcessInfo, orderId, orderProcessId);
-                    ppbomGroupVo.setOrderPPbomResultList(orderPPbomResults);
-                    ppbomGroupVos.add(ppbomGroupVo);
-                }
-                break;
-                case LichengConstants.PROCESS_NUMBER_RUHUAJIANG: {
-                    //乳化浆工序
-                    ppbomGroupVo = new PpbomGroupVo();
-                    orderPPbomResults = getRhj(tSysProcessInfo, orderId);
-                    ppbomGroupVo.setOrderPPbomResultList(orderPPbomResults);
-                    ppbomGroupVos.add(ppbomGroupVo);
-                }
-                break;
+
                 default: {
                     String midPpbomEntryInputProcess = tSysProcessInfo.getErpProcessNumber();
                     if (StringUtils.isEmpty(midPpbomEntryInputProcess)) {
                         throw new RuntimeException("工序没有绑定ERP工序，请检查下后台的工序管理配置");
                     }
-                    List<Map> maps = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId, midPpbomEntryInputProcess, -1);
+                    List<Map> maps = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId);
                     String mapsStr = JSON.toJSONString(maps);
                     ppbomGroupVo = new PpbomGroupVo();
                     orderPPbomResults = JSON.parseArray(mapsStr, OrderPPbomResult.class);
@@ -485,7 +465,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         if (StringUtils.isEmpty(midPpbomEntryInputProcess)) {
             throw new RuntimeException("工序没有绑定ERP工序，请检查下后台的工序管理配置");
         }
-        List<Map> mapRhj = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId, midPpbomEntryInputProcess, -1);
+        List<Map> mapRhj = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId);
         String mapsStr = JSON.toJSONString(mapRhj);
         List<OrderPPbomResult> orderPPbomResults = JSON.parseArray(mapsStr, OrderPPbomResult.class);
         return orderPPbomResults;
@@ -658,7 +638,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
 
     private List<OrderPPbomResult> listMap(Integer orderId, String midPpbomEntryInputProcess, Integer key, Integer orderProcessId) {
         List<OrderPPbomResult> orderPPbomResults;
-        List<Map> maps = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId, midPpbomEntryInputProcess, key);
+        List<Map> maps = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId);
         if (maps != null && maps.size() > 0) {
             String mapsStr = JSON.toJSONString(maps);
             orderPPbomResults = JSON.parseArray(mapsStr, OrderPPbomResult.class);

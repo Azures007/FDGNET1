@@ -56,10 +56,22 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_craft_process_rel b on a.craft_id =b.craft_id \n" +
             "join t_sys_process_info c on b.process_id =c.process_id \n" +
             "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
-            "join t_sys_class_group_leader_rel e on d.class_id =e.class_id \n" +
-            "join t_sys_personnel_info f on e.personnel_id =f.personnel_id \n" +
             "where TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD')=?2 " +
-            "and (f.user_id =?1 or ?1='') " +
+            "AND d.class_id IN (\n" +
+            "    SELECT class_id\n" +
+            "    FROM (\n" +
+            "        SELECT a.class_id\n" +
+            "        FROM t_sys_class_group_leader_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "        UNION ALL \n" +
+            "        SELECT class_id\n" +
+            "        FROM t_sys_class_personnel_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "    ) AS t\n" +
+            "    GROUP BY class_id\n" +
+            ")\n" +
             "and a.is_deleted='0' " +
             "and (c.process_number=?3 or ?3='' or ?3 is null) " +
             "and (a.body_lot=?4 or ?4='' or ?4 is null)" +
@@ -72,10 +84,22 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_craft_process_rel b on a.craft_id =b.craft_id \n" +
             "join t_sys_process_info c on b.process_id =c.process_id \n" +
             "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
-            "join t_sys_class_group_leader_rel e on d.class_id =e.class_id \n" +
-            "join t_sys_personnel_info f on e.personnel_id =f.personnel_id \n" +
             "where TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD')=?2 " +
-            "and (f.user_id =?1 or ?1='') " +
+            "AND d.class_id IN (\n" +
+            "    SELECT class_id\n" +
+            "    FROM (\n" +
+            "        SELECT a.class_id\n" +
+            "        FROM t_sys_class_group_leader_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "        UNION ALL \n" +
+            "        SELECT class_id\n" +
+            "        FROM t_sys_class_personnel_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "    ) AS t\n" +
+            "    GROUP BY class_id\n" +
+            ")\n" +
             "and a.is_deleted='0' " +
             "and (c.process_number=?3 or ?3='' or ?3 is null) " +
             "and (a.body_lot=?4 or ?4='' or ?4 is null)" +
@@ -83,169 +107,125 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     int getCountCurrentTask2(String userId, String currentDateStr, String processNumber, String bodyLot);
 
     /* 获取待生产任务 行数 */
-    @Query(value = "select sum(cout) from (\n" +
-            "select count(1) cout from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a\n" +
-            "join t_bus_order_process_lk b on a.order_id=b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_process_info d on c.process_id =d.process_id \n" +
-            "where c.process_status='0' and person_id is null " +
-            "and c.class_id in (\n" +
-            "select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id\n" +
-            ") " +
-            "and (c.type='1' or c.type is null) and a.is_deleted='0' \n" +
-            "and (d.process_number=?2 or ?2='' or ?2 is null)" +
-            "and (a.body_lot=?3 or ?3='' or ?3 is null) \n" +
-            "and (?4='' or a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%')) \n" +
-            "union \n" +
-            "select count(1) cout from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_personnel_info d on c.person_id =d.personnel_id\n" +
-            "join t_sys_process_info f on c.process_id =f.process_id \n" +
-            "where c.process_status='0' and c.type='1' " +
-            "and c.class_id in (\n" +
-            "select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id\n" +
-            ")" +
-            "and a.is_deleted='0'\n" +
-            "and (f.process_number=?2 or ?2='' or ?2 is null)" +
-            "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
-            "and (?4='' or a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%')) \n" +
-            ") as t",nativeQuery = true)
+    @Query(value = "SELECT COUNT(1) AS cout\n" +
+            "FROM t_bus_order_head a\n" +
+            "LEFT JOIN t_sys_process_info m2 ON a.current_process = m2.process_id\n" +
+            "JOIN t_bus_order_process_lk b ON a.order_id = b.order_id \n" +
+            "JOIN t_bus_order_process c ON b.order_process_id = c.order_process_id \n" +
+            "JOIN t_sys_process_info d ON c.process_id = d.process_id \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
+            //"LEFT JOIN t_sys_personnel_info p ON c.person_id = p.personnel_id\n" +
+            "WHERE c.process_status = '0'\n" +
+            "AND a.is_deleted = '0'\n" +
+            "AND t2.class_id IN (\n" +
+            "    SELECT class_id\n" +
+            "    FROM (\n" +
+            "        SELECT a.class_id\n" +
+            "        FROM t_sys_class_group_leader_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "        UNION ALL \n" +
+            "        SELECT class_id\n" +
+            "        FROM t_sys_class_personnel_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "    ) AS t\n" +
+            "    GROUP BY class_id\n" +
+            ")\n" +
+            "-- 合并两种情况的判断条件\n" +
+            "AND (\n" +
+            "    (c.person_id IS NULL AND (c.type = '1' OR c.type IS NULL))  -- 未分配任务的条件\n" +
+            "    OR \n" +
+            "    (c.person_id IS NOT NULL AND c.type = '1')  -- 已分配任务的条件\n" +
+            ")\n" +
+            "-- 公共筛选条件\n" +
+            "AND (d.process_number = ?2 OR ?2 = '' OR ?2 IS NULL)\n" +
+            "AND (a.body_lot = ?3 OR ?3 = '' OR ?3 IS NULL)\n" +
+            "AND (?4 = '' OR \n" +
+            "     a.order_no LIKE CONCAT('%', ?4, '%') OR \n" +
+            "     a.body_lot LIKE CONCAT('%', ?4, '%') OR \n" +
+            "     a.body_material_name LIKE CONCAT('%', ?4, '%') OR \n" +
+            "     a.bill_no LIKE CONCAT('%', ?4, '%'))",nativeQuery = true)
     int getWaitTaskCountByUserId2(String userId, String processNumber, String bodyLot,String selectOrField);
 
     /* 获取待生产任务 */
-    @Query(value = "select * from (\n" +
-            "select a.order_id as orderId,\n" +
-            "a.craft_id as craftId, \n" +
-            "t1.craft_name as craftName, \n" +
-            "a.order_no as orderNo, \n" +
-            "a.body_lot as bodyLot,\n" +
-            "a.body_pot_qty as bodyPotQty,\n" +
-            "a.material_id as materialId,\n" +
-            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
-            "a.body_material_name as bodyMaterialName,\n" +
-            "a.body_plan_prd_qty as billPlanQty,\n" +
-            "a.body_unit as bodyUnit,\n" +
-            "a.body_unit as bodyUnitStr,\n" +
-            "a.order_status as orderStatus,\n" +
-            "a.order_pending_desc as orderPendingDesc,\n" +
-            "a.mid_mo_customer_id as midMoCustomerId,\n" +
-            "a.mid_mo_customer_name as midMoCustomerName,\n" +
-            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
-            "a.mid_mo_customer_type as midMoCustomerType,\n" +
-            "a.mid_mo_desc as midMoDesc,\n" +
-            "null as finishTime,\n" +
-            "c.type as type, \n" +
-            "a.body_material_specification bodyMaterialSpecification, \n" +
-            "c.order_process_id as orderProcessId, \n" +
-            "null as bodyMaterialId, \n" +
-            "null as bodyMaterialNumber, \n" +
-            "null as bodyPlanFinishDate, \n" +
-            "a.process_id processId,\n" +
-            "a.process_name processName,\n" +
-            "a.process_number processNumber,\n" +
-            "d.process_id executeProcessId,\n" +
-            "d.process_name executeProcessName,\n" +
-            "d.process_number executeProcessNumber, \n" +
-            "c.process_status executeProcessStatus \n" +
-            ",null executeRecordTypePd \n" +
-            ",null recordTypePd \n" +
-            "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a\n" +
-            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
-            "join t_bus_order_process_lk b on a.order_id=b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_process_info d on c.process_id =d.process_id \n" +
-            "where c.process_status='0' and person_id is null " +
-            "and  c.class_id in (\n" +
-            "select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id\n" +
-            ") " +
-            "and (c.type='1' or c.type is null) and a.is_deleted='0'\n" +
-            "and (d.process_number=?2 or ?2='' or ?2 is null) \n" +
-            "and (a.body_lot=?3 or ?3='' or ?3 is null) \n" +
-            "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
-            "union \n" +
-            "select " +
-            "a.order_id as orderId,\n" +
-            "a.craft_id as craftId, \n" +
-            "t1.craft_name as craftName, \n" +
-            "a.order_no as orderNo, \n" +
-            "a.body_lot as bodyLot,\n" +
-            "a.body_pot_qty as bodyPotQty,\n" +
-            "a.material_id as materialId,\n" +
-            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
-            "a.body_material_name as bodyMaterialName,\n" +
-            "a.body_plan_prd_qty as billPlanQty,\n" +
-            "a.body_unit as bodyUnit,\n" +
-            "a.body_unit as bodyUnitStr,\n" +
-            "a.order_status as orderStatus,\n" +
-            "a.order_pending_desc as orderPendingDesc,\n" +
-            "a.mid_mo_customer_id as midMoCustomerId,\n" +
-            "a.mid_mo_customer_name as midMoCustomerName,\n" +
-            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
-            "a.mid_mo_customer_type as midMoCustomerType,\n" +
-            "a.mid_mo_desc as midMoDesc,\n" +
-            "null as finishTime,\n" +
-            "c.type as type, \n" +
-            "a.body_material_specification bodyMaterialSpecification, \n" +
-            "c.order_process_id as orderProcessId, \n" +
-            "null as bodyMaterialId, \n" +
-            "null as bodyMaterialNumber, \n" +
-            "null as bodyPlanFinishDate, \n" +
-            "a.process_id processId,\n" +
-            "a.process_name processName,\n" +
-            "a.process_number processNumber,\n" +
-            "d.process_id executeProcessId,\n" +
-            "d.process_name executeProcessName,\n" +
-            "d.process_number executeProcessNumber, \n" +
-            "c.process_status executeProcessStatus \n" +
-            ",null executeRecordTypePd \n" +
-            ",null recordTypePd " +
-            "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a\n" +
-            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_process_info d on c.process_id =d.process_id \n" +
-            "join t_sys_personnel_info f on c.person_id =f.personnel_id\n" +
-            "where c.process_status='0' and c.type='1' " +
-            "and c.class_id in (\n" +
-            "select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id\n" +
+    @Query(value = "SELECT \n" +
+            "    a.order_id AS orderId,\n" +
+            "    a.craft_id AS craftId, \n" +
+            "    t1.craft_name AS craftName, \n" +
+            "    a.order_no AS orderNo, \n" +
+            "    a.body_lot AS bodyLot,\n" +
+            "    a.body_pot_qty AS bodyPotQty,\n" +
+            "    a.material_id AS materialId,\n" +
+            "    TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') AS billDate,\n" +
+            "    a.body_material_name AS bodyMaterialName,\n" +
+            "    a.body_plan_prd_qty AS billPlanQty,\n" +
+            "    a.body_unit AS bodyUnit,\n" +
+            "    a.body_unit AS bodyUnitStr,\n" +
+            "    a.order_status AS orderStatus,\n" +
+            "    a.order_pending_desc AS orderPendingDesc,\n" +
+            "    a.mid_mo_customer_id AS midMoCustomerId,\n" +
+            "    a.mid_mo_customer_name AS midMoCustomerName,\n" +
+            "    a.mid_mo_customer_number AS midMoCustomerNumber,\n" +
+            "    a.mid_mo_customer_type AS midMoCustomerType,\n" +
+            "    a.mid_mo_desc AS midMoDesc,\n" +
+            "    NULL AS finishTime,\n" +
+            "    c.type AS type, \n" +
+            "    a.body_material_specification AS bodyMaterialSpecification, \n" +
+            "    c.order_process_id AS orderProcessId, \n" +
+            "    NULL AS bodyMaterialId, \n" +
+            "    NULL AS bodyMaterialNumber, \n" +
+            "    NULL AS bodyPlanFinishDate, \n" +
+            "    m2.process_id AS processId,\n" +
+            "    m2.process_name AS processName,\n" +
+            "    m2.process_number AS processNumber,\n" +
+            "    d.process_id AS executeProcessId,\n" +
+            "    d.process_name AS executeProcessName,\n" +
+            "    d.process_number AS executeProcessNumber, \n" +
+            "    c.process_status AS executeProcessStatus,\n" +
+            "    NULL AS executeRecordTypePd,\n" +
+            "    NULL AS recordTypePd\n" +
+            "FROM t_bus_order_head a \n" +
+            "LEFT JOIN t_sys_process_info m2 ON a.current_process = m2.process_id\n" +
+            "JOIN t_sys_craft_info t1 ON t1.craft_id = a.craft_id \n" +
+            "JOIN t_bus_order_process_lk b ON a.order_id = b.order_id \n" +
+            "JOIN t_bus_order_process c ON b.order_process_id = c.order_process_id \n" +
+            "JOIN t_sys_process_info d ON c.process_id = d.process_id \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
+            //"LEFT JOIN t_sys_personnel_info f ON c.person_id = f.personnel_id\n" +
+            "WHERE c.process_status = '0'\n" +
+            "AND a.is_deleted = '0'\n" +
+            "AND t2.class_id IN (\n" +
+            "    SELECT class_id\n" +
+            "    FROM (\n" +
+            "        SELECT a.class_id\n" +
+            "        FROM t_sys_class_group_leader_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "        UNION ALL \n" +
+            "        SELECT class_id\n" +
+            "        FROM t_sys_class_personnel_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "    ) AS t\n" +
+            "    GROUP BY class_id\n" +
             ")\n" +
-            "and a.is_deleted='0'\n" +
-            "and (d.process_number=?2 or ?2='' or ?2 is null)" +
-            "and (a.body_lot=?3 or ?3='' or ?3 is null) \n" +
-            "and (a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='')" +
-            ") as a",nativeQuery = true)
+            "-- 合并两种情况的判断条件\n" +
+            "AND (\n" +
+            "    (c.person_id IS NULL AND (c.type = '1' OR c.type IS NULL))  -- 未分配任务的条件\n" +
+            "    OR \n" +
+            "    (c.person_id IS NOT NULL AND c.type = '1')  -- 已分配任务的条件\n" +
+            ")\n" +
+            "-- 公共筛选条件\n" +
+            "AND (d.process_number = ?2 OR ?2 = '' OR ?2 IS NULL)\n" +
+            "AND (a.body_lot = ?3 OR ?3 = '' OR ?3 IS NULL)\n" +
+            "AND (\n" +
+            "    a.order_no LIKE CONCAT('%', ?4, '%') \n" +
+            "    OR a.body_lot LIKE CONCAT('%', ?4, '%') \n" +
+            "    OR a.body_material_name LIKE CONCAT('%', ?4, '%') \n" +
+            "    OR a.bill_no LIKE CONCAT('%', ?4, '%') \n" +
+            "    OR ?4 = ''\n" +
+            ")",nativeQuery = true)
     List<Map> getWaitTaskUserId2(String userId, String processNumber, String bodyLot,String selectOrField, PageRequest of);
 
     /* 获取生产中任务 */
@@ -253,10 +233,10 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "from t_bus_order_head a \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
-            "join t_sys_personnel_info b on a2.person_id =b.personnel_id \n" +
             "left join t_sys_process_info g on g.process_id = a2.process_id \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = a2.process_id \n" +
             "where 1=1 \n" +
-            "and a2.class_id in (select class_id  from \n" +
+            "and t2.class_id in (select class_id  from \n" +
             "(select a.class_id from t_sys_class_group_leader_rel a \n" +
             "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
             "where b.user_id =?1 \n" +
@@ -312,13 +292,14 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
-            "join t_sys_personnel_info b on a2.person_id =b.personnel_id  \n" +
+            //"join t_sys_personnel_info b on a2.person_id =b.personnel_id  \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = a2.process_id \n" +
             "left join t_sys_process_info d on a2.process_id =d.process_id \n" +
             "left join t_sys_process_info g on g.process_id = a.current_process \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h2 on a2.order_process_id = h2.order_process_id \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h on a2.old_order_process_id = h.order_process_id \n" +
             "where 1=1 \n" +
-            "and a2.class_id in (select class_id  from \n" +
+            "and t2.class_id in (select class_id  from \n" +
             "(select a.class_id from t_sys_class_group_leader_rel a \n" +
             "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
             "where b.user_id =?1 \n" +
@@ -507,8 +488,9 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_personnel_info b on a2.person_id =b.personnel_id  \n" +
             "left join t_sys_process_info d on a2.process_id =d.process_id \n" +
             "left join t_sys_process_info g on g.process_id = a.current_process \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = g.process_id \n" +
             "where 1=1 " +
-            "and a2.class_id in (\n" +
+            "and t2.class_id in (\n" +
             "select class_id  from \n" +
             "(select a.class_id from t_sys_class_group_leader_rel a \n" +
             "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
@@ -578,10 +560,11 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "left join (select order_process_id ,old_order_process_id from t_bus_order_process where type='3') as  b " +
             "on a.order_process_id =b.old_order_process_id \n ) a2 " +
             "on a1.order_process_id =a2.order_process_id \n" +
-            "join t_sys_personnel_info b on a2.person_id =b.personnel_id  \n" +
+            "left join t_sys_personnel_info b on a2.person_id =b.personnel_id  \n" +
             "left join t_sys_personnel_info b2 on a2.old_hand_over_person_id =b2.personnel_id \n" +
             "left join t_sys_process_info d on a2.process_id =d.process_id \n" +
             "left join t_sys_process_info g on g.process_id = a.current_process \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = g.process_id \n" +
             "left join (select r1.record_type_pd,sum(record_qty) as record_qty,sum(record_manual_qty) as record_manual_qty,max(record_unit) as record_unit,order_process_id \n" +
             "from t_bus_order_process_record r1 where r1.record_type='3' and r1.bus_type='BG' \n" +
             "group by order_process_id,record_type_pd) r3 on a1.order_process_id=r3.order_process_id\n" +
@@ -589,7 +572,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h on a2.old_order_process_id = h.order_process_id \n" +
 //            "left join (select * from t_bus_order_process_record tbopr where bus_type ='PD') pd on a1.order_process_id=pd.order_process_id \n" +
             "where 1=1 " +
-            "and a2.class_id in (\n" +
+            "and t2.class_id in (\n" +
             "select class_id  from \n" +
             "(select a.class_id from t_sys_class_group_leader_rel a \n" +
             "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
