@@ -158,32 +158,4 @@ public class TSysCodeDscController extends BaseController {
 //        return ResultUtil.success(pageVo);
 //    }
 
-    @ApiOperation("获取字典确定修改提示信息")
-    @ApiImplicitParam(name = "codeClId", value = "字典分类编码", required = true)
-    @GetMapping("/judgment")
-    public ResponseResult<String> judgment(@RequestParam("codeClId") String codeClId) {
-        String message = null;
-
-        if (codeClId != null) {
-            switch (codeClId) {
-                case "QCCF0000":
-                    message = "本次编辑会修改所有【品质类目管理】中配置信息对应内容，是否确定修改？";
-                    break;
-                case "QPJ0000":
-                    message = "本次编辑会修改所有【品质方案管理】中配置信息对应内容，是否确定修改？";
-                    break;
-                case "GJGX0000":
-                    message = "本次编辑会修改所有【关键工序管理】中配置信息对应内容，是否确定修改？";
-                    break;
-                case "JKFF0000":
-                    message = "本次编辑会修改所有【监控方法管理】中配置信息对应内容，是否确定修改？";
-                    break;
-            }
-        }
-
-        // 返回提示信息（如果不需要提示则返回空字符串）
-        return ResultUtil.success(message != null ? message : "");
-    }
-
-
 }
