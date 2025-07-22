@@ -1,4 +1,4 @@
-package org.thingsboard.server.common.data.nc.nc_material;
+package org.thingsboard.server.common.data.nc_material;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

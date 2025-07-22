@@ -1,9 +1,9 @@
-package org.thingsboard.server.dao.nc.nc_material;
+package org.thingsboard.server.dao.nc_material;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.nc.nc_material.NcTSyncMaterial;
-import org.thingsboard.server.dao.sql.nc.nc_material.NcTSyncMaterialRepository;
+import org.thingsboard.server.common.data.nc_material.NcTSyncMaterial;
+import org.thingsboard.server.dao.sql.nc_material.NcTSyncMaterialRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
