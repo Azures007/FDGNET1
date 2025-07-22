@@ -1,7 +1,7 @@
-package org.thingsboard.server.dao.sql.nc.nc_material;
+package org.thingsboard.server.dao.sql.nc_material;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.thingsboard.server.common.data.nc.nc_material.NcTSyncMaterial;
+import org.thingsboard.server.common.data.nc_material.NcTSyncMaterial;
 
 import java.util.List;
 

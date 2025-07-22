@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.thingsboard.server.common.data.nc.nc_material.NcTSyncMaterial;
+import org.thingsboard.server.common.data.nc_material.NcTSyncMaterial;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.nc.nc_material.NcTSyncMaterialService;
+import org.thingsboard.server.dao.nc_material.NcTSyncMaterialService;
 
 import java.util.List;
 

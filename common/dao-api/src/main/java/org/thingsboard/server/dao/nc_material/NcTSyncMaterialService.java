@@ -1,6 +1,6 @@
-package org.thingsboard.server.dao.nc.nc_material;
+package org.thingsboard.server.dao.nc_material;
 
-import org.thingsboard.server.common.data.nc.nc_material.NcTSyncMaterial;
+import org.thingsboard.server.common.data.nc_material.NcTSyncMaterial;
 
 import java.util.List;
 
