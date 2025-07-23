@@ -107,6 +107,10 @@ public class TSysClassServiceImpl implements TSysClassService {
 
     @Override
     public void saveTSysClass(TSysClass tSysClass) {
+        //校验基地必填
+        if (StringUtils.isEmpty(tSysClass.getPkOrg())) {
+            throw new RuntimeException("请绑定基地");
+        }
         if (tSysClass.getClassId() == null) {
             //新增
             tSysClass.setCrtUser(tSysClass.getUpdateUser());

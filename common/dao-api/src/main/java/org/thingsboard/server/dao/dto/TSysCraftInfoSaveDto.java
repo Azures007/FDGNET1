@@ -61,4 +61,6 @@ public class TSysCraftInfoSaveDto {
     @ApiModelProperty("前道工艺路线id")
     private Integer prevCraftId;
 
+    @ApiModelProperty("基地Id")
+    private String pkOrg;
 }

@@ -26,8 +26,9 @@ public class ClassGroupLeaderExcelVo extends BaseRowModel {
     private String groupLeader;
     @ExcelProperty("组长-手机号码")
     private String groupLeaderPhone;
-    @ExcelProperty("组长-岗位")
-    private String groupLeaderStation;
+    // 2025-07-23 hhh 隐藏导出表格两个页签的岗位字段
+//    @ExcelProperty("组长-岗位")
+//    private String groupLeaderStation;
 
 //    @ExcelProperty("组员-姓名")
 //    private String personnelName;

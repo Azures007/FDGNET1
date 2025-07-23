@@ -70,12 +70,6 @@ public class TSysClass {
     @ApiModelProperty("所属工序id")
     @Column(name = "belong_process_id")
     private Integer belongProcessId;
-    @ApiModelProperty("生产组织id")
-    @Column(name = "kd_org_id")
-    private Integer kdOrgId;
-    @ApiModelProperty("生产车间id")
-    @Column(name = "kd_dept_id")
-    private Integer kdDeptId;
 
     @ApiModelProperty("ERP班别编码")
     @Column(name = "class_team_number")
@@ -88,5 +82,19 @@ public class TSysClass {
     @ApiModelProperty("车间主任")
     @Column(name = "workshop_director")
     private String workshopDirector;
+
+    // 列表的生产组织改为基地，默认为当前登录用户的基地，隐藏生产车间 hhh 2025-07-23
+    // 废弃字段：生产组织id、生产车间id；新增基地id
+    @ApiModelProperty("生产组织id")
+    @Column(name = "kd_org_id")
+    private Integer kdOrgId;
+
+    @ApiModelProperty("生产车间id")
+    @Column(name = "kd_dept_id")
+    private Integer kdDeptId;
+
+    @ApiModelProperty("基地Id")
+    @Column(name = "pk_org")
+    private String pkOrg;
 
 }

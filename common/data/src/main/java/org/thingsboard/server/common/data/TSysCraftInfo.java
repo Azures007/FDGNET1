@@ -62,6 +62,12 @@ public class TSysCraftInfo {
     @Column(name = "updated_user")
     private String updatedUser;
 
+    @ApiModelProperty("前道工艺路线id")
+    @Column(name = "prev_craft_id")
+    private Integer prevCraftId;
+
+    // 列表的生产组织改为基地，默认为当前登录用户的基地，隐藏生产车间 hhh 2025-07-23
+    // 废弃字段：生产组织id、生产车间id；新增基地id
     @ApiModelProperty("生产组织id")
     @Column(name = "kd_org_id")
     private Integer kdOrgId;
@@ -70,8 +76,8 @@ public class TSysCraftInfo {
     @Column(name = "kd_dept_id")
     private Integer kdDeptId;
 
-    @ApiModelProperty("前道工艺路线id")
-    @Column(name = "prev_craft_id")
-    private Integer prevCraftId;
+    @ApiModelProperty("基地Id")
+    @Column(name = "pk_org")
+    private String pkOrg;
 
 }

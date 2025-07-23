@@ -26,8 +26,9 @@ public class ClassPersonnelExcelVo extends BaseRowModel {
     private String personnel;
     @ExcelProperty(value ="组员-手机号码",index = 4)
     private String personnelPhone;
-    @ExcelProperty(value ="组员-岗位",index =5)
-    private String personnelStation;
+    // 2025-07-23 hhh 隐藏导出表格两个页签的岗位字段
+//    @ExcelProperty(value ="组员-岗位",index =5)
+//    private String personnelStation;
 
 
 

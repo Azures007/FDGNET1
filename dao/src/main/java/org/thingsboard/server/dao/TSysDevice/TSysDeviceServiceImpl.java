@@ -94,6 +94,10 @@ public class TSysDeviceServiceImpl implements TSysDeviceService {
 
     @Override
     public ResponseResult saveTSysDevice(TsysDevice device) {
+        //校验基地必填
+        if (StringUtils.isEmpty(device.getPkOrg())) {
+            throw new RuntimeException("请绑定基地");
+        }
         //新增
         if (device.getDeviceId() == null) {
             List<TsysDevice> devices = tSysDeviceRepository.findByDeviceNumber(device.getDeviceNumber());
