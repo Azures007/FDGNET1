@@ -16,6 +16,7 @@ import org.thingsboard.server.dao.dto.TSysCodeDscDto;
 import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscRepository;
 import org.thingsboard.server.dao.vo.AppVersionVo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -141,7 +142,15 @@ public class TSysCodeDscServiceImpl implements TSysCodeDscService {
 
     @Override
     public Page<TSysCodeDsc> getCodeByCodeCl(Integer current, Integer size, String codeClId, String enabledSt) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "crtTime");
+//        Sort sort = Sort.by(Sort.Direction.DESC, "crtTime");
+        //统一按照字段分组和字典编码从小到大排序
+        List<Sort.Order> orders = new ArrayList<>();
+        Sort.Order sort1 = new Sort.Order(Sort.Direction.ASC, "codeClId");
+        Sort.Order sort2 = new Sort.Order(Sort.Direction.ASC, "codeValue");
+        orders.add(sort1);
+        orders.add(sort2);
+        Sort sort = Sort.by(orders);
+
         Pageable pageable = PageRequest.of(current, size, sort);
         TSysCodeDsc tSysCodeDsc = new TSysCodeDsc();
         tSysCodeDsc.setCodeClId(codeClId);

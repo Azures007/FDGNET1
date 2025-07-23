@@ -44,7 +44,6 @@ public class TSysProcessInfoServiceImpl implements TSysProcessInfoService {
             if (!tSysProcessInfoRepository.findById(processInfo.getProcessId()).isEmpty()) {
                 TSysProcessInfo processInfo1 = tSysProcessInfoRepository.findById(processInfo.getProcessId()).get();
                 if (processInfo1 != null && StringUtils.isNotEmpty(processInfo1.getProcessNumber())) {
-                    processInfo.setProcessNumber(processInfo1.getProcessNumber());
                     processInfo.setCreatedTime(processInfo1.getCreatedTime());
                     processInfo.setCreatedUser(processInfo1.getCreatedUser());
                 }
