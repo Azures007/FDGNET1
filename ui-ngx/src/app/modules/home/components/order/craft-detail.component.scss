@@ -1,6 +1,9 @@
 .table-wrapper {
   max-height: 600px;
   overflow-y: scroll;
+  .mat-cell,.mat-header-cell {
+    width: unset !important;
+  }
 }
 	.search_form {
 		width: 100%;

@@ -48,6 +48,14 @@
       </select>
     </div>
     <div class="row-block cols4">
+      <label class="label">订单状态：</label>
+      <select required [(ngModel)]="searchFormGroup.value.orderStatus">
+        <option *ngFor="let item of getOrderStatusList" [value]="item.value">
+          {{item.label}}
+        </option>
+      </select>
+    </div>
+    <div class="row-block cols4">
       <label class="label"></label>
       <div class="btn-group">
         <button class="search_btn" (click)="searchList()">
@@ -66,12 +74,12 @@
 
 
   </div>
-  <div class="tags">
+  <!-- <div class="tags">
     <div class="tag" *ngFor="let item of getOrderStatusList" (click)="changeStatus(item.value)"
       [ngClass]="{'active': item.value === searchFormGroup.value.orderStatus}">
       {{item.label}}({{item.total === '' ? '-' : item.total}})
     </div>
-  </div>
+  </div> -->
   <div class="page-content">
     <table mat-table [dataSource]="dataSource" class="table-warp">
       <ng-container matColumnDef="index" sticky="true">

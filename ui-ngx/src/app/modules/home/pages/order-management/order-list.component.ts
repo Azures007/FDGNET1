@@ -95,13 +95,18 @@ export class OrderListComponent implements OnInit {
     ncMaterialCode: '',
     ncMaterialName: '',
     cwkid: '',
-    orderStatus: '0'
+    orderStatus: ''
   });
   cwkList = [];
   clickedRows = new Set();
   bodyUnit = "";
 
   orderStatus = [
+    {
+      label: "全部",
+      value: "",
+      total: ''
+    },
     {
       label: "未开工",
       value: "0",
@@ -121,11 +126,6 @@ export class OrderListComponent implements OnInit {
       label: "暂停",
       value: "2",
       hide: true,
-      total: ''
-    },
-    {
-      label: "全部",
-      value: "",
       total: ''
     },
   ]
