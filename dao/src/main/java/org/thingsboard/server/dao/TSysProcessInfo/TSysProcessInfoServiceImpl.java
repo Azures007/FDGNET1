@@ -55,6 +55,8 @@ public class TSysProcessInfoServiceImpl implements TSysProcessInfoService {
     }
 
     public void updateVerify(TSysProcessInfo processInfo) {
+        // 工序编码去除空格
+        processInfo.setProcessNumber(processInfo.getProcessNumber().trim());
         if (StringUtils.isBlank(processInfo.getProcessNumber())) {
             throw new RuntimeException("工序编码不能为空");
         }
