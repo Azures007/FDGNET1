@@ -218,7 +218,7 @@ export class OrderListComponent implements OnInit {
       ncMaterialCode: '',
       ncMaterialName: '',
       cwkid: '',
-      orderStatus: this.searchFormGroup.value.orderStatus,
+      orderStatus: '',
     });
     this.searchList();
 
