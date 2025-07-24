@@ -34,8 +34,8 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
      */
     @Query(value = "select a.* from t_sync_material a  where 1=1 \n" +
             "and (material_code like %?1% or material_name like %?1% )\n" +
-            "and material_code not in (select material_code from t_sys_craft_material_rel group by material_code)",nativeQuery = true)
-    Page<TSyncMaterial> listMaterialFiter(String materialCode, PageRequest pageRequest);
+            "and material_code not in (select material_code from t_sys_craft_material_rel where craft_id = ?2 group by material_code)",nativeQuery = true)
+    Page<TSyncMaterial> listMaterialFiter(String materialCode,Integer craftId, PageRequest pageRequest);
 
     /**
      * 主产品列表（过滤已绑定的物料代码）
