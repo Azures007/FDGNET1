@@ -241,4 +241,11 @@ public interface OrderHeadService {
      * 获取订单详情（简要VO）
      */
     OrderDetailSimpleVo getOrderDetailSimple(Integer orderId);
+
+    /**
+     * 获取报工信息
+     * @param orderId
+     * @return
+     */
+    List<OrderProcessVo> getProcessHistoryInfo(Integer orderId);
 }

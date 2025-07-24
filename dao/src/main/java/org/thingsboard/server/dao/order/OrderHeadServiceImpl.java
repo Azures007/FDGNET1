@@ -1633,5 +1633,37 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         }
         return vo;
     }
+
+    @Override
+    public List<OrderProcessVo> getProcessHistoryInfo(Integer orderId) {
+        TBusOrderHead order = orderHeadRepository.findById(orderId).orElse(null);
+        if (order == null) return null;
+        List<OrderProcessVo> processHistory = new ArrayList<>();
+//        int processIndex = 1;
+        if (order.getTBusOrderProcessSet() != null) {
+            for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
+                List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
+                if (recordList != null) {
+                    for (TBusOrderProcessRecord record : recordList) {
+                        OrderProcessVo execVo = new OrderProcessVo();
+//                        execVo.setIndex(processIndex++);
+                        execVo.setProcessName(process.getProcessId() != null ? process.getProcessId().getProcessName() : "");
+                        execVo.setProcessType(record.getBusType());
+                        execVo.setMaterialName(record.getMaterialName());
+                        execVo.setMaterialSpec("");
+                        execVo.setLot(record.getBodyLot());
+                        execVo.setUnit(record.getRecordUnit());
+                        execVo.setQty(record.getRecordQty());
+                        execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
+                        execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
+                        execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
+                        execVo.setReportTime(record.getReportTime() != null ? record.getReportTime().toString() : "");
+                        processHistory.add(execVo);
+                    }
+                }
+            }
+        }
+        return processHistory;
+    }
 }
 

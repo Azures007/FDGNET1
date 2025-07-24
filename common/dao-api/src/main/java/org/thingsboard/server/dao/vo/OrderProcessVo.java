@@ -78,4 +78,31 @@ public class OrderProcessVo {
 
     @ApiModelProperty("累计产后数量")
     private float totalProductQty = 0f;
+
+    @ApiModelProperty("报工类别")
+    private String processType;
+
+    @ApiModelProperty("报工物料名称")
+    private String materialName;
+
+    @ApiModelProperty("报工规格")
+    private String materialSpec;
+
+    @ApiModelProperty("报工批次")
+    private String lot;
+
+    @ApiModelProperty("单位")
+    private String unit;
+
+    @ApiModelProperty("报工数量")
+    private Float qty;
+
+    @ApiModelProperty("报工班组")
+    private String className;
+
+    @ApiModelProperty("锅数/批次数")
+    private Integer potCount;
+
+    @ApiModelProperty("报工时间")
+    private String reportTime;
 }
