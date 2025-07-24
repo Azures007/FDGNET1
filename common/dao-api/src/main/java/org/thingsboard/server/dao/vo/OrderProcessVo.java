@@ -1,5 +1,6 @@
 package org.thingsboard.server.dao.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -103,6 +104,7 @@ public class OrderProcessVo {
     @ApiModelProperty("锅数/批次数")
     private Integer potCount;
 
-    @ApiModelProperty("报工时间")
+    @ApiModelProperty("报工时间，格式：yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private String reportTime;
 }

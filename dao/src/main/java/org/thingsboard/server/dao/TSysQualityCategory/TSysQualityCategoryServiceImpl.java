@@ -59,7 +59,7 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
                                                              String sortOrder,
                                                              TSysQualityCategoryDto tSysQualityCategoryDto) {
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+        Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
             String converterSortField = StringConverterUtil.camelToSnake(sortField);
             sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
@@ -249,6 +249,13 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
             tSysQualityCategory.setCreateTime(tSysQualityCategory.getUpdateTime());
             if (StringUtils.isBlank(tSysQualityCategory.getIsEnabled())) {
                 tSysQualityCategory.setIsEnabled("1");
+            }
+        }else {
+            //编辑 - 保留原有的创建时间和创建人
+            TSysQualityCategory existingCategory = tSysQualityCategoryRepository.findById(tSysQualityCategory.getId()).orElse(null);
+            if (existingCategory != null) {
+                tSysQualityCategory.setCreateUser(existingCategory.getCreateUser());
+                tSysQualityCategory.setCreateTime(existingCategory.getCreateTime());
             }
         }
         if (StringUtils.isNotEmpty(tSysQualityCategory.getInspectionItem())) {
