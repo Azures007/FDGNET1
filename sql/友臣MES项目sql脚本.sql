@@ -510,3 +510,13 @@ COMMENT ON COLUMN t_sys_craft_info.pk_org IS '基地id';
 
 ALTER TABLE t_sys_device ADD COLUMN pk_org VARCHAR(255);
 COMMENT ON COLUMN t_sys_device.pk_org IS '基地id';
+
+ALTER TABLE t_bus_order_process_history
+    ADD COLUMN all_import_pot int4 NULL;
+COMMENT ON COLUMN public.t_bus_order_process_history.all_import_pot IS '积累投入锅数';
+
+ALTER TABLE public.t_bus_order_process_history ADD iot_math varchar NULL;
+COMMENT ON COLUMN public.t_bus_order_process_history.iot_math IS '计算公式';
+
+ALTER TABLE public.t_bus_order_process_history ADD iot_qty int4 NULL;
+COMMENT ON COLUMN public.t_bus_order_process_history.iot_qty IS '设备采集数量';
