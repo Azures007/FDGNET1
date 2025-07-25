@@ -39,6 +39,7 @@ import org.thingsboard.server.dao.sql.tSysClass.TSysClassRepository;
 import org.thingsboard.server.dao.sql.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscService;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.*;
 
 import javax.persistence.criteria.Predicate;
@@ -147,6 +148,9 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 
     @Autowired
     AppOrderProcessRecordSubmitService appOrderProcessRecordSubmitService;
+
+    @Autowired
+    protected UserService userService;
 
     @Override
     public PageVo<TBusOrderHead> tBusOrderHeadList(Integer current, Integer size, TBusOrderHeadDto tBusOrderHeadDto) {
@@ -1531,7 +1535,10 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     }
 
     @Override
-    public PageVo<OrderSimpleListVo> getSimpleOrderList(Integer current, Integer size, TBusOrderDto orderDto) {
+    public PageVo<OrderSimpleListVo> getSimpleOrderList(String userId,Integer current, Integer size, TBusOrderDto orderDto) {
+        //获取登录的产线
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        orderDto.setCwkid(cwkid);
         PageVo<TBusOrderHead> pageVo = tBusOrderHeadList(current, size, orderDto);
         PageVo<OrderSimpleListVo> result = new PageVo<>();
         result.setTotal(pageVo.getTotal());

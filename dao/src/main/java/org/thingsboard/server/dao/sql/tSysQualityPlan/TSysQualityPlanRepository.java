@@ -25,6 +25,7 @@ public interface TSysQualityPlanRepository extends JpaRepository<TSysQualityPlan
             "on t.production_line_id =t1.nc_cwkid \n" +
             "where 1=1 \n" +
             "and (t.plan_name like %:#{#tSysQualityPlan.planName}% or :#{#tSysQualityPlan.planName} is null or :#{#tSysQualityPlan.planName} ='') \n" +
+            "and (t.production_line_id = :#{#tSysQualityPlan.productionLineId} or :#{#tSysQualityPlan.productionLineId} is null or :#{#tSysQualityPlan.productionLineId} ='') \n" +
             "and (t1.nc_vwkname like %:#{#tSysQualityPlan.productionLineName}% or :#{#tSysQualityPlan.productionLineName} is null or :#{#tSysQualityPlan.productionLineName} ='') \n" +
             "and (t.is_enabled=:#{#tSysQualityPlan.isEnabled} or :#{#tSysQualityPlan.isEnabled} is null or :#{#tSysQualityPlan.isEnabled} ='')",nativeQuery = true)
     Page<TSysQualityPlan> findAllBy(@Param("tSysQualityPlan") TSysQualityPlan tSysQualityPlan, Pageable pageable);

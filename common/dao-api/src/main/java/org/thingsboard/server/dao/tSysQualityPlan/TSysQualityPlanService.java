@@ -21,7 +21,7 @@ public interface TSysQualityPlanService {
      * 返回质检方案列表
      * @return
      */
-    Page<TSysQualityPlan> tSysQualityPlanList(Integer current, Integer size,String sortField,String sortOrder,  TSysQualityPlanDto tSysQualityPlanDto);
+    Page<TSysQualityPlan> tSysQualityPlanList(String userId,Integer current, Integer size,String sortField,String sortOrder,  TSysQualityPlanDto tSysQualityPlanDto);
 
 
     /**

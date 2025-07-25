@@ -132,8 +132,8 @@ public class OrderHeadExcelServiceImpl implements OrderHeadExcelService {
     }
 
     @Override
-    public void download(Integer current, Integer size, TBusOrderDto tBusOrderDto, HttpServletResponse response) throws IOException {
-        PageVo<OrderSimpleListVo> tBusOrderHeadPage= orderHeadService.getSimpleOrderList(current, size, tBusOrderDto);
+    public void download(String userId,Integer current, Integer size, TBusOrderDto tBusOrderDto, HttpServletResponse response) throws IOException {
+        PageVo<OrderSimpleListVo> tBusOrderHeadPage= orderHeadService.getSimpleOrderList(userId,current, size, tBusOrderDto);
         List<OrderExcelVo> excelVos=new ArrayList<>();
         for (var tBusOrderHead : tBusOrderHeadPage.getList()) {
             OrderExcelVo vo=new OrderExcelVo();

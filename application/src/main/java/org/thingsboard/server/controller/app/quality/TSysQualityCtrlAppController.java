@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.TSysQualityCtrl;
 import org.thingsboard.server.common.data.TSysQualityPlan;
+import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
@@ -58,8 +59,9 @@ public class TSysQualityCtrlAppController extends BaseController {
                                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                    @RequestParam(value = "sortField", defaultValue = "") String sortField,
                                                                    @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
-                                                                   @RequestBody TSysQualityPlanDto tSysQualityPlanDto) {
-        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(current, size,sortField,sortOrder, tSysQualityPlanDto);
+                                                                   @RequestBody TSysQualityPlanDto tSysQualityPlanDto) throws ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(currentUser.getId().toString(),current, size,sortField,sortOrder, tSysQualityPlanDto);
         PageVo<TSysQualityPlan> pageVo = new PageVo<>(qualityPlanList);
         return ResultUtil.success(pageVo);
     }

@@ -20,6 +20,7 @@ import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanConfigRepos
 import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
 import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanRepository;
 import org.thingsboard.server.dao.tSysQualityPlan.TSysQualityPlanService;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.util.StringConverterUtil;
 import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 import org.thingsboard.server.dao.vo.TSysQualityPlanVo;
@@ -45,15 +46,15 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 
     @Autowired
     TSysQualityPlanJudgmentRepository tSysQualityPlanJudgmentRepository;
-
+    @Autowired
+    protected UserService userService;
 
     @Override
-    public Page<TSysQualityPlan> tSysQualityPlanList(Integer current,
+    public Page<TSysQualityPlan> tSysQualityPlanList(String userId,Integer current,
                                                      Integer size,
                                                      String sortField,
                                                      String sortOrder,
                                                      TSysQualityPlanDto tSysQualityPlanDto) {
-
         Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
 
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
@@ -68,7 +69,9 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         TSysQualityPlan tSysQualityPlan = new TSysQualityPlan();
         BeanUtils.copyProperties(tSysQualityPlanDto, tSysQualityPlan);
 //        Example<TSysQualityPlan> example = Example.of(tSysClass, matcher);
-
+        //获取登录的产线
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        tSysQualityPlan.setProductionLineId(cwkid);
 
 
 //        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.TSysQualityCategory;
 import org.thingsboard.server.common.data.TSysQualityPlan;
 import org.thingsboard.server.common.data.TSysQualityPlanConfig;
+import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
@@ -56,10 +57,11 @@ public class TSysQualityPlanController extends BaseController {
                                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                    @RequestParam(value = "sortField", defaultValue = "createTime") String sortField,
                                                                    @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder,
-                                                                   @RequestBody TSysQualityPlanDto tSysQualityPlanDto) {
+                                                                   @RequestBody TSysQualityPlanDto tSysQualityPlanDto) throws ThingsboardException {
         sortField = sortField.equals("") ? sortField : "createTime";
         sortOrder = sortOrder.equals("") ? sortOrder : "asc" ;
-        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(current, size,sortField,sortOrder, tSysQualityPlanDto);
+        SecurityUser currentUser = getCurrentUser();
+        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(currentUser.getId().toString(),current, size,sortField,sortOrder, tSysQualityPlanDto);
         PageVo<TSysQualityPlan> pageVo = new PageVo<>(qualityPlanList);
         return ResultUtil.success(pageVo);
     }

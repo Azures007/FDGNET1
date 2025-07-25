@@ -12,6 +12,7 @@ import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportPlanRel
 import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportPlanRepository;
 import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportCategoryService;
 import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportPlanService;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.PageVo;
 
 import java.util.ArrayList;
@@ -35,7 +36,8 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
     @Autowired
     TSysQualityReportCategoryService sysQualityReportCategoryService;
 
-
+    @Autowired
+    protected UserService userService;
     @Override
     @Transactional
     public void savePlan(TSysQualityReportPlanDto tSysQualityReportPlanDto) {
@@ -90,12 +92,14 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
     }
 
     @Override
-    public PageVo<TSysQualityReportPlanDto> getPlanList(Integer current, Integer size, TSysQualityReportPlanSearchDto searchDto) {
+    public PageVo<TSysQualityReportPlanDto> getPlanList(String userId,Integer current, Integer size, TSysQualityReportPlanSearchDto searchDto) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdTime");
         Pageable pageable = PageRequest.of(current, size, sort);
+        String cwkid =userService.getUserCurrentCwkid(userId);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("prodLineName", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("prodLineName", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("prodLineId", ExampleMatcher.GenericPropertyMatchers.exact());
         TSysQualityReportPlan plan = new TSysQualityReportPlan();
         if (StringUtils.isEmpty(searchDto.getProductName())) {
             searchDto.setEnabled(null);
@@ -106,6 +110,8 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
         BeanUtils.copyProperties(searchDto, plan);
 
         plan.setEnabled(null);
+        //设置生产线id过滤
+        plan.setProdLineId(cwkid);
         Example<TSysQualityReportPlan> example = Example.of(plan, matcher);
         Page<TSysQualityReportPlan> craftInfos = reportPlanRepository.findAll(example, pageable);
         List<TSysQualityReportPlanDto> dtos = new ArrayList<>();
