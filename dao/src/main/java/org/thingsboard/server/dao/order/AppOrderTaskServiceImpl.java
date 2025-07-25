@@ -70,29 +70,29 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
             processStatusList1.add("0");
             // 待生产任务
 //        int waitTask = orderHeadRepository.getWaitTaskCountByUserId(userId,getMyDate());
-            int waitTask = appOrderTaskRepository.getWaitTaskCountByUserId2(userId, "", "", "");
+            Integer waitTask = appOrderTaskRepository.getWaitTaskCountByUserId2(userId, "", "", "");
             //生产中任务
             List<String> processStatusList = new ArrayList<>();
             processStatusList.add("1");
             processStatusList.add("2");
-            int startTask = appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, LichengConstants.ORDER_PROCESS_TYPE_1, "", "", "");
+            Integer startTask = appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, LichengConstants.ORDER_PROCESS_TYPE_1, "", "", "");
             //未生产任务
-            int offTask = appOrderTaskRepository.getOffTask2(userId, "", "", "");
+            Integer offTask = appOrderTaskRepository.getOffTask2(userId, "", "", "");
             //已完工任务
             List<String> processStatusList2 = new ArrayList<>();
             processStatusList2.add("3");
-            int endTask = appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatus(userId, processStatusList2, "", "", "");
+            Integer endTask = appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatus(userId, processStatusList2, "", "", "");
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DATE, 1);
             Date time = cal.getTime();
             //明日任务
-            int tomorrowTask = appOrderTaskRepository.getCountNextDayTask(sdf1.format(time), "");
+            Integer tomorrowTask = appOrderTaskRepository.getCountNextDayTask(userId,sdf1.format(time), "");
             //移交待生产任务
-            int waithandOverVerify = appOrderTaskRepository.getWaitTaskCountByUserIdHandOver(userId, "", "", "");
+            Integer waithandOverVerify = appOrderTaskRepository.getWaitTaskCountByUserIdHandOver(userId, "", "", "");
             //移交生产中任务
-            int handOverTask = appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, LichengConstants.ORDER_PROCESS_TYPE_2, "", "", "");
+            Integer handOverTask = appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, LichengConstants.ORDER_PROCESS_TYPE_2, "", "", "");
             //转移列表
-            int shiftTask = appOrderTaskRepository.countShiftNoAcceptTaskList(userId, "", "");
+            Integer shiftTask = appOrderTaskRepository.countShiftNoAcceptTaskList(userId, "", "");
             getOrderSizeVo = new GetOrderSizeVo(currentTask, waitTask, startTask, offTask, endTask, tomorrowTask, handOverTask, waithandOverVerify, shiftTask);
             if (getOrderSizeVo != null) {
                 valueOperations.set(ORDER_HEAD_HEADER_SIZE + userId,getOrderSizeVo, 1, TimeUnit.MINUTES);
@@ -102,9 +102,10 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
     }
 
     // 根据日期获取用户订单数
-    public int getTaskByDate(String userId, String currentDateStr) {
+    public Integer getTaskByDate(String userId, String currentDateStr) {
 //        return orderHeadRepository.getCountCurrentTask(userId, currentDateStr);
-        return appOrderTaskRepository.getCountCurrentTask2(userId, currentDateStr, "", "");
+        Integer count = appOrderTaskRepository.getCountCurrentTask2(userId, currentDateStr, "", "");
+        return count != null ? count : 0;  // 处理 null 值，返回默认值 0
     }
 
     /**
@@ -288,7 +289,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
         String nextDayDateStr = sdf1.format(c.getTime());
 
 //        List<Object[]> select = orderHeadRepository.getNextDayTaskList(nextDayDateStr, of);
-        List<Map> select = appOrderTaskRepository.getNextDayTaskList(nextDayDateStr, selectDto.getBodyLot(), of);
+        List<Map> select = appOrderTaskRepository.getNextDayTaskList(userId,nextDayDateStr, selectDto.getBodyLot(), of);
         try {
             PageVo<TaskListVo> pageVo = new PageVo(size, current);
 //            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
@@ -296,7 +297,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
             /*castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
             });*/
-            int total = appOrderTaskRepository.getCountNextDayTask(nextDayDateStr, selectDto.getBodyLot());
+            int total = select.size();//appOrderTaskRepository.getCountNextDayTask(userId,nextDayDateStr, selectDto.getBodyLot());
             pageVo.setTotal(total);
             pageVo.setList(castEntity);
             return pageVo;

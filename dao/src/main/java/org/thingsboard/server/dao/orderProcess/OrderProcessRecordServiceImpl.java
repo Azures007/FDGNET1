@@ -330,6 +330,15 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                     String mapsStr = JSON.toJSONString(maps);
                     ppbomGroupVo = new PpbomGroupVo();
                     orderPPbomResults = JSON.parseArray(mapsStr, OrderPPbomResult.class);
+                    for (OrderPPbomResult orderPPbomResult : orderPPbomResults) {
+                        orderPPbomResult.setMidPpbomEntryWeighDeveptQty(orderPPbomResult.getMustQty().floatValue());
+                        orderPPbomResult.setMidPpbomEntryWeighMesQty(orderPPbomResult.getMustQty().floatValue());
+                        orderPPbomResult.setMidPpbomEntryWeighMesUnit(orderPPbomResult.getUnit());
+                        orderPPbomResult.setMidPpbomEntryWeighDeveptUnit(orderPPbomResult.getUnit());
+                        orderPPbomResult.setUnitStr(orderPPbomResult.getUnit());
+                        orderPPbomResult.setRecordUnit(orderPPbomResult.getUnit());
+                        orderPPbomResult.setRecordUnitStr(orderPPbomResult.getUnit());
+                    }
                     ppbomGroupVo.setOrderPPbomResultList(orderPPbomResults);
                     ppbomGroupVos.add(ppbomGroupVo);
                 }
@@ -485,7 +494,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                 if (null != totalMap) {
                     orderPPbomResult.setRecordQtyTotal(Float.parseFloat(String.valueOf(totalMap.get("record_qty"))));
                     orderPPbomResult.setRecordUnit(String.valueOf(totalMap.get("record_unit")));
-                    orderPPbomResult.setRecordUnitStr(GlobalConstant.getCodeDscName("UNIT0000", orderPPbomResult.getRecordUnit()));
+                    orderPPbomResult.setRecordUnitStr(String.valueOf(totalMap.get("record_unit")));
                 }
                 if (null != personMap) {
                     orderPPbomResult.setRecordQtyPersonal(Float.parseFloat(String.valueOf(personMap.get("record_qty"))));
@@ -497,7 +506,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                 if (null != totalMap) {
                     orderPPbomResult.setRecordQtyTotal(Float.parseFloat(String.valueOf(totalMap.get("record_qty"))));
                     orderPPbomResult.setRecordUnit(String.valueOf(totalMap.get("record_unit")));
-                    orderPPbomResult.setRecordUnitStr(GlobalConstant.getCodeDscName("UNIT0000", orderPPbomResult.getRecordUnit()));
+                    orderPPbomResult.setRecordUnitStr(String.valueOf(totalMap.get("record_unit")));
                 }
                 if (null != personMap) {
                     orderPPbomResult.setRecordQtyPersonal(Float.parseFloat(String.valueOf(personMap.get("record_qty"))));
@@ -797,10 +806,13 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                         float sumImportRecordQty = orderProcessRecordRepository.getBGSumRecordQty(saveDto.getProcessId(), orderPpbomId, saveDto.getRecordTypeBg());
                         sumImportRecordQty += saveDto.getRecordQty();//累加本次提交的数量
                         // 计划投入总数量
-                        float sumPlanImportQty = orderPpbom.getMidPpbomEntryWeighDeveptQty() * pot;
-                        if (sumPlanImportQty <= 0) {
-                            throw new RuntimeException("投入超额校验处理异常，计划投入总数量为0，请检查下计划锅数和开发分子");
+                        float sumPlanImportQty = 0;
+                        if (orderPpbom != null) {
+                            sumPlanImportQty = orderPpbom.getMustQty().floatValue();//orderPpbom.getMidPpbomEntryWeighDeveptQty() * pot;
                         }
+                        /*if (sumPlanImportQty <= 0) {
+                            throw new RuntimeException("投入超额校验处理异常，计划投入总数量为0，请检查下计划锅数和开发分子");
+                        }*/
                         // 计算当前投入比例 = 累计投入数量/计划投入总数量*100
                         float importProportion = BigDecimalUtil.format(sumImportRecordQty / sumPlanImportQty * 100, 2);
                         checkVo.setImportProportion(importProportion);

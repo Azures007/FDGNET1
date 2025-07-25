@@ -529,7 +529,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "a.mid_mo_customer_type as midMoCustomerType,\n" +
             "a.mid_mo_desc as midMoDesc,\n" +
             "a.body_plan_prd_qty as bodyPlanPrdQty,\n" +
-            "null as finishTime,\n" +
+            "TO_CHAR(a2.finish_time,'YYYY-MM-DD HH24:MI:SS') as finishTime,\n" +
             "a2.type as type, \n" +
             "a.body_material_specification bodyMaterialSpecification, \n" +
             "a2.order_process_id as orderProcessId, \n" +
@@ -591,11 +591,29 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     List<Map> getTaskListByPersonIdAndProcessStatus(String userId, List<String> processStatus,String processNumber,String bodyLot,String sele, PageRequest sort);
 
     /* 获取明日任务 行数 */
-    @Query(value = "select count(1) from t_bus_order_head a \n" +
-            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?1 and a.is_deleted='0' " +
-            "and (body_lot=?2 or ?2='' or ?2 is null)" +
+    @Query(value = "select count(1) \n" +
+            "from t_bus_order_head a \n" +
+            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
+            "JOIN t_bus_order_process_lk b ON a.order_id = b.order_id \n" +
+            "JOIN t_bus_order_process c ON b.order_process_id = c.order_process_id \n" +
+            "JOIN t_sys_process_info d ON c.process_id = d.process_id \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
+            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?2 and a.is_deleted='0' " +
+            "and (body_lot=?3 or ?3='' or ?3 is null)" +
+            "and t2.class_id in (\n" +
+            "select class_id  from \n" +
+            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
+            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
+            "where b.user_id =?1 \n" +
+            "union all \n" +
+            "select class_id from t_sys_class_personnel_rel a \n" +
+            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+            "where b.user_id =?1) as t\n" +
+            "group by class_id\n" +
+            ")" +
             "", nativeQuery = true)
-    Integer getCountNextDayTask(String currentDateStr,String bodyIot);
+    Integer getCountNextDayTask(String userId,String currentDateStr,String bodyIot);
 
     /* 获取明日任务 */
     //查询订单表“计划开工时间”是明日日期（取系统日期）的订单
@@ -630,10 +648,25 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             ",null recordTypePd \n" +
             "from t_bus_order_head a \n" +
             "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
-            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?1 and a.is_deleted='0' " +
-            "and (a.body_lot=?2 or ?2='' or ?2 is null) " +
+            "JOIN t_bus_order_process_lk b ON a.order_id = b.order_id \n" +
+            "JOIN t_bus_order_process c ON b.order_process_id = c.order_process_id \n" +
+            "JOIN t_sys_process_info d ON c.process_id = d.process_id \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
+            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?2 and a.is_deleted='0' " +
+            "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
+            "and t2.class_id in (\n" +
+            "select class_id  from \n" +
+            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
+            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+            "where b.user_id =?1 \n" +
+            "union all \n" +
+            "select class_id from t_sys_class_personnel_rel a \n" +
+            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+            "where b.user_id =?1) as t\n" +
+            "group by class_id\n" +
+            ")" +
             "", nativeQuery = true)
-    List<Map> getNextDayTaskList(String currentDateStr,String bodyLot, PageRequest sort);
+    List<Map> getNextDayTaskList(String userId,String currentDateStr,String bodyLot, PageRequest sort);
 
     /* 移交待生产任务 行数 */
     @Query(value = "select sum(cout) from (\n" +

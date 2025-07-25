@@ -183,7 +183,7 @@ public class OrderProcessRecordController extends BaseController {
     @ApiOperation("机台号选择（多选机台号过滤）")
     @PostMapping("/deviceList2")
     public ResponseResult<List<TsysDevice>> getDevice2(@RequestBody TSysDeviceSearchDto deviceDto) throws Exception {
-        deviceDto.setEnabled("0");
+        deviceDto.setEnabled("1");
         var devices = deviceService.tSysDeviceList(deviceDto);
         return ResultUtil.success(devices);
     }

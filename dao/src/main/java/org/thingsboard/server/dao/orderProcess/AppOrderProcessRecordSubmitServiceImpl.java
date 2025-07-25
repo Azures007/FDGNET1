@@ -318,7 +318,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         if ("1".equals(saveDto.getRecordType()) && "1".equals(submitEnabled)) {
             String processNumber = saveDto.getProcessNumber() == null ? "" : saveDto.getProcessNumber();
             currentPot1= getAllPot(saveDto.getOrderProcessId(), saveDto.getOrderPPBomId());
-            // 斩拌
+            /*// 斩拌
             if (LichengConstants.PROCESS_NUMBER_ZHANBAN.equals(processNumber)) {
                 //斩拌工序验证锅数
                 Integer orderId = orderHeadRepository.findByOrderNo(saveDto.getOrderNo()).get(0).getOrderId();
@@ -328,7 +328,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 if (pot <= exportPot) {
                     throw new RuntimeException("积累投入锅数超出计划锅数，请变更订单！\n(积累投入锅数:" + exportPot + "锅  计划锅数：" + pot + "锅)");
                 }
-            }
+            }*/
             //判断是否投入字段
             if (saveDto.getOrderPPBomId() != null) {
                 Optional<TBusOrderPPBom> byId = orderPPBomRepository.findById(saveDto.getOrderPPBomId());
@@ -646,14 +646,14 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         }
         if ("3".equals(saveDto.getRecordType()) && "1".equals(submitEnabled)) {
             float exportPotByPerson = orderPPBomRepository.findExportPotOne(record.getOrderProcessId(), "-1", "-1");
-            if (LichengConstants.PROCESS_NUMBER_ZHANBAN.equals(saveDto.getProcessNumber())) {
+            /*if (LichengConstants.PROCESS_NUMBER_ZHANBAN.equals(saveDto.getProcessNumber())) {
                 // 斩拌工序 验证
                 //积累投入锅数
                 int importPot = orderPPBomRepository.findExportPotByImportAll(tBusOrderHead.getOrderId(), LichengConstants.PROCESS_NUMBER_ZHANBAN, "-1", "-1");
                 if (exportPotByPerson >= importPot) {
                     throw new RuntimeException("产出锅数大于等于投入锅数（产出锅数" + exportPotByPerson + "锅，投入锅数" + importPot + "锅）");
                 }
-            }
+            }*/
             float exportPot = BigDecimalUtil.add(record.getExportPot() == null ? 0 : record.getExportPot(), 0.5F).floatValue();
             record.setExportPot(exportPot);
             record.setExportPotMin(BigDecimalUtil.add(record.getExportPotMin() == null ? 0 : record.getExportPotMin(), 1F).floatValue());
