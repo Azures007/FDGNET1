@@ -54,9 +54,11 @@ public class TSysQualityPlanController extends BaseController {
     @PostMapping("/qualityPlanList")
     public ResponseResult<PageVo<TSysQualityPlan>> qualityPlanList(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                                   @RequestParam(value = "sortField", defaultValue = "") String sortField,
-                                                                   @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
+                                                                   @RequestParam(value = "sortField", defaultValue = "createTime") String sortField,
+                                                                   @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder,
                                                                    @RequestBody TSysQualityPlanDto tSysQualityPlanDto) {
+        sortField = sortField.equals("") ? sortField : "createTime";
+        sortOrder = sortOrder.equals("") ? sortOrder : "asc" ;
         Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(current, size,sortField,sortOrder, tSysQualityPlanDto);
         PageVo<TSysQualityPlan> pageVo = new PageVo<>(qualityPlanList);
         return ResultUtil.success(pageVo);

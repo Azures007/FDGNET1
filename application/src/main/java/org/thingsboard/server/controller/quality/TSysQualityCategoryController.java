@@ -53,9 +53,11 @@ public class TSysQualityCategoryController extends BaseController {
     @PostMapping("/qualityCategoryList")
     public ResponseResult<PageVo<TSysQualityCategory>> qualityCategoryList(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                                  @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                                 @RequestParam(value = "sortField", defaultValue = "") String sortField,
-                                                                 @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
+                                                                 @RequestParam(value = "sortField", defaultValue = "createTime") String sortField,
+                                                                 @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder,
                                                                  @RequestBody TSysQualityCategoryDto tSysQualityCategoryDto) {
+        sortField = sortField.equals("") ? sortField : "createTime";
+        sortOrder = sortOrder.equals("") ? sortOrder : "asc" ;
         Page<TSysQualityCategory> qualityCategoryList =
                 tSysQualityCategoryService.tSysQualityCategoryList(current, size,sortField,sortOrder, tSysQualityCategoryDto);
         PageVo<TSysQualityCategory> pageVo = new PageVo<>(qualityCategoryList);

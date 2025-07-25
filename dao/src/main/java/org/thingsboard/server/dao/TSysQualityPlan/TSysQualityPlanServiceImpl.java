@@ -54,7 +54,7 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
                                                      String sortOrder,
                                                      TSysQualityPlanDto tSysQualityPlanDto) {
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+        Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
 
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
             String converterSortField = StringConverterUtil.camelToSnake(sortField);
@@ -108,6 +108,13 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
             tSysQualityPlan.setCreateTime(tSysQualityPlan.getUpdateTime());
             if (StringUtils.isBlank(tSysQualityPlan.getIsEnabled())) {
                 tSysQualityPlan.setIsEnabled("1");
+            }
+        } else {
+            //编辑 - 保留原有的创建时间和创建人
+            TSysQualityPlan existingPlan = tSysQualityPlanRepository.findById(tSysQualityPlan.getId()).orElse(null);
+            if (existingPlan != null) {
+                tSysQualityPlan.setCreateUser(existingPlan.getCreateUser());
+                tSysQualityPlan.setCreateTime(existingPlan.getCreateTime());
             }
         }
         if (StringUtils.isNotEmpty(tSysQualityPlan.getPlanName())) {
