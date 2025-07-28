@@ -8,6 +8,8 @@ import { Utils } from '../order-management/w-utils';
 import { AddProcessRouteComponent } from '@home/pages/technological-process/dialog/add.process-route.component';
 import { MatDialog } from '@angular/material/dialog';
 import { TechnologicalService } from '@app/core/http/technological.service';
+import { AccountService } from '@app/core/http/account.service';
+
 @Component({
   selector: 'tb-process-route',
   templateUrl: './process-route.html',
@@ -37,7 +39,7 @@ export class ProcessRouteComponent implements OnInit {
     midOrgList = JSON.parse(localStorage.getItem('orgs'));
 
   edit = false;
-  displayedColumns: string[] = ['no', 'craftName', 'craftNumber', 'effectiveTime', 'failureTime','kdOrgId','kdDeptId', 'craftDetail', 'createdTime', 'enabled', 'customColumn1'];
+  displayedColumns: string[] = ['no', 'craftName', 'craftNumber', 'effectiveTime', 'failureTime','pkOrg', 'craftDetail', 'createdTime', 'enabled', 'customColumn1'];
 
   // 搜索参数
   searchFormGroup = this.fb.group({
@@ -57,17 +59,37 @@ export class ProcessRouteComponent implements OnInit {
     private utils: Utils,
     private router: Router,
     public fb: FormBuilder,
-    public dialog: MatDialog, private api: TechnologicalService) {
+    public dialog: MatDialog, private api: TechnologicalService,
+    private accountService: AccountService
+  ) {
 
   }
   deptMap = new Map();
   orgMap = new Map();
-
+  pkOrgList = [];
   ngOnInit() {
     this.setMyMap();
     // console.log()
+    this.accountService.fetchBaseList({
+      type: 'base',
+    }).subscribe(res => {
+      this.pkOrgList = res.data.map(item => {
+        return {
+          name: item.org_name,
+          id: item.pk_org,
+        }
+      });
+    })
   }
-
+  getPkOrgName(id) {
+    let name = '';
+    this.pkOrgList.forEach(item => {
+      if (item.id === id) {
+        name = item.name;
+      }
+    })
+    return name;
+  }
     //创建哈希表
     setMyMap() {
       this.deptMap = this.putHash(new Map(), this.midDeptList, 'dept', 'kdDeptId');
@@ -108,7 +130,10 @@ export class ProcessRouteComponent implements OnInit {
       width: '950px',
       height: 'auto',
       panelClass: 'custom-modalbox',
-      data,
+      data: {
+        ...data,
+        pkOrgList: this.pkOrgList,
+      },
     })
 
     dialogRef.afterClosed().subscribe(result => {

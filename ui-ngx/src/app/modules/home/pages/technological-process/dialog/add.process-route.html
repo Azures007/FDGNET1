@@ -12,7 +12,7 @@
         工艺路线编号为<strong>必填</strong>
       </mat-error>
     </mat-form-field>
-    
+
   </div> -->
   <div class="row-block">
     <label class="label"><span class="red-star">*</span>工艺路线名称:</label>
@@ -52,29 +52,15 @@
   </div>
 
   <div class="row-block">
-    <label class="label"><span class="red-star">*</span>所属组织:</label>
+    <label class="label"><span class="red-star">*</span>基地:</label>
     <mat-form-field appearance="fill" class="select">
-      <mat-select formControlName="kdOrgId" (ngModelChange)="handleGetDept($event)">
-        <mat-option *ngFor="let item of midOrgList" [value]="item.kdOrgId">
-          {{item.kdOrgName}}
+      <mat-select formControlName="pkOrg">
+        <mat-option *ngFor="let item of injectData.pkOrgList" [value]="item.id">
+          {{item.name}}
         </mat-option>
       </mat-select>
-      <mat-error *ngIf="dataForm.hasError('required','kdOrgId')">
-        请选择<strong>组织</strong>
-      </mat-error>
-    </mat-form-field>
-  </div>
-
-  <div class="row-block">
-    <label class="label"><span class="red-star">*</span>所属车间:</label>
-    <mat-form-field appearance="fill" class="select">
-      <mat-select formControlName="kdDeptId">
-        <mat-option *ngFor="let item of midDeptList" [value]="item.kdDeptId">
-          {{item.kdDeptName}}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="dataForm.hasError('required','kdDeptId')">
-        请选择<strong>车间</strong>
+      <mat-error *ngIf="dataForm.hasError('required','pkOrg')">
+        请选择<strong>基地</strong>
       </mat-error>
     </mat-form-field>
   </div>
@@ -125,7 +111,6 @@
         <th class="process">工序</th>
         <th class="class-handle">处理班别</th>
         <th>操作</th>
-        <th>规则</th>
       </tr>
       <tr *ngFor="let item of settingSource; let i = index">
         <td>
@@ -162,14 +147,6 @@
           <div class="group-btn" *ngIf="formType !== 'details'">
             <button class="mini_btn edit_btn" (click)="handleEvent(item,'add')">添加</button>
             <button *ngIf="settingSource.length > 1" class="mini_btn del_btn" (click)="handleEvent(i,'del')">删除</button>
-          </div>
-        </td>
-        <td>
-          <div class="check_box">
-            <mat-checkbox [(ngModel)]="item.isReportingBindCode" class="example-margin">报工扫码</mat-checkbox>
-            <mat-checkbox [(ngModel)]="item.isReceivingBindCode" class="example-margin">投入扫码</mat-checkbox>
-            <mat-checkbox [(ngModel)]="item.isReceivingUnBindCode" class="example-margin">投入解绑</mat-checkbox>
-
           </div>
         </td>
       </tr>

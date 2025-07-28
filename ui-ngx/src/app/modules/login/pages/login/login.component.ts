@@ -81,6 +81,16 @@ export class LoginComponent extends PageComponent implements OnInit {
       }
     )
   }
+  changeAccount() {
+    this.loginFormGroup.controls.remember.setValue(false);
+    this.loginFormGroup.controls.username.setValue('');
+    this.loginFormGroup.controls.password.setValue('');
+    this.loginFormGroup.controls.pkOrg.setValue('');
+    this.loginFormGroup.controls.cwkid.setValue('');
+    this.orgList = [];
+    this.lineList = [];
+    this.userNameComplete = false;
+  }
   login(): void {
     if (!this.userNameComplete) {
       if(!this.loginFormGroup.value.username) {

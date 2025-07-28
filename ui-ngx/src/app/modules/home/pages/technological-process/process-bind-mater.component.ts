@@ -134,6 +134,7 @@ export class ProcessBindMaterComponent implements OnInit {
     }
     this.dataCheck.push(this.checkData);
     this.dataSource = this.dataSource.filter(item => item != this.checkData)
+    this.dataCheckCopy = JSON.parse(JSON.stringify(this.dataCheck));
   }
 
 

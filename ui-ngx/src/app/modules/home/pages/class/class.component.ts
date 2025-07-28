@@ -24,6 +24,7 @@ import { DictionaryService } from '@app/core/http/dictionary.service';
 
 import { ClassAddComponent } from '../../components/class/class-add.component';
 import { TechnologicalService } from '@app/core/http/technological.service';
+import { AccountService } from '@app/core/http/account.service';
 
 
 @Component({
@@ -34,7 +35,7 @@ import { TechnologicalService } from '@app/core/http/technological.service';
 export class ClassComponent implements OnInit {
 
   constructor(
-    private authService: AuthService,
+    private accountService: AccountService,
     private dialogService: DialogService,
     private ClassService: ClassService,
     private DictionaryService: DictionaryService,
@@ -64,7 +65,7 @@ export class ClassComponent implements OnInit {
   dataSource = [];
 
   //表格列参数
-  displayedColumns: string[] = ['name', 'classNumber', 'groupLeader', 'teamNum', 'scheduling', 'belongProcessId', 'kdDeptId', 'kdOrgId', 'enabledSt', 'customColumn1']
+  displayedColumns: string[] = ['name', 'classNumber', 'groupLeader', 'teamNum', 'scheduling', 'belongProcessId', 'pkOrg', 'enabledSt', 'customColumn1']
 
 
   //新增班组参数
@@ -100,7 +101,7 @@ export class ClassComponent implements OnInit {
   midDeptList = [];
   midOrgList = [];
   processList = [];
-
+  pkOrgList = [];
   //生产车间列表
   // midDeptList = localStorage.getItem('depts') ? JSON.parse(localStorage.getItem('depts')) : [];
 
@@ -117,8 +118,26 @@ export class ClassComponent implements OnInit {
 
   ngOnInit(): void {
     this.getStationList()
+    this.accountService.fetchBaseList({
+      type: 'base',
+    }).subscribe(res => {
+      this.pkOrgList = res.data.map(item => {
+        return {
+          name: item.org_name,
+          id: item.pk_org,
+        }
+      });
+    })
   }
-
+  getOrgName(id) {
+    let name = '';
+    this.pkOrgList.forEach(item => {
+      if(item.id == id) {
+        name = item.name;
+      }
+    })
+    return name;
+  }
   //创建哈希表
   setMyMap() {
     this.processMap = this.putHash(new Map(), this.processList, 'process', 'processId');
@@ -276,6 +295,7 @@ export class ClassComponent implements OnInit {
       midOrgList: this.midOrgList,
       processList: this.processList,
       erpClassList: this.erpClassList,
+      pkOrgList: this.pkOrgList,
     }
     let diaref = this._dialog.open(ClassAddComponent, {
       width: "695px",
@@ -315,6 +335,7 @@ export class ClassComponent implements OnInit {
         midOrgList: this.midOrgList,
         processList: this.processList,
         erpClassList: this.erpClassList,
+        pkOrgList: this.pkOrgList,
       }
 
       this.roleService.fetchGetMidDept({ params: { current: 0, size: 999 }, body: { kdOrgId: data.params.tSysClass.kdOrgId } }).subscribe(res => {

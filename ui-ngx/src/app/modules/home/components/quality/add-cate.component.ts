@@ -277,7 +277,9 @@ export class AddCateComponent implements OnInit {
       width: "1400px",
       height: "800px",
       panelClass: 'custom-modalbox',
-      data: {}
+      data: {
+        title: '选择品名'
+      }
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -294,7 +296,9 @@ export class AddCateComponent implements OnInit {
       width: "1400px",
       height: "800px",
       panelClass: 'custom-modalbox',
-      data: {}
+      data: {
+        title: '选择品名'
+      }
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

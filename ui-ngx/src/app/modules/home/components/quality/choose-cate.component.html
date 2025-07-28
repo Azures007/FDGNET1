@@ -74,11 +74,9 @@
     </table>
   </div>
 </div>
-<div class="table-wrapper">
-  <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
-    aria-label="选择要跳转的页面" (page)="getNotices($event)">
-  </mat-paginator>
-</div>
+<mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
+  aria-label="选择要跳转的页面" (page)="getNotices($event)">
+</mat-paginator>
 
 <div class="footer">
   <button (click)="addDialogClose(true)" mat-raised-button color="primary" class="search-btn btn">
