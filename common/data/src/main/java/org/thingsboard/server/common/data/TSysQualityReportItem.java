@@ -35,7 +35,7 @@ public class TSysQualityReportItem {
 
     @ApiModelProperty("下拉框")
     @Column(name = "dropdown_fields")
-    private Integer dropdownFields;
+    private String dropdownFields;
 
     @ApiModelProperty("是否必填")
     @Column(name = "required")

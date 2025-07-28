@@ -44,13 +44,13 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
         TSysQualityReportPlan reportPlan = new TSysQualityReportPlan();
         BeanUtils.copyProperties(tSysQualityReportPlanDto, reportPlan);
         if (reportPlan.getId() == null) {
-            reportPlan.setCreatedMame(reportPlan.getCreatedMame());
+            reportPlan.setCreatedMame(reportPlan.getUpdatedName());
             reportPlan.setCreatedTime(reportPlan.getUpdatedTime());
         } else {
-            if (reportPlanRepository.findById(reportPlan.getId()).isEmpty()) {
+            if (!reportPlanRepository.findById(reportPlan.getId()).isEmpty()) {
                 TSysQualityReportPlan info = reportPlanRepository.findById(reportPlan.getId()).get();
                 reportPlan.setCreatedTime(info.getCreatedTime());
-                reportPlan.setCreatedMame(reportPlan.getCreatedMame());
+                reportPlan.setCreatedMame(info.getCreatedMame());
             }
         }
         reportPlan.setEnabled(1);
@@ -93,7 +93,7 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
 
     @Override
     public PageVo<TSysQualityReportPlanDto> getPlanList(String userId,Integer current, Integer size, TSysQualityReportPlanSearchDto searchDto) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdTime");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdTime");
         Pageable pageable = PageRequest.of(current, size, sort);
         String cwkid =userService.getUserCurrentCwkid(userId);
         ExampleMatcher matcher = ExampleMatcher.matching()

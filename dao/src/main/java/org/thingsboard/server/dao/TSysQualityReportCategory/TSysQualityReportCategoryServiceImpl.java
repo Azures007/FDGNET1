@@ -43,10 +43,10 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
             category.setCreatedMame(category.getUpdatedName());
             category.setCreatedTime(category.getUpdatedTime());
         } else {
-            if (reportCategoryRepository.findById(category.getId()).isEmpty()) {
+            if (reportCategoryRepository.findById(categoryDto.getId()).isPresent()) {
                 TSysQualityReportCategory info = reportCategoryRepository.findById(category.getId()).get();
                 category.setCreatedTime(info.getCreatedTime());
-                category.setCreatedMame(category.getCreatedMame());
+                category.setCreatedMame(info.getCreatedMame());
             }
         }
         category.setEnabled(1);
@@ -87,11 +87,12 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
 
     @Override
     public PageVo<SysQualityReportCategoryDto> getCategoryList(Integer current, Integer size, TSysQualityReportCategorySearchDto searchDto) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdTime");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdTime");
         Pageable pageable = PageRequest.of(current, size, sort);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("frequency", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("importantItem", ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("importantItem", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact());
         TSysQualityReportCategory category = new TSysQualityReportCategory();
         if (StringUtils.isEmpty(searchDto.getFrequency())) {
             searchDto.setFrequency(null);
@@ -101,7 +102,6 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
         }
         BeanUtils.copyProperties(searchDto, category);
 
-        category.setEnabled(null);
         Example<TSysQualityReportCategory> example = Example.of(category, matcher);
         Page<TSysQualityReportCategory> craftInfos = reportCategoryRepository.findAll(example, pageable);
         List<SysQualityReportCategoryDto> dtos = new ArrayList<>();
