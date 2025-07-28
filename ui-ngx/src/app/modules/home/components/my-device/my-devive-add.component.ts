@@ -62,12 +62,8 @@ export class MyDeviveAddComponent implements OnInit {
       this.utils.showMessage("工序不能为空", 'error');
       return
     }
-    if (this.data.params.kdDeptId == "" || this.data.params.kdDeptId == null) {
-      this.utils.showMessage("生产车间不能为空", 'error');
-      return
-    }
-    if (this.data.params.kdOrgId == "" || this.data.params.kdOrgId == null) {
-      this.utils.showMessage("生产组织不能为空", 'error');
+    if (this.data.params.pkOrg == "" || this.data.params.pkOrg == null) {
+      this.utils.showMessage("基地不能为空", 'error');
       return
     }
     if (this.data.params.enabled == "" || this.data.params.enabled == null) {

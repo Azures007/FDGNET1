@@ -48,6 +48,12 @@ public class YcPdServiceImpl implements YcPdService {
                 tSysPdRecord.setPdCreatedName(nameJoin);
             }
             tSysPdRecordRepository.updatePd(format,tSysPdRecord.getPdWorkshopNumber(), tSysPdRecord.getPdClassNumber());
+        }else {
+            //复盘
+            Integer pdRecordId = tSysPdRecord.getPdRecordId();
+            TSysPdRecord tSysPdRecord1 = tSysPdRecordRepository.findById(pdRecordId).orElse(null);
+            tSysPdRecord1.setByFp("1");
+            tSysPdRecordRepository.saveAndFlush(tSysPdRecord1);
         }
         tSysPdRecord.setCreatedTime(new Date());
         tSysPdRecord.setByDeleted("0");
@@ -65,6 +71,12 @@ public class YcPdServiceImpl implements YcPdService {
     @Override
     public List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate) {
         List<TSysPdRecord> tSysPdRecords=tSysPdRecordRepository.fpWorkshopRecord(startDate,endDate);
+        return tSysPdRecords;
+    }
+
+    @Override
+    public List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber) {
+        List<TSysPdRecord> tSysPdRecords=tSysPdRecordRepository.showWorkshopRecord(pdTimeStr,pdWorkshopNumber);
         return tSysPdRecords;
     }
 }

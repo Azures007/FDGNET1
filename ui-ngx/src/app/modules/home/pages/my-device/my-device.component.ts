@@ -23,6 +23,7 @@ import { MyDeviceService } from '@app/core/http/my-device.service';
 import { MyDeviveAddComponent } from '../../components/my-device/my-devive-add.component';
 import { DeviveUploadComponent } from '../../components/my-device/devive-upload.component';
 import { TechnologicalService } from '@app/core/http/technological.service';
+import { AccountService } from '@app/core/http/account.service';
 
 
 
@@ -42,7 +43,8 @@ export class MyDeviceComponent implements OnInit {
     private translate: TranslateService,
     public _dialog: MatDialog,
     private router: Router,
-    private technologicalService: TechnologicalService
+    private technologicalService: TechnologicalService,
+    private accountService: AccountService
   ) { }
 
   //搜索参数
@@ -63,7 +65,7 @@ export class MyDeviceComponent implements OnInit {
   dataSource = [];
 
   //表格列参数
-  displayedColumns: string[] = ['deviceId', 'deviceName', 'deviceNumber', 'belongProcessId', 'kdDeptId', 'kdOrgId', 'note', 'enabled', 'customColumn1'];
+  displayedColumns: string[] = ['deviceId', 'deviceName', 'deviceNumber', 'belongProcessId', 'pkOrg', 'note', 'enabled', 'customColumn1'];
 
 
   btns = JSON.parse(localStorage.getItem('btns'));
@@ -80,8 +82,7 @@ export class MyDeviceComponent implements OnInit {
     // workshop: "",
     // workshopNo: "",
     belongProcessId: "",//工序
-    kdDeptId: "",//生产车间
-    kdOrgId: "",//生产组织
+    pkOrg: "",//基地
   }
 
   //生产车间列表
@@ -99,12 +100,32 @@ export class MyDeviceComponent implements OnInit {
 
   //车间列表
   workShop = [];
-
+  pkOrgList = [];
   ngOnInit(): void {
     this.technologicalService.fetchGetTableList({ current: 0, size: 999, body: { enabled: '1' } }).subscribe(res => {
       this.processList = res.data.content;
       this.setMyMap();
     });
+    this.accountService.fetchBaseList({
+      type: 'base',
+    }).subscribe(res => {
+      this.pkOrgList = res.data.map(item => {
+        return {
+          name: item.org_name,
+          id: item.pk_org,
+        }
+      });
+    })
+  }
+  //获取基地名称
+  getOrgName(id) {
+    let name = '';
+    this.pkOrgList.forEach(item => {
+      if (item.id == id) {
+        name = item.name;
+      }
+    })
+    return name;
   }
 
   //创建哈希表
@@ -185,7 +206,8 @@ export class MyDeviceComponent implements OnInit {
       wsList: this.workShop,
       midDeptList: this.midDeptList,
       midOrgList: this.midOrgList,
-      processList: this.processList
+      processList: this.processList,
+      pkOrgList: this.pkOrgList,
     }
     let diaref = this._dialog.open(MyDeviveAddComponent, {
       width: "695px",
@@ -228,7 +250,8 @@ export class MyDeviceComponent implements OnInit {
       wsList: this.workShop,
       midDeptList: this.midDeptList,
       midOrgList: this.midOrgList,
-      processList: this.processList
+      processList: this.processList,
+      pkOrgList: this.pkOrgList,
     }
     console.log(data,'data');
 

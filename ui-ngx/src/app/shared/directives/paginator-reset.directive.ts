@@ -1,4 +1,4 @@
-import { Directive, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 
 @Directive({
@@ -9,12 +9,16 @@ export class PaginatorResetDirective implements OnChanges {
   @Input() pageIndex: number;
   @Input() pageSize: number;
 
-  constructor(private paginator: MatPaginator) {}
+  constructor(private paginator: MatPaginator, private el: ElementRef) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes.hasOwnProperty('length')) {
       this.checkAndResetPageIndex();
     }
+  }
+  ngAfterViewInit(): void {
+    const labelDom = this.el.nativeElement.querySelector('.mat-paginator-page-size-label') as HTMLElement;
+    labelDom.innerHTML = '条数/页';
   }
 
   private checkAndResetPageIndex(): void {

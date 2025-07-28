@@ -53,6 +53,7 @@ import { BasketModule } from '@home/pages/basket/basket.module';
 import { SpecificationModule } from '@home/pages/specification/specification.module';
 import { MenuModule } from '@home/pages/menu/menu.module';
 import { QualityModule } from '@home/pages/quality/quality.module';
+import { InventoryMgtModule } from '@home/pages/invetory-mgt/invetory-mgt.module';
 
 @NgModule({
   exports: [
@@ -87,7 +88,8 @@ import { QualityModule } from '@home/pages/quality/quality.module';
     PickingModule,
     SpecificationModule,
     MenuModule,
-    QualityModule
+    QualityModule,
+    InventoryMgtModule
   ],
   providers: [
     {

@@ -159,16 +159,16 @@ export class ClassAddComponent implements OnInit {
         }
       }
     }
-    if (this.data.params.tSysClass.belongProcessId == "" || this.data.params.tSysClass.belongProcessId == null) {
-      this.utils.showMessage("工序不能为空", 'error');
-      return
-    }
-    if (this.data.params.tSysClass.kdDeptId == "" || this.data.params.tSysClass.kdDeptId == null) {
-      this.utils.showMessage("生产车间不能为空", 'error');
-      return
-    }
-    if (this.data.params.tSysClass.kdOrgId == "" || this.data.params.tSysClass.kdOrgId == null) {
-      this.utils.showMessage("生产组织不能为空", 'error');
+    // if (this.data.params.tSysClass.belongProcessId == "" || this.data.params.tSysClass.belongProcessId == null) {
+    //   this.utils.showMessage("工序不能为空", 'error');
+    //   return
+    // }
+    // if (this.data.params.tSysClass.kdDeptId == "" || this.data.params.tSysClass.kdDeptId == null) {
+    //   this.utils.showMessage("生产车间不能为空", 'error');
+    //   return
+    // }
+    if (this.data.params.tSysClass.pkOrg == "" || this.data.params.tSysClass.pkOrg == null) {
+      this.utils.showMessage("基地不能为空", 'error');
       return
     }
     if (this.data.params.tSysClass.enabledSt == "") {

@@ -26,18 +26,10 @@
     </div>
 
     <div class="item">
-        <div class="label">生产组织:</div>
-        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.kdOrgId" required
-            (ngModelChange)="handleGetDept($event)" aria-placeholder="请选择">
-            <option *ngFor="let wsItem of data.midOrgList" [value]="wsItem.kdOrgId">{{wsItem.kdOrgName}}</option>
-        </select>
-    </div>
-
-    <div class="item">
-        <div class="label">生产车间:</div>
-        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.kdDeptId" required
-            aria-placeholder="请选择">
-            <option *ngFor="let wsItem of data.midDeptList" [value]="wsItem.kdDeptId">{{wsItem.kdDeptName}}</option>
+        <div class="label">生产基地:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.pkOrg" required
+             aria-placeholder="请选择">
+            <option *ngFor="let wsItem of data.pkOrgList" [value]="wsItem.id">{{wsItem.name}}</option>
         </select>
     </div>
 

@@ -24,8 +24,14 @@
 	.tb-login-content {
     .check-box {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
       width: 392px;
       margin-top: 5px;
+      .change-account {
+        cursor: pointer;
+        color: #ff993c;
+      }
     }
     .mat-error {
       margin-top: 14px;

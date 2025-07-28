@@ -257,7 +257,7 @@ export class AddPlanComponent implements OnInit {
   addConfig() {
     let dialogRef = this._dialog.open(ChooseCateComponent, {
       width: "1400px",
-      height: "800px",
+      height: "auto",
       panelClass: 'custom-modalbox',
       data: {
         configs: this.configs,

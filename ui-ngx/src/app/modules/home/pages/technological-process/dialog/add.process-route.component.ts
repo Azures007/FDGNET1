@@ -39,8 +39,7 @@ export class AddProcessRouteComponent implements OnInit {
     processInfos: [],
     updatedTime: '',
     updatedUser: '',
-    kdOrgId: "",
-    kdDeptId: "",
+    pkOrg: '',
   };
 
   settingSource = [{
@@ -100,7 +99,7 @@ export class AddProcessRouteComponent implements OnInit {
       }
     }
 
-    if (this.utils.isEmpty(this.injectData)) {
+    if (!this.injectData.data?.craftId) {
       this.dataForm = this.fb.group({
         craftName: ['', [Validators.required]],
         // craftNumber: ['', [Validators.required]],
@@ -108,14 +107,12 @@ export class AddProcessRouteComponent implements OnInit {
         craftDetail: '',
         effectiveTime: ['', [Validators.required]],
         failureTime: ['', [Validators.required]],
-        kdOrgId: ['', [Validators.required]],
-        kdDeptId: ['', [Validators.required]],
+        pkOrg: ['', [Validators.required]],
         prevCraftId: ['',],
       });
 
     } else {
       this.formType = this.injectData.type;
-      this.handleGetDept(this.injectData.data.kdOrgId)
       const obj = {
         craftName: '',
         // craftNumber: 0,
@@ -123,8 +120,7 @@ export class AddProcessRouteComponent implements OnInit {
         craftDetail: '',
         effectiveTime: '',
         failureTime: '',
-        kdOrgId: "",
-        kdDeptId: "",
+        pkOrg: '',
         prevCraftId: "",
       };
 
@@ -141,8 +137,7 @@ export class AddProcessRouteComponent implements OnInit {
           craftDetail: [{ value: obj.craftDetail, disabled: true }],
           effectiveTime: [{ value: new Date(obj.effectiveTime), disabled: true }, [Validators.required]],
           failureTime: [{ value: new Date(obj.failureTime), disabled: true }, [Validators.required]],
-          kdOrgId: [{ value: obj.kdOrgId, disabled: true }, [Validators.required]],
-          kdDeptId: [{ value: obj.kdDeptId, disabled: true }, [Validators.required]],
+          pkOrg: [{ value: obj.pkOrg, disabled: true }, [Validators.required]],
           prevCraftId: [{ value: obj.prevCraftId, disabled: true }],
         });
       } else {
@@ -156,8 +151,7 @@ export class AddProcessRouteComponent implements OnInit {
           craftDetail: [{ value: obj.craftDetail, disabled: false }],
           effectiveTime: [{ value: new Date(obj.effectiveTime), disabled: false }, [Validators.required]],
           failureTime: [{ value: new Date(obj.failureTime), disabled: false }, [Validators.required]],
-          kdOrgId: [{ value: obj.kdOrgId, disabled: false }, [Validators.required]],
-          kdDeptId: [{ value: obj.kdDeptId, disabled: false }, [Validators.required]],
+          pkOrg: [{ value: obj.pkOrg, disabled: false }, [Validators.required]],
           prevCraftId: [{ value: obj.prevCraftId, disabled: false }],
         });
       }
@@ -181,16 +175,6 @@ export class AddProcessRouteComponent implements OnInit {
   addDialogClose(): void {
     this.dialogRef.close();
   }
-
-  //获取组织下车间列表
-  handleGetDept(orgId) {
-    console.log(orgId)
-    this.roleService.fetchGetMidDept({ params: { current: 0, size: 999 }, body: { kdOrgId: orgId } }).subscribe(res => {
-      this.midDeptList = res.data.list;
-      this.addParams.kdDeptId = res.data.list[0].midDeptId;
-    })
-  }
-
 
   // 打开选择班别框
   showTransfer(data, index): void {

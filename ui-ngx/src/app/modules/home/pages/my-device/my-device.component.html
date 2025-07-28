@@ -70,13 +70,9 @@
                     <th mat-header-cell *matHeaderCellDef> 所属工序 </th>
                     <td mat-cell *matCellDef="let element"> {{element.belongProcessId?handleHash(0,element.belongProcessId):'未绑定'}} </td>
                 </ng-container>
-                <ng-container matColumnDef="kdDeptId">
-                    <th mat-header-cell *matHeaderCellDef> 生产车间 </th>
-                    <td mat-cell *matCellDef="let element"> {{element.kdDeptId?handleHash(1,element.kdDeptId):'未绑定'}} </td>
-                </ng-container>
-                <ng-container matColumnDef="kdOrgId">
-                    <th mat-header-cell *matHeaderCellDef> 生产组织 </th>
-                    <td mat-cell *matCellDef="let element">  {{element.kdOrgId?handleHash(2,element.kdOrgId):'未绑定'}} </td>
+                <ng-container matColumnDef="pkOrg">
+                    <th mat-header-cell *matHeaderCellDef> 基地 </th>
+                    <td mat-cell *matCellDef="let element">  {{getOrgName(element.pkOrg)}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="note">
