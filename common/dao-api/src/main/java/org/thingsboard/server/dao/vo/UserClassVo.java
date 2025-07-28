@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
+
 @Data
 @ApiModel("用户班别信息")
 public class UserClassVo {
@@ -21,4 +23,6 @@ public class UserClassVo {
     private Integer processId;
     @ApiModelProperty("人员id")
     private Integer personId;
+    @ApiModelProperty("车间主任")
+    private String workshopDirector;
 }

@@ -97,4 +97,6 @@ public class TSysPdRecord {
     @ApiModelProperty("盘点日期（格式yyyy-MM-dd）")
     private String pdTimeStr;
 
+
+
 }

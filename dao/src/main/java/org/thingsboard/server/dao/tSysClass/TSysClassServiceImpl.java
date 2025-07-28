@@ -22,6 +22,7 @@ import org.thingsboard.server.dao.sql.tSysClass.TSysClassRepository;
 import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscRepository;
 import org.thingsboard.server.dao.sql.tSysPersonnelInfo.ClassPersonnelRepository;
 import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysPersonnelInfoRepository;
+import org.thingsboard.server.dao.sql.user.UserDetailRepository;
 import org.thingsboard.server.dao.vo.*;
 
 import java.text.ParseException;
@@ -46,6 +47,9 @@ public class TSysClassServiceImpl implements TSysClassService {
 
     @Autowired
     TSysCodeDscRepository tSysCodeDscRepository;
+
+    @Autowired
+    UserDetailRepository userDetailRepository;
 
     @Override
     public Page<TSysClass> tSysClassList(Integer current, Integer size, TSysClassDto tSysClassDto) {
@@ -377,6 +381,7 @@ public class TSysClassServiceImpl implements TSysClassService {
         userClassVo.setGroupSize(map.get("groupsize") == null ? 0 : Integer.parseInt(String.valueOf(map.get("groupsize"))));
         userClassVo.setProcess(map.get("process") == null ? "" : String.valueOf(map.get("process")));
         userClassVo.setProcessId(map.get("processId") == null ? null : Integer.parseInt(String.valueOf(map.get("processid"))));
+        userClassVo.setWorkshopDirector(map.get("workshop_director") == null ? null : String.valueOf(map.get("workshop_director")));
         TSysPersonnelInfo byUserId = tSysPersonnelInfoRepository.findByUserId(userId);
         userClassVo.setPersonId(byUserId == null ? null : byUserId.getPersonnelId());
         return userClassVo;

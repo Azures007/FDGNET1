@@ -488,6 +488,12 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
             userVo.setByEnabled(true);
         }
 
+        //获取用户详情
+        List<TSysUserDetail> byUserId1 = userDetailRepository.findByUserId(userVo.getUseId());
+        TSysUserDetail tSysUserDetail = byUserId1.get(0);
+        userVo.setNcWarehouseId(tSysUserDetail.getNcWarehouseId());
+        userVo.setNcWarehouseName(tSysUserDetail.getNcWarehouseName());
+
     }
 
     @Override

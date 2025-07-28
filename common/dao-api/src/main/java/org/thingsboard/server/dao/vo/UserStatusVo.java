@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.thingsboard.server.common.data.TSysRole;
 
+import javax.persistence.Column;
+
 /**
  * @author lik
  * @version V1.0
@@ -33,4 +35,14 @@ public class UserStatusVo {
     private TSysRole tSysRole;
     @ApiModelProperty("当前用户班别信息")
     private UserClassVo userClassVo;
+
+    @Column(name = "nc_warehouse_id")
+    @ApiModelProperty("仓库ID")
+    private String ncWarehouseId;
+
+    @Column(name = "nc_warehouse_name")
+    @ApiModelProperty("仓库名称")
+    private String ncWarehouseName;
+
+
 }

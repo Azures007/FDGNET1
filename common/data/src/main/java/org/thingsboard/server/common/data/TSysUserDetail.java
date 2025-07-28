@@ -59,4 +59,6 @@ public class TSysUserDetail {
     @ApiModelProperty("仓库名称")
     private String ncWarehouseName;
 
+
+
 }

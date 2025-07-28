@@ -18,12 +18,12 @@ import java.util.Map;
  * @Description:
  */
 public interface TSysClassRepository extends JpaRepository<TSysClass,Integer> {
-    @Query(value = "select a.name,a.class_id,a.group_leader as groupleader,count(b.class_personnel_id) as groupsize,a.process,t1.group_leader_id\n" +
+    @Query(value = "select a.name,a.class_id,a.group_leader as groupleader,count(b.class_personnel_id) as groupsize,a.process,t1.group_leader_id,a.workshop_director \n" +
             "            from t_sys_class a\n" +
             "            left join t_sys_class_personnel_rel b on a.class_id =b.class_id\n" +
             "            join CLASS_GROUP_LEADER_VIEW t1 on t1.class_id = a.class_id \n" +
             "            where t1.group_leader_id=?1 \n" +
-            "            group by a.name,a.group_leader,a.process,a.class_id,a.group_leader_id ,t1.group_leader_id limit 1 ",nativeQuery = true)
+            "            group by a.name,a.group_leader,a.process,a.class_id,a.group_leader_id ,t1.group_leader_id,a.workshop_director limit 1 ",nativeQuery = true)
     Map<String, Object> getUserClass(String userId);
 
     @Query(value = "select a.name,a.class_id,a.group_leader as groupleader,count(b.class_personnel_id) as groupsize,a.process,t1.user_id\n" +
