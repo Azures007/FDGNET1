@@ -160,6 +160,7 @@ import { ProtobufContentComponent } from './components/protobuf-content.componen
 import { ToastDialogComponent } from './components/dialog/toast-dialog.component';
 
 import { GetMatchStrPipe } from '@app/modules/home/models/myPipe.models';
+import { PaginatorResetDirective } from './directives/paginator-reset.directive';
 
 export function MarkedOptionsFactory(markedOptionsService: MarkedOptionsService) {
   return markedOptionsService;
@@ -277,6 +278,7 @@ export function MarkedOptionsFactory(markedOptionsService: MarkedOptionsService)
     ProtobufContentComponent,
     ToastDialogComponent,
     GetMatchStrPipe,
+    PaginatorResetDirective
   ],
   imports: [
     CommonModule,
@@ -470,7 +472,8 @@ export function MarkedOptionsFactory(markedOptionsService: MarkedOptionsService)
     CopyButtonComponent,
     TogglePasswordComponent,
     ProtobufContentComponent,
-    GetMatchStrPipe
+    GetMatchStrPipe,
+    PaginatorResetDirective
   ]
 })
 export class SharedModule { }

@@ -62,7 +62,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
             "record.device_id,record.device_person_id, " +
             "record.import_pot,record.export_pot,record.export_pot_min, " +
             "record.material_number,record.material_name,record.record_type,record.capacity_unit,record.capacity_qty " +
-            "from thingsboard.public.t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
+            "from t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
             " left join t_sys_personnel_info info on record.person_id = info.personnel_id " +
             " left join t_sys_process_info tspi on record.process_id = tspi.process_id " +
             " where 1=1 " +
@@ -77,7 +77,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 //            "record.device_id,record.device_person_id, " +
 //            "record.import_pot,record.export_pot,record.export_pot_min, " +
 //            "record.material_number,record.material_name,record.record_type,record.capacity_unit,record.capacity_qty " +
-//            "from thingsboard.public.t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
+//            "from t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
 //            " left join t_sys_personnel_info info on record.person_id = info.personnel_id " +
 //            " left join t_sys_process_info tspi on record.process_id = tspi.process_id " +
 //            " where 1=1 " +
@@ -93,7 +93,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
             "record.device_id,record.device_person_id, " +
             "record.import_pot,record.export_pot,record.export_pot_min, " +
             "record.material_number,record.material_name,record.record_type,record.capacity_unit,record.capacity_qty " +
-            "from thingsboard.public.t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
+            "from t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
             " left join t_sys_personnel_info info on record.person_id = info.personnel_id " +
             " left join t_sys_process_info tspi on record.process_id = tspi.process_id " +
             " where 1=1 " +
@@ -108,7 +108,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
     //获取工序和用料id对应的累计投入数量
     @Query(value = "select coalesce(sum(record.record_qty),0) as record_qty " +
-            "from thingsboard.public.t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
+            "from t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
             " left join t_sys_personnel_info info on record.person_id = info.personnel_id " +
             " left join t_sys_process_info tspi on record.process_id = tspi.process_id " +
             " where 1=1 " +
@@ -120,7 +120,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
     //获取工序全部用料对应的累计投入数量
     @Query(value = "select coalesce(sum(record.record_qty),0) as record_qty " +
-            "from thingsboard.public.t_bus_order_process_record record " +
+            "from t_bus_order_process_record record " +
             " left join t_bus_order_head head on head.order_no = record.order_no " +
             " where 1=1 " +
             " and head.mid_mo_sale_order_no=:midMoSaleOrderNo" +
@@ -131,7 +131,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
     //获取拌料的前道订单全部用料累计报工数量
     @Query(value = "select coalesce(sum(record.record_qty),0) as record_qty " +
-            "from thingsboard.public.t_bus_order_process_record record " +
+            "from t_bus_order_process_record record " +
             " left join t_bus_order_head head on head.order_no = record.order_no " +
             " where 1=1 " +
             " and head.order_no=:orderNo" +
@@ -144,7 +144,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
     //获取拌料的前道订单全部用料累计报工数量
     @Query(value = "select coalesce(sum(record.record_qty),0) as record_qty " +
-            "from thingsboard.public.t_bus_order_process_record record " +
+            "from t_bus_order_process_record record " +
             " left join t_bus_order_head head on head.order_no = record.order_no " +
             " where 1=1 " +
             " and head.order_no=:orderNo" +
@@ -160,7 +160,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 //            "record.device_id,record.device_person_id, " +
 //            "record.import_pot,record.export_pot,record.export_pot_min, " +
 //            "record.material_number,record.material_name,record.record_type,record.capacity_unit,record.capacity_qty " +
-//            "from thingsboard.public.t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
+//            "from t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
 //            " left join t_sys_personnel_info info on record.person_id = info.personnel_id " +
 //            "left join t_sys_process_info tspi on record.process_id = tspi.process_id " +
 //            " where 1=1 " +
@@ -172,7 +172,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 //            "record.device_id,record.device_person_id, " +
 //            "record.import_pot,record.export_pot,record.export_pot_min, " +
 //            "record.material_number,record.material_name,record.record_type,record.capacity_unit,record.capacity_qty " +
-//            "from thingsboard.public.t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
+//            "from t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
 //            " left join t_sys_personnel_info info on record.person_id = info.personnel_id " +
 //            " left join t_sys_process_info tspi on record.process_id = tspi.process_id " +
 //            " where 1=1 " +
@@ -185,7 +185,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 //            "record.device_id,record.device_person_id, " +
 //            "record.import_pot,record.export_pot,record.export_pot_min, " +
 //            "record.material_number,record.material_name,record.record_type,record.capacity_unit,record.capacity_qty " +
-//            "from thingsboard.public.t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
+//            "from t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
 //            " left join t_sys_personnel_info info on record.person_id = info.personnel_id " +
 //            "left join t_sys_process_info tspi on record.process_id = tspi.process_id " +
 //            " where 1=1 " +

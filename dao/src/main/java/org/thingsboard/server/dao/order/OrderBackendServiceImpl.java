@@ -291,7 +291,7 @@ public class OrderBackendServiceImpl implements OrderBackendService{
             throw new RuntimeException("物料未绑定工艺路线，请维护物料工艺路线");
         }
         TSysCraftInfo craft = craftInfoRepository.findById(materialRels.get(0).getCraftId()).get();
-        if ("1".equals(craft.getEnabled())) {
+        if ("0".equals(craft.getEnabled())) {
             //设置匹配工艺路线: -1: 不匹配, 1:匹配
 //            setOrderHeadOrderMatching(orderId,  LichengConstants.ORDER_HEAD_MATCHING__1 );
             throw new RuntimeException("工艺路线已被禁用，请在MES变更物料对应工艺路线");

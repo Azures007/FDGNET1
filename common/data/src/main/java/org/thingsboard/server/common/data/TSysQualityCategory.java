@@ -33,9 +33,17 @@ public class TSysQualityCategory {
     @Column(name = "key_process")
     private String keyProcess;
 
+    @ApiModelProperty("关键工序名称")
+    @Column(name = "key_process_name")
+    private String keyProcessName;
+
     @ApiModelProperty("监控方法")
     @Column(name = "monitoring_method")
     private String monitoringMethod;
+
+    @ApiModelProperty("监控方法名称")
+    @Column(name = "monitoring_method_name")
+    private String monitoringMethodName;
 
     @ApiModelProperty("物料ID")
     @Column(name = "material_id")

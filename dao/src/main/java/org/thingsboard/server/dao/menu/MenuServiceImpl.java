@@ -2,11 +2,9 @@ package org.thingsboard.server.dao.menu;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.*;
@@ -65,13 +63,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public MenuListVo list(int isTree, Integer roleId) {
         MenuListVo menuListVo = new MenuListVo();
-        List<Sort.Order> orders=new ArrayList<>();
-        Sort.Order sort1=new Sort.Order(Sort.Direction.ASC,"sort");
-        Sort.Order sort2=new Sort.Order(Sort.Direction.ASC,"menuId");
-        orders.add(sort1);
-        orders.add(sort2);
-        Sort sort = Sort.by(orders);
-        List<TSysMenu> menuList = menuRepository.findAll(sort);
+        List<TSysMenu> menuList = getSysMenus();
         if (isTree == 0) {
         } else {
             List<TSysMenu> tSysMenus = menuRepository.listMenuByRoleId(roleId);
@@ -103,6 +95,35 @@ public class MenuServiceImpl implements MenuService {
         }
         menuListVo.setTsysMenus(menuList);
         return menuListVo;
+    }
+
+    /**
+     * 获取所有菜单
+     * 过滤：enabled=1
+     * 排序：sort、menuId
+     * @return
+     */
+    @NotNull
+    private List<TSysMenu> getSysMenus() {
+        List<Sort.Order> orders=new ArrayList<>();
+        Sort.Order sort1=new Sort.Order(Sort.Direction.ASC,"sort");
+        Sort.Order sort2=new Sort.Order(Sort.Direction.ASC,"menuId");
+        orders.add(sort1);
+        orders.add(sort2);
+        Sort sort = Sort.by(orders);
+
+        // 创建一个示例实体，用于匹配
+        TSysMenu menu = new TSysMenu();
+        menu.setEnabled("1");
+
+        // 创建 ExampleMatcher，自定义匹配规则
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact()); // enabled 等于指定值
+
+        // 创建 Example 对象
+        Example<TSysMenu> example = Example.of(menu, matcher);
+        List<TSysMenu> menuList = menuRepository.findAll(example, sort);
+        return menuList;
     }
 
     @Override

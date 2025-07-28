@@ -48,7 +48,7 @@ public class TSysClassExcelServiceImpl implements TSysClassExcelService {
             ClassGroupLeaderExcelVo vo = new ClassGroupLeaderExcelVo();
             BeanUtils.copyProperties(classExportVo, vo);
             vo.setScheduling(GlobalConstant.getCodeDscName("SCHEDULING0000", vo.getScheduling()));
-            vo.setGroupLeaderStation(GlobalConstant.getCodeDscName("JOB0000", vo.getGroupLeaderStation()));
+//            vo.setGroupLeaderStation(GlobalConstant.getCodeDscName("JOB0000", vo.getGroupLeaderStation()));
             excelVos.add(vo);
         }
         //获取组员
@@ -58,7 +58,7 @@ public class TSysClassExcelServiceImpl implements TSysClassExcelService {
             ClassPersonnelExcelVo vo = new ClassPersonnelExcelVo();
             BeanUtils.copyProperties(classExportVo2, vo);
             vo.setScheduling(GlobalConstant.getCodeDscName("SCHEDULING0000", vo.getScheduling()));
-            vo.setPersonnelStation(GlobalConstant.getCodeDscName("JOB0000", vo.getPersonnelStation()));
+//            vo.setPersonnelStation(GlobalConstant.getCodeDscName("JOB0000", vo.getPersonnelStation()));
             excelVos2.add(vo);
         }
         ExcelUtil.writeExcel(response

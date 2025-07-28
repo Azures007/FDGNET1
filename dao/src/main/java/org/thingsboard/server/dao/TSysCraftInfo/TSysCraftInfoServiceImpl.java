@@ -73,15 +73,9 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        //提示绑定生产组织和生产车间
-        if (craftInfoSaveDto.getKdOrgId() == null && craftInfoSaveDto.getKdDeptId() == null) {
-            throw new RuntimeException("请绑定生产车间和生产组织");
-        }
-        if (craftInfoSaveDto.getKdDeptId() == null) {
-            throw new RuntimeException("请绑定生产车间");
-        }
-        if (craftInfoSaveDto.getKdOrgId() == null) {
-            throw new RuntimeException("请绑定生产组织");
+        //校验基地必填
+        if (StringUtils.isEmpty(craftInfoSaveDto.getPkOrg())) {
+            throw new RuntimeException("请绑定基地");
         }
         //插入工艺路线
         TSysCraftInfo craftInfo = new TSysCraftInfo();

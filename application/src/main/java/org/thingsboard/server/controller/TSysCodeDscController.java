@@ -4,9 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.TSysCodeDsc;
+import org.thingsboard.server.common.data.TSysCodeDscVersion;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.constant.GlobalConstant;
@@ -14,6 +16,7 @@ import org.thingsboard.server.dao.dto.TSysCodeDscDto;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +61,17 @@ public class TSysCodeDscController extends BaseController {
                                                                @RequestParam("codeClId") String codeClId,
                                                                @RequestParam(value = "enabledSt", defaultValue = "1") String enabledSt) throws Exception {
         Page<TSysCodeDsc> tSysCodeDscList = tSysCodeDscService.getCodeByCodeCl(current, size, codeClId, enabledSt);
+        PageVo<TSysCodeDsc> pageVo = new PageVo<>(tSysCodeDscList);
+        return ResultUtil.success(pageVo);
+
+    }
+
+    @ApiOperation("根据字典分类编码获取字典列表（不过滤启停状态）")
+    @GetMapping("/getCodeByCodeClNotJudEt")
+    public ResponseResult<PageVo<TSysCodeDsc>> getCodeByCodeClNotJudEt(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                                               @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                               @RequestParam("codeClId") String codeClId) throws Exception {
+        Page<TSysCodeDsc> tSysCodeDscList = tSysCodeDscService.getCodeByCodeClNotJudEt(current, size, codeClId);
         PageVo<TSysCodeDsc> pageVo = new PageVo<>(tSysCodeDscList);
         return ResultUtil.success(pageVo);
 
@@ -119,4 +133,29 @@ public class TSysCodeDscController extends BaseController {
         this.saveCode(tSysCodeDsc);
         return ResultUtil.success();
     }
+
+
+
+    //========================以下是历史版本控制接口（非常规）==========
+
+
+//    @ApiOperation("根据字典分类编码及版本号获取字典列表")
+//    @GetMapping("/getCodeByCodeClAndVersion")
+//    public ResponseResult<PageVo<TSysCodeDsc>> getCodeByCodeClAndVersion(@RequestParam(value = "current", defaultValue = "0") Integer current,
+//                                                               @RequestParam(value = "size", defaultValue = "10") Integer size,
+//                                                               @RequestParam("codeClId") String codeClId,
+//                                                               @RequestParam("versionNo") String versionNo,
+//                                                               @RequestParam(value = "enabledSt", defaultValue = "1") String enabledSt) throws Exception {
+//        //根据版本号从t_sys_code_dsc_version表获取数据，如果没有找到则去t_sys_code_dsc字典表获取最新版本
+//        Page<TSysCodeDsc> tSysCodeDscVersionList = tSysCodeDscVersionService.getCodeByCodeCl(current, size, codeClId,versionNo, enabledSt);
+//        PageVo<TSysCodeDsc> pageVo = new PageVo<>(tSysCodeDscVersionList);
+//        if (tSysCodeDscVersionList.getContent().size()==0){
+//
+//            Page<TSysCodeDsc> tSysCodeDscList = tSysCodeDscService.getCodeByCodeCl(current, size, codeClId, enabledSt);
+//            pageVo = new PageVo<>(tSysCodeDscList);
+//
+//        }
+//        return ResultUtil.success(pageVo);
+//    }
+
 }

@@ -116,6 +116,13 @@ public class OrderHeadController extends BaseController {
         return ResultUtil.success(orderProcessVo);
     }
 
+    @ApiOperation("报工详情信息")
+    @GetMapping("/getProcessHistoryInfo")
+    public ResponseResult<List<OrderProcessVo>> getProcessHistoryInfo(@RequestParam(value = "orderId") Integer orderId) throws Exception {
+        List<OrderProcessVo> orderProcessVoList = orderHeadService.getProcessHistoryInfo(orderId);
+        return ResultUtil.success(orderProcessVoList);
+    }
+
     @ApiOperation("工序详情")
     @GetMapping("/getProcessInfo")
     public ResponseResult<List<OrderProcessVo>> getProcessInfo(@RequestParam(value = "orderId") Integer orderId) throws Exception {

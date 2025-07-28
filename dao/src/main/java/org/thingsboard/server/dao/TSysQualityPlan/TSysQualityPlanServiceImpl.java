@@ -1,4 +1,4 @@
-package org.thingsboard.server.dao.TSysQualityPlan;
+package org.thingsboard.server.dao.tSysQualityPlan;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +20,8 @@ import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanConfigRepos
 import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
 import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanRepository;
 import org.thingsboard.server.dao.tSysQualityPlan.TSysQualityPlanService;
+import org.thingsboard.server.dao.user.UserService;
+import org.thingsboard.server.dao.util.StringConverterUtil;
 import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 import org.thingsboard.server.dao.vo.TSysQualityPlanVo;
 
@@ -44,12 +46,22 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 
     @Autowired
     TSysQualityPlanJudgmentRepository tSysQualityPlanJudgmentRepository;
-
+    @Autowired
+    protected UserService userService;
 
     @Override
-    public Page<TSysQualityPlan> tSysQualityPlanList(Integer current, Integer size, TSysQualityPlanDto tSysQualityPlanDto) {
+    public Page<TSysQualityPlan> tSysQualityPlanList(String userId,Integer current,
+                                                     Integer size,
+                                                     String sortField,
+                                                     String sortOrder,
+                                                     TSysQualityPlanDto tSysQualityPlanDto) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+        if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
+            String converterSortField = StringConverterUtil.camelToSnake(sortField);
+            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
+        }
+
         Pageable pageable = PageRequest.of(current, size, sort);
 //        ExampleMatcher matcher = ExampleMatcher.matching()
 //                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -57,7 +69,9 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         TSysQualityPlan tSysQualityPlan = new TSysQualityPlan();
         BeanUtils.copyProperties(tSysQualityPlanDto, tSysQualityPlan);
 //        Example<TSysQualityPlan> example = Example.of(tSysClass, matcher);
-
+        //获取登录的产线
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        tSysQualityPlan.setProductionLineId(cwkid);
 
 
 //        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
@@ -98,6 +112,13 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
             if (StringUtils.isBlank(tSysQualityPlan.getIsEnabled())) {
                 tSysQualityPlan.setIsEnabled("1");
             }
+        } else {
+            //编辑 - 保留原有的创建时间和创建人
+            TSysQualityPlan existingPlan = tSysQualityPlanRepository.findById(tSysQualityPlan.getId()).orElse(null);
+            if (existingPlan != null) {
+                tSysQualityPlan.setCreateUser(existingPlan.getCreateUser());
+                tSysQualityPlan.setCreateTime(existingPlan.getCreateTime());
+            }
         }
         if (StringUtils.isNotEmpty(tSysQualityPlan.getPlanName())) {
             List<TSysQualityPlan> sysPlanList = tSysQualityPlanRepository.findByPlanName(tSysQualityPlan.getPlanName());
@@ -130,19 +151,23 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 
     @Override
     @Transactional
-    public void deleteTSysQualityPlan(Integer categoryId) {
-        tSysQualityPlanRepository.deleteById(categoryId);
-        tSysQualityPlanConfigRepository.deleteByPlanId(categoryId);
+    public void deleteTSysQualityPlan(Integer planId) {
+        tSysQualityPlanRepository.deleteById(planId);
+        tSysQualityPlanConfigRepository.deleteByPlanId(planId);
     }
 
     @Override
-    public TSysQualityPlanVo getQualityPlanById(Integer categoryId) {
+    public TSysQualityPlanVo getQualityPlanById(Integer planId) {
         TSysQualityPlanVo vo = new TSysQualityPlanVo();
 
 
-        TSysQualityPlan tSysQualityPlan = tSysQualityPlanRepository.findById(categoryId).orElse(null);
+        TSysQualityPlan tSysQualityPlan = tSysQualityPlanRepository.findById(planId).orElse(null);
         BeanUtils.copyProperties(tSysQualityPlan, vo);
-        List<TSysQualityPlanConfig> tSysQualityPlanConfigList =tSysQualityPlanConfigRepository.findByPlanId(categoryId);
+
+        List<TSysQualityPlanJudgment> tSysQualityPlanJudgmentList =tSysQualityPlanJudgmentRepository.findByPlanId(planId);
+        vo.settSysQualityPlanJudgmentList(tSysQualityPlanJudgmentList);
+
+        List<TSysQualityPlanConfig> tSysQualityPlanConfigList =tSysQualityPlanConfigRepository.findByPlanId(planId);
         vo.settSysQualityPlanConfigList(tSysQualityPlanConfigList);
 
         if (null == tSysQualityPlan){

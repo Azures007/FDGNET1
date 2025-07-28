@@ -17,10 +17,12 @@
                 <option value="1">禁用</option>
             </select>
         </div>
-        <button class="search_btn" (click)="getTableData()">
+        <button class="search_btn" (click)="getTableData()" style="margin-right: 10px;">
             <mat-icon>search</mat-icon> 查询
         </button>
-
+        <button class="search_btn" (click)="reset()">
+            <mat-icon>clear</mat-icon> 重置
+        </button>
     </div>
 
     <div class="info_container">
@@ -96,8 +98,8 @@
 
                         <button *ngIf="set.has('/role/menu')" class="page_btn"
                             (click)="showMenuDia(element)">菜单配置</button>
-                        <button *ngIf="set.has('/role/data')" class="page_btn"
-                            (click)="showDataPageDia(element)">数据权限</button>
+                        <!-- <button *ngIf="set.has('/role/data')" class="page_btn"
+                            (click)="showDataPageDia(element)">数据权限</button> -->
                     </td>
                 </ng-container>
 

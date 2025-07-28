@@ -1,0 +1,77 @@
+<div class="title">
+  选择检查项
+  <span class="close_icon" (click)="addDialogClose()">X</span>
+</div>
+
+<div class="search_form">
+  <div class="search_item">
+    <div class="label">频次</div>
+    <select [(ngModel)]="searchFormGroup.value.frequency" style="width: 180px;">
+      <option *ngFor="let frequency of injectData.frequencyList" [value]="frequency.codeValue">
+        {{frequency.codeDsc}}
+      </option>
+    </select>
+  </div>
+  <div class="search_item">
+    <div class="label">重点项目</div>
+    <input type="text" [(ngModel)]="searchFormGroup.value.importantItem" placeholder="请输入重点项目" style="width: 180px;">
+  </div>
+  <button class="search_btn" style="margin-right: 10px;" (click)="getTableData()">
+    <mat-icon>search</mat-icon> 查询
+  </button>
+  <button class="search_btn" (click)="reset()">
+    <mat-icon>clear</mat-icon> 重置
+  </button>
+</div>
+<div class="setting-warp table-wrapper">
+  <div class="setting-panl">
+    <table class="table">
+      <tr>
+        <th>选择</th>
+        <th>序号</th>
+        <th>频次</th>
+        <th>重点项目</th>
+        <th>备注</th>
+      </tr>
+      <tr *ngFor="let item of dataSource; let i = index">
+        <td>
+          <div>
+            <mat-checkbox [(ngModel)]="item.isChecked" [disabled]="item.disabled"></mat-checkbox>
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ i + 1 }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ getFrequency(item.frequency) }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ item.importantItem }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ item.remark }}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div>
+  <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
+    aria-label="选择要跳转的页面" (page)="getNotices($event)">
+  </mat-paginator>
+</div>
+
+<div class="footer">
+  <button (click)="handleChoose()" mat-raised-button color="primary" class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>确定</span>
+  </button>
+</div>

@@ -29,7 +29,9 @@ export class AddCateComponent implements OnInit {
     id: "",
     inspectionItem: "",
     keyProcess: "",
+    keyProcessName: '',
     monitoringMethod: '',
+    monitoringMethodName: '',
     materialId: '',
     productName: '',
     isEnabled: '',
@@ -67,8 +69,14 @@ export class AddCateComponent implements OnInit {
       current: 0,
       size: 999,
       codeClId: 'GJGX0000',
-      enabledSt: 1
+      // enabledSt: 1
     }
+    this.DictionaryService.fetchGetTypeTableList({
+      ...par,
+      codeClId: 'QCCF0000',
+    }).subscribe(res => {
+      this.fieldNames = res.data.list;
+    })
     if (this.utils.isEmpty(this.injectData.data)) {
       this.dataForm = this.fb.group({
         inspectionItem: ['', [Validators.required]],
@@ -138,12 +146,6 @@ export class AddCateComponent implements OnInit {
     })
     this.DictionaryService.fetchGetTypeTableList({
       ...par,
-      codeClId: 'QCCF0000',
-    }).subscribe(res => {
-      this.fieldNames = res.data.list;
-    })
-    this.DictionaryService.fetchGetTypeTableList({
-      ...par,
       codeClId: 'ZDLX0000',
     }).subscribe(res => {
       this.fieldTypes = res.data.list;
@@ -164,8 +166,8 @@ export class AddCateComponent implements OnInit {
       }
       this.addParams['materialId'] = this.productItem.materialId;
       if(!this.configs.length) {
-        this.utils.showMessage('请添加配置项', 'error');
-        return;
+        // this.utils.showMessage('请添加配置项', 'error');
+        // return;
       } else {
         const materialNameFlag = this.configs.filter(item => {
           return !item.materialName;
@@ -182,6 +184,13 @@ export class AddCateComponent implements OnInit {
           return;
         }
       }
+      this.addParams['keyProcessName'] = this.process.find(item => item.codeValue == this.addParams['keyProcess'])?.codeDsc;
+      // this.addParams['monitoringMethodName'] = this.methods.find(item => item.codeValue == this.addParams['monitoringMethod'][0])?.codeDsc;
+      let monitoringMethodName = [];
+      (this.addParams['monitoringMethod'] as unknown as Array<string>).forEach(item => {
+        monitoringMethodName.push(this.methods.find(subItem => subItem.codeValue == item)?.codeDsc);
+      })
+      this.addParams['monitoringMethodName'] = monitoringMethodName.join(',');
       const params = {
         tSysQualityCategory: {
           ...this.addParams,

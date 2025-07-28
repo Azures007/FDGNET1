@@ -1,4 +1,9 @@
 <div class="page-container ">
+  <div class="page-header">
+    <button class="search-btn" (click)="back()">
+      返回
+    </button>
+  </div>
   <div class="flex-column">
     <mat-accordion multi="true">
       <mat-expansion-panel [expanded]="true">
@@ -58,7 +63,7 @@
               <th>序号</th>
               <th>产品编码</th>
               <th>产品名称</th>
-              <th>计划产量(件)</th>
+              <th>计划产量</th>
               <th>计划开工日期</th>
               <th>计划完工日期</th>
             </tr>

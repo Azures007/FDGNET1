@@ -27,3 +27,15 @@
   max-height: 80vh;
   overflow-y: auto;
 }
+.border-none {
+  // border: none !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 34px;
+  width: 100%;
+}
+.padding-none {
+  padding: 0 !important;
+  border: none !important;
+}

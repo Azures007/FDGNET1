@@ -2,7 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Utils } from './w-utils';
 import { OrderService } from "@core/http/order.service";
@@ -66,6 +66,7 @@ export class OrderDetailsComponent implements OnInit {
     private activeRoute: ActivatedRoute,
     private apiOrder: OrderService,
     public _dialog: MatDialog,
+    private router: Router,
   ) {
 
   }
@@ -163,7 +164,9 @@ export class OrderDetailsComponent implements OnInit {
   handleEvent(data, type) {
 
   }
-
+  back(){
+    this.router.navigate(['/order/list']);
+  }
 
 
 }

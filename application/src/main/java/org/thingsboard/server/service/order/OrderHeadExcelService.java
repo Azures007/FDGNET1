@@ -14,7 +14,7 @@ import java.util.List;
 public interface OrderHeadExcelService {
 
     void download(Integer current, Integer size, TBusOrderHeadDto tBusOrderHeadDto, HttpServletResponse response) throws IOException;
-    void download(Integer current, Integer size, TBusOrderDto tBusOrderDto, HttpServletResponse response) throws IOException;
+    void download(String userId,Integer current, Integer size, TBusOrderDto tBusOrderDto, HttpServletResponse response) throws IOException;
     void downloadOrder(Integer current, Integer size, TBusOrderDto tBusOrderDto, HttpServletResponse response) throws Exception;
 
 

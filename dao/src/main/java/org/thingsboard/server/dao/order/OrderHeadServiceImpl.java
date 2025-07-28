@@ -39,6 +39,7 @@ import org.thingsboard.server.dao.sql.tSysClass.TSysClassRepository;
 import org.thingsboard.server.dao.sql.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscService;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.*;
 
 import javax.persistence.criteria.Predicate;
@@ -147,6 +148,9 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 
     @Autowired
     AppOrderProcessRecordSubmitService appOrderProcessRecordSubmitService;
+
+    @Autowired
+    protected UserService userService;
 
     @Override
     public PageVo<TBusOrderHead> tBusOrderHeadList(Integer current, Integer size, TBusOrderHeadDto tBusOrderHeadDto) {
@@ -1340,6 +1344,8 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             orderProcessService.saveTBusOrderProcess(tBusOrderProcess);
             TBusOrderHead orderHead = this.getTBusOrderHead(orderId);
             orderHead.setCurrentPersonId(tSysPersonnelInfo);
+            orderHead.setNcReceiveTime(receiveTime);
+            orderHead.setOrderStatus(LichengConstants.ORDERSTATUS_1);
             this.saveTBusOrderHead(orderHead);
             return ResultUtil.success();
         } else {
@@ -1529,7 +1535,10 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     }
 
     @Override
-    public PageVo<OrderSimpleListVo> getSimpleOrderList(Integer current, Integer size, TBusOrderDto orderDto) {
+    public PageVo<OrderSimpleListVo> getSimpleOrderList(String userId,Integer current, Integer size, TBusOrderDto orderDto) {
+        //获取登录的产线
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        orderDto.setCwkid(cwkid);
         PageVo<TBusOrderHead> pageVo = tBusOrderHeadList(current, size, orderDto);
         PageVo<OrderSimpleListVo> result = new PageVo<>();
         result.setTotal(pageVo.getTotal());
@@ -1630,6 +1639,41 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             vo.setCraftProcesses(craftDetail.getProcessInfos());
         }
         return vo;
+    }
+
+    @Override
+    public List<OrderProcessVo> getProcessHistoryInfo(Integer orderId) {
+        TBusOrderHead order = orderHeadRepository.findById(orderId).orElse(null);
+        if (order == null) return null;
+        List<OrderProcessVo> processHistory = new ArrayList<>();
+//        int processIndex = 1;
+        if (order.getTBusOrderProcessSet() != null) {
+            for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
+                List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
+                if (recordList != null) {
+                    for (TBusOrderProcessRecord record : recordList) {
+                        OrderProcessVo execVo = new OrderProcessVo();
+//                        execVo.setIndex(processIndex++);
+                        execVo.setProcessName(process.getProcessId() != null ? process.getProcessId().getProcessName() : "");
+                        execVo.setProcessType(record.getBusType());
+                        execVo.setMaterialName(record.getMaterialName());
+                        execVo.setMaterialSpec("");
+                        execVo.setLot(record.getBodyLot());
+                        execVo.setUnit(record.getRecordUnit());
+                        execVo.setQty(record.getRecordQty());
+                        execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
+                        execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
+                        execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
+                        if (record.getReportTime() != null) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            execVo.setReportTime(sdf.format(record.getReportTime()));
+                        }
+                        processHistory.add(execVo);
+                    }
+                }
+            }
+        }
+        return processHistory;
     }
 }
 

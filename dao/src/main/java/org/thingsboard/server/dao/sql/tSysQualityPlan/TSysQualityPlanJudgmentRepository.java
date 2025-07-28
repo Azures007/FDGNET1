@@ -1,7 +1,10 @@
 package org.thingsboard.server.dao.sql.tSysQualityPlan;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.thingsboard.server.common.data.TSysQualityPlanConfig;
 import org.thingsboard.server.common.data.TSysQualityPlanJudgment;
+
+import java.util.List;
 
 /**
  * @author 陈懋燊
@@ -12,4 +15,6 @@ import org.thingsboard.server.common.data.TSysQualityPlanJudgment;
 public interface TSysQualityPlanJudgmentRepository extends JpaRepository<TSysQualityPlanJudgment,Integer> {
 
     void deleteByPlanId(Integer planId);
+
+    List<TSysQualityPlanJudgment> findByPlanId(Integer planId);
 }

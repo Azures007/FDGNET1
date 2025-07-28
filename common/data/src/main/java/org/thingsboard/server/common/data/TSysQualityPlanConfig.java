@@ -8,7 +8,6 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.util.Date;
-import org.thingsboard.server.common.data.json.JsonStringType;
 
 /**
  * @author 陈懋燊
@@ -19,7 +18,7 @@ import org.thingsboard.server.common.data.json.JsonStringType;
 @Data
 @Entity
 @Table(name = "t_sys_quality_plan_config")
-@TypeDef(name = "jsonb", typeClass = JsonStringType.class)
+//@TypeDef(name = "json", typeClass = JsonStringType.class)
 @ApiModel("质检方案配置类")
 public class TSysQualityPlanConfig {
 
@@ -36,9 +35,35 @@ public class TSysQualityPlanConfig {
     @Column(name = "category_id")
     private Integer categoryId;
 
+    //类目冗余字段存储，方案不因类目修改而改变
+    @ApiModelProperty("检查项目")
+    @Column(name = "inspection_item")
+    private String inspectionItem;
+
+    @ApiModelProperty("关键工序id")
+    @Column(name = "key_process")
+    private String keyProcess;
+
+    @ApiModelProperty("关键工序名称")
+    @Column(name = "key_process_name")
+    private String keyProcessName;
+
+    @ApiModelProperty("监控方法id")
+    @Column(name = "monitoring_method")
+    private String monitoringMethod;
+
+    @ApiModelProperty("监控方法名称")
+    @Column(name = "monitoring_method_name")
+    private String monitoringMethodName;
+
+    @ApiModelProperty("质检标准")
+    @Column(name = "standard")
+    private String standard;
+
     @ApiModelProperty("配置数据，存储动态配置信息")
-    @Type(type = "jsonb")
-    @Column(name = "config_data", columnDefinition = "jsonb")
+//    @Type(type = "json")
+//    @Column(name = "config_data", columnDefinition = "json")
+    @Column(name = "config_data")
     private String configData;
 
     @ApiModelProperty("创建时间")

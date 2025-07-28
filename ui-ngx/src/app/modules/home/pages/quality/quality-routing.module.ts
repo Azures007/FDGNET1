@@ -5,6 +5,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { Authority } from '@shared/models/authority.enum';
 import { QualityCateComponent } from './quality-cate.component';
 import { QualityPlanComponent } from './quality-plan.component';
+import { QualityCheckCateComponent } from './quality-check-cate.component';
+import { QualityCheckPlanComponent } from './quality-check-plan.component';
 
 
 const routes: Routes = [
@@ -45,7 +47,29 @@ const routes: Routes = [
             icon: 'bookmarks'
           }
         }
-      }
+      },
+      {
+        path: 'check-cate',
+        component: QualityCheckCateComponent,
+        data: {
+          title: '日报检查项维护',
+          breadcrumb: {
+            label: '日报检查项维护',
+            icon: 'bookmarks'
+          }
+        }
+      },
+      {
+        path: 'check-plan',
+        component: QualityCheckPlanComponent,
+        data: {
+          title: '日报方案管理',
+          breadcrumb: {
+            label: '日报方案管理',
+            icon: 'bookmarks'
+          }
+        }
+      },
     ]
   }
 ];

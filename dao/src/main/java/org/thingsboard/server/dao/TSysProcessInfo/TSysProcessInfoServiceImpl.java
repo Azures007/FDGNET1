@@ -39,15 +39,40 @@ public class TSysProcessInfoServiceImpl implements TSysProcessInfoService {
 
     @Override
     public void saveProcess(TSysProcessInfo processInfo) {
+        this.updateVerify(processInfo);
         if (processInfo.getProcessId() != null) {
             if (!tSysProcessInfoRepository.findById(processInfo.getProcessId()).isEmpty()) {
                 TSysProcessInfo processInfo1 = tSysProcessInfoRepository.findById(processInfo.getProcessId()).get();
-                processInfo.setProcessNumber(processInfo1.getProcessNumber());
+                if (processInfo1 != null && StringUtils.isNotEmpty(processInfo1.getProcessNumber())) {
+                    processInfo.setCreatedTime(processInfo1.getCreatedTime());
+                    processInfo.setCreatedUser(processInfo1.getCreatedUser());
+                }
             }
         }
         processInfo.setBySetImport(StringUtils.isEmpty(processInfo.getBySetImport())||(processInfo.getBySetImport().equals(GlobalConstant.enableFalse)) ? GlobalConstant.enableFalse : GlobalConstant.enableTrue);
         processInfo.setBySetExport(StringUtils.isEmpty(processInfo.getBySetExport())||(processInfo.getBySetExport().equals(GlobalConstant.enableFalse)) ? GlobalConstant.enableFalse : GlobalConstant.enableTrue);
         tSysProcessInfoRepository.saveAndFlush(processInfo);
+    }
+
+    public void updateVerify(TSysProcessInfo processInfo) {
+        // 工序编码去除空格
+        processInfo.setProcessNumber(processInfo.getProcessNumber().trim());
+        if (StringUtils.isBlank(processInfo.getProcessNumber())) {
+            throw new RuntimeException("工序编码不能为空");
+        }
+        if (StringUtils.isBlank(processInfo.getProcessName())) {
+            throw new RuntimeException("工序名称不能为空");
+        }
+        List<TSysProcessInfo> processInfoList = tSysProcessInfoRepository.findByProcessNumber(processInfo.getProcessNumber());
+        if (processInfo.getProcessId() == null) {
+            if (processInfoList != null && processInfoList.size() > 0) {
+                throw new RuntimeException("工序编码不能和已有的重复");
+            }
+        } else {
+            if (processInfoList != null && processInfoList.size() > 0 && !processInfoList.get(0).getProcessId().equals(processInfo.getProcessId())) {
+                throw new RuntimeException("工序编码不能和已有的重复");
+            }
+        }
     }
 
     @Override
@@ -165,7 +190,8 @@ public class TSysProcessInfoServiceImpl implements TSysProcessInfoService {
 
     @Override
     public TSysProcessInfo getByProcessNumber(String processNumber) {
-        return tSysProcessInfoRepository.getByProcessNumber(processNumber);
+        List<TSysProcessInfo> processInfoList = tSysProcessInfoRepository.findByProcessNumber(processNumber);
+        return processInfoList.get(0);
     }
 
     @Override

@@ -204,7 +204,7 @@ public class MaterialServiceImpl implements MaterialService {
         PageRequest pageRequest = PageRequest.of(current, size);
         ListMaterialFiterVo listMaterialFiterVo = new ListMaterialFiterVo();
         listMaterialFiterVo.setOffMaterial(materialRepository.listMaterialOffFiter(craftId));
-        Page<TSyncMaterial> page = materialRepository.listMaterialFiter(materialCode,pageRequest);
+        Page<TSyncMaterial> page = materialRepository.listMaterialFiter(materialCode,craftId,pageRequest);
         listMaterialFiterVo.setNoMaterial(new PageVo<TSyncMaterial>(page));
         return listMaterialFiterVo;
     }

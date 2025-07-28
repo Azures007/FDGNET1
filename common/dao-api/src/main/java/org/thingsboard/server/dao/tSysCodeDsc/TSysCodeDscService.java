@@ -58,6 +58,13 @@ public interface TSysCodeDscService {
     Page<TSysCodeDsc> getCodeByCodeCl(Integer current, Integer size, String codeClId, String enabledSt);
 
     /**
+     * 根据字典分类编码获取字典列表（不过滤启停状态）
+     * @return
+     */
+    Page<TSysCodeDsc> getCodeByCodeClNotJudEt(Integer current, Integer size, String codeClId);
+
+
+    /**
      * 根据ID获取字典信息
      * @param codeId
      * @return

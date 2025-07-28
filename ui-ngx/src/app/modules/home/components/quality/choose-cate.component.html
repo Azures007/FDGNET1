@@ -1,0 +1,88 @@
+<div class="title">
+  选择类目
+  <span class="close_icon" (click)="addDialogClose(false)">X</span>
+</div>
+
+<div class="search_form">
+  <div class="search_item">
+    <div class="label">检查项目</div>
+    <input type="text" [(ngModel)]="searchFormGroup.value.inspectionItem" placeholder="请输入检查项目" style="width: 180px;">
+  </div>
+  <div class="search_item">
+    <div class="label">关键工序</div>
+    <input type="text" [(ngModel)]="searchFormGroup.value.keyProcessName" placeholder="请输入关键工序" style="width: 180px;">
+  </div>
+  <div class="search_item">
+    <div class="label">产品名称</div>
+    <input type="text" [(ngModel)]="searchFormGroup.value.productName" placeholder="请输入产品名称" style="width: 180px;">
+  </div>
+  <button class="search_btn" style="margin-right: 10px;" (click)="getTableData()">
+    <mat-icon>search</mat-icon> 查询
+  </button>
+  <button class="search_btn" (click)="reset()">
+    <mat-icon>clear</mat-icon> 重置
+  </button>
+</div>
+<div class="setting-warp">
+  <div class="setting-panl">
+    <table class="table">
+      <tr>
+        <th>选择</th>
+        <th>序号</th>
+        <th>检查项目</th>
+        <th>关键工序</th>
+        <th>监控方法</th>
+        <th>品名</th>
+        <th *ngFor="let item of fieldNames">{{item.codeDsc}}</th>
+      </tr>
+      <tr *ngFor="let item of dataSource; let i = index">
+        <td>
+          <div>
+            <mat-checkbox [(ngModel)]="item.isChecked" [disabled]="item.disabled"></mat-checkbox>
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ i + 1 }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ item.inspectionItem }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ item.keyProcessName }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ item.monitoringMethodName }}
+          </div>
+        </td>
+        <td *ngFor="let arrItem of getArray(); let n = index" class="padding-none">
+          <tr *ngFor="let subItem of getFieldValue(item)" class="border-none">
+            <ng-container  *ngFor="let listItem of subItem; let j = index">
+              <td *ngIf="n === j" class="border-none">
+                {{ listItem }}
+              </td>
+            </ng-container>
+          </tr>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div class="table-wrapper">
+  <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
+    aria-label="选择要跳转的页面" (page)="getNotices($event)">
+  </mat-paginator>
+</div>
+
+<div class="footer">
+  <button (click)="addDialogClose(true)" mat-raised-button color="primary" class="search-btn btn">
+    <mat-icon class="material-icons svgIcon">done</mat-icon>
+    <span>确定</span>
+  </button>
+</div>

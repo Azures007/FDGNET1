@@ -36,7 +36,7 @@ public class TSysQualityPlan {
 
     @ApiModelProperty("生产线ID")
     @Column(name = "production_line_id")
-    private Integer productionLineId;
+    private String productionLineId;
 
     @ApiModelProperty("生产线名称")
     @Column(name = "production_line_name")

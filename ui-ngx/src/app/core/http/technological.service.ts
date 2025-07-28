@@ -15,15 +15,7 @@ export class TechnologicalService {
 
   // 获取工序管理列表
   public fetchGetTableList(data): Observable<any> {
-    let body = {
-      processName: "",
-      processNumber: "",
-      enabled: ""
-    }
-    if (data.body) {
-      body.enabled = data.body.enabled
-    }
-    return this.http.post(`/api/process/getProcessInfoList?current=${data.current}&size=${data.size}`, body);
+    return this.http.post(`/api/process/getProcessInfoList?current=${data.current}&size=${data.size}`, data.body || {});
   }
 
 

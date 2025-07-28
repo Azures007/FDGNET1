@@ -13,6 +13,9 @@ import java.util.List;
 @ApiModel("质检类目明细")
 public class TSysQualityCategoryVo extends TSysQualityCategory {
 
+    @ApiModelProperty("字典版本号")
+    private String codeVersionNo;
+
 //    @ApiModelProperty("关键工序")
 //    private String keyProcessName;
 //

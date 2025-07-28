@@ -27,7 +27,7 @@ export class QualityCateComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   searchData = {
     inspectionItem: '',
-    keyProcess: '',
+    keyProcessName: '',
     productName: '',
     current: 0,
     size: 50,
@@ -77,13 +77,13 @@ export class QualityCateComponent implements OnInit {
   }
   getMethod(value) {
     const arr = value.split(',');
-    let label = '';
+    let label = [];
     this.methods.forEach(item => {
       if (arr.indexOf(item.codeValue) !== -1) {
-        label += item.codeDsc + ',';
+        label.push(item.codeDsc);
       }
     })
-    return label;
+    return label.join(',');
   }
   constructor(private utils: Utils,
     private DictionaryService: DictionaryService,
@@ -117,7 +117,7 @@ export class QualityCateComponent implements OnInit {
   resetQuery() {
     this.searchData = {
       inspectionItem: '',
-      keyProcess: '',
+      keyProcessName: '',
       productName: '',
       current: 0,
       size: 50,
@@ -138,7 +138,7 @@ export class QualityCateComponent implements OnInit {
       sortOrder: this.sort?.direction,
       body: {
         inspectionItem: this.searchData.inspectionItem,
-        keyProcess: this.searchData.keyProcess,
+        keyProcessName: this.searchData.keyProcessName,
         productName: this.searchData.productName,
       }
     }

@@ -66,7 +66,7 @@ export class StaffComponent implements OnInit {
   dataSource = [];
 
   //表格列参数
-  displayedColumns: string[] = ['name', 'sex', 'phone', 'station', 'class', 'byDevicesType1','enabledSt', 'customColumn1']
+  displayedColumns: string[] = ['name', 'sex', 'phone', 'class','enabledSt', 'customColumn1']
 
   //岗位列表
   stationList = [];
@@ -80,7 +80,7 @@ export class StaffComponent implements OnInit {
     name: "",
     phone: "",
     sex: "",
-    station: "",
+    // station: "",
     userId: "",
     userEmail: "",
     personnelId: "",
@@ -355,6 +355,12 @@ export class StaffComponent implements OnInit {
     // 点击paginator事件，获取pageIndex，重新加载页面
     this.searchFormGroup.value.current = $event.pageIndex;
     this.searchFormGroup.value.size = $event.pageSize;
+    this.getTableData();
+  }
+  reset() {
+    this.searchFormGroup.value.className = null;
+    this.searchFormGroup.value.name = null;
+    this.searchFormGroup.value.sex = '';
     this.getTableData();
   }
 }

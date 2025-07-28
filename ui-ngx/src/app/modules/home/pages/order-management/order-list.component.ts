@@ -45,8 +45,9 @@ export class OrderListComponent implements OnInit {
 
   minDate: Date;
   orderBillRange = new FormGroup({
-    start: new FormControl(new Date(new Date().getTime() - 2 * 24 * 3600 * 1000)),
-    end: new FormControl(new Date(new Date().getTime() + 4 * 24 * 3600 * 1000)),
+    // 默认开始时间为当月一号，结束时间为当前日
+    start: new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
+    end: new FormControl(new Date()),
   });
 
   orderPlanRange = new FormGroup({
@@ -94,13 +95,18 @@ export class OrderListComponent implements OnInit {
     ncMaterialCode: '',
     ncMaterialName: '',
     cwkid: '',
-    orderStatus: '0'
+    orderStatus: ''
   });
   cwkList = [];
   clickedRows = new Set();
   bodyUnit = "";
 
   orderStatus = [
+    {
+      label: "全部",
+      value: "",
+      total: ''
+    },
     {
       label: "未开工",
       value: "0",
@@ -120,11 +126,6 @@ export class OrderListComponent implements OnInit {
       label: "暂停",
       value: "2",
       hide: true,
-      total: ''
-    },
-    {
-      label: "全部",
-      value: "",
       total: ''
     },
   ]
@@ -203,8 +204,8 @@ export class OrderListComponent implements OnInit {
   }
   resetQuery() {
     this.orderBillRange = new FormGroup({
-      start: new FormControl(new Date(new Date().getTime() - 2 * 24 * 3600 * 1000)),
-      end: new FormControl(new Date(new Date().getTime() + 4 * 24 * 3600 * 1000)),
+      start: new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
+      end: new FormControl(new Date()),
     });
     this.orderPlanRange = new FormGroup({
       start: new FormControl(null),
@@ -217,7 +218,7 @@ export class OrderListComponent implements OnInit {
       ncMaterialCode: '',
       ncMaterialName: '',
       cwkid: '',
-      orderStatus: this.searchFormGroup.value.orderStatus,
+      orderStatus: '',
     });
     this.searchList();
 

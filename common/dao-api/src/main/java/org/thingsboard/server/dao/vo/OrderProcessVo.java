@@ -1,5 +1,6 @@
 package org.thingsboard.server.dao.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,17 +27,17 @@ public class OrderProcessVo {
     @ApiModelProperty("暂停原因")
     private String suspendReason;
 
-    @ApiModelProperty(value = "处理人")
+    @ApiModelProperty(value = "责任人id")
     private TSysPersonnelInfo personId;
-    @ApiModelProperty(value = "处理人名称")
+    @ApiModelProperty(value = "责任人名称")
     private String personName;
 
     @ApiModelProperty("接单时间")
     private String receiveTime;
-    @ApiModelProperty("完工时间")
+    @ApiModelProperty("完成时间")
     private String finishTime;
 
-    @ApiModelProperty("耗时:完工时间-接单时间")
+    @ApiModelProperty("耗时:完成时间-接单时间")
     private Integer elapsedTime;
 
     @ApiModelProperty("未完成数量：计划生产数量-工序实际产量")
@@ -78,4 +79,32 @@ public class OrderProcessVo {
 
     @ApiModelProperty("累计产后数量")
     private float totalProductQty = 0f;
+
+    @ApiModelProperty("报工类别")
+    private String processType;
+
+    @ApiModelProperty("报工物料名称")
+    private String materialName;
+
+    @ApiModelProperty("报工规格")
+    private String materialSpec;
+
+    @ApiModelProperty("报工批次")
+    private String lot;
+
+    @ApiModelProperty("单位")
+    private String unit;
+
+    @ApiModelProperty("报工数量")
+    private Float qty;
+
+    @ApiModelProperty("报工班组")
+    private String className;
+
+    @ApiModelProperty("锅数/批次数")
+    private Integer potCount;
+
+    @ApiModelProperty("报工时间，格式：yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private String reportTime;
 }

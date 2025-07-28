@@ -1,0 +1,41 @@
+.content{
+    .row-block{
+        width: 33.33%;
+    }
+}
+.relative {
+  position: relative;
+  .absolute {
+    position: absolute;
+    top: 0;
+    right: -21%;
+    cursor: pointer;
+    color: #1890ff;
+  }
+}
+.btn {
+  cursor: pointer;
+  &-color {
+    color: #1890ff;
+  }
+}
+.setting-warp {
+  max-height: unset !important;
+}
+
+.cate-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.border-none {
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 34px;
+  width: 100%;
+}
+.padding-none {
+  padding: 0 !important;
+  border: none !important;
+}

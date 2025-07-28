@@ -22,6 +22,7 @@ import { DictionaryService } from '@app/core/http/dictionary.service';
 import { MyDeviceService } from '@app/core/http/my-device.service';
 import { MyDeviveAddComponent } from '../../components/my-device/my-devive-add.component';
 import { DeviveUploadComponent } from '../../components/my-device/devive-upload.component';
+import { TechnologicalService } from '@app/core/http/technological.service';
 
 
 
@@ -40,7 +41,8 @@ export class MyDeviceComponent implements OnInit {
     public fb: FormBuilder,
     private translate: TranslateService,
     public _dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private technologicalService: TechnologicalService
   ) { }
 
   //搜索参数
@@ -99,7 +101,10 @@ export class MyDeviceComponent implements OnInit {
   workShop = [];
 
   ngOnInit(): void {
-    this.setMyMap();
+    this.technologicalService.fetchGetTableList({ current: 0, size: 999, body: { enabled: '1' } }).subscribe(res => {
+      this.processList = res.data.content;
+      this.setMyMap();
+    });
   }
 
   //创建哈希表
@@ -347,7 +352,7 @@ export class MyDeviceComponent implements OnInit {
     const blob = new Blob([data], { type: contentType });
     const url = window.URL.createObjectURL(blob);
     // 打开新窗口方式进行下载
-    // window.open(url); 
+    // window.open(url);
     // 以动态创建a标签进行下载
     const a = document.createElement("a");
     a.href = url;
@@ -402,6 +407,12 @@ export class MyDeviceComponent implements OnInit {
     // 点击paginator事件，获取pageIndex，重新加载页面
     this.searchFormGroup.value.current = $event.pageIndex;
     this.searchFormGroup.value.size = $event.pageSize;
+    this.getTableData();
+  }
+  reset() {
+    this.searchFormGroup.value.deviceName = null;
+    this.searchFormGroup.value.deviceNumber = null;
+    this.searchFormGroup.value.enabled = "";
     this.getTableData();
   }
 }

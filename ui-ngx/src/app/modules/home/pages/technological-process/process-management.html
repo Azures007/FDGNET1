@@ -1,6 +1,35 @@
 <div class="page-container flex-column">
   <div class="page-header">
+    <div class="row-block cols4">
+      <label class="label">工序名称：</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.processName" />
+    </div>
 
+    <div class="row-block cols4">
+      <label class="label">工序编号：</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.processNumber" />
+    </div>
+
+    <div class="row-block cols4">
+      <label class="label">状态：</label>
+      <select required [(ngModel)]="searchFormGroup.value.enabled">
+        <option *ngFor="let item of orderSelect" [value]="item.value">
+          {{item.label}}
+        </option>
+      </select>
+    </div>
+    <div class="row-block cols4">
+      <button class="search-btn btn" (click)="searchList()">
+        <mat-icon class="material-icons svgIcon">search</mat-icon>
+        <span>查询</span>
+      </button>
+      <button class="search-btn btn" (click)="resetSearch()">
+        重置
+      </button>
+    </div>
+
+  </div>
+  <div class="page-header">
     <button *ngIf="set.has('/technological/processManage/add')" class="search-btn btn" (click)="showAddVisibilly({})">
       <mat-icon class="material-icons svgIcon">control_point</mat-icon>
       <span>新增工序</span>
@@ -29,32 +58,32 @@
         <td mat-cell *matCellDef="let element"> {{element.processNumber}} </td>
       </ng-container>
 
-      <ng-container matColumnDef="erpProcessNumber">
+      <!-- <ng-container matColumnDef="erpProcessNumber">
         <th mat-header-cell *matHeaderCellDef> ERP工序标识 </th>
         <td mat-cell *matCellDef="let element"> {{element.erpProcessNumber?handleHash(element.erpProcessNumber):'未绑定'}}
         </td>
-      </ng-container>
+      </ng-container> -->
 
       <ng-container matColumnDef="processDetail">
         <th mat-header-cell *matHeaderCellDef> 工艺说明 </th>
         <td mat-cell *matCellDef="let element"> {{element.processDetail}} </td>
       </ng-container>
 
-      <ng-container matColumnDef="bySetImport">
+      <!-- <ng-container matColumnDef="bySetImport">
         <th mat-header-cell *matHeaderCellDef>投入设置属性 </th>
         <td mat-cell *matCellDef="let element">
           <span class="s-enable" *ngIf="element.bySetImport == 1">启用</span>
           <span class="s-disabled" *ngIf="element.bySetImport == 0">禁用</span>
         </td>
-      </ng-container>
+      </ng-container> -->
 
-      <ng-container matColumnDef="bySetExport">
+      <!-- <ng-container matColumnDef="bySetExport">
         <th mat-header-cell *matHeaderCellDef>投入产出控制 </th>
         <td mat-cell *matCellDef="let element">
           <span class="s-enable" *ngIf="element.bySetExport == 1">启用</span>
           <span class="s-disabled" *ngIf="element.bySetExport == 0">禁用</span>
         </td>
-      </ng-container>
+      </ng-container> -->
 
       <ng-container matColumnDef="enabled">
         <th mat-header-cell *matHeaderCellDef> 状态 </th>

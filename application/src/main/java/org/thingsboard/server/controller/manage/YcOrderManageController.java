@@ -39,7 +39,7 @@ public class YcOrderManageController extends BaseController {
                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                            @RequestBody TBusOrderDto orderDto) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
-        return ResultUtil.success(orderHeadService.getSimpleOrderList(current, size, orderDto));
+        return ResultUtil.success(orderHeadService.getSimpleOrderList(currentUser.getId().toString(),current, size, orderDto));
     }
     @ApiOperation("订单详情")
     @GetMapping("/get")
@@ -49,7 +49,8 @@ public class YcOrderManageController extends BaseController {
     @ApiOperation("excel导出")
     @PostMapping("/exportorder")
     public void download(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                         @RequestParam(value = "size", defaultValue = "10") Integer size, @RequestBody TBusOrderDto tBusOrderDto, HttpServletResponse response) throws IOException {
-        orderHeadExcelService.download(current, size, tBusOrderDto, response);
+                         @RequestParam(value = "size", defaultValue = "10") Integer size, @RequestBody TBusOrderDto tBusOrderDto, HttpServletResponse response) throws IOException, ThingsboardException {
+        SecurityUser  currentUser = getCurrentUser();
+        orderHeadExcelService.download(currentUser.getId().toString(),current, size, tBusOrderDto, response);
     }
 }

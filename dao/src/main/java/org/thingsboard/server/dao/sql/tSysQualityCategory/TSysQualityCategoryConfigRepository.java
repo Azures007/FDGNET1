@@ -18,4 +18,6 @@ public interface TSysQualityCategoryConfigRepository extends JpaRepository<TSysQ
     void deleteByCategoryId(Integer categoryId);
 
     List<TSysQualityCategoryConfig> findByCategoryId(Integer categoryId);
+
+    List<TSysQualityCategoryConfig> findByCategoryIdIn(List<Integer> categoryId);
 }

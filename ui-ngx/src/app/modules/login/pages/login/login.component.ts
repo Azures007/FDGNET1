@@ -38,6 +38,7 @@ export class LoginComponent extends PageComponent implements OnInit {
     password: ['', [Validators.required]],
     pkOrg: ['', [Validators.required]],
     cwkid: ['', [Validators.required]],
+    remember: [false],
   });
   oauth2Clients: Array<OAuth2ClientInfo> = null;
   orgList = [];
@@ -53,6 +54,25 @@ export class LoginComponent extends PageComponent implements OnInit {
 
   ngOnInit() {
     this.oauth2Clients = this.authService.oauth2Clients;
+    const rememberPassword = localStorage.getItem('rememberPassword');
+    if(rememberPassword) {
+      const rememberPasswordObj = JSON.parse(rememberPassword);
+      this.loginFormGroup.controls.username.setValue(rememberPasswordObj.username);
+      this.loginFormGroup.controls.password.setValue(rememberPasswordObj.password);
+      this.userNameComplete = true;
+      this.authService.getOrgList(this.loginFormGroup.value.username).subscribe(
+        (res: any) => {
+          this.orgList = res.data || [];
+          if(this.orgList.length) {
+            this.userNameComplete = true;
+          }
+        }
+      );
+      this.loginFormGroup.controls.pkOrg.setValue(rememberPasswordObj.pkOrg);
+      this.changeOrg(rememberPasswordObj.pkOrg);
+      this.loginFormGroup.controls.cwkid.setValue(rememberPasswordObj.cwkid);
+      this.loginFormGroup.controls.remember.setValue(rememberPasswordObj.remember);
+    }
   }
   changeOrg(e) {
     this.authService.getLineList(this.loginFormGroup.value.username, this.loginFormGroup.value.pkOrg).subscribe(
@@ -80,7 +100,13 @@ export class LoginComponent extends PageComponent implements OnInit {
     if (this.loginFormGroup.valid) {
 
       this.authService.login(this.loginFormGroup.value).subscribe(
-        () => {},
+        () => {
+          if(this.loginFormGroup.value.remember) {
+            localStorage.setItem('rememberPassword', JSON.stringify(this.loginFormGroup.value));
+          } else {
+            localStorage.removeItem('rememberPassword');
+          }
+        },
         (error: HttpErrorResponse) => {
           if (error && error.error && error.error.errorCode) {
             if (error.error.errorCode === Constants.serverErrorCode.credentialsExpired) {

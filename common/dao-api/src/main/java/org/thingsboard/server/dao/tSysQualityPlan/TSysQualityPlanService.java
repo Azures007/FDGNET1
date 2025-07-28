@@ -21,7 +21,7 @@ public interface TSysQualityPlanService {
      * 返回质检方案列表
      * @return
      */
-    Page<TSysQualityPlan> tSysQualityPlanList(Integer current, Integer size, TSysQualityPlanDto tSysQualityPlanDto);
+    Page<TSysQualityPlan> tSysQualityPlanList(String userId,Integer current, Integer size,String sortField,String sortOrder,  TSysQualityPlanDto tSysQualityPlanDto);
 
 
     /**
@@ -46,9 +46,9 @@ public interface TSysQualityPlanService {
 
     /**
      * 根据ID删除质检方案
-     * @param categoryId
+     * @param planId
      */
-    void deleteTSysQualityPlan(Integer categoryId);
+    void deleteTSysQualityPlan(Integer planId);
 
     /**
      * 根据ID获取质检方案详情

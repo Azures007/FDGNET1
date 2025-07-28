@@ -176,7 +176,10 @@ import { AddCateComponent } from './quality/add-cate.component';
 import { AddPlanComponent } from './quality/add-plan.component';
 import { ChangeOrgComponent } from './account/change-org.component';
 import { ChooseDirectorComponent } from '@home/components/class/choose-director.component';
-
+import { AddCheckCateComponent } from './quality/add-check-cate.component';
+import { AddCheckPlanComponent } from './quality/add-check-plan.component';
+import { ChooseCheckCateComponent } from './quality/choose-check-cate.component';
+import { ChooseCateComponent } from './quality/choose-cate.component';
 
 @NgModule({
   declarations:
@@ -330,6 +333,10 @@ import { ChooseDirectorComponent } from '@home/components/class/choose-director.
       AddPlanComponent,
       ChangeOrgComponent,
       ChooseDirectorComponent,
+      AddCheckCateComponent,
+      AddCheckPlanComponent,
+      ChooseCheckCateComponent,
+      ChooseCateComponent
     ],
   imports: [
     CommonModule,
