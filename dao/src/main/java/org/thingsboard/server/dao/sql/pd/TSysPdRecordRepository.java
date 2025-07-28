@@ -40,4 +40,8 @@ public interface TSysPdRecordRepository extends JpaRepository<TSysPdRecord,Integ
             "group by pd_time_str, pd_workshop_number,pd_workshop_name \n" +
             "order by pd_time_str desc\n",nativeQuery = true)
     List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate);
+    @Query(value = "select * from t_sys_pd_record  \n" +
+            "where pd_time_str=?1 and pd_workshop_number=?2  and by_deleted ='0'\n" +
+            "order by pd_time desc ",nativeQuery = true)
+    List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber);
 }
