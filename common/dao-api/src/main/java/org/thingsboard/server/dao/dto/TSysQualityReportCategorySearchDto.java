@@ -19,5 +19,5 @@ public class TSysQualityReportCategorySearchDto {
     private String importantItem;
 
     @ApiModelProperty("是否启用 0：启用 1：禁用")
-    private Integer enabled=0;
+    private Integer enabled;
 }
