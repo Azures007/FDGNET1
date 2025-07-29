@@ -18,6 +18,7 @@ import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.OrderTaskSelectDto;
 import org.thingsboard.server.dao.sql.order.AppOrderTaskRepository;
 import org.thingsboard.server.dao.sql.order.OrderHeadRepository;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.*;
 
 import java.text.SimpleDateFormat;
@@ -45,6 +46,8 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
     @Autowired
     private AppOrderTaskRepository appOrderTaskRepository;
 
+    @Autowired
+    protected UserService userService;
     /**
      * 获取当前用户订单信息
      * @param userId
@@ -53,8 +56,9 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
     @Override
     public GetOrderSizeVo getOrderSize(String userId) {
         GetOrderSizeVo getOrderSizeVo;
+        String cwkid =userService.getUserCurrentCwkid(userId);
         ValueOperations valueOperations = redisTemplate.opsForValue();
-        Object val = valueOperations.get(ORDER_HEAD_HEADER_SIZE + userId);
+        Object val = valueOperations.get(ORDER_HEAD_HEADER_SIZE + userId+":"+cwkid);
         if (val != null) {
             Map map = JSON.parseObject(JSON.toJSONString(val), Map.class);
             getOrderSizeVo = JSON.parseObject(JSON.toJSONString(map), GetOrderSizeVo.class);
@@ -95,7 +99,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
             Integer shiftTask = appOrderTaskRepository.countShiftNoAcceptTaskList(userId, "", "");
             getOrderSizeVo = new GetOrderSizeVo(currentTask, waitTask, startTask, offTask, endTask, tomorrowTask, handOverTask, waithandOverVerify, shiftTask);
             if (getOrderSizeVo != null) {
-                valueOperations.set(ORDER_HEAD_HEADER_SIZE + userId,getOrderSizeVo, 1, TimeUnit.MINUTES);
+                valueOperations.set(ORDER_HEAD_HEADER_SIZE + userId+":"+cwkid,getOrderSizeVo, 1, TimeUnit.MINUTES);
             }
         }
         return getOrderSizeVo;
