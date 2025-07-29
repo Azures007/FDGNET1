@@ -39,6 +39,7 @@ import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.id.UserCredentialsId;
 import org.thingsboard.server.common.data.id.UserId;
 import org.thingsboard.server.common.data.nc_org.NcOrganization;
+import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
 import org.thingsboard.server.common.data.nc_workline.NcWorkline;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
@@ -55,6 +56,7 @@ import org.thingsboard.server.dao.exception.DataValidationException;
 import org.thingsboard.server.dao.exception.IncorrectParameterException;
 import org.thingsboard.server.dao.model.ModelConstants;
 import org.thingsboard.server.dao.nc_org.NcOrganizationService;
+import org.thingsboard.server.dao.nc_warehouse.NcWarehouseService;
 import org.thingsboard.server.dao.nc_workline.NcWorklineService;
 import org.thingsboard.server.dao.service.DataValidator;
 import org.thingsboard.server.dao.service.PaginatedRemover;
@@ -110,6 +112,10 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
     @Autowired
     private NcWorklineService ncWorklineService;
+
+    @Autowired
+    private NcWarehouseService ncWarehouseService;
+
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
@@ -790,9 +796,13 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         String userId = user.getId().toString();
         List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrg(userId, pkOrg);
         List<String> cwkids = details.stream().map(TSysUserDetail::getNcCwkid).distinct().collect(Collectors.toList());
-        List<NcWorkline> lines = ncWorklineService.findAllByCwkids(cwkids);
-
-        return lines;
+        return ncWorklineService.findAllByCwkids(cwkids);
+    }
+    @Override
+    public List<NcWarehouse> findNcWarehouseByUserIdAndPkOrgAndWorkline(String userId, String pkOrg,String cwkid) {
+        List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrgAndNcCwkid(userId, pkOrg,cwkid);
+        List<String> warehouseIds = details.stream().map(TSysUserDetail::getNcWarehouseId).distinct().collect(Collectors.toList());
+        return ncWarehouseService.findAllByWarehouseIds(warehouseIds);
     }
     @Override
     public void saveUserCurrentOrgLine(String userId, String pkOrg, String cwkid) {

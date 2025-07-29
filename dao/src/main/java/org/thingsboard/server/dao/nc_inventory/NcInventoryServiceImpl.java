@@ -11,9 +11,12 @@ import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.EntityUtils;
 import org.thingsboard.server.common.data.TBusOrderHead;
 import org.thingsboard.server.common.data.TSysClass;
+import org.thingsboard.server.common.data.TSysUserDetail;
 import org.thingsboard.server.common.data.nc_inventory.NcInventory;
+import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.sql.nc_inventory.NcInventoryRepository;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.ClassGroupLeaderExpVo;
 import org.thingsboard.server.dao.vo.PageVo;
 
@@ -21,11 +24,15 @@ import javax.persistence.criteria.Predicate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NcInventoryServiceImpl implements NcInventoryService {
     @Autowired
     private NcInventoryRepository repository;
+
+    @Autowired
+    protected UserService userService;
 
     @Override
     public void saveOrUpdateBatchByBillId(List<NcInventory> list) {
@@ -36,7 +43,10 @@ public class NcInventoryServiceImpl implements NcInventoryService {
         repository.saveAll(list);
     }
     @Override
-    public PageVo<NcInventory> queryInventory(String warehouseName, String materialName, String spec,Integer current, Integer size) {
+    public PageVo<NcInventory> queryInventory(String userId,String warehouseName, String materialName, String spec,Integer current, Integer size) {
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
         List<Sort.Order> orders = new ArrayList<>();
         orders.add(new Sort.Order(Sort.Direction.DESC, "billId"));
         Sort sort1 = Sort.by(orders);
@@ -56,7 +66,10 @@ public class NcInventoryServiceImpl implements NcInventoryService {
             if (!StringUtils.isEmpty(spec)) {
                 predicates.add(criteriaBuilder.like(root.get("spec"), "%" + spec + "%"));
             }
-
+            if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
+                List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
+                predicates.add(root.get("warehouseId").in(warehouseIds));
+            }
             return criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
         }, pageable);
         PageVo<NcInventory> pageVo = new PageVo<>(inventoryPage);

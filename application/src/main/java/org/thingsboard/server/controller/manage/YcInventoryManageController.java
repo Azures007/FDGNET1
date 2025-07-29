@@ -8,15 +8,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thingsboard.server.common.data.TSysClass;
+import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.nc_inventory.NcInventory;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
+import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.nc_inventory.NcInventoryService;
 import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.service.security.model.SecurityUser;
+
 @Api(value = "YC库存管理", tags = "YC库存管理")
 @RequestMapping("/api/manage/invetory")
 @RestController
-public class YcInventoryManageController {
+public class YcInventoryManageController extends BaseController {
     @Autowired
     private NcInventoryService service;
 
@@ -35,8 +39,9 @@ public class YcInventoryManageController {
             @RequestParam(value ="spec", required = false) String spec,
             @RequestParam(value = "current", defaultValue = "0") Integer current,
             @RequestParam(value = "size", defaultValue = "10") Integer size
-    ) {
-        PageVo<NcInventory> classList = service.queryInventory(warehouseName, materialName, spec, current, size);
+    ) throws ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        PageVo<NcInventory> classList = service.queryInventory(currentUser.getId().toString(),warehouseName, materialName, spec, current, size);
         return ResultUtil.success(classList);
     }
 }
