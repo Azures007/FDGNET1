@@ -30,6 +30,7 @@ public class YcPdServiceImpl implements YcPdService {
     @Override
     public void savePd(TSysPdRecord tSysPdRecord) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        tSysPdRecord.setPdTime(new Date());
         Date pdTime = tSysPdRecord.getPdTime();
         String format = simpleDateFormat.format(pdTime);
         tSysPdRecord.setCreatedName(tSysPdRecord.getPdCreatedName());
