@@ -544,6 +544,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "a2.order_process_id as orderProcessId, \n" +
             "a.body_material_id as bodyMaterialId, \n" +
             "a.body_material_number as bodyMaterialNumber, \n" +
+            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
             "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
             "g.process_id processId,\n" +
             "g.process_name processName,\n" +

@@ -79,6 +79,7 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
         entity.setIsDeleted("0");
         entity.setCreatedName("system");
         entity.setCreatedTime(new java.util.Date());
+        entity.setUnit("KG");
         NcTBusOrderHead existingOrder = repository.findByCmoid(cmoid);
         if (existingOrder != null) {
             // 先删除原有 bomList
@@ -123,6 +124,7 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             entity.setIsDeleted("0");
             entity.setCreatedName("system");
             entity.setCreatedTime(new java.util.Date());
+            entity.setUnit("KG");
             NcTBusOrderHead existingOrder = repository.findByCmoid(entity.getCmoid());
             if (existingOrder != null) {
                 Integer orderId = existingOrder.getOrderId();

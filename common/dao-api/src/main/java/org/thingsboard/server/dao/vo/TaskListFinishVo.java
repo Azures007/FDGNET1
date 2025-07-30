@@ -78,6 +78,9 @@ public class TaskListFinishVo {
     @ApiModelProperty("明细-物料编码")
     private String bodyMaterialNumber;
 
+    @ApiModelProperty("明细-计划开始时间")
+    private String bodyPlanStartDate;
+
     @ApiModelProperty("明细-计划完工时间")
     private String bodyPlanFinishDate;
 
