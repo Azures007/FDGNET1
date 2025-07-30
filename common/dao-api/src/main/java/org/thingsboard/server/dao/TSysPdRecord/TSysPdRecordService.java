@@ -1,0 +1,27 @@
+package org.thingsboard.server.dao.TSysPdRecord;
+
+
+import org.springframework.data.domain.Page;
+import org.thingsboard.server.dao.dto.TSysPdRecordDto;
+import org.thingsboard.server.dao.vo.TSysPdRecordVo;
+
+/**
+ * @author 许文言
+ * @project youchen_IOTServer
+ * @description
+ * @date 2025/7/30 10:01:36
+ */
+public interface TSysPdRecordService {
+    /**
+     * 盘点记录列表
+     * @param toString
+     * @param current
+     * @param size
+     * @param sortField
+     * @param sortOrder
+     * @param tSysPdRecordDto
+     * @return
+     */
+    Page<TSysPdRecordVo> tSysPdRecordList(String toString, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto);
+}
+
