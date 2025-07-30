@@ -186,9 +186,9 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
             PageVo<TaskListVo> pageVo = new PageVo(size, current);
 //            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
             List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
-            castEntity.stream().forEach(order -> {
+            /*castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
-            });
+            });*/
             int total = select.size();//appOrderTaskRepository.getTaskListCountByPersonIdAndProcessStatusAndOrderProcessType(userId, processStatusList, orderProcessType, selectDto.getProcessNumber(), selectDto.getBodyLot(), selectDto.getSelectOrField());
             pageVo.setTotal(total);
             pageVo.setList(castEntity);
