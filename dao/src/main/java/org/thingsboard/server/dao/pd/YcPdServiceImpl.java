@@ -1,5 +1,6 @@
 package org.thingsboard.server.dao.pd;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.thingsboard.server.dao.sql.pd.TSysPdRecordRepository;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +32,7 @@ public class YcPdServiceImpl implements YcPdService {
     @Override
     public void savePd(TSysPdRecord tSysPdRecord) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        tSysPdRecord.setPdTime(new Date());
         Date pdTime = tSysPdRecord.getPdTime();
         String format = simpleDateFormat.format(pdTime);
         tSysPdRecord.setCreatedName(tSysPdRecord.getPdCreatedName());
@@ -70,8 +73,9 @@ public class YcPdServiceImpl implements YcPdService {
 
     @Override
     public List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate) {
-        List<TSysPdRecord> tSysPdRecords=tSysPdRecordRepository.fpWorkshopRecord(startDate,endDate);
-        return tSysPdRecords;
+        List<Map> tSysPdRecords=tSysPdRecordRepository.fpWorkshopRecord(startDate,endDate);
+        List<TSysPdRecord> tSysPdRecords1 = JSON.parseArray(JSON.toJSONString(tSysPdRecords), TSysPdRecord.class);
+        return tSysPdRecords1;
     }
 
     @Override

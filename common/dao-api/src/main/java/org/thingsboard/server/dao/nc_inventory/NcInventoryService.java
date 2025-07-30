@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface NcInventoryService {
     void saveOrUpdateBatchByBillId(List<NcInventory> list);
-    PageVo<NcInventory> queryInventory(String warehouseName, String materialName, String spec,Integer current, Integer size);
+    PageVo<NcInventory> queryInventory(String userId,String warehouseName, String materialName, String spec,Integer current, Integer size);
 }

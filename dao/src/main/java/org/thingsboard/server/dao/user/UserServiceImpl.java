@@ -39,6 +39,7 @@ import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.id.UserCredentialsId;
 import org.thingsboard.server.common.data.id.UserId;
 import org.thingsboard.server.common.data.nc_org.NcOrganization;
+import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
 import org.thingsboard.server.common.data.nc_workline.NcWorkline;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
@@ -55,10 +56,12 @@ import org.thingsboard.server.dao.exception.DataValidationException;
 import org.thingsboard.server.dao.exception.IncorrectParameterException;
 import org.thingsboard.server.dao.model.ModelConstants;
 import org.thingsboard.server.dao.nc_org.NcOrganizationService;
+import org.thingsboard.server.dao.nc_warehouse.NcWarehouseService;
 import org.thingsboard.server.dao.nc_workline.NcWorklineService;
 import org.thingsboard.server.dao.service.DataValidator;
 import org.thingsboard.server.dao.service.PaginatedRemover;
 import org.thingsboard.server.dao.sql.role.RoleUserRepository;
+import org.thingsboard.server.dao.sql.user.TBusUserCurrentOrgLineRepository;
 import org.thingsboard.server.dao.sql.user.UserDetailRepository;
 import org.thingsboard.server.dao.tenant.TbTenantProfileCache;
 import org.thingsboard.server.dao.tenant.TenantDao;
@@ -110,8 +113,15 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
     @Autowired
     private NcWorklineService ncWorklineService;
+
+    @Autowired
+    private NcWarehouseService ncWarehouseService;
+
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private TBusUserCurrentOrgLineRepository userCurrentOrgLineRepository;
 
     public UserServiceImpl(UserDao userDao,
                            UserCredentialsDao userCredentialsDao,
@@ -790,12 +800,23 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         String userId = user.getId().toString();
         List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrg(userId, pkOrg);
         List<String> cwkids = details.stream().map(TSysUserDetail::getNcCwkid).distinct().collect(Collectors.toList());
-        List<NcWorkline> lines = ncWorklineService.findAllByCwkids(cwkids);
-
-        return lines;
+        return ncWorklineService.findAllByCwkids(cwkids);
+    }
+    @Override
+    public List<NcWarehouse> findNcWarehouseByUserIdAndPkOrgAndWorkline(String userId, String pkOrg,String cwkid) {
+        List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrgAndNcCwkid(userId, pkOrg,cwkid);
+        List<String> warehouseIds = details.stream().map(TSysUserDetail::getNcWarehouseId).distinct().collect(Collectors.toList());
+        return ncWarehouseService.findAllByWarehouseIds(warehouseIds);
     }
     @Override
     public void saveUserCurrentOrgLine(String userId, String pkOrg, String cwkid) {
+        // 先保存到表
+        TBusUserCurrentOrgLine entity = new TBusUserCurrentOrgLine();
+        entity.setUserId(userId);
+        entity.setOrg(pkOrg);
+        entity.setWorkline(cwkid);
+        userCurrentOrgLineRepository.save(entity);
+        // 再存入redis
         redisTemplate.opsForHash().put("user:orgline:" + userId, "pkOrg", pkOrg);
         redisTemplate.opsForHash().put("user:orgline:" + userId, "cwkid", cwkid);
     }
@@ -803,12 +824,26 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
     @Override
     public String getUserCurrentPkOrg(String userId) {
         Object val = redisTemplate.opsForHash().get("user:orgline:" + userId, "pkOrg");
-        return val != null ? val.toString() : null;
+        if (val != null) {
+            return val.toString();
+        } else {
+            // 从表获取
+            return userCurrentOrgLineRepository.findById(userId)
+                    .map(TBusUserCurrentOrgLine::getOrg)
+                    .orElse(null);
+        }
     }
 
     @Override
     public String getUserCurrentCwkid(String userId) {
         Object val = redisTemplate.opsForHash().get("user:orgline:" + userId, "cwkid");
-        return val != null ? val.toString() : null;
+        if (val != null) {
+            return val.toString();
+        } else {
+            // 从表获取
+            return userCurrentOrgLineRepository.findById(userId)
+                    .map(TBusUserCurrentOrgLine::getWorkline)
+                    .orElse(null);
+        }
     }
 }

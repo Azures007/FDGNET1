@@ -24,6 +24,7 @@ import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.id.UserCredentialsId;
 import org.thingsboard.server.common.data.id.UserId;
 import org.thingsboard.server.common.data.nc_org.NcOrganization;
+import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
 import org.thingsboard.server.common.data.nc_workline.NcWorkline;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
@@ -175,6 +176,14 @@ public interface UserService {
 	 */
 	List<NcWorkline> findLineListByUserNameAndPkOrg(String username, String pkOrg);
 
+	/**
+	 * 获取用户在某基地下的仓库列表
+	 * @param userId
+	 * @param pkOrg
+	 * @param cwkid
+	 * @return
+	 */
+	List<NcWarehouse> findNcWarehouseByUserIdAndPkOrgAndWorkline(String userId, String pkOrg, String cwkid);
 	/**
 	 * 保存当前用户的基地和产线到redis
 	 * @param userId

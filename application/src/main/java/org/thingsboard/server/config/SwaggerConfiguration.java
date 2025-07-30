@@ -403,6 +403,7 @@ public class SwaggerConfiguration {
     }
     @Bean
     public Docket manageApi() {
+        TypeResolver typeResolver = new TypeResolver();
         return new Docket(DocumentationType.OAS_30)
                 .groupName("manage-api") // 这里就是你访问的 group 名
                 .apiInfo(new ApiInfoBuilder()
@@ -410,6 +411,12 @@ public class SwaggerConfiguration {
                         .description("用于对接管理后台")
                         .version("1.0.0")
                         .build())
+                .additionalModels(
+                        typeResolver.resolve(ThingsboardErrorResponse.class),
+                        typeResolver.resolve(ThingsboardCredentialsExpiredResponse.class),
+                        typeResolver.resolve(LoginRequest.class),
+                        typeResolver.resolve(LoginResponse.class)
+                )
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.thingsboard.server.controller.manage"))
                 .paths(PathSelectors.any())

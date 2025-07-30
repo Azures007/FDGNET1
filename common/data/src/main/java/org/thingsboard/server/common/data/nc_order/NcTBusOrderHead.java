@@ -140,4 +140,9 @@ public class NcTBusOrderHead {
     @JoinTable(name = "t_bus_order_ppbom_lk", joinColumns = {@JoinColumn(name = "order_id")}
             , inverseJoinColumns = {@JoinColumn(name = "order_ppbom_id")})
     private Set<NcTBusOrderPPBom> bomList;
+
+    @ApiModelProperty("单位")
+    @Column(name = "body_unit")
+    @JsonIgnore
+    private String unit;
 }

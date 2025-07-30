@@ -60,4 +60,14 @@ public interface UserDetailRepository extends JpaRepository<TSysUserDetail, Inte
      */
     @Query("SELECT t FROM TSysUserDetail t WHERE t.userId = :userId AND t.ncPkOrg = :ncPkOrg")
     List<TSysUserDetail> findByUserIdAndNcPkOrg(@Param("userId") String userId, @Param("ncPkOrg") String ncPkOrg);
+
+    /**
+     * 根据用户ID、基地ID和产线ID查询用户详细信息
+     * @param userId 用户ID
+     * @param ncPkOrg 基地ID
+     * @param ncCwkid 产线ID
+     * @return 用户详细信息
+     */
+    @Query("SELECT t FROM TSysUserDetail t WHERE t.userId = :userId AND t.ncPkOrg = :ncPkOrg AND t.ncCwkid= :ncCwkid")
+    List<TSysUserDetail> findByUserIdAndNcPkOrgAndNcCwkid(@Param("userId") String userId, @Param("ncPkOrg") String ncPkOrg, @Param("ncCwkid") String ncCwkid);
 }

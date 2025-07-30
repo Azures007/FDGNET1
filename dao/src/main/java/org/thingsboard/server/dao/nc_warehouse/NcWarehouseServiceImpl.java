@@ -34,4 +34,9 @@ public class NcWarehouseServiceImpl implements NcWarehouseService {
     public List<NcWarehouse> findByPkOrg(String pkOrg) {
         return repository.findByPkOrg(pkOrg);
     }
+
+    @Override
+    public List<NcWarehouse> findAllByWarehouseIds(List<String> warehourseId) {
+        return repository.findByPkStordocInAndStatus(warehourseId, "生效");
+    }
 }
