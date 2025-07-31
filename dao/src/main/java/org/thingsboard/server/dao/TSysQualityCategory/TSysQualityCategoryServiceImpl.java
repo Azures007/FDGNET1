@@ -258,12 +258,12 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
                 tSysQualityCategory.setCreateTime(existingCategory.getCreateTime());
             }
         }
-        if (StringUtils.isNotEmpty(tSysQualityCategory.getInspectionItem())) {
-            List<TSysQualityCategory> sysCategoryList = tSysQualityCategoryRepository.findByInspectionItem(tSysQualityCategory.getInspectionItem());
-            if (sysCategoryList != null && sysCategoryList.size() > 0 && sysCategoryList.get(0).getId() != tSysQualityCategory.getId()) {
-                throw new RuntimeException("类目名称已存在！");
-            }
-        }
+//        if (StringUtils.isNotEmpty(tSysQualityCategory.getInspectionItem())) {
+//            List<TSysQualityCategory> sysCategoryList = tSysQualityCategoryRepository.findByInspectionItem(tSysQualityCategory.getInspectionItem());
+//            if (sysCategoryList != null && sysCategoryList.size() > 0 && sysCategoryList.get(0).getId() != tSysQualityCategory.getId()) {
+//                throw new RuntimeException("类目名称已存在！");
+//            }
+//        }
         tSysQualityCategoryRepository.saveAndFlush(tSysQualityCategory);
 //        //生成班别编码：BB+三位的ID流水号
 //        if (StringUtils.isEmpty(tSysClass.getClassNumber())) {
