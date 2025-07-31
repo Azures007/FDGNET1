@@ -98,7 +98,7 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
 
     @Override
     public Page<TSysQualityPlanConfig> getTSysQualityCategoryListToPlan(Integer current, Integer size, TSysQualityCategoryDto tSysQualityCategoryDto) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+        Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
         Pageable pageable = PageRequest.of(current, size, sort);
 //        ExampleMatcher matcher = ExampleMatcher.matching()
 //                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
