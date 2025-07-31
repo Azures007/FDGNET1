@@ -11,6 +11,7 @@ import org.thingsboard.server.common.data.nc_inventory.NcInventory;
 import org.thingsboard.server.dao.dto.PdMaterialsDto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface NcInventoryRepository extends JpaRepository<NcInventory, String>, JpaSpecificationExecutor<NcInventory> {
     Page<NcInventory> findByWarehouseNameContainingAndMaterialNameContainingAndSpecContaining(
@@ -21,4 +22,6 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
             "and warehouse_code=:#{#pdMaterialsDto.warehouseCode} " +
             "and (:#{#pdMaterialsDto.material} ='' or material_name like %:#{#pdMaterialsDto.material}% or material_code like %:#{#pdMaterialsDto.material}%)",nativeQuery = true)
     List<NcInventory> pdMaterials(@Param("pdMaterialsDto") PdMaterialsDto pdMaterialsDto);
+
+    List<NcInventory> findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(String warehouseId, String materialCode, String status);
 }
