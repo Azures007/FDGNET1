@@ -127,18 +127,19 @@ public class TSysQualityPlanController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
             @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
-//            @ApiImplicitParam(name = "sortField", value = "排序字段", readOnly = false),
-//            @ApiImplicitParam(name = "sortOrder", value = "排序方式（asc/desc）", readOnly = false)
+            @ApiImplicitParam(name = "sortField", value = "排序字段", readOnly = false),
+            @ApiImplicitParam(name = "sortOrder", value = "排序方式（asc/desc）", readOnly = false)
 
     })
     @PostMapping("/qualityCategoryList")
     public ResponseResult<PageVo<TSysQualityPlanConfig>> qualityCategoryList(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
-//                                                                           @RequestParam(value = "sortField", defaultValue = "") String sortField,
-//                                                                           @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
+                                                                           @RequestParam(value = "sortField", defaultValue = "") String sortField,
+                                                                           @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                            @RequestBody TSysQualityCategoryDto tSysQualityCategoryDto) {
         tSysQualityCategoryDto.setIsEnabled("1");
-
+        sortField = sortField.equals("") ? "createTime" : sortField;
+        sortOrder = sortOrder.equals("") ? "asc" : sortOrder;
         //todo  查询类目信息之后将其转换成json串返回
 
 

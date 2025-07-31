@@ -209,14 +209,14 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 if (orderDto.getBillDateEnd() != null) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("billDate"), orderDto.getBillDateEnd()));
                 }
-                /*if (orderDto.getPlanStartDateStart() != null) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("bodyPlanStartDate"), sdf.parse(orderDto.getPlanStartDateStart())));
+                if (orderDto.getNcReceiveTimeStart() != null) {
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("bodyPlanStartDate"), orderDto.getNcReceiveTimeStart()));
                 }
-                if (orderDto.getPlanStartDateEnd() != null) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("bodyPlanStartDate"), sdf.parse(orderDto.getPlanStartDateEnd())));
-                }*/
+                if (orderDto.getNcReceiveTimeEnd() != null) {
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("bodyPlanStartDate"), orderDto.getNcReceiveTimeEnd()));
+                }
                 // 新增开工时间条件，支持空值查询
-                if (orderDto.getNcReceiveTimeStart() != null || orderDto.getNcReceiveTimeEnd() != null) {
+                /*if (orderDto.getNcReceiveTimeStart() != null || orderDto.getNcReceiveTimeEnd() != null) {
                     if (orderDto.getNcReceiveTimeStart() != null && orderDto.getNcReceiveTimeEnd() != null) {
                         // 开工时间范围查询
                         predicates.add(criteriaBuilder.between(root.get("ncReceiveTime"), orderDto.getNcReceiveTimeStart(), orderDto.getNcReceiveTimeEnd()));
@@ -233,7 +233,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                             criteriaBuilder.isNull(root.get("ncReceiveTime")),
                             criteriaBuilder.isTrue(criteriaBuilder.literal(true)) // 占位符确保条件有效
                     ));
-                }
+                }*/
 
 
                 //过滤是否删除,1,非删除

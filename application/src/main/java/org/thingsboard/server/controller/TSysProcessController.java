@@ -46,6 +46,13 @@ public class TSysProcessController extends BaseController{
         return ResultUtil.success(processInfo);
     }
 
+    /**
+     * 工序详情（已废弃）
+     * 请改用 OrderTaskController#processDetailByOrderProcessId(Long)
+     * @param orderProcessId
+     * @return
+     * @throws Exception
+     */
     @ApiOperation("工序详情")
     @GetMapping("/processDetailByOrderProcessId")
     public ResponseResult<TSysProcessInfo> processDetailByOrderProcessId(@RequestParam Integer orderProcessId) throws Exception {

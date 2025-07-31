@@ -322,10 +322,10 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
             switch (tSysProcessInfo.getProcessNumber()) {
 
                 default: {
-                    String midPpbomEntryInputProcess = tSysProcessInfo.getErpProcessNumber();
+                    /*String midPpbomEntryInputProcess = tSysProcessInfo.getErpProcessNumber();
                     if (StringUtils.isEmpty(midPpbomEntryInputProcess)) {
                         throw new RuntimeException("工序没有绑定ERP工序，请检查下后台的工序管理配置");
-                    }
+                    }*/
                     List<Map> maps = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId);
                     String mapsStr = JSON.toJSONString(maps);
                     ppbomGroupVo = new PpbomGroupVo();
