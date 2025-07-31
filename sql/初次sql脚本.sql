@@ -1503,3 +1503,58 @@ ALTER TABLE public.t_sys_pd_record ADD pd_time_str varchar NULL;
 COMMENT ON COLUMN public.t_sys_pd_record.pd_time_str IS '盘点日期（格式yyyy-MM-dd）';
 
 ALTER TABLE public.t_sys_pd_record RENAME COLUMN by_deteled TO by_deleted;
+
+-- 2025-7-31
+CREATE TABLE t_sys_pd_record_split(
+    pd_record_split_id serial NOT NULL,
+    pd_time timestamp NOT NULL,
+    material_number VARCHAR(255),
+    material_name VARCHAR(255),
+    material_specifications VARCHAR(255),
+    pd_unit VARCHAR(255),
+    pd_unit_str VARCHAR(255),
+    pd_qty NUMERIC(24,6),
+    pd_created_name VARCHAR(255),
+    pd_created_id VARCHAR(255),
+    pd_workshop_name VARCHAR(255),
+    pd_workshop_number VARCHAR(255),
+    pd_workshop_leader_name VARCHAR(255),
+    pd_workshop_leader_id VARCHAR(255),
+    pd_class_name VARCHAR(255),
+    pd_class_number VARCHAR(255),
+    by_deteled VARCHAR(1),
+    created_time timestamp NOT NULL,
+    created_name VARCHAR(255) NOT NULL,
+    by_fp VARCHAR(1),
+    pd_type VARCHAR(1),
+    pd_br VARCHAR(9999),
+    re_pd_record_id INTEGER,
+    pd_time_str VARCHAR(255),
+    PRIMARY KEY (pd_record_split_id)
+);
+
+COMMENT ON TABLE t_sys_pd_record_split IS '友臣盘点拆分记录表';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_record_split_id IS 'id';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_time IS '盘点时间';
+COMMENT ON COLUMN t_sys_pd_record_split.material_number IS '材料编码';
+COMMENT ON COLUMN t_sys_pd_record_split.material_name IS '材料名称';
+COMMENT ON COLUMN t_sys_pd_record_split.material_specifications IS '材料规格';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_unit IS '单位';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_unit_str IS '单位名称';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_qty IS '盘点数量';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_created_name IS '盘点人姓名';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_created_id IS '盘点人id';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_workshop_name IS '盘点车间名称';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_workshop_number IS '盘点车间编码';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_workshop_leader_name IS '盘点车间主任名称';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_workshop_leader_id IS '盘点车间主任id';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_class_name IS '盘点班组名称';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_class_number IS '盘点班组编码';
+COMMENT ON COLUMN t_sys_pd_record_split.by_deteled IS '是否删除 0：否 1：是';
+COMMENT ON COLUMN t_sys_pd_record_split.created_time IS '创建时间';
+COMMENT ON COLUMN t_sys_pd_record_split.created_name IS '创建人（用户名）';
+COMMENT ON COLUMN t_sys_pd_record_split.by_fp IS '是否已复盘 0:否 1：是';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_type IS '盘点类型 0：盘点 1：复盘';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_br IS '备注';
+COMMENT ON COLUMN t_sys_pd_record_split.re_pd_record_id IS '原盘点记录id';
+COMMENT ON COLUMN t_sys_pd_record_split.pd_time_str IS '盘点日期（格式yyyy-MM-dd）';
