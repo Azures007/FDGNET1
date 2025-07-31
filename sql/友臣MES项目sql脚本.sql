@@ -522,7 +522,7 @@ ALTER TABLE public.t_bus_order_process_history ADD iot_qty int4 NULL;
 COMMENT ON COLUMN public.t_bus_order_process_history.iot_qty IS '设备采集数量';
 
 -- 2025-07-31 30355 【后台】工序管理
-ALTER TABLE public.t_sys_process_info ADD t_sys_process_info varchar NULL;
-COMMENT ON COLUMN public.t_sys_process_info.t_sys_process_info IS '报工类型';
+ALTER TABLE public.t_sys_process_info ADD report_type varchar NULL;
+COMMENT ON COLUMN public.t_sys_process_info.report_type IS '报工类型';
 
 
