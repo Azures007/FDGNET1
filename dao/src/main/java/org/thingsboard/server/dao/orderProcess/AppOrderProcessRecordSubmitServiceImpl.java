@@ -13,10 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.common.util.BigDecimalUtil;
 import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.nc_inventory.NcInventory;
+import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
 import org.thingsboard.server.dao.TSysCraftinfo.TSysCraftInfoService;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.OrderRecordSaveDto;
 import org.thingsboard.server.dao.dto.OrderRecordSaveListDto;
+import org.thingsboard.server.dao.nc_inventory.NcInventoryService;
 import org.thingsboard.server.dao.order.OrderHeadService;
 import org.thingsboard.server.dao.order.OrderProcessDeviceRelService;
 import org.thingsboard.server.dao.order.OrderProcessHistoryService;
@@ -29,6 +32,7 @@ import org.thingsboard.server.dao.sql.TSysProcessInfo.TSysProcessInfoRepository;
 import org.thingsboard.server.dao.sql.device.TSysDeviceIotHistoryRepository;
 import org.thingsboard.server.dao.sql.device.TSysDeviceIotRepository;
 import org.thingsboard.server.dao.sql.licheng.MidMaterialRepository;
+import org.thingsboard.server.dao.sql.nc_inventory.NcInventoryRepository;
 import org.thingsboard.server.dao.sql.order.*;
 import org.thingsboard.server.dao.sql.tSysClass.ClassGroupLeaderRepository;
 import org.thingsboard.server.dao.sql.tSysClass.TSysClassRepository;
@@ -37,6 +41,7 @@ import org.thingsboard.server.dao.sql.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.dao.sql.tSysPersonnelInfo.ClassPersonnelRepository;
 import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.tSysClass.TSysClassService;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.OrderProcessRecordVo;
 
 import java.math.BigDecimal;
@@ -143,6 +148,12 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
 
     @Autowired
     OrderProcessPersonRelService orderProcessPersonRelService;
+
+    @Autowired
+    protected UserService userService;
+
+    @Autowired
+    NcInventoryRepository ncInventoryRepository;
 
     @Value("${submit.enabled:0}")
     String submitEnabled;
@@ -436,7 +447,35 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         history.setExportPot(record.getExportPot());
         history.setExportPotMin(record.getExportPotMin());
         orderProcessHistoryRepository.saveAndFlush(history);
-
+        //扣减线边仓库存
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
+        if(ncWarehouses!=null&& !ncWarehouses.isEmpty()){
+            String wid=ncWarehouses.get(0).getPkStordoc();
+            List<NcInventory> inventories =ncInventoryRepository.findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(wid,saveDto.getMaterialNumber(),"生效");
+            if(inventories!=null&& !inventories.isEmpty()){
+                Float qty=saveDto.getRecordQty();
+                for(NcInventory inventory:inventories){
+                    if(inventory.getQty()>=qty){
+                        Float f=(float)(Math.round((inventory.getQty()-qty)*10000)/10000.0);
+                        inventory.setQty(f);
+                        qty=0f;
+                    }else{
+                        qty=(float)(Math.round((qty-inventory.getQty())*10000)/10000.0);
+                        inventory.setQty(0f);
+                    }
+                }
+                if(qty>0){
+                    //插入负库存行
+                    NcInventory newinventory=new NcInventory();
+                    BeanUtils.copyProperties(inventories.get(0), newinventory);
+                    newinventory.setQty(-1*qty);
+                    inventories.add(newinventory);
+                }
+                ncInventoryRepository.saveAll(inventories);
+            }
+        }
         return history.getOrderProcessHistoryId();
     }
 
