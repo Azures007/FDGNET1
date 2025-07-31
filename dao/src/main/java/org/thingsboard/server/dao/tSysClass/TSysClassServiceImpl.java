@@ -27,6 +27,7 @@ import org.thingsboard.server.dao.vo.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -162,6 +163,21 @@ public class TSysClassServiceImpl implements TSysClassService {
     @Transactional
     @Override
     public void deleteTSysClass(Integer classId) {
+        List<TSysClassGroupLeaderRel> tSysClassGroupLeaderRelLits=new ArrayList<>();
+        tSysClassGroupLeaderRelLits=classGroupLeaderRepository.findAllByClassId(classId);
+        //获取所有关于此班别得组长id
+        List<Integer> deleteRelIds = tSysClassGroupLeaderRelLits.stream().map(TSysClassGroupLeaderRel::getPersonnelId).collect(Collectors.toList());
+        //循环获取组长是否有在其他班别担任组长
+        for(Integer Leader : deleteRelIds) {
+            List<TSysClass> tSysClass = tSysClassRepository.findAllByGroupLeaderID(Leader+"");
+            if(tSysClass.size()>0) {
+                tSysPersonnelInfoRepository.updateClassNameByClassId(deleteRelIds, tSysClass.get(0).getClassId());
+            }
+            else {
+                tSysPersonnelInfoRepository.updateClassNameByClassId(deleteRelIds, 0);
+            }
+
+        }
         //删除班组相关关联信息也要删除
         tSysClassRepository.deleteById(classId);
         classPersonnelRepository.deleteByClassId(classId);

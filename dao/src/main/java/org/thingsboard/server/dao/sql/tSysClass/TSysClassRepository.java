@@ -112,4 +112,8 @@ public interface TSysClassRepository extends JpaRepository<TSysClass,Integer> {
             "right join t_sys_personnel_info c on b.personnel_id = c.personnel_id \n" +
             "where a.class_id =:classId",nativeQuery = true)
     List<Map> findPersonByClassId(@Param("classId") Integer classId);
+
+    List<TSysClass> findAllByGroupLeaderID(String leaderID);
+
+
 }
