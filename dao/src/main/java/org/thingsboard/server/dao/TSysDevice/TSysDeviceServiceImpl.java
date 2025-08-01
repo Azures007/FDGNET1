@@ -3,6 +3,7 @@ package org.thingsboard.server.dao.TSysDevice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import org.thingsboard.server.dao.order.OrderProcessPersonRelService;
 import org.thingsboard.server.dao.sql.device.TSysDeviceIotRepository;
 import org.thingsboard.server.dao.sql.order.OrderProcessPersonRelRepository;
 import org.thingsboard.server.dao.sql.tSysDevice.TSysDeviceRepository;
+import org.thingsboard.server.dao.user.UserService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,15 +50,21 @@ public class TSysDeviceServiceImpl implements TSysDeviceService {
 
     @Autowired
     OrderProcessPersonRelRepository orderProcessPersonRelRepository;
-
+    @Autowired
+    @Qualifier("userServiceImpl")
+    private UserService userService;
     @Override
-    public Page<TsysDevice> tSysDeviceList(Integer current, Integer size, TSysDeviceDto deviceDto, Integer belongProcessId) {
+    public Page<TsysDevice> tSysDeviceList(String userId,Integer current, Integer size, TSysDeviceDto deviceDto, Integer belongProcessId) {
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+
         Sort sort = Sort.by(Sort.Direction.DESC, "createdTime");
         Pageable pageable = PageRequest.of(current, size, sort);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("deviceName", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("deviceNumber", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("pkOrg", ExampleMatcher.GenericPropertyMatchers.exact())
                 .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact());
+
         if (belongProcessId != -1) {
             matcher.withMatcher("belongProcessId", ExampleMatcher.GenericPropertyMatchers.contains());
         }
@@ -74,6 +82,7 @@ public class TSysDeviceServiceImpl implements TSysDeviceService {
             tsysDevice.setBelongProcessId(belongProcessId);
         }
         BeanUtils.copyProperties(deviceDto, tsysDevice);
+        tsysDevice.setPkOrg(pkOrg);
         Example<TsysDevice> example = Example.of(tsysDevice, matcher);
         Page<TsysDevice> devicePage = tSysDeviceRepository.findAll(example, pageable);
         return devicePage;

@@ -548,5 +548,6 @@ COMMENT ON TABLE public.t_bus_inventory_inout IS '库存出入记录表';
 COMMENT ON COLUMN public.t_bus_inventory_inout.order_process_history_id IS '报工记录表行ID';
 COMMENT ON COLUMN public.t_bus_inventory_inout.bill_id IS '库存ID';
 COMMENT ON COLUMN public.t_bus_inventory_inout.qty IS '变化数量';
-
+ALTER TABLE "public"."t_bus_order_head"
+    ALTER COLUMN "body_pot_qty" SET DEFAULT 0;
 

@@ -14,7 +14,7 @@ import java.util.List;
  * @Description:
  */
 public interface TSysDeviceService {
-    Page<TsysDevice> tSysDeviceList(Integer current, Integer size, TSysDeviceDto deviceDto, Integer belongProcessId);
+    Page<TsysDevice> tSysDeviceList(String userId,Integer current, Integer size, TSysDeviceDto deviceDto, Integer belongProcessId);
 
     List<TsysDevice> tSysDeviceList(TSysDeviceSearchDto deviceDto);
 

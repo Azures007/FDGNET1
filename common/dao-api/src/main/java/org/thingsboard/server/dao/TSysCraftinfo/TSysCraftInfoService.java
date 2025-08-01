@@ -23,7 +23,7 @@ public interface TSysCraftInfoService {
 
     void save(TSysCraftInfoSaveDto craftInfoSaveDto);
 
-    PageVo<TSysCraftInfoSaveDto> list(Integer current, Integer size, TSysCraftSearchDto searchDto);
+    PageVo<TSysCraftInfoSaveDto> list(String userId,Integer current, Integer size, TSysCraftSearchDto searchDto);
 
     TSysCraftInfoSaveDto detail(Integer craftId);
 

@@ -35,8 +35,8 @@ public class TSysDeviceExcelServiceImpl implements TSysDeviceExcelService {
     TSysDeviceRepository tSysDeviceRepository;
 
     @Override
-    public void download(Integer current, Integer size, TSysDeviceDto deviceDto, HttpServletResponse response) throws IOException {
-        Page<TsysDevice> devicePage= deviceService.tSysDeviceList(current,size,deviceDto,-1);
+    public void download(String userId,Integer current, Integer size, TSysDeviceDto deviceDto, HttpServletResponse response) throws IOException {
+        Page<TsysDevice> devicePage= deviceService.tSysDeviceList(userId,current,size,deviceDto,-1);
         List<DeviceExcelVo> excelVos=new ArrayList<>();
         for (TsysDevice device : devicePage.getContent()) {
             DeviceExcelVo vo=new DeviceExcelVo();

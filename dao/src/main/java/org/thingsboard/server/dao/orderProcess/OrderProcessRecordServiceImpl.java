@@ -1734,7 +1734,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         }
         allData.setBodyPlanPrdQty(bodyPlanPrdQty);
         //计划锅数=订单表“锅数”（数量后缀加单位锅）
-        Integer bodyPotQty = tBusOrderHead.getBodyPotQty();
+        Integer bodyPotQty = tBusOrderHead.getBodyPotQty()==null?0:tBusOrderHead.getBodyPotQty();
         allData.setBodyPotQty(bodyPotQty);
         //总合格累计数量=产后合格品报工累计数量（订单编号+工序编码进行统计）
         Float sumExportPotByImportAll = orderPPBomRepository.sumExportPotQtyAllByBL(searchDto.getOrderId(), processNumber);

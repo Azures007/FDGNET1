@@ -16,8 +16,12 @@ public interface TSysClassService {
      * 返回班别列表
      * @return
      */
+    Page<TSysClass> tSysClassList(String userId,Integer current, Integer size, TSysClassDto tSysClassDto);
+    /**
+     * 返回班别列表
+     * @return
+     */
     Page<TSysClass> tSysClassList(Integer current, Integer size, TSysClassDto tSysClassDto);
-
     /**
      * 返回班别组长列表(用于导出)
      * @return

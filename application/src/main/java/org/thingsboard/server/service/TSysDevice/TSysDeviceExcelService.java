@@ -13,7 +13,7 @@ import java.io.IOException;
  * @Description:
  */
 public interface TSysDeviceExcelService {
-    void download( Integer current, Integer size,  TSysDeviceDto deviceDto,HttpServletResponse response) throws IOException;
+    void download(String userId, Integer current, Integer size,  TSysDeviceDto deviceDto,HttpServletResponse response) throws IOException;
     ResponseResult upload(MultipartFile file, String name);
 
     void downTemplate(HttpServletResponse response);

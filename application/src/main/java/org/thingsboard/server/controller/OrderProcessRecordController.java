@@ -173,9 +173,10 @@ public class OrderProcessRecordController extends BaseController {
     public ResponseResult<PageVo<TsysDevice>> getDevice(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                         @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                         @RequestParam("belongProcessId") Integer belongProcessId) throws Exception {
+        SecurityUser user = getCurrentUser();
         TSysDeviceDto deviceDto = new TSysDeviceDto();
         deviceDto.setEnabled("0");
-        Page<TsysDevice> devices = deviceService.tSysDeviceList(current, size, deviceDto, belongProcessId);
+        Page<TsysDevice> devices = deviceService.tSysDeviceList(user.getId().toString(),current, size, deviceDto, belongProcessId);
         PageVo<TsysDevice> pageVo = new PageVo<>(devices);
         return ResultUtil.success(pageVo);
     }
