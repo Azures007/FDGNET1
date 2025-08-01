@@ -537,4 +537,16 @@ COMMENT ON COLUMN public.t_bus_user_current_org_line.workline IS '产线id';
 ALTER TABLE public.t_sys_process_info ADD report_type varchar NULL;
 COMMENT ON COLUMN public.t_sys_process_info.report_type IS '报工类型';
 
+create table t_bus_inventory_inout(
+                                      id serial4 NOT NULL,
+                                      order_process_history_id INT4,
+                                      bill_id varchar(255) NOT NULL,
+                                      qty FLOAT4,
+                                      CONSTRAINT t_bus_inventory_inout_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_bus_inventory_inout IS '库存出入记录表';
+COMMENT ON COLUMN public.t_bus_inventory_inout.order_process_history_id IS '报工记录表行ID';
+COMMENT ON COLUMN public.t_bus_inventory_inout.bill_id IS '库存ID';
+COMMENT ON COLUMN public.t_bus_inventory_inout.qty IS '变化数量';
+
 

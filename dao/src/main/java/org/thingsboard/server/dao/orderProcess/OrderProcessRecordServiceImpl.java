@@ -1701,32 +1701,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         String groupId = orderProcessPersonRelRepository.getPersonGroupId(searchDto.getOrderProcessId(), searchDto.getDevicePersonIds(), searchDto.getDevicePersonIds().size());
         ChopAndMixTotalVo chopAndMixTotalVo = null;
         switch (searchDto.getProcessType()) {
-            case LichengConstants.PROCESS_NUMBER_ZHANBAN: {
-                // 斩拌工序
-                chopAndMixTotalVo = getExport(groupId, searchDto, LichengConstants.PROCESS_NUMBER_ZHANBAN);
-            }
-            break;
-            case LichengConstants.PROCESS_NUMBER_BANLIAO: {
-                //拌料工序
-                chopAndMixTotalVo = getExport(groupId, searchDto, LichengConstants.PROCESS_NUMBER_BANLIAO);
-            }
-            break;
-            case LichengConstants.PROCESS_NUMBER_RUHUAJIANG: {
-                //乳化浆
-                chopAndMixTotalVo = getExport(groupId, searchDto, searchDto.getProcessType());
-                //产出锅数需要*2
-                ChopAndMixTotalData totalData = chopAndMixTotalVo.getTotalData();
-                totalData.setQualifiedBodyPotQty(totalData.getQualifiedBodyPotQty() * 2);
-            }
-            break;
-            case LichengConstants.PROCESS_NUMBER_XIELIUSESU: {
-                //蟹柳色素
-                chopAndMixTotalVo = getExport(groupId, searchDto, searchDto.getProcessType());
-                //产出锅数需要*2
-                ChopAndMixTotalData totalData = chopAndMixTotalVo.getTotalData();
-                totalData.setQualifiedBodyPotQty(totalData.getQualifiedBodyPotQty() * 2);
-            }
-            break;
+
             default: {
                 //默认通用
                 chopAndMixTotalVo = getExport(groupId, searchDto, searchDto.getProcessType());
