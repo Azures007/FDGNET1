@@ -23,5 +23,17 @@ public interface TSysPdRecordService {
      * @return
      */
     Page<TSysPdRecordVo> tSysPdRecordList(String toString, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto);
+
+    /**
+     * 盘点还原记录列表
+     * @param toString
+     * @param current
+     * @param size
+     * @param sortField
+     * @param sortOrder
+     * @param tSysPdRecordDto
+     * @return
+     */
+    Page<TSysPdRecordVo> tSysPdRecordListWithSplit(String toString, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto);
 }
 

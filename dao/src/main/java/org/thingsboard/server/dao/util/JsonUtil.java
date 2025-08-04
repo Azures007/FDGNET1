@@ -3,10 +3,7 @@ package org.thingsboard.server.dao.util;
 import com.alibaba.fastjson.JSON;
 import org.thingsboard.server.common.data.TSysFieldConfig;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 陈懋燊
@@ -156,7 +153,7 @@ public class JsonUtil {
 //        tableData.add(List.of("true", "4", "消防栓门板", "QCCF0004", "1", "ZDLX0004", "", "是，否", "", "1"));
 
         // 按品名分组存储产品信息
-        Map<String, Product> productMap = new HashMap<>();
+        Map<String, Product> productMap = new LinkedHashMap<>();
 
         // 遍历表格数据
         for (List<String> row : tableData) {

@@ -51,4 +51,23 @@ public class TSysPdRecordController extends BaseController {
         return ResultUtil.success(pageVo);
 
     }
+
+    @ApiOperation("查询盘点记录列表（含还原材料）")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+            @ApiImplicitParam(name = "sortField", value = "排序字段", readOnly = false),
+            @ApiImplicitParam(name = "sortOrder", value = "排序方式（asc/desc）", readOnly = false)
+    })
+    @PostMapping("/pdRecordListWithSplit")
+    public ResponseResult<PageVo<TSysPdRecordVo>> pdRecordListWithSplit(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                                                        @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                        @RequestParam(value = "sortField", defaultValue = "") String sortField,
+                                                                        @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
+                                                                        @RequestBody TSysPdRecordDto tSysPdRecordDto) throws ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordListWithSplit(currentUser.getId().toString(), current, size, sortField, sortOrder, tSysPdRecordDto);
+        PageVo<TSysPdRecordVo> pageVo = new PageVo<>(pdRecordList);
+        return ResultUtil.success(pageVo);
+    }
 }

@@ -92,5 +92,7 @@ public class TSysPdRecordVo {
     @ApiModelProperty("盘点日期（格式yyyy-MM-dd）")
     private String pdTimeStr;
 
+    @ApiModelProperty("是否还原")
+    private String isReturn;
 
 }

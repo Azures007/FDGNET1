@@ -14,7 +14,6 @@ import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscVersionRelRepositor
 import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscVersionRepository;
 import org.thingsboard.server.dao.sql.tSysQualityCategory.TSysQualityCategoryConfigRepository;
 import org.thingsboard.server.dao.sql.tSysQualityCategory.TSysQualityCategoryRepository;
-import org.thingsboard.server.dao.tSysQualityCategory.TSysQualityCategoryService;
 import org.thingsboard.server.dao.util.JsonUtil;
 import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 
@@ -124,7 +123,7 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
         List<Integer> categoryIdList = processedContent.stream().map(TSysQualityCategory::getId).collect(Collectors.toList());
 
         //根据ID合集查询所有的类目配置
-        List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList =tSysQualityCategoryConfigRepository.findByCategoryIdIn(categoryIdList);
+        List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList =tSysQualityCategoryConfigRepository.findByCategoryIdInOrderByIdAsc(categoryIdList);
         //根据CategoryId对类目配置信息进行分组
         Map<Integer, List<TSysQualityCategoryConfig>> configMap = tSysQualityCategoryConfigList.stream()
                 .collect(Collectors.groupingBy(TSysQualityCategoryConfig::getCategoryId));
@@ -297,7 +296,7 @@ public class TSysQualityCategoryServiceImpl implements TSysQualityCategoryServic
 
         TSysQualityCategory tSysQualityCategory = tSysQualityCategoryRepository.findById(categoryId).orElse(null);
         BeanUtils.copyProperties(tSysQualityCategory, vo);
-        List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList =tSysQualityCategoryConfigRepository.findByCategoryId(categoryId);
+        List<TSysQualityCategoryConfig> tSysQualityCategoryConfigList =tSysQualityCategoryConfigRepository.findByCategoryIdOrderByIdAsc(categoryId);
         vo.settSysQualityCategoryConfigList(tSysQualityCategoryConfigList);
 
 //        List<TSysCodeDscVersionRel> versionRels = tSysCodeDscVersionRelRepository.findByRelId(tSysQualityCategory.getId());
