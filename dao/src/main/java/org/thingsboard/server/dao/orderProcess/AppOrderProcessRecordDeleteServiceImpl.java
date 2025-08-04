@@ -8,7 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.common.util.BigDecimalUtil;
 import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.nc_inventory.NcInventory;
+import org.thingsboard.server.common.data.nc_inventory.NcInventoryInOut;
 import org.thingsboard.server.dao.constant.GlobalConstant;
+import org.thingsboard.server.dao.sql.nc_inventory.NcInventoryInoutRepository;
+import org.thingsboard.server.dao.sql.nc_inventory.NcInventoryRepository;
 import org.thingsboard.server.dao.sql.order.OrderHeadRepository;
 import org.thingsboard.server.dao.sql.order.OrderPPBomRepository;
 import org.thingsboard.server.dao.sql.order.OrderProcessHistoryRepository;
@@ -43,6 +47,12 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
 
     @Autowired
     OrderProcessRecordService orderProcessRecordService;
+
+    @Autowired
+    NcInventoryInoutRepository ncInventoryInoutRepository;
+
+    @Autowired
+    NcInventoryRepository ncInventoryRepository;
 
     @Value("${submit.enabled:0}")
     String submitEnabled;
@@ -156,6 +166,16 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         }
         orderProcessRecordRepository.saveAndFlush(tBusOrderProcessRecord);
         tBusOrderProcessHistory.setReportStatus(LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1);//删除状态
+        //还原库存数量，删除出库记录
+        List<NcInventoryInOut> inout=ncInventoryInoutRepository.getAllByOrderProcessHistoryId(tBusOrderProcessHistory.getOrderProcessRecordId());
+        for(NcInventoryInOut ncInventoryInOut:inout){
+            NcInventory inv=ncInventoryRepository.getOne(ncInventoryInOut.getBillId());
+            if(inv!=null){
+                inv.setQty(inv.getQty()-ncInventoryInOut.getQty());
+                ncInventoryRepository.saveAndFlush(inv);
+            }
+        }
+        ncInventoryInoutRepository.deleteAll(inout);
         orderProcessHistoryRepository.saveAndFlush(tBusOrderProcessHistory);
 
     }

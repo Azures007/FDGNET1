@@ -51,6 +51,7 @@ public interface TSysClassRepository extends JpaRepository<TSysClass,Integer> {
             "from t_sys_class a join t_sys_class_personnel_rel b on a.class_id =b.class_id \n" +
             "group by a.class_id ) as b on a.class_id =b.class_id\n" +
             "where 1=1 \n" +
+            "and (a.pk_org=:#{#tSysClass.pkOrg} or :#{#tSysClass.pkOrg} is null or :#{#tSysClass.pkOrg} ='')\n" +
             "and (a.name like %:#{#tSysClass.name}% or :#{#tSysClass.name} is null or :#{#tSysClass.name} ='')\n" +
             "and (a.class_number like %:#{#tSysClass.classNumber}% or :#{#tSysClass.classNumber} is null or :#{#tSysClass.classNumber} ='')\n" +
             "and (a.enabled_st=:#{#tSysClass.enabledSt} or :#{#tSysClass.enabledSt} is null or :#{#tSysClass.enabledSt} ='')",nativeQuery = true)
@@ -112,4 +113,8 @@ public interface TSysClassRepository extends JpaRepository<TSysClass,Integer> {
             "right join t_sys_personnel_info c on b.personnel_id = c.personnel_id \n" +
             "where a.class_id =:classId",nativeQuery = true)
     List<Map> findPersonByClassId(@Param("classId") Integer classId);
+
+    List<TSysClass> findAllByGroupLeaderID(String leaderID);
+
+
 }

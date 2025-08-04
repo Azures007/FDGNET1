@@ -1701,32 +1701,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         String groupId = orderProcessPersonRelRepository.getPersonGroupId(searchDto.getOrderProcessId(), searchDto.getDevicePersonIds(), searchDto.getDevicePersonIds().size());
         ChopAndMixTotalVo chopAndMixTotalVo = null;
         switch (searchDto.getProcessType()) {
-            case LichengConstants.PROCESS_NUMBER_ZHANBAN: {
-                // 斩拌工序
-                chopAndMixTotalVo = getExport(groupId, searchDto, LichengConstants.PROCESS_NUMBER_ZHANBAN);
-            }
-            break;
-            case LichengConstants.PROCESS_NUMBER_BANLIAO: {
-                //拌料工序
-                chopAndMixTotalVo = getExport(groupId, searchDto, LichengConstants.PROCESS_NUMBER_BANLIAO);
-            }
-            break;
-            case LichengConstants.PROCESS_NUMBER_RUHUAJIANG: {
-                //乳化浆
-                chopAndMixTotalVo = getExport(groupId, searchDto, searchDto.getProcessType());
-                //产出锅数需要*2
-                ChopAndMixTotalData totalData = chopAndMixTotalVo.getTotalData();
-                totalData.setQualifiedBodyPotQty(totalData.getQualifiedBodyPotQty() * 2);
-            }
-            break;
-            case LichengConstants.PROCESS_NUMBER_XIELIUSESU: {
-                //蟹柳色素
-                chopAndMixTotalVo = getExport(groupId, searchDto, searchDto.getProcessType());
-                //产出锅数需要*2
-                ChopAndMixTotalData totalData = chopAndMixTotalVo.getTotalData();
-                totalData.setQualifiedBodyPotQty(totalData.getQualifiedBodyPotQty() * 2);
-            }
-            break;
+
             default: {
                 //默认通用
                 chopAndMixTotalVo = getExport(groupId, searchDto, searchDto.getProcessType());
@@ -1759,7 +1734,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         }
         allData.setBodyPlanPrdQty(bodyPlanPrdQty);
         //计划锅数=订单表“锅数”（数量后缀加单位锅）
-        Integer bodyPotQty = tBusOrderHead.getBodyPotQty();
+        Integer bodyPotQty = tBusOrderHead.getBodyPotQty()==null?0:tBusOrderHead.getBodyPotQty();
         allData.setBodyPotQty(bodyPotQty);
         //总合格累计数量=产后合格品报工累计数量（订单编号+工序编码进行统计）
         Float sumExportPotByImportAll = orderPPBomRepository.sumExportPotQtyAllByBL(searchDto.getOrderId(), processNumber);

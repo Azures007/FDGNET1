@@ -2,7 +2,9 @@ package org.thingsboard.server.common.data;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -33,5 +35,6 @@ public class TSyncMaterialBom {
     @Column(name = "material_name")
     @ApiModelProperty("物料名称")
     private String materialName;
+
 
 }

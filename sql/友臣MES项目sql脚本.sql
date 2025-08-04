@@ -520,3 +520,34 @@ COMMENT ON COLUMN public.t_bus_order_process_history.iot_math IS '计算公式';
 
 ALTER TABLE public.t_bus_order_process_history ADD iot_qty int4 NULL;
 COMMENT ON COLUMN public.t_bus_order_process_history.iot_qty IS '设备采集数量';
+
+create table t_bus_user_current_org_line(
+                                            id serial4 NOT NULL,
+                                            user_id varchar(255) NULL,
+                                            org varchar(255) NULL,
+                                            workline varchar(255) NULL,
+                                            CONSTRAINT t_bus_user_current_org_line_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_bus_user_current_org_line IS '记录用户登录的基地产线';
+COMMENT ON COLUMN public.t_bus_user_current_org_line.user_id IS '用户ID';
+COMMENT ON COLUMN public.t_bus_user_current_org_line.org IS '基地id';
+COMMENT ON COLUMN public.t_bus_user_current_org_line.workline IS '产线id';
+
+-- 2025-07-31 30355 【后台】工序管理
+ALTER TABLE public.t_sys_process_info ADD report_type varchar NULL;
+COMMENT ON COLUMN public.t_sys_process_info.report_type IS '报工类型';
+
+create table t_bus_inventory_inout(
+                                      id serial4 NOT NULL,
+                                      order_process_history_id INT4,
+                                      bill_id varchar(255) NOT NULL,
+                                      qty FLOAT4,
+                                      CONSTRAINT t_bus_inventory_inout_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_bus_inventory_inout IS '库存出入记录表';
+COMMENT ON COLUMN public.t_bus_inventory_inout.order_process_history_id IS '报工记录表行ID';
+COMMENT ON COLUMN public.t_bus_inventory_inout.bill_id IS '库存ID';
+COMMENT ON COLUMN public.t_bus_inventory_inout.qty IS '变化数量';
+ALTER TABLE "public"."t_bus_order_head"
+    ALTER COLUMN "body_pot_qty" SET DEFAULT 0;
+

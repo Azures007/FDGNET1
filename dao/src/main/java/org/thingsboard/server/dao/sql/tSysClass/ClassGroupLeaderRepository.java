@@ -76,4 +76,6 @@ public interface ClassGroupLeaderRepository extends JpaRepository<TSysClassGroup
     List<Object[]> getRelByPersonnelIdAndOtherClass(Integer classId,List<Integer> personnelId);
 
     List<TSysClassGroupLeaderRel> findByPersonnelId(Integer personnelId);
+
+    List<TSysClassGroupLeaderRel> findAllByClassId(Integer classId);
 }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.TSysClass;
 import org.thingsboard.server.common.data.TSysClassPersonnelRel;
+import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.ImportParam.TSysClassImportParam;
@@ -43,8 +44,9 @@ public class TSysClassController extends BaseController {
     @PostMapping("/classList")
     public ResponseResult<PageVo<TSysClass>> classList(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                        @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                       @RequestBody TSysClassDto tSysClassDto) {
-        Page<TSysClass> classList = tSysClassService.tSysClassList(current, size, tSysClassDto);
+                                                       @RequestBody TSysClassDto tSysClassDto) throws ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        Page<TSysClass> classList = tSysClassService.tSysClassList(currentUser.getId().toString(),current, size, tSysClassDto);
         PageVo<TSysClass> pageVo = new PageVo<>(classList);
         return ResultUtil.success(pageVo);
     }

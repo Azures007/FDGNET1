@@ -42,7 +42,8 @@ public class TSysCraftInfoController extends BaseController{
     @PostMapping("/list")
     public ResponseResult<PageVo<TSysCraftInfoSaveDto>> list(@RequestParam(value = "current",defaultValue = "0") Integer current,
                                                              @RequestParam(value = "size",defaultValue = "10") Integer size, @RequestBody TSysCraftSearchDto searchDto) throws Exception {
-        PageVo<TSysCraftInfoSaveDto> list=tSysCraftInfoService.list(current,size,searchDto);
+        SecurityUser currentUser = getCurrentUser();
+        PageVo<TSysCraftInfoSaveDto> list=tSysCraftInfoService.list(currentUser.getId().toString(),current,size,searchDto);
         return ResultUtil.success(list);
     }
 

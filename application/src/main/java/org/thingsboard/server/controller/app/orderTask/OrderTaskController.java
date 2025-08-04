@@ -1,12 +1,15 @@
-package org.thingsboard.server.controller;
+package org.thingsboard.server.controller.app.orderTask;
 
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.LichengConstants;
 import org.thingsboard.server.common.data.TSysProcessInfo;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
+import org.thingsboard.server.controller.BaseController;
+import org.thingsboard.server.dao.TSysProcessInfo.TSysProcessInfoService;
 import org.thingsboard.server.dao.dto.OrderTaskSelectDto;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.dao.vo.TaskListFinishVo;
@@ -29,6 +32,9 @@ import java.util.Map;
 @Api(value = "订单生产任务", tags = "订单生产任务")
 @RequestMapping("/api/orderTask")
 public class OrderTaskController extends BaseController {
+
+    @Autowired
+    TSysProcessInfoService tSysProcessInfoService;
 
     @ApiOperation("任务列表批次")
     @GetMapping("/listBodyIot")
@@ -317,6 +323,27 @@ public class OrderTaskController extends BaseController {
     public ResponseResult resumedProcess(@RequestParam("orderId") Integer orderId, @RequestParam("orderProcessId") Integer orderProcessId) throws Exception {
         return orderHeadService.resumedProcess(orderId, orderProcessId);
     }
+
+    @ApiOperation("通过工序id获取工序详情")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "processId", value = "工序ID", required = true)
+    })
+    @GetMapping("/processDetailByProcessId")
+    public ResponseResult<TSysProcessInfo> processDetail(@RequestParam Integer processId) {
+        TSysProcessInfo processInfo = tSysProcessInfoService.processDetail(processId);
+        return ResultUtil.success(processInfo);
+    }
+
+    @ApiOperation("通过订单工序执行id获取工序详情")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderProcessId", value = "订单工序执行ID", required = true)
+    })
+    @GetMapping("/processDetailByOrderProcessId")
+    public ResponseResult<TSysProcessInfo> processDetailByOrderProcessId(@RequestParam Integer orderProcessId) {
+        TSysProcessInfo processInfo=tSysProcessInfoService.processDetailByOrderProcessId(orderProcessId);
+        return ResultUtil.success(processInfo);
+    }
+
 
 
 }

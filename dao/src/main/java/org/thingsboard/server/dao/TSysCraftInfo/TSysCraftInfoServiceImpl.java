@@ -3,6 +3,7 @@ package org.thingsboard.server.dao.TSysCraftInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.thingsboard.common.util.Utils;
@@ -22,6 +23,7 @@ import org.thingsboard.server.dao.sql.TSysProcessInfo.TSysProcessClassRelReposit
 import org.thingsboard.server.dao.sql.TSysProcessInfo.TSysProcessInfoRepository;
 import org.thingsboard.server.dao.sql.sync.SyncMaterialRepository;
 import org.thingsboard.server.dao.sql.tSysClass.TSysClassRepository;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.PageVo;
 
 import java.text.ParseException;
@@ -53,7 +55,9 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
     TSysCraftMaterialRelRepository tSysCraftMaterialRelRepository;
     @Autowired
     SyncMaterialRepository syncMaterialRepository;
-
+    @Autowired
+    @Qualifier("userServiceImpl")
+    private UserService userService;
     @Override
     public void save(TSysCraftInfoSaveDto craftInfoSaveDto) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -116,12 +120,14 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
     }
 
     @Override
-    public PageVo<TSysCraftInfoSaveDto> list(Integer current, Integer size, TSysCraftSearchDto searchDto) {
+    public PageVo<TSysCraftInfoSaveDto> list(String userId,Integer current, Integer size, TSysCraftSearchDto searchDto) {
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
         Sort sort = Sort.by(Sort.Direction.DESC, "createdTime");
         Pageable pageable = PageRequest.of(current, size, sort);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("craftName", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("craftNumber", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("pkOrg", ExampleMatcher.GenericPropertyMatchers.exact())
                 .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact());
         TSysCraftInfo craftInfo = new TSysCraftInfo();
         if (StringUtils.isEmpty(searchDto.getCraftName())) {
@@ -131,7 +137,7 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
             searchDto.setCraftNumber(null);
         }
         BeanUtils.copyProperties(searchDto, craftInfo);
-
+        craftInfo.setPkOrg(pkOrg);
         Example<TSysCraftInfo> example = Example.of(craftInfo, matcher);
         Page<TSysCraftInfo> craftInfos = tSysCraftInfoRepository.findAll(example, pageable);
         List<TSysCraftInfoSaveDto> dtos = new ArrayList<>();

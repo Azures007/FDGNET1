@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.thingsboard.server.common.data.TsysDevice;
+import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.TSysDevice.TSysDeviceService;
@@ -38,7 +39,8 @@ public class TSysDeviceController extends BaseController{
     @PostMapping("/getDevice")
     public ResponseResult<PageVo<TsysDevice>> getDevice(@RequestParam(value = "current",defaultValue = "0") Integer current,
                                     @RequestParam(value = "size",defaultValue = "10") Integer size,@RequestBody TSysDeviceDto deviceDto) throws Exception {
-        Page<TsysDevice> devices =deviceService.tSysDeviceList(current,size,deviceDto,-1);
+        SecurityUser currentUser = getCurrentUser();
+        Page<TsysDevice> devices =deviceService.tSysDeviceList(currentUser.getId().toString(),current,size,deviceDto,-1);
         PageVo<TsysDevice> pageVo=new PageVo<>(devices);
         return ResultUtil.success(pageVo);
     }
@@ -84,8 +86,9 @@ public class TSysDeviceController extends BaseController{
     @ApiOperation("excel导出")
     @PostMapping("/exportDevices")
     public void download(@RequestParam(value = "current",defaultValue = "0") Integer current,
-                         @RequestParam(value = "size",defaultValue = "10") Integer size,@RequestBody TSysDeviceDto deviceDto,HttpServletResponse response) throws IOException {
-        downloadService.download(current,size,deviceDto,response);
+                         @RequestParam(value = "size",defaultValue = "10") Integer size,@RequestBody TSysDeviceDto deviceDto,HttpServletResponse response) throws IOException, ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        downloadService.download(currentUser.getId().toString(),current,size,deviceDto,response);
     }
 
     @ApiOperation("导入")

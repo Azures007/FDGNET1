@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +24,12 @@ import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscRepository;
 import org.thingsboard.server.dao.sql.tSysPersonnelInfo.ClassPersonnelRepository;
 import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.sql.user.UserDetailRepository;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +53,31 @@ public class TSysClassServiceImpl implements TSysClassService {
 
     @Autowired
     UserDetailRepository userDetailRepository;
-
+    @Autowired
+    @Qualifier("userServiceImpl")
+    private UserService userService;
+    @Override
+    public Page<TSysClass> tSysClassList(String userId,Integer current, Integer size, TSysClassDto tSysClassDto) {
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+        Sort sort = Sort.by(Sort.Direction.DESC, "crt_time");
+        Pageable pageable = PageRequest.of(current, size, sort);
+//        ExampleMatcher matcher = ExampleMatcher.matching()
+//                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
+//                .withMatcher("enabledSt", ExampleMatcher.GenericPropertyMatchers.exact());
+        TSysClass tSysClass = new TSysClass();
+        BeanUtils.copyProperties(tSysClassDto, tSysClass);
+//        Example<TSysClass> example = Example.of(tSysClass, matcher);
+        tSysClass.setEnabledSt(StringUtils.isNotBlank(tSysClass.getEnabledSt()) ? tSysClass.getEnabledSt() : "");
+        tSysClass.setName(StringUtils.isNotBlank(tSysClass.getName()) ? tSysClass.getName() : "");
+        tSysClass.setClassNumber(StringUtils.isNotBlank(tSysClass.getClassNumber()) ? tSysClass.getClassNumber() : "");
+        tSysClass.setPkOrg(pkOrg);
+        Page<TSysClass> tSysClassPage = tSysClassRepository.findAllBy(tSysClass, pageable);
+        String code = "SCHEDULING0000";
+        tSysClassPage.getContent().stream().forEach(tSysClass1 -> {
+            tSysClass1.setSchedulingCodeDsc(GlobalConstant.getCodeDscName(code, tSysClass1.getScheduling()));
+        });
+        return tSysClassPage;
+    }
     @Override
     public Page<TSysClass> tSysClassList(Integer current, Integer size, TSysClassDto tSysClassDto) {
         Sort sort = Sort.by(Sort.Direction.DESC, "crt_time");
@@ -71,7 +98,6 @@ public class TSysClassServiceImpl implements TSysClassService {
         });
         return tSysClassPage;
     }
-
     @Override
     public PageVo<ClassGroupLeaderExpVo> tSysClassListExp(Integer current, Integer size, TSysClassDto tSysClassDto) {
         Sort sort = Sort.by(Sort.Direction.DESC, "crt_time");
@@ -162,6 +188,21 @@ public class TSysClassServiceImpl implements TSysClassService {
     @Transactional
     @Override
     public void deleteTSysClass(Integer classId) {
+        List<TSysClassGroupLeaderRel> tSysClassGroupLeaderRelLits=new ArrayList<>();
+        tSysClassGroupLeaderRelLits=classGroupLeaderRepository.findAllByClassId(classId);
+        //获取所有关于此班别得组长id
+        List<Integer> deleteRelIds = tSysClassGroupLeaderRelLits.stream().map(TSysClassGroupLeaderRel::getPersonnelId).collect(Collectors.toList());
+        //循环获取组长是否有在其他班别担任组长
+        for(Integer Leader : deleteRelIds) {
+            List<TSysClass> tSysClass = tSysClassRepository.findAllByGroupLeaderID(Leader+"");
+            if(tSysClass.size()>0) {
+                tSysPersonnelInfoRepository.updateClassNameByClassId(deleteRelIds, tSysClass.get(0).getClassId());
+            }
+            else {
+                tSysPersonnelInfoRepository.updateClassNameByClassId(deleteRelIds, 0);
+            }
+
+        }
         //删除班组相关关联信息也要删除
         tSysClassRepository.deleteById(classId);
         classPersonnelRepository.deleteByClassId(classId);

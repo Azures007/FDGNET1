@@ -70,4 +70,7 @@ public class TSysProcessInfo {
     @Column(name = "by_set_export")
     private String bySetExport;
 
+    @ApiModelProperty("报工类型")
+    @Column(name = "report_type")
+    private String reportType;
 }

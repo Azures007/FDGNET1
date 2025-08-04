@@ -21,4 +21,13 @@ public interface SyncMaterialBomRepository extends JpaRepository<TSyncMaterialBo
     // 按父级物料id删除
     int deleteByParentId(Integer materialId);
 
+    /**
+     * 通过父级物料编码查找
+     * @param materialNumber
+     * @return
+     */
+    @Query(value = "select b.* from t_sync_material a " +
+            "join t_sync_material_bom b on a.id=b.parent_id " +
+            "where a.material_code=?1 ",nativeQuery = true)
+    List<TSyncMaterialBom> findByMaterialNumber(String materialNumber);
 }
