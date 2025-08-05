@@ -3,14 +3,17 @@ package org.thingsboard.server.dao.TSysPdRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.TSysPdRecord;
 import org.thingsboard.server.common.data.TSysPdRecordSplit;
+import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
 import org.thingsboard.server.dao.dto.TSysPdRecordDto;
 import org.thingsboard.server.dao.sql.pd.TSysPdRecordRepository;
 import org.thingsboard.server.dao.sql.pd.TSysPdRecordSplitRepository;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.TSysPdRecordVo;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -39,9 +42,13 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
 
     @Autowired
     private TSysPdRecordSplitRepository tSysPdRecordSplitRepository;
+
+    @Autowired
+    @Qualifier("userServiceImpl")
+    private UserService userService;
     /**
      * 盘点记录列表
-     * @param toString
+     * @param userId
      * @param current
      * @param size
      * @param sortField
@@ -50,7 +57,11 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
      * @return
      */
     @Override
-    public Page<TSysPdRecordVo> tSysPdRecordList(String toString, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto) {
+    public Page<TSysPdRecordVo> tSysPdRecordList(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto) {
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
+
         Sort sort = Sort.by(Sort.Direction.ASC, "createdTime");
         if ("desc".equalsIgnoreCase(sortOrder)) {
             sort = Sort.by(Sort.Direction.DESC, "createdTime");
@@ -66,6 +77,10 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             }
             if (tSysPdRecordDto.getPdWorkshopName() != null && !tSysPdRecordDto.getPdWorkshopName().isEmpty()) {
                 predicates.add(cb.like(root.get("pdWorkshopName"), "%" + tSysPdRecordDto.getPdWorkshopName() + "%"));
+            }
+            if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
+                List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
+                predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
             }
             predicates.add(cb.equal(root.get("byDeleted"), "0"));
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -98,7 +113,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
 
     /**
      * 盘点记录列表（含复盘）
-     * @param toString
+     * @param userId
      * @param current
      * @param size
      * @param sortField
@@ -107,7 +122,10 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
      * @return
      */
     @Override
-    public Page<TSysPdRecordVo> tSysPdRecordListWithSplit(String toString, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto) {
+    public Page<TSysPdRecordVo> tSysPdRecordListWithSplit(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto) {
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
         Sort sort = Sort.by(Sort.Direction.ASC, "createdTime");
         if ("desc".equalsIgnoreCase(sortOrder)) {
             sort = Sort.by(Sort.Direction.DESC, "createdTime");
@@ -123,6 +141,10 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             }
             if (tSysPdRecordDto.getPdWorkshopName() != null && !tSysPdRecordDto.getPdWorkshopName().isEmpty()) {
                 predicates.add(cb.like(root.get("pdWorkshopName"), "%" + tSysPdRecordDto.getPdWorkshopName() + "%"));
+            }
+            if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
+                List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
+                predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
             }
             predicates.add(cb.equal(root.get("byDeleted"), "0"));
             return cb.and(predicates.toArray(new Predicate[0]));
