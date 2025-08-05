@@ -104,7 +104,7 @@ public class YcPdServiceImpl implements YcPdService {
                 TSyncMaterial tSyncMaterial = syncMaterialRepository.findById(tSyncMaterialBom.getMaterialId()).orElse(null);
                 TSysPdRecordSplit tSysPdRecordSplit=JSON.parseObject(JSON.toJSONString(tSysPdRecord),TSysPdRecordSplit.class);
                 tSysPdRecordSplit.setRePdRecordId(tSysPdRecord.getPdRecordId());
-                tSysPdRecordSplit.setPdQty(tSysPdRecord.getPdQty().multiply(tSyncMaterialBom.getRatio()));
+                tSysPdRecordSplit.setPdQty(tSysPdRecord.getPdQty().multiply(tSyncMaterialBom.getRatio()).doubleValue());
                 tSysPdRecordSplit.setMaterialName(tSyncMaterialBom.getMaterialName());
                 tSysPdRecordSplit.setMaterialNumber(tSyncMaterial.getMaterialCode());
                 tSysPdRecordSplit.setMaterialSpecifications(tSyncMaterial.getMaterialModel());

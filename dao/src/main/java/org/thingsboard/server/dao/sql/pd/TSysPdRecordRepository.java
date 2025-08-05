@@ -1,6 +1,10 @@
 package org.thingsboard.server.dao.sql.pd;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.thingsboard.server.common.data.TSysPdRecord;
@@ -8,7 +12,7 @@ import org.thingsboard.server.common.data.TSysPdRecord;
 import java.util.List;
 import java.util.Map;
 
-public interface TSysPdRecordRepository extends JpaRepository<TSysPdRecord,Integer> {
+public interface TSysPdRecordRepository extends JpaRepository<TSysPdRecord, Integer>, JpaSpecificationExecutor<TSysPdRecord> {
     /**
      * 获取同班组、车间、日期的最新盘点记录
      * @param pdTimeStr
@@ -45,4 +49,5 @@ public interface TSysPdRecordRepository extends JpaRepository<TSysPdRecord,Integ
             "where pd_time_str=?1 and pd_workshop_number=?2  and by_deleted ='0'\n" +
             "order by pd_time desc ",nativeQuery = true)
     List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber);
+
 }

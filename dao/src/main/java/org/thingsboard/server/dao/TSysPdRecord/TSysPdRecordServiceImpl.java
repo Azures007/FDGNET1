@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.TSysPdRecord;
 import org.thingsboard.server.common.data.TSysPdRecordSplit;
 import org.thingsboard.server.dao.dto.TSysPdRecordDto;
-import org.thingsboard.server.dao.sql.TSysPdRecord.TSysPdRecordSplitRepository;
-import org.thingsboard.server.dao.sql.TSysPdRecord.tSysPdRecordRepository;
+import org.thingsboard.server.dao.sql.pd.TSysPdRecordRepository;
+import org.thingsboard.server.dao.sql.pd.TSysPdRecordSplitRepository;
 import org.thingsboard.server.dao.vo.TSysPdRecordVo;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -35,7 +35,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
 
 
     @Autowired
-    private tSysPdRecordRepository tSysPdRecordRepository;
+    private TSysPdRecordRepository tSysPdRecordRepository;
 
     @Autowired
     private TSysPdRecordSplitRepository tSysPdRecordSplitRepository;
