@@ -1,579 +1,259 @@
--- mes权限部分
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(1, '顶级菜单1', '123', '/path', '0', 0, '0', NULL, NULL, NULL, NULL, NULL);
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(2, '顶级菜单2', '123', '/path2', '0', 0, '0', NULL, NULL, NULL, NULL, NULL);
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(3, '顶级菜单3', '123', '/path3', '0', 0, '0', NULL, NULL, NULL, NULL, NULL);
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(4, '顶级菜单4', '123', '/path4', '0', 0, '0', NULL, NULL, NULL, NULL, NULL);
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(5, '子集菜单4', '123', '/path/path1', '0', 1, '0', NULL, NULL, NULL, NULL, NULL);
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(6, '子集菜单1', '123', '/path/path2', '0', 1, '0', NULL, NULL, NULL, NULL, NULL);
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(7, '子集菜单3', '123', '/path/path3', '0', 1, '0', NULL, NULL, NULL, NULL, NULL);
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(8, '子集菜单4', '123', '/path/path12', '0', 7, '0', NULL, NULL, NULL, NULL, NULL);
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(9, '子集菜单5', '123', '/path/path122', '0', 8, '0', NULL, NULL, NULL, NULL, NULL);
--- INSERT INTO public.t_sys_menu
--- (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
--- VALUES(10, '子集菜单8', '123', '/path/path1122', '0', 5, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(11, '首页', 'home', '/home', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(13, '账号管理', 'domain', '/account', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(14, '字典管理', 'domain', '/dictionary', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(15, '设备管理', 'domain', '/mydevice', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(16, '人员管理', 'domain', '/staff', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(17, '班别管理', 'domain', '/class', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(18, '规则链库', 'settings_ethernet', '/ruleChains', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(19, '订单管理', 'bookmarks', '/order', '0', 0, '0', NULL, NULL, NULL, NULL, 'toggle');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(20, '工艺路线管理', 'bookmarks', '/technological', '0', 0, '0', NULL, NULL, NULL, NULL, 'toggle');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(21, '资产', 'domain', '/assets', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(22, '设备', 'devices_other', '/devices', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(23, '设备配置', 'mdi:alpha-d-box', '/deviceProfiles', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(24, 'OTA升级', 'memory', '/otaUpdates', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(25, '实体视图', 'view_quilt', '/entityViews', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(26, 'Edge instances', 'router', '/edgeInstances', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(27, 'Edge management', 'settings_input_antenna', '/edgeManagement', '0', 0, '0', NULL, NULL, NULL, NULL, 'toggle');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(28, '部件库', 'now_widgets', '/widgets-bundles', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(29, '仪表板库', 'dashboards', '/dashboards', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(30, '审计日志', 'domain', '/assets', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(31, 'Api 使用统计', 'insert_chart', '/usage', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(32, '系统设置', 'settings', '/settings', '0', 0, '0', NULL, NULL, NULL, NULL, 'toggle');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(33, '订单列表', 'bookmarks', '/order/list', '0', 19, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(34, '工艺路线', 'bookmarks', '/technological/processRoute', '0', 20, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(35, '工序管理', 'bookmarks', '/technological/processManage', '0', 20, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(36, 'Rule Chain templates', 'settings_ethernet', '/edgeManagement/ruleChains', '0', 27, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(37, '首页设置', 'settings_applications', '/settings/home', '0', 32, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(38, '资源库', 'folder', '/settings/resources-library', '0', 32, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(12, '角色管理', 'domain', '/role', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(39, '物料管理', 'domain', '/material', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(41, '编辑', '', '/role/edit', '1', 12, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(42, '禁用', '', '/role/disable', '1', 12, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(43, '启用', '', '/role/enable', '1', 12, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(44, '查看', '', '/role/detail', '1', 12, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(45, '删除', '', '/role/delete', '1', 12, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(46, '菜单配置', '', '/role/menu', '1', 12, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(47, '数据权限', '', '/role/data', '1', 12, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(48, '新增账号', '', '/account/add', '1', 13, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(49, '编辑', '', '/account/edit', '1', 13, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(50, '禁用', '', '/account/disable', '1', 13, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(51, '启用', '', '/account/enable', '1', 13, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(52, '查看', '', '/account/detail', '1', 13, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(53, '删除', '', '/account/del', '1', 13, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(54, '重置密码', '', '/account/reset', '1', 13, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(55, '角色配置', '', '/account/setrole', '1', 13, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(56, '新增设备', '', '/mydevice/add', '1', 15, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(57, '编辑', '', '/mydevice/edit', '1', 15, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(58, '禁用', '', '/mydevice/disable', '1', 15, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(59, '启用', '', '/mydevice/enable', '1', 15, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(60, '查看', '', '/mydevice/detail', '1', 15, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(61, '删除', '', '/mydevice/del', '1', 15, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(62, '导入', '', '/mydevice/up', '1', 15, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(63, '导出', '', '/mydevice/down', '1', 15, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(64, '新增人员', '', '/staff/add', '1', 16, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(65, '编辑', '', '/staff/edit', '1', 16, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(66, '禁用', '', '/staff/disable', '1', 16, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(67, '启用', '', '/staff/enable', '1', 16, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(68, '查看', '', '/staff/detail', '1', 16, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(69, '删除', '', '/staff/del', '1', 16, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(70, '导入', '', '/staff/up', '1', 16, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(71, '导出', '', '/staff/down', '1', 16, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(72, '新增班别', '', '/class/add', '1', 17, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(73, '编辑', '', '/class/edit', '1', 17, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(74, '禁用', '', '/class/disable', '1', 17, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(75, '启用', '', '/class/enable', '1', 17, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(76, '查看', '', '/class/detail', '1', 17, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(77, '删除', '', '/class/del', '1', 17, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(78, '组员管理', '', '/class/member', '1', 17, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(79, '接单开工', '', '/order/list/start', '1', 33, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(80, '导出', '', '/order/list/up', '1', 33, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(81, '新增工艺路线', '', '/technological/processRoute/add', '1', 34, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(82, '产品绑定', '', '/technological/processRoute/bind', '1', 34, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(83, '禁用', '', '/technological/processRoute/disable', '1', 34, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(84, '启用', '', '/technological/processRoute/enable', '1', 34, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(85, '编辑', '', '/technological/processRoute/edit', '1', 34, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(86, '删除', '', '/technological/processRoute/del', '1', 34, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(87, '新增工序', '', '/technological/processManage/add', '1', 35, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(88, '工序设置', '', '/technological/processManage/set', '1', 35, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(89, '禁用', '', '/technological/processManage/disable', '1', 35, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(90, '启用', '', '/technological/processManage/enable', '1', 35, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(91, '编辑', '', '/technological/processManage/edit', '1', 35, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(92, '删除', '', '/technological/processManage/del', '1', 35, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(93, '新增物料', '', '/material/add', '1', 39, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(94, '同步', '', '/material/sync', '1', 39, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(40, '新增角色', '', '/role/add', '1', 12, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(95, '禁用', '', '/material/disable', '1', 39, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(96, '启用', '', '/material/enable', '1', 39, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(97, '编辑', '', '/material/edit', '1', 39, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(98, '删除', '', '/material/del', '1', 39, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(99, '料筐管理', 'domain', '/basketManage', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(100, '新增料框', '', '/basketManage/add', '1', 99, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(101, '导入料框', '', '/basketManage/up', '1', 99, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(102, '禁用', '', '/basketManage/disable', '1', 99, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(103, '启用', '', '/basketManage/enable', '1', 99, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(104, '编辑', '', '/basketManage/edit', '1', 99, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(105, '删除', '', '/basketManage/del', '1', 99, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(106, '导出二维码', '', '/basketManage/down', '1', 99, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(107, '新增字典', '', '/dictionary/add', '1', 14, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(108, '禁用', '', '/dictionary/disable', '1', 14, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(109, '启用', '', '/dictionary/enable', '1', 14, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(110, '编辑', '', '/dictionary/edit', '1', 14, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(111, '删除', '', '/dictionary/del', '1', 14, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(112, '查看', '', '/dictionary/detail', '1', 14, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(113, '导出', '', '/class/down', '1', 17, '0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(114, '批量接单', '', '/order/list/moreStart', '1', 33, '0', NULL, NULL, NULL, NULL, NULL);
+-- public.t_sys_menu definition
 
--- 2022/9/28
---app父级菜单
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(10000, 'APP菜单', 'app菜单部分', '/appMenu', '0', 0, '0', NULL, NULL, NULL, NULL, NULL);
+-- Drop table
 
---任务列表部分
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(11111, '今日任务', 'app菜单部分', '/appMenu/getTodayTask', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
+-- DROP TABLE t_sys_menu;
 
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(111110, '查看详情', 'app菜单部分', '/appMenu/getTodayTask/show', '1', 11111, '0', NULL, NULL, NULL, NULL, NULL);
+CREATE TABLE t_sys_menu (
+                            menu_id serial4 NOT NULL,
+                            menu_name varchar(50) NOT NULL,
+                            menu_explain varchar(255) NULL,
+                            "path" varchar(50) NOT NULL,
+                            flag varchar(1) NULL DEFAULT 0,
+                            parent_id int4 NOT NULL DEFAULT 0,
+                            enabled varchar(1) NOT NULL DEFAULT 0,
+                            created_time date NULL,
+                            created_name varchar(50) NULL,
+                            updated_time date NULL,
+                            updated_name varchar(50) NULL,
+                            menu_type varchar NULL,
+                            skip_url varchar(3000) NULL, -- 跳转url，只对标识为url时有效
+                            sort int4 NULL, -- 排序
+                            br varchar NULL, -- 备注
+                            CONSTRAINT t_sys_menu_pkey PRIMARY KEY (menu_id)
+);
 
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(12111, '待生产任务', 'app菜单部分', '/appMenu/getWaitTaskList', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
+-- Column comments
 
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(121110, '查看详情', 'app菜单部分', '/appMenu/getWaitTaskList/show', '1', 12111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(121111, '接单开工', 'app菜单部分', '/appMenu/getWaitTaskList/orderToStart', '1', 12111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(13111, '生产中任务', 'app菜单部分', '/appMenu/getStartTaskList', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(131115, '查看详情', 'app菜单部分', '/appMenu/getStartTaskList/show', '1', 13111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(131110, '工序报工', 'app菜单部分', '/appMenu/getStartTaskList/processBG', '1', 13111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(131111, '工序盘点', 'app菜单部分', '/appMenu/getStartTaskList/processPD', '1', 13111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(131112, '工序暂停', 'app菜单部分', '/appMenu/getStartTaskList/processZT', '1', 13111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(131113, '工序恢复', 'app菜单部分', '/appMenu/getStartTaskList/processHF', '1', 13111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(131114, '工序结束', 'app菜单部分', '/appMenu/getStartTaskList/processJS', '1', 13111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(14111, '未生产任务', 'app菜单部分', '/appMenu/getUnStartTaskList', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(141110, '查看详情', 'app菜单部分', '/appMenu/getUnStartTaskList/show', '1', 14111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(15111, '已完工任务', 'app菜单部分', '/appMenu/getFinishTaskList', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(151110, '查看详情', 'app菜单部分', '/appMenu/getFinishTaskList/show', '1', 15111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(151111, '工序撤回', 'app菜单部分', '/appMenu/getFinishTaskList/reloadProcess', '1', 15111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(151112, '工序盘点', 'app菜单部分', '/appMenu/getFinishTaskList/processPD', '1', 15111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(16111, '移交待生产任务列表', 'app菜单部分', '/appMenu/getWaithandOverVerify', '1', 10000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(161110, '查看详情', 'app菜单部分', '/appMenu/getWaithandOverVerify/show', '1', 16111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(161111, '接受移交', 'app菜单部分', '/appMenu/getWaithandOverVerify/getYJ', '1', 16111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(161112, '驳回移交', 'app菜单部分', '/appMenu/getWaithandOverVerify/pushYJ', '1', 16111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(17111, '移交生产中任务列表', 'app菜单部分', '/appMenu/gethandOverTask', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(171110, '查看详情', 'app菜单部分', '/appMenu/gethandOverTask/show', '1', 17111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(171111, '工序报工', 'app菜单部分', '/appMenu/gethandOverTask/processBG', '1', 17111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(171113, '工序结束', 'app菜单部分', '/appMenu/gethandOverTask/processJS', '1', 17111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(171112, '工序盘点', 'app菜单部分', '/appMenu/gethandOverTask/processPD', '1', 17111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(171114, '工序暂停', 'app菜单部分', '/appMenu/gethandOverTask/processZT', '1', 17111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(171115, '工序恢复', 'app菜单部分', '/appMenu/gethandOverTask/processHF', '1', 17111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(18111, '明日订单任务', 'app菜单部分', '/appMenu/getNextDayTaskList', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(181110, '查看详情', 'app菜单部分', '/appMenu/getNextDayTaskList/show', '1', 18111, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(19000, '消息中心', 'app菜单部分', '/appMenu/message', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(191111, '消息列表--订单详情', 'app菜单部分', '/appMenu/message/show', '0', 19000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(191112, '消息列表--订单列表', 'app菜单部分', '/appMenu/message/listMessage', '0', 19000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(20000, '工序报工', 'app菜单部分', '/appMenu/processBG', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200000, '标识单打印', 'app菜单部分', '/appMenu/processBG/workPrint', '1', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200001, '自定义报工', 'app菜单部分', '/appMenu/processBG/optionalBG', '1', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200002, '报工记录', 'app菜单部分', '/appMenu/processBG/listBG', '1', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200003, '报工记录删除', 'app菜单部分', '/appMenu/processBG/deleteListBG', '1', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200004, '工序结束', 'app菜单部分', '/appMenu/processBG/processJS', '1', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200005, '提交', 'app菜单部分', '/appMenu/processBG/submit', '1', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200006, '原辅料投入', 'app菜单部分', '/appMenu/processBG/rawMaterialImport', '0', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200007, 'AB料投入', 'app菜单部分', '/appMenu/processBG/ABImport', '0', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200008, 'AB料产出', 'app菜单部分', '/appMenu/processBG/ABExport', '0', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(200009, '合格品产出', 'app菜单部分', '/appMenu/processBG/qualifiedExport', '0', 20000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(21000, '工序盘点', 'app菜单部分', '/appMenu/processPD', '0', 10000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(210000, '移交', 'app菜单部分', '/appMenu/processPD/handover', '1', 21000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(210001, '移交记录', 'app菜单部分', '/appMenu/processPD/listHandover', '1', 21000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(210002, '盘点记录', 'app菜单部分', '/appMenu/processPD/listPD', '1', 21000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(210003, '盘点记录重新盘点', 'app菜单部分', '/appMenu/processPD/listPDReload', '1', 21000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(210004, '盘点记录删除', 'app菜单部分', '/appMenu/processPD/deleteListPD', '1', 21000, '0', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(210005, '提交', 'app菜单部分', '/appMenu/processPD/submit', '1', 21000, '0', NULL, NULL, NULL, NULL, NULL);
-
--- 2022-12-7
-INSERT INTO public.t_sys_menu
-( menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type,skip_url)
-VALUES('MES订单投入产出汇总表(一级)', 'domain', '/appMenu/dataMsa/mesSum1', '2', 22000, '0', NULL, NULL, NULL, NULL, 'link','http://59.61.227.161:8081/decision/view/report?viewlet=%252Flc%252F%25E4%25BF%25A1%25E6%2581%25AF%25E9%2583%25A8%252FMES%25E5%25B7%25A5%25E5%25BA%258F%25E6%258A%2595%25E5%2585%25A5%25E4%25BA%25A7%25E5%2587%25BA%25E7%25B3%25BB%25E5%2588%2597%25E6%258A%25A5%25E8%25A1%25A8%252FMES%25E8%25AE%25A2%25E5%258D%2595%25E6%258A%2595%25E5%2585%25A5%25E4%25BA%25A7%25E5%2587%25BA%25E6%25B1%2587%25E6%2580%25BB%25E8%25A1%25A8%2528%25E4%25B8%2580%25E7%25BA%25A7%2529.cpt&op=view&__parameters__=%257B%2522__pi__%2522%253Atrue%257D&_=1670382187810');
-INSERT INTO public.t_sys_menu
-( menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type,skip_url)
-VALUES('MES订单投入产出明细表(二级)', 'domain', '/appMenu/dataMsa/mesPlan2', '2', 22000, '0', NULL, NULL, NULL, NULL, 'link','http://59.61.227.161:8081/decision/view/report?viewlet=%252Flc%252F%25E4%25BF%25A1%25E6%2581%25AF%25E9%2583%25A8%252FMES%25E5%25B7%25A5%25E5%25BA%258F%25E6%258A%2595%25E5%2585%25A5%25E4%25BA%25A7%25E5%2587%25BA%25E7%25B3%25BB%25E5%2588%2597%25E6%258A%25A5%25E8%25A1%25A8%252FMES%25E8%25AE%25A2%25E5%258D%2595%25E6%258A%2595%25E5%2585%25A5%25E4%25BA%25A7%25E5%2587%25BA%25E6%2598%258E%25E7%25BB%2586%25E8%25A1%25A8%2528%25E4%25BA%258C%25E7%25BA%25A7%2529.cpt&op=view&__parameters__=%257B%2522__pi__%2522%253Atrue%257D&_=1670382666284');
-INSERT INTO public.t_sys_menu
-( menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type,skip_url)
-VALUES('MES订单AB料投入产出明细表(二级)', 'domain', '/appMenu/dataMsa/mesABPlan2', '2', 22000, '0', NULL, NULL, NULL, NULL, 'link','http://59.61.227.161:8081/decision/view/report?viewlet=%252Flc%252F%25E4%25BF%25A1%25E6%2581%25AF%25E9%2583%25A8%252FMES%25E5%25B7%25A5%25E5%25BA%258F%25E6%258A%2595%25E5%2585%25A5%25E4%25BA%25A7%25E5%2587%25BA%25E7%25B3%25BB%25E5%2588%2597%25E6%258A%25A5%25E8%25A1%25A8%252FMES%25E8%25AE%25A2%25E5%258D%2595AB%25E6%2596%2599%25E6%258A%2595%25E5%2585%25A5%25E4%25BA%25A7%25E5%2587%25BA%25E6%2598%258E%25E7%25BB%2586%25E8%25A1%25A8%2528%25E4%25BA%258C%25E7%25BA%25A7%2529.cpt&op=view&__parameters__=%257B%2522__pi__%2522%253Atrue%257D&_=1670382671880');
-INSERT INTO public.t_sys_menu
-( menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type,skip_url)
-VALUES('人员投入产出报表', 'domain', '/appMenu/dataMsa/userexport', '2', 22000, '0', NULL, NULL, NULL, NULL, 'link','http://59.61.227.161:8081/decision/view/report?viewlet=%252Flc%252F%25E4%25BF%25A1%25E6%2581%25AF%25E9%2583%25A8%252FMES%25E5%25B7%25A5%25E5%25BA%258F%25E6%258A%2595%25E5%2585%25A5%25E4%25BA%25A7%25E5%2587%25BA%25E7%25B3%25BB%25E5%2588%2597%25E6%258A%25A5%25E8%25A1%25A8%252F%25E4%25BA%25BA%25E5%2591%2598%25E6%258A%2595%25E5%2585%25A5%25E4%25BA%25A7%25E5%2587%25BA%25E6%258A%25A5%25E8%25A1%25A8.cpt&op=view&__parameters__=%257B%2522__pi__%2522%253Atrue%257D&_=1670382687096');
-
-INSERT INTO public.t_sys_menu
-(menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type)
-VALUES(4020, '磨具管理', 'domain', '/mySpec', '0', 0, '0', NULL, NULL, NULL, NULL, 'link');
+COMMENT ON TABLE t_sys_menu IS '菜单表';
+COMMENT ON COLUMN t_sys_menu.menu_id IS 'id';
+COMMENT ON COLUMN t_sys_menu.menu_name IS '菜单名称';
+COMMENT ON COLUMN t_sys_menu.menu_explain IS '菜单说明';
+COMMENT ON COLUMN t_sys_menu.path IS '菜单路径';
+COMMENT ON COLUMN t_sys_menu.flag IS '标识 0:菜单 1:功能按钮;0:菜单 1:功能按钮';
+COMMENT ON COLUMN t_sys_menu.parent_id IS '父级菜单id;根菜单为0';
+COMMENT ON COLUMN t_sys_menu.enabled IS '是否可用;0：可用 1：不可用';
+COMMENT ON COLUMN t_sys_menu.created_time IS '创建时间';
+COMMENT ON COLUMN t_sys_menu.created_name IS '创建人';
+COMMENT ON COLUMN t_sys_menu.updated_time IS '修改时间';
+COMMENT ON COLUMN t_sys_menu.updated_name IS '修改人';
+COMMENT ON COLUMN t_sys_menu.menu_type IS '菜单类型';
+COMMENT ON COLUMN t_sys_menu.skip_url IS '跳转url，只对标识为url时有效';
+COMMENT ON COLUMN t_sys_menu.sort IS '排序';
+COMMENT ON COLUMN t_sys_menu.br IS '备注';
 
 
-
+-- 插入菜单
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(11, '首页', 'home', '/home', '0', 0, '1', NULL, NULL, '2025-07-07', 'tenant@thingsboard.org', 'link', NULL, 1, '首页');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(12, '角色管理', 'domain', '/role', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(13, '账号管理', 'domain', '/account', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(14, '字典管理', 'domain', '/dictionary', '0', 32, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(15, '设备管理', 'domain', '/mydevice', '0', 234, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(16, '人员管理', 'domain', '/staff', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(17, '班别管理', 'domain', '/class', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(18, '规则链库', 'settings_ethernet', '/ruleChains', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(19, '订单管理', 'bookmarks', '/order', '0', 0, '1', NULL, NULL, NULL, NULL, 'toggle', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(20, '工艺路线管理', 'bookmarks', '/technological', '0', 0, '1', NULL, NULL, NULL, NULL, 'toggle', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(21, '资产', 'domain', '/assets', '0', 0, '0', NULL, NULL, '2025-07-29', 'tenant@thingsboard.org', 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(22, '设备', 'devices_other', '/devices', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(23, '设备配置', 'domain', '/deviceProfiles', '0', 0, '1', NULL, NULL, '2025-07-30', 'tenant@thingsboard.org', 'link', NULL, 1, '1');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(24, 'OTA升级', 'memory', '/otaUpdates', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(25, '实体视图', 'view_quilt', '/entityViews', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(26, 'Edge instances', 'router', '/edgeInstances', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(27, 'Edge management', 'settings_input_antenna', '/edgeManagement', '0', 0, '1', NULL, NULL, NULL, NULL, 'toggle', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(28, '部件库', 'now_widgets', '/widgets-bundles', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(29, '仪表板库', 'dashboards', '/dashboards', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(30, '审计日志', 'domain', '/assets', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(31, 'Api 使用统计', 'insert_chart', '/usage', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(32, '系统设置', 'settings', '/settings', '0', 0, '1', NULL, NULL, NULL, NULL, 'toggle', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(33, '订单列表', 'bookmarks', '/order/list', '0', 19, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(34, '工艺路线', 'bookmarks', '/technological/processRoute', '0', 20, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(35, '工序管理', 'bookmarks', '/technological/processManage', '0', 20, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(36, 'Rule Chain templates', 'settings_ethernet', '/edgeManagement/ruleChains', '0', 27, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(37, '首页设置', 'settings_applications', '/settings/home', '0', 32, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(38, '资源库', 'folder', '/settings/resources-library', '0', 32, '0', NULL, NULL, '2025-08-01', 'tenant@thingsboard.org', 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(39, '物料管理', 'domain', '/material', '0', 0, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(40, '新增角色', '', '/role/add', '1', 12, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(41, '编辑', '', '/role/edit', '1', 12, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(42, '禁用', '', '/role/disable', '1', 12, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(43, '启用', '', '/role/enable', '1', 12, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(44, '查看', '', '/role/detail', '1', 12, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(45, '删除', '', '/role/delete', '1', 12, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(46, '菜单配置', '', '/role/menu', '1', 12, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(47, '数据权限', '', '/role/data', '1', 12, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(48, '新增账号', '', '/account/add', '1', 13, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(49, '编辑', '', '/account/edit', '1', 13, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(50, '禁用', '', '/account/disable', '1', 13, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(51, '启用', '', '/account/enable', '1', 13, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(52, '查看', '', '/account/detail', '1', 13, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(53, '删除', '', '/account/del', '1', 13, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(54, '重置密码', '', '/account/reset', '1', 13, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(55, '角色配置', '', '/account/setrole', '1', 13, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(56, '新增设备', '', '/mydevice/add', '1', 15, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(57, '编辑', '', '/mydevice/edit', '1', 15, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(58, '禁用', '', '/mydevice/disable', '1', 15, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(59, '启用', '', '/mydevice/enable', '1', 15, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(60, '查看', '', '/mydevice/detail', '1', 15, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(61, '删除', '', '/mydevice/del', '1', 15, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(62, '导入', '', '/mydevice/up', '1', 15, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(63, '导出', '', '/mydevice/down', '1', 15, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(64, '新增人员', '', '/staff/add', '1', 16, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(65, '编辑', '', '/staff/edit', '1', 16, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(66, '禁用', '', '/staff/disable', '1', 16, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(67, '启用', '', '/staff/enable', '1', 16, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(68, '查看', '', '/staff/detail', '1', 16, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(69, '删除', '', '/staff/del', '1', 16, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(70, '导入', '', '/staff/up', '1', 16, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(71, '导出', '', '/staff/down', '1', 16, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(72, '新增班别', '', '/class/add', '1', 17, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(73, '编辑', '', '/class/edit', '1', 17, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(74, '禁用', '', '/class/disable', '1', 17, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(75, '启用', '', '/class/enable', '1', 17, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(76, '查看', '', '/class/detail', '1', 17, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(77, '删除', '', '/class/del', '1', 17, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(78, '组员管理', '', '/class/member', '1', 17, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(79, '接单开工', '', '/order/list/start', '1', 33, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(80, '导出', '', '/order/list/up', '1', 33, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(81, '新增工艺路线', '', '/technological/processRoute/add', '1', 34, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(82, '产品绑定', '', '/technological/processRoute/bind', '1', 34, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(83, '禁用', '', '/technological/processRoute/disable', '1', 34, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(84, '启用', '', '/technological/processRoute/enable', '1', 34, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(85, '编辑', '', '/technological/processRoute/edit', '1', 34, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(86, '删除', '', '/technological/processRoute/del', '1', 34, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(87, '新增工序', '', '/technological/processManage/add', '1', 35, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(88, '工序设置', '', '/technological/processManage/set', '1', 35, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(89, '禁用', '', '/technological/processManage/disable', '1', 35, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(90, '启用', '', '/technological/processManage/enable', '1', 35, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(91, '编辑', '', '/technological/processManage/edit', '1', 35, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(92, '删除', '', '/technological/processManage/del', '1', 35, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(93, '新增物料', '', '/material/add', '1', 39, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(94, '同步', '', '/material/sync', '1', 39, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(95, '禁用', '', '/material/disable', '1', 39, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(96, '启用', '', '/material/enable', '1', 39, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(97, '编辑', '', '/material/edit', '1', 39, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(98, '删除', '', '/material/del', '1', 39, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(99, '料筐管理', 'domain', '/basketManage', '0', 0, '0', NULL, NULL, '2025-07-22', 'tenant@thingsboard.org', 'link', NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(100, '新增料框', '', '/basketManage/add', '1', 99, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(101, '导入料框', '', '/basketManage/up', '1', 99, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(102, '禁用', '', '/basketManage/disable', '1', 99, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(103, '启用', '', '/basketManage/enable', '1', 99, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(104, '编辑', '', '/basketManage/edit', '1', 99, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(105, '删除', '', '/basketManage/del', '1', 99, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(106, '导出二维码', '', '/basketManage/down', '1', 99, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(107, '新增字典', '', '/dictionary/add', '1', 14, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(108, '禁用', '', '/dictionary/disable', '1', 14, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(109, '启用', '', '/dictionary/enable', '1', 14, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(110, '编辑', '', '/dictionary/edit', '1', 14, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(111, '删除', '', '/dictionary/del', '1', 14, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(112, '查看', '', '/dictionary/detail', '1', 14, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(113, '导出', '', '/class/down', '1', 17, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(114, '批量接单', '', '/order/list/moreStart', '1', 33, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200, '质量管理', 'domain', '/quality', '0', 0, '1', NULL, NULL, '2025-08-01', 'tenant@thingsboard.org', 'toggle', '', 100, '质量管理');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(203, '品质类目管理', 'domain', '/quality/cate', '0', 200, '1', NULL, NULL, '2025-07-07', 'tenant@thingsboard.org', 'link', '', 100, '品质类目管理');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(204, '品质方案管理', 'domain', '/quality/plan', '0', 200, '1', '2025-07-09', 'tenant@thingsboard.org', '2025-07-09', 'tenant@thingsboard.org', 'link', '', 100, '品质方案管理');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(205, '日报检查项维护', 'domain', '/quality/check-cate', '0', 200, '1', '2025-07-11', 'tenant@thingsboard.org', '2025-07-11', 'tenant@thingsboard.org', 'link', '', 101, '日报检查项维护');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(206, '日报方案管理', 'domain', '/quality/check-plan', '0', 200, '1', '2025-07-14', 'tenant@thingsboard.org', '2025-07-14', 'tenant@thingsboard.org', 'link', '', 102, '日报方案管理');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(208, '新增', 'domain', '/quality/cate/add', '0', 203, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '新增');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(209, '编辑', 'domain', '/quality/cate/edit', '0', 203, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '编辑');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(210, '删除', 'domain', '/quality/cate/del', '0', 203, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '删除');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(211, '启用', 'domain', '/quality/cate/enabled', '0', 203, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '启用');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(212, '禁用', 'domain', '/quality/cate/disable', '0', 203, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '禁用');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(213, '详情', 'domain', '/quality/cate/detail', '0', 203, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '详情');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(214, '新增', 'domain', '/quality/plan/add', '0', 204, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '新增');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(215, '编辑', 'domain', '/quality/plan/edit', '0', 204, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '编辑');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(216, '详情', 'domain', '/quality/plan/detail', '0', 204, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '详情');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(217, '删除', 'domain', '/quality/plan/del', '0', 204, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '删除');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(218, '启用', 'domain', '/quality/plan/enabled', '0', 204, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '启用');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(219, '禁用', 'domain', '/quality/plan/disable', '0', 204, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '禁用');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(220, '新增', 'domain', '/quality/check/cate/add', '0', 205, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '新增');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(221, '编辑', 'domain', '/quality/check/cate/edit', '0', 205, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '编辑');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(222, '详情', 'domain', '/quality/check/cate/detail', '0', 205, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '详情');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(223, '删除', 'domain', '/quality/check/cate/del', '0', 205, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '删除');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(224, '启用', 'domain', '/quality/check/cate/enabled', '0', 205, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '启用');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(225, '禁用', 'domain', '/quality/check/cate/disable', '0', 205, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '禁用');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(226, '新增', 'domain', '/quality/check/plan/add', '0', 206, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '新增');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(227, '编辑', 'domain', '/quality/check/plan/edit', '0', 206, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '编辑');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(228, '详情', 'domain', '/quality/check/plan/detail', '0', 206, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '详情');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(229, '删除', 'domain', '/quality/check/plan/del', '0', 206, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '删除');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(230, '启用', 'domain', '/quality/check/plan/enabled', '0', 206, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '启用');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(231, '禁用', 'domain', '/quality/check/plan/disable', '0', 206, '1', '2025-07-17', 'tenant@thingsboard.org', '2025-07-17', 'tenant@thingsboard.org', NULL, '', 1, '禁用');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(232, '线边仓库管理', 'domain', '/invetory-mgt', '0', 0, '1', '2025-07-28', 'tenant@thingsboard.org', '2025-07-28', 'tenant@thingsboard.org', 'link', '', 150, '线边仓库管理');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(233, '盘点记录', 'domain', '/pd-mgt', '0', 0, '1', '2025-08-05', 'tenant@thingsboard.org', '2025-08-05', 'tenant@thingsboard.org', 'link', '', 150, '盘点记录');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(234, '基础管理', 'domain', '/base', '0', 0, '1', NULL, NULL, '2025-08-06', 'tenant@thingsboard.org', 'toggle', '', 5, '基础管理');
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(4010, '领料管理-废弃', 'bookmarks', '/picking', '0', 0, '0', NULL, NULL, '2025-06-27', 'tenant@thingsboard.org', 'toggle', NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(4020, '磨具管理', 'domain', '/mySpec', '0', 0, '0', NULL, NULL, '2025-07-22', 'tenant@thingsboard.org', 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(10000, 'APP菜单', 'app菜单部分', '/appMenu', '0', 0, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(11111, '今日任务', 'app菜单部分', '/appMenu/getTodayTask', '0', 10000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(12111, '待生产', 'app菜单部分', '/appMenu/getWaitTaskList', '0', 10000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(13111, '生产中', 'app菜单部分', '/appMenu/getStartTaskList', '0', 10000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(14111, '未生产任务', 'app菜单部分', '/appMenu/getUnStartTaskList', '0', 10000, '0', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(15111, '已完工', 'app菜单部分', '/appMenu/getFinishTaskList', '0', 10000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(16111, '移交待生产任务列表', 'app菜单部分', '/appMenu/getWaithandOverVerify', '1', 10000, '0', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(17111, '移交生产中任务列表', 'app菜单部分', '/appMenu/gethandOverTask', '0', 10000, '0', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(18111, '明日任务', 'app菜单部分', '/appMenu/getNextDayTaskList', '0', 10000, '1', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, NULL, NULL, '');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(19000, '消息中心', 'app菜单部分', '/appMenu/message', '0', 10000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(20000, '工序报工', 'app菜单部分', '/appMenu/processBG', '0', 10000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(20030, '质量管理', '', '/appMenu/qualityManagement', '1', 10000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(20031, '质量管理-新建品质管控', '', '/appMenu/qualityManagement/addQuality', '1', 20030, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(20032, '质量管理-新建每日报表', '', '/appMenu/qualityManagement/addReport', '1', 20030, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(20033, '质量管理-质量管理记录', '', '/appMenu/qualityManagement/Record', '1', 20030, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(20034, '质量管理-品质管控复核', '', '/appMenu/qualityManagement/Review', '1', 20030, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(21000, '工序盘点', 'app菜单部分', '/appMenu/processPD', '0', 10000, '0', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(22000, '数据分析', 'app菜单部分', '/appMenu/dataMsa', '0', 10000, '0', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(23000, '入库查询', 'app菜单部分', '/appMenu/inStorageSearch', '0', 10000, '0', '2024-12-30', 'test', '2025-07-18', 'tenant@thingsboard.org', '2', NULL, NULL, '入库查询');
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(24000, '回剥管理 ', 'app菜单部分', '/appMenu/HuiBoManage', '0', 10000, '0', '2025-03-06', 'tenant@thingsboard.org', '2025-07-18', 'tenant@thingsboard.org', '2', NULL, 20, '回剥管理 ');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(25000, '余料盘点', 'app菜单部分', '/appMenu/remainingMaterialsPD', '0', 10000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(29000, '组合包装-废弃', 'app菜单部分', '/appMenu/packingIndex', '0', 10000, '0', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(30000, '我的领料单-废弃', 'app菜单部分', '/appMenu/picking', '0', 10000, '0', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(31000, '合框', 'app菜单部分', '/appMenu/mergeFrame', '0', 10000, '0', '2025-04-28', 'tenant@thingsboard.org', '2025-07-18', 'tenant@thingsboard.org', 'link', '', 31, 'APP菜单');
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(32000, '批号盘点', 'app菜单部分', '/appMenu/lotPD', '0', 10000, '0', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, '', 32, 'APP菜单');
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(33000, 'AB料查询', 'app菜单部分', '/appMenu/ABQuery', '0', 10000, '0', NULL, NULL, '2025-07-18', 'tenant@thingsboard.org', NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(40000, '领料PDA菜单-废弃', '领料pda', '/pickingPda', '0', 0, '0', NULL, NULL, '2025-07-22', 'tenant@thingsboard.org', 'link', NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(40101, '领料汇总-废弃', 'domain', '/picking/picking-sum', '0', 4010, '0', NULL, NULL, '2025-06-27', 'tenant@thingsboard.org', 'link', NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(40102, '领料进度-废弃', 'domain', '/picking/picking-plan', '0', 4010, '0', NULL, NULL, '2025-06-27', 'tenant@thingsboard.org', 'link', NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(111110, '查看详情', 'app菜单部分', '/appMenu/getTodayTask/show', '1', 11111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(121110, '查看详情', 'app菜单部分', '/appMenu/getWaitTaskList/show', '1', 12111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(121111, '接单开工', 'app菜单部分', '/appMenu/getWaitTaskList/orderToStart', '1', 12111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(131110, '工序报工', 'app菜单部分', '/appMenu/getStartTaskList/processBG', '1', 13111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(131111, '工序盘点', 'app菜单部分', '/appMenu/getStartTaskList/processPD', '1', 13111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(131112, '工序暂停', 'app菜单部分', '/appMenu/getStartTaskList/processZT', '1', 13111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(131113, '工序恢复', 'app菜单部分', '/appMenu/getStartTaskList/processHF', '1', 13111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(131114, '工序结束', 'app菜单部分', '/appMenu/getStartTaskList/processJS', '1', 13111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(131115, '查看详情', 'app菜单部分', '/appMenu/getStartTaskList/show', '1', 13111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(141110, '查看详情', 'app菜单部分', '/appMenu/getUnStartTaskList/show', '1', 14111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(151110, '查看详情', 'app菜单部分', '/appMenu/getFinishTaskList/show', '1', 15111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(151111, '工序撤回', 'app菜单部分', '/appMenu/getFinishTaskList/reloadProcess', '1', 15111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(151112, '工序盘点', 'app菜单部分', '/appMenu/getFinishTaskList/processPD', '1', 15111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(161110, '查看详情', 'app菜单部分', '/appMenu/getWaithandOverVerify/show', '1', 16111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(161111, '接受移交', 'app菜单部分', '/appMenu/getWaithandOverVerify/getYJ', '1', 16111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(161112, '驳回移交', 'app菜单部分', '/appMenu/getWaithandOverVerify/pushYJ', '1', 16111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(171110, '查看详情', 'app菜单部分', '/appMenu/gethandOverTask/show', '1', 17111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(171111, '工序报工', 'app菜单部分', '/appMenu/gethandOverTask/processBG', '1', 17111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(171112, '工序盘点', 'app菜单部分', '/appMenu/gethandOverTask/processPD', '1', 17111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(171113, '工序结束', 'app菜单部分', '/appMenu/gethandOverTask/processJS', '1', 17111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(171114, '工序暂停', 'app菜单部分', '/appMenu/gethandOverTask/processZT', '1', 17111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(171115, '工序恢复', 'app菜单部分', '/appMenu/gethandOverTask/processHF', '1', 17111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(181110, '查看详情', 'app菜单部分', '/appMenu/getNextDayTaskList/show', '1', 18111, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(191111, '消息列表--订单详情', 'app菜单部分', '/appMenu/message/show', '0', 19000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(191112, '消息列表--订单列表', 'app菜单部分', '/appMenu/message/listMessage', '0', 19000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200000, '标识单打印', 'app菜单部分', '/appMenu/processBG/workPrint', '1', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200001, '自定义报工', 'app菜单部分', '/appMenu/processBG/optionalBG', '1', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200002, '报工记录', 'app菜单部分', '/appMenu/processBG/listBG', '1', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200003, '报工记录删除', 'app菜单部分', '/appMenu/processBG/deleteListBG', '1', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200004, '工序结束', 'app菜单部分', '/appMenu/processBG/processJS', '1', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200005, '提交', 'app菜单部分', '/appMenu/processBG/submit', '1', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200006, '原辅料投入', 'app菜单部分', '/appMenu/processBG/rawMaterialImport', '0', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200007, 'AB料投入', 'app菜单部分', '/appMenu/processBG/ABImport', '0', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200008, 'AB料产出', 'app菜单部分', '/appMenu/processBG/ABExport', '0', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(200009, '合格品产出', 'app菜单部分', '/appMenu/processBG/qualifiedExport', '0', 20000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(210000, '移交', 'app菜单部分', '/appMenu/processPD/handover', '1', 21000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(210001, '移交记录', 'app菜单部分', '/appMenu/processPD/listHandover', '1', 21000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(210002, '盘点记录', 'app菜单部分', '/appMenu/processPD/listPD', '1', 21000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(210003, '盘点记录重新盘点', 'app菜单部分', '/appMenu/processPD/listPDReload', '1', 21000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(210004, '盘点记录删除', 'app菜单部分', '/appMenu/processPD/deleteListPD', '1', 21000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(210005, '提交', 'app菜单部分', '/appMenu/processPD/submit', '1', 21000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(250001, '余料盘点-班组盘点', '', '/appMenu/remainingMaterialsPD/classPD', '1', 25000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(250002, '余料盘点-车间复盘', '', '/appMenu/remainingMaterialsPD/review', '1', 25000, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(400001, '首页-废弃', '领料pda', '/pickingPda/index', '0', 40000, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(4000011, '扫码领料/退料-废弃', '领料pda', '/pickingPda/index/picking', '0', 400001, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
+-- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(4000012, '领料/退料记录-废弃', '领料pda', '/pickingPda/index/pickingRecord', '0', 400001, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
