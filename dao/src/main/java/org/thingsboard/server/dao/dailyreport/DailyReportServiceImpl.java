@@ -63,7 +63,7 @@ public class DailyReportServiceImpl implements DailyReportService{
     private String dbPassword;
 
     @Override
-    public Map<String, Object> selectShopPerson(String name, Integer current, Integer size) {
+    public PageVo<Map<String, Object>> selectShopPerson(String name, Integer current, Integer size) {
         TSysPersonnelInfoDto tSysPersonnelInfoDto=new TSysPersonnelInfoDto();
         tSysPersonnelInfoDto.setName(name);
         Page<TSysPersonnelInfo> personnelList = tSysPersonnelInfoService.tSysPersonnelInfoList(current, size, tSysPersonnelInfoDto);
@@ -72,6 +72,7 @@ public class DailyReportServiceImpl implements DailyReportService{
             tSysClassDto.setName(t.getClassName());
         }
         Page<TSysClass> classList = tSysClassService.tSysClassList(current, size, tSysClassDto);
+        List<Map<String, Object>> ShopPersonMapList = new ArrayList<>();
         Map<String,Object> ShopPersonMap=new HashMap<>();
         for(TSysClass c : classList){
             if(ShopPersonMap.size()>0)
@@ -80,22 +81,31 @@ public class DailyReportServiceImpl implements DailyReportService{
             }
             ShopPersonMap.put("ShopPersonId",c.getWorkshopDirectorId());
             ShopPersonMap.put("ShopPersonName",c.getWorkshopDirector());
+            ShopPersonMapList.add(ShopPersonMap);
         }
-        return ShopPersonMap;
+        PageVo<Map<String, Object>> pageVo = new PageVo<>();
+        pageVo.setList(ShopPersonMapList);
+        pageVo.setCurrent(current);
+        pageVo.setSize(size);
+        return pageVo;
     }
 
     @Override
     public String getBillNo(DailyReportVo dailyReportVo) throws SQLException {
-        String billNo = dailyGetBillNo("D");
-        //Connection conn = DriverManager.getConnection(dbUrl, dbUserName, dbPassword);
-        //Statement statement = conn.createStatement();
+        if (dailyReportVo.getBillNo().equals("")) {
+            String billNo = dailyGetBillNo("D");
+            //Connection conn = DriverManager.getConnection(dbUrl, dbUserName, dbPassword);
+            //Statement statement = conn.createStatement();
         /*statement.execute("INSERT INTO daily_report_vo (bill_no,material_code,material_name,solut_id,solut_name,shop_manager_id,shop_manager_name) VALUES " +
                 "(" + dailyReportVo.getBillNo() + "," + dailyReportVo.getMaterialName() + "," + dailyReportVo.getMaterialCode() + "," + dailyReportVo.getSolutId() + "," + dailyReportVo.getSolutName() + "," + dailyReportVo.getShopManagerId() + "," + dailyReportVo.getShopManagerName() + ")");
         dailyReport.updateByBillNo(dailyReportVo);*/
-        if (billNo == null) {
-            return "";
+            if (billNo == null) {
+                return "";
+            }
+            return billNo;
+        } else {
+            return dailyReportVo.getBillNo();
         }
-        return billNo;
     }
 
 
