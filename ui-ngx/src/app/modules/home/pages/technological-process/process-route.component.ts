@@ -70,9 +70,7 @@ export class ProcessRouteComponent implements OnInit {
   ngOnInit() {
     this.setMyMap();
     // console.log()
-    this.accountService.fetchBaseList({
-      type: 'base',
-    }).subscribe(res => {
+    this.accountService.getOrgList().subscribe(res => {
       this.pkOrgList = res.data.map(item => {
         return {
           name: item.org_name,

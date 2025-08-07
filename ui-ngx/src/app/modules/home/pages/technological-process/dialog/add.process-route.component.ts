@@ -434,6 +434,13 @@ export class AddProcessRouteComponent implements OnInit {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
     if (this.dataForm.valid) {
+      // 判断this.settingSource是否存在sort相同的
+      const sortList = this.settingSource.map(item => item.sort);
+      const sortSet = new Set(sortList);
+      if (sortList.length !== sortSet.size) {
+        this.utils.showMessage('工序设置执行序号不能重复', 'warn');
+        return;
+      }
 
       let exist = true;
 

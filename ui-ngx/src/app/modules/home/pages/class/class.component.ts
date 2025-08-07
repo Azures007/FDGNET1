@@ -118,9 +118,7 @@ export class ClassComponent implements OnInit {
 
   ngOnInit(): void {
     this.getStationList()
-    this.accountService.fetchBaseList({
-      type: 'base',
-    }).subscribe(res => {
+    this.accountService.getOrgList().subscribe(res => {
       this.pkOrgList = res.data.map(item => {
         return {
           name: item.org_name,

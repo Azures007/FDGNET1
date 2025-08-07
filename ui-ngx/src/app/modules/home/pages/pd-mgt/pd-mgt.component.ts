@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AppState } from '@core/core.state';
-import { FormBuilder } from '@angular/forms';
-import { InventoryMgtService } from '@app/core/http/invetory-mgt.service';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { PdMgtService } from '@app/core/http/pd-mgt.service';
 
 export interface PeriodicElement {
   name: string;
@@ -16,19 +16,20 @@ export interface PeriodicElement {
 
 
 @Component({
-  selector: 'tb-inventory-mgt',
-  templateUrl: './inventory-mgt.component.html',
-  styleUrls: ['./inventory-mgt.component.scss']
+  selector: 'tb-pd-mgt',
+  templateUrl: './pd-mgt.component.html',
+  styleUrls: ['./pd-mgt.component.scss']
 })
-export class InventoryMgtComponent implements OnInit {
-
+export class PdMgtComponent implements OnInit {
+  pdRange = new FormGroup({
+    start: new FormControl(null),
+    end: new FormControl(null),
+  });
   //搜索参数
   searchFormGroup = this.fb.group({
     current: 0,
     size: 50,
-    warehouseName: "",
-    materialName: "",
-    spec: "",
+    pdWorkshopName: "",
   });
 
   //新增角色参数
@@ -47,7 +48,7 @@ export class InventoryMgtComponent implements OnInit {
   }
   //角色弹窗
   dialogRef: any
-
+  curTable = 1;
   //翻页参数
   length: number;
   pageSize = 50;
@@ -57,7 +58,7 @@ export class InventoryMgtComponent implements OnInit {
   // pageEvent: PageEvent;
 
   //table
-  displayedColumns: string[] = ['no', 'warehouseName', 'warehouseCode', 'materialName',  'materialCode', 'spec', 'unit', 'qty'];
+  displayedColumns: string[] = ['no', 'pdTimeStr', 'materialNumber', 'materialName','materialSpecifications', 'pdUnit',  'pdQty', 'pdCreatedName', 'isReturn', 'pdWorkshopLeaderName'];
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -68,7 +69,7 @@ export class InventoryMgtComponent implements OnInit {
 
   constructor(protected store: Store<AppState>,
     public fb: FormBuilder,
-    private inventoryMgtService: InventoryMgtService,
+    private pdMgtService: PdMgtService,
   ) { }
 
   ngOnInit(): void {
@@ -81,18 +82,36 @@ export class InventoryMgtComponent implements OnInit {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
       body:{
-        warehouseName:this.searchFormGroup.value.warehouseName,
-        materialName:this.searchFormGroup.value.materialName,
-        spec:this.searchFormGroup.value.spec,
+        pdWorkshopName:this.searchFormGroup.value.pdWorkshopName,
+        startTime: this.pdRange.value.start,
+        endTime: this.pdRange.value.end,
       }
     }
-    this.inventoryMgtService.fetchGetTableList(par).subscribe(res => {
-      this.dataSource = res.data.list;
-      this.total = res.data.total;
-    })
+    if (this.curTable === 1) {
+      this.pdMgtService.fetchGetTableList(par).subscribe(res => {
+        this.dataSource = res.data.list;
+        this.total = res.data.total;
+      })
+    } else {
+      this.pdMgtService.fetchGetTableListWithSplit(par).subscribe(res => {
+        this.dataSource = res.data.list;
+        this.total = res.data.total;
+      })
+    }
   }
 
+  export() {
+    let par = {
+      pdWorkshopName:this.searchFormGroup.value.pdWorkshopName,
+      startTime: this.pdRange.value.start,
+      endTime: this.pdRange.value.end,
+    }
+  }
 
+  changeTable(index) {
+    this.curTable = index;
+    this.getTableData();
+  }
 
   //翻页事件
   getNotices($event): any {
@@ -102,9 +121,11 @@ export class InventoryMgtComponent implements OnInit {
     this.getTableData();
   }
   reset() {
-    this.searchFormGroup.value.warehouseName = '';
-    this.searchFormGroup.value.materialName = '';
-    this.searchFormGroup.value.spec = '';
+    this.searchFormGroup.value.pdWorkshopName = '';
+    this.pdRange = new FormGroup({
+      start: new FormControl(null),
+      end: new FormControl(null),
+    });
     this.getTableData();
   }
 }

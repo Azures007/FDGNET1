@@ -1,23 +1,25 @@
-.search-btn{
+.search-btn {
   margin-right: 8px;
 }
 
-.svgIcon{
+.svgIcon {
   width: 16px;
   height: 16px;
   font-size: 16px;
 }
 
-.table-info{
+.table-info {
   padding: 12px 0;
   font-size: 12px;
-  .total{
+
+  .total {
     color: #0066FF;
     font-weight: 700;
     font-size: 14px;
     margin: 0 4px;
   }
-  .yield{
+
+  .yield {
     color: #FF9900;
     font-weight: 700;
     font-size: 14px;
@@ -25,7 +27,7 @@
   }
 }
 
-.showCell{
+.showCell {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -35,49 +37,81 @@
   width: 150px;
 }
 
-.mat-column-craftName{
+.mat-column-craftName {
   width: 100px;
 }
 
-.mat-column-customColumn1{
+.mat-column-customColumn1 {
   width: 100px;
 }
 
 
-.mat-column-craftName{
-
-}
+.mat-column-craftName {}
 
 
 .row-block {
-	select {
-		border: 1px solid #999;
-		width: 200px;
-		height: 36px;
+  select {
+    border: 1px solid #999;
+    width: 200px;
+    height: 36px;
     outline: none;
-	}
-	option {
-		width: 200px;
-		height: 36px;
-	}
-  input{
+  }
+
+  option {
+    width: 200px;
+    height: 36px;
+  }
+
+  input {
     outline: none;
     width: 200px;
-		height: 36px;
+    height: 36px;
   }
 }
 
 .search-btn {
-	color: #fff;
-	background-color: #3399ff;
-	// align-items: center;
-	// display: flex;
-	// justify-content: center;
-	width: 150px;
-	height: 36px;
-	border: 1px solid #3399ff;
-	border-radius: 4px;
-	cursor: pointer;
-	font-size: 16px;
-	margin-right: 10px;
+  color: #fff;
+  background-color: #3399ff;
+  // align-items: center;
+  // display: flex;
+  // justify-content: center;
+  width: 150px;
+  height: 36px;
+  border: 1px solid #3399ff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.page-content {
+  .mat-table {
+    .mat-header-row {
+      background-color: #e0e0e0;
+
+      .mat-header-cell {
+        font-weight: 700;
+        font-size: 16px;
+      }
+    }
+
+    .mat-row {
+      .mat-cell {
+        padding-right: 5px;
+      }
+
+      .mat-cell,
+      .mat-header-cell {
+        width: 8%;
+      }
+      .mat-cell:nth-of-type(1),
+      .mat-header-cell:nth-of-type(1) {
+        width: 5%;
+      }
+      .mat-cell:last-of-type,
+      .mat-header-cell:last-of-type {
+        width: 12%;
+      }
+    }
+  }
 }

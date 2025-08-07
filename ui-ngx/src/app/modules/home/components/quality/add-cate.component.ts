@@ -32,15 +32,9 @@ export class AddCateComponent implements OnInit {
     keyProcessName: '',
     monitoringMethod: '',
     monitoringMethodName: '',
-    materialId: '',
-    productName: '',
     isEnabled: '',
     standard: '',
     remarks: ''
-  }
-  productItem = {
-    productName: '',
-    materialId: ''
   }
   dataForm: FormGroup;
 
@@ -82,7 +76,6 @@ export class AddCateComponent implements OnInit {
         inspectionItem: ['', [Validators.required]],
         keyProcess: ['', [Validators.required]],
         monitoringMethod: ['', [Validators.required]],
-        productName: ['', [Validators.required]],
         isEnabled: ['', [Validators.required]],
         standard: [''],
         remarks: [''],
@@ -94,8 +87,6 @@ export class AddCateComponent implements OnInit {
         inspectionItem: "",
         keyProcess: "",
         monitoringMethod: '',
-        materialId: '',
-        productName: '',
         isEnabled: '',
         standard: '',
         remarks: ''
@@ -107,14 +98,11 @@ export class AddCateComponent implements OnInit {
       if (this.injectData.data.data.tSysQualityCategoryConfigList) {
         this.configs = this.injectData.data.data.tSysQualityCategoryConfigList;
       }
-      this.productItem.productName = this.injectData.data.data.productName;
-      this.productItem.materialId = this.injectData.data.data.materialId;
       if (this.formType === 'details') {
         this.dataForm = this.fb.group({
           inspectionItem: [{ value: obj.inspectionItem, disabled: true }],
           keyProcess: [{ value: obj.keyProcess, disabled: true }],
           monitoringMethod: [{ value: obj.monitoringMethod.split(','), disabled: true }],
-          productName: [{ value: obj.productName, disabled: true }],
           isEnabled: [{ value: obj.isEnabled, disabled: true }],
           standard: [{ value: obj.standard, disabled: true }],
           remarks: [{ value: obj.remarks, disabled: true }],
@@ -125,7 +113,6 @@ export class AddCateComponent implements OnInit {
           inspectionItem: [{ value: obj.inspectionItem, disabled: false }, [Validators.required]],
           keyProcess: [{ value: obj.keyProcess, disabled: false }, [Validators.required]],
           monitoringMethod: [{ value: obj.monitoringMethod.split(','), disabled: false }, [Validators.required]],
-          productName: [{ value: obj.productName, disabled: false }, [Validators.required]],
           isEnabled: [{ value: obj.isEnabled, disabled: false }, [Validators.required]],
           standard: [{ value: obj.standard, disabled: false }],
           remarks: [{ value: obj.remarks, disabled: false }],
@@ -164,7 +151,6 @@ export class AddCateComponent implements OnInit {
       if (this.injectData.data?.data?.id) {
         this.addParams['id'] = this.injectData.data.data.id;
       }
-      this.addParams['materialId'] = this.productItem.materialId;
       if(!this.configs.length) {
         // this.utils.showMessage('请添加配置项', 'error');
         // return;
@@ -271,26 +257,6 @@ export class AddCateComponent implements OnInit {
     })
   }
 
-
-  selectProduct() {
-    let dialogRef = this._dialog.open(ChooseMaterialComponent, {
-      width: "1400px",
-      height: "800px",
-      panelClass: 'custom-modalbox',
-      data: {
-        title: '选择品名'
-      }
-    })
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.dataForm.setControl('productName', new FormControl(result.materialName, [Validators.required]));
-        this.productItem = {
-          productName: result.materialName,
-          materialId: result.id
-        }
-      }
-    });
-  }
   selectMaterial(item, index) {
     let dialogRef = this._dialog.open(ChooseMaterialComponent, {
       width: "1400px",

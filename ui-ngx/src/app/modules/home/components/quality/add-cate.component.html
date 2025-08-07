@@ -42,20 +42,6 @@
       </mat-form-field>
 
     </div>
-    <div class="row-block">
-      <label class="label"><span class="red-star">*</span>产品名称：</label>
-      <mat-form-field class="example-full-width" appearance="fill">
-        <div class="relative">
-          <input autocomplete="off" class="input" readonly formControlName="productName" type="text" matInput
-            placeholder="请选择产品">
-          <span class="absolute" (click)="selectProduct()" *ngIf="formType !== 'details'">选择</span>
-        </div>
-        <mat-error *ngIf="dataForm.hasError('required','productName')">
-          产品名称为<strong>必填</strong>
-        </mat-error>
-      </mat-form-field>
-
-    </div>
 
     <div class="row-block">
       <div class="label"><span class="red-star">*</span>状态:</div>

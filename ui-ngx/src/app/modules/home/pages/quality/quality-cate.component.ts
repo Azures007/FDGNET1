@@ -28,7 +28,6 @@ export class QualityCateComponent implements OnInit {
   searchData = {
     inspectionItem: '',
     keyProcessName: '',
-    productName: '',
     current: 0,
     size: 50,
   }
@@ -43,7 +42,7 @@ export class QualityCateComponent implements OnInit {
   tableData: any[] = [];
   dataSource = new MatTableDataSource<any>(this.tableData);
 
-  displayedColumns: string[] = ['no', 'inspectionItem', 'keyProcess', 'monitoringMethod', 'productName', 'remarks', 'isEnabled',
+  displayedColumns: string[] = ['no', 'inspectionItem', 'keyProcess', 'monitoringMethod', 'remarks', 'isEnabled',
     'customColumn1',];
 
   btns = JSON.parse(localStorage.getItem('btns'));
@@ -118,7 +117,6 @@ export class QualityCateComponent implements OnInit {
     this.searchData = {
       inspectionItem: '',
       keyProcessName: '',
-      productName: '',
       current: 0,
       size: 50,
     }
@@ -139,7 +137,6 @@ export class QualityCateComponent implements OnInit {
       body: {
         inspectionItem: this.searchData.inspectionItem,
         keyProcessName: this.searchData.keyProcessName,
-        productName: this.searchData.productName,
       }
     }
 

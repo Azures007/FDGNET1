@@ -10,10 +10,6 @@
       <input class="input" [(ngModel)]="searchData.keyProcessName" />
     </div>
     <div class="row-block cols4">
-      <label class="label">产品名称</label>
-      <input class="input" [(ngModel)]="searchData.productName" />
-    </div>
-    <div class="row-block cols4">
       <label class="label"></label>
       <div class="btn-group">
         <button class="search_btn" (click)="searchList()">
@@ -23,6 +19,8 @@
           <mat-icon class="material-icons svgIcon">search</mat-icon>重置
         </button>
       </div>
+    </div>
+    <div class="row-block cols4">
     </div>
     <div class="row-block cols4">
       <label class="label"></label>
@@ -50,10 +48,6 @@
       <ng-container matColumnDef="monitoringMethod">
         <th mat-header-cell *matHeaderCellDef> 监控方法 </th>
         <td mat-cell *matCellDef="let element"> {{getMethod(element.monitoringMethod)}} </td>
-      </ng-container>
-      <ng-container matColumnDef="productName">
-        <th mat-header-cell *matHeaderCellDef> 产品名称 </th>
-        <td mat-cell *matCellDef="let element"> {{element.productName}} </td>
       </ng-container>
       <ng-container matColumnDef="remarks">
         <th mat-header-cell *matHeaderCellDef> 备注 </th>

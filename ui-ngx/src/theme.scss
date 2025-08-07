@@ -249,3 +249,6 @@ $tb-dark-theme: get-tb-dark-theme(
       padding: 0;
   }
 }
+.mat-paginator-container {
+  align-items: unset !important;
+}

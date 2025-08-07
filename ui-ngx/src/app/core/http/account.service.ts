@@ -67,6 +67,13 @@ export class AccountService {
         return this.http.get(url)
     }
 
+    // 根据用户名获取基地列表
+    getOrgList(): Observable<any> {
+      const userName = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).email : '';
+      return this.http.get('/api/noauth/user/orgList?username=' + userName);
+
+    }
+
     // 获取用户详情
     public fetchUserDetail(id): Observable<any> {
         let url = "/api/user/listUserDetail"
