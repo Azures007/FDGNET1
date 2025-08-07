@@ -18,7 +18,7 @@ public class ProcessInfoDto {
     private String processName;
     @ApiModelProperty("处理班组‘,’隔开")
     private String className;
-    @ApiModelProperty("排序")
+    @ApiModelProperty("排序,执行序号")
     private Integer sort;
 
     @ApiModelProperty("报工扫码 0：否 1：是")

@@ -31,9 +31,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 /**
  * @Auther: l
  * @Date: 2022/4/21 16:43
@@ -104,6 +105,15 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
         }
         //插入工序工艺关系
         List<ProcessInfoDto> processInfoDtos = craftInfoSaveDto.getProcessInfos();
+        // 增加校验工序的执行序号是否重复 processInfoDtos sort
+        if (processInfoDtos != null && !processInfoDtos.isEmpty()) {
+            Set<Integer> sortSet = new HashSet<>();
+            for (ProcessInfoDto processInfoDto : processInfoDtos) {
+                if (!sortSet.add(processInfoDto.getSort())) {
+                    throw new RuntimeException("工序执行序号存在重复: " + processInfoDto.getSort());
+                }
+            }
+        }
         List<TSysCraftProcessRel> rels = new ArrayList<>();
         tSysCraftProcessRelRepository.deleteByCraftId(craftInfo.getCraftId());
         for (ProcessInfoDto processInfoDto : processInfoDtos) {
