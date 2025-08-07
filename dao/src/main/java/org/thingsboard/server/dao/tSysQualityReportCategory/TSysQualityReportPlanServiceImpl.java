@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.*;
 import org.thingsboard.server.dao.dto.*;
-import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportPlanRelRepository;
-import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportPlanRepository;
-import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportCategoryService;
-import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportPlanService;
+import org.thingsboard.server.dao.sql.tSysQualityReport.TSysQualityReportPlanRelRepository;
+import org.thingsboard.server.dao.sql.tSysQualityReport.TSysQualityReportPlanRepository;
 import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.PageVo;
 
@@ -93,7 +91,7 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
 
     @Override
     public PageVo<TSysQualityReportPlanDto> getPlanList(String userId,Integer current, Integer size, TSysQualityReportPlanSearchDto searchDto) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createdTime");
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = PageRequest.of(current, size, sort);
         String cwkid =userService.getUserCurrentCwkid(userId);
         ExampleMatcher matcher = ExampleMatcher.matching()
@@ -113,9 +111,9 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
         //设置生产线id过滤
         plan.setProdLineId(cwkid);
         Example<TSysQualityReportPlan> example = Example.of(plan, matcher);
-        Page<TSysQualityReportPlan> craftInfos = reportPlanRepository.findAll(example, pageable);
+        Page<TSysQualityReportPlan> planInfos = reportPlanRepository.findAll(example, pageable);
         List<TSysQualityReportPlanDto> dtos = new ArrayList<>();
-        for (TSysQualityReportPlan info : craftInfos) {
+        for (TSysQualityReportPlan info : planInfos) {
             TSysQualityReportPlanDto categoryDto = new TSysQualityReportPlanDto();
             BeanUtils.copyProperties(info, categoryDto);
             List<TSysQualityReportPlanRel> itemList = reportPlanRelRepository.findByPlanId(info.getId(), Sort.by(Sort.Direction.ASC, "id"));
@@ -124,7 +122,7 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
         }
         PageVo<TSysQualityReportPlanDto> pageVo = new PageVo<>();
         pageVo.setList(dtos);
-        pageVo.setTotal((int) craftInfos.getTotalElements());
+        pageVo.setTotal((int) planInfos.getTotalElements());
         pageVo.setCurrent(current);
         pageVo.setSize(size);
         return pageVo;

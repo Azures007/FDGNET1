@@ -1,7 +1,6 @@
-package org.thingsboard.server.dao.sql.TSysQualityReport;
+package org.thingsboard.server.dao.sql.tSysQualityReport;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.thingsboard.server.common.data.TSysQualityReportItem;
 import org.thingsboard.server.common.data.TSysQualityReportPlan;
 
 /**
