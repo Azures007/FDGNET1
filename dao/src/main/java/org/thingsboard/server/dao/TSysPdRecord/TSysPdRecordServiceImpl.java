@@ -78,10 +78,10 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             if (tSysPdRecordDto.getPdWorkshopName() != null && !tSysPdRecordDto.getPdWorkshopName().isEmpty()) {
                 predicates.add(cb.like(root.get("pdWorkshopName"), "%" + tSysPdRecordDto.getPdWorkshopName() + "%"));
             }
-//            if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
-//                List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
-//                predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
-//            }
+            if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
+                List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
+                predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
+            }
             predicates.add(cb.equal(root.get("byDeleted"), "0"));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
@@ -142,10 +142,10 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             if (tSysPdRecordDto.getPdWorkshopName() != null && !tSysPdRecordDto.getPdWorkshopName().isEmpty()) {
                 predicates.add(cb.like(root.get("pdWorkshopName"), "%" + tSysPdRecordDto.getPdWorkshopName() + "%"));
             }
-//            if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
-//                List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
-//                predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
-//            }
+            if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
+                List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
+                predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
+            }
             predicates.add(cb.equal(root.get("byDeleted"), "0"));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
