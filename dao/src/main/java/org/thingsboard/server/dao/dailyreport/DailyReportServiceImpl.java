@@ -15,6 +15,7 @@ import org.thingsboard.server.dao.sql.DailyReport.DailyReportItemRepository;
 import org.thingsboard.server.dao.sql.DailyReport.DailyReportRepository;
 import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportPlanRelRepository;
 import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportPlanRepository;
+import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.tSysClass.TSysClassService;
 import org.thingsboard.server.dao.tSysPersonnelInfo.TSysPersonnelInfoService;
 import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportCategoryService;
@@ -53,6 +54,9 @@ public class DailyReportServiceImpl implements DailyReportService{
     @Autowired
     DailyReportItemRepository dailyReportItemRepository;;
 
+    @Autowired
+    TSysPersonnelInfoRepository tSysPersonnelInfoRepository;
+
     @Value("${spring.datasource.url}")
     private String dbUrl;
 
@@ -63,27 +67,24 @@ public class DailyReportServiceImpl implements DailyReportService{
     private String dbPassword;
 
     @Override
-    public PageVo<Map<String, Object>> selectShopPerson(String name, Integer current, Integer size) {
-        TSysPersonnelInfoDto tSysPersonnelInfoDto=new TSysPersonnelInfoDto();
-        tSysPersonnelInfoDto.setName(name);
-        Page<TSysPersonnelInfo> personnelList = tSysPersonnelInfoService.tSysPersonnelInfoList(current, size, tSysPersonnelInfoDto);
-        TSysClassDto tSysClassDto=new TSysClassDto();
-        for(TSysPersonnelInfo t : personnelList){
-            tSysClassDto.setName(t.getClassName());
-        }
+    public PageVo<DailyReportVo> selectShopPerson(String id, Integer current, Integer size) {
+        TSysPersonnelInfo currentUser = tSysPersonnelInfoRepository.findAllByUserId(id);
+        if(currentUser==null)
+            return null;
+        TSysClassDto tSysClassDto = new TSysClassDto();
+        tSysClassDto.setName(currentUser.getClassName());
         Page<TSysClass> classList = tSysClassService.tSysClassList(current, size, tSysClassDto);
-        List<Map<String, Object>> ShopPersonMapList = new ArrayList<>();
-        Map<String,Object> ShopPersonMap=new HashMap<>();
-        for(TSysClass c : classList){
-            if(ShopPersonMap.size()>0)
-            {
+        List<DailyReportVo> ShopPersonMapList = new ArrayList<>();
+        DailyReportVo ShopPersonMap = new DailyReportVo();
+        for (TSysClass c : classList) {
+            if (ShopPersonMapList.size() > 0) {
                 break;
             }
-            ShopPersonMap.put("ShopPersonId",c.getWorkshopDirectorId());
-            ShopPersonMap.put("ShopPersonName",c.getWorkshopDirector());
+            ShopPersonMap.setShopManagerId(c.getWorkshopDirectorId() + "");
+            ShopPersonMap.setShopManagerName(c.getWorkshopDirector());
             ShopPersonMapList.add(ShopPersonMap);
         }
-        PageVo<Map<String, Object>> pageVo = new PageVo<>();
+        PageVo<DailyReportVo> pageVo = new PageVo<>();
         pageVo.setList(ShopPersonMapList);
         pageVo.setCurrent(current);
         pageVo.setSize(size);
@@ -136,6 +137,7 @@ public class DailyReportServiceImpl implements DailyReportService{
                 dailyReportItem.setId(item1.getId());
                 dailyReportItem.setFieldName(item1.getFieldName());
                 dailyReportItem.setFieldTypeId(item1.getFieldType());
+                dailyReportItem.setSpiltValue(item1.getDropdownFields());
                 itemList.add(dailyReportItem);
             }
             dto.setItemList(itemList);
@@ -151,13 +153,13 @@ public class DailyReportServiceImpl implements DailyReportService{
         DailyReportHead dailyReportHead = new DailyReportHead();
         BeanUtils.copyProperties(dailyReportVo, dailyReportHead);
         if (dailyReportHead.getId() == null ||dailyReportHead.getId()==0) {
-            dailyReportHead.setCreatedMame(dailyReportHead.getCreatedMame());
+            dailyReportHead.setCreatedName(dailyReportHead.getCreatedName());
             dailyReportHead.setCreatedTime(dailyReportHead.getUpdatedTime());
         } else {
             if (dailyReportRepository.findById(dailyReportHead.getId()).isEmpty()) {
                 DailyReportHead info = dailyReportRepository.findById(dailyReportHead.getId()).get();
                 dailyReportHead.setCreatedTime(info.getCreatedTime());
-                dailyReportHead.setCreatedMame(dailyReportHead.getCreatedMame());
+                dailyReportHead.setCreatedName(dailyReportHead.getCreatedName());
             }
         }
         dailyReportHead.setEnabled(1);

@@ -46,7 +46,7 @@ public class DailyReportVo {
     private Integer enabled;
 
     @ApiModelProperty("创建人")
-    private String createdMame;
+    private String createdName;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty("创建时间")

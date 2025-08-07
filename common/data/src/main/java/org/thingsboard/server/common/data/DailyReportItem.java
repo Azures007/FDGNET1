@@ -29,6 +29,10 @@ public class DailyReportItem {
     @Column(name = "status")
     private String status;
 
+    @ApiModelProperty("下拉列表对应字段值")
+    @Column(name = "spilt_value")
+    private String spiltValue;
+
     @ApiModelProperty("达成情况类型id")
     @Column(name = "field_type_id")
     private String fieldTypeId;
