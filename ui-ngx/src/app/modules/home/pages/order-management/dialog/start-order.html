@@ -29,7 +29,7 @@
     <div class="label">备注说明:</div>
     <mat-form-field class="example-full-width" appearance="fill">
       <textarea matInput class="textarea" formControlName="craftDesc" maxlength="150"
-        placeholder="请输入工序说明，限制150个字符"></textarea>
+        placeholder="请输入备注说明，限制150个字符"></textarea>
       <mat-error *ngIf="dataForm.hasError('required','craftDesc')">
         备注说明为<strong>必填</strong>
       </mat-error>

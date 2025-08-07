@@ -1,4 +1,4 @@
-package org.thingsboard.server.dao.sql.TSysQualityReport;
+package org.thingsboard.server.dao.sql.tSysQualityReport;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;

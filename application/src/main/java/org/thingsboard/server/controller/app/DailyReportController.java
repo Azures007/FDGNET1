@@ -69,10 +69,10 @@ public class DailyReportController extends BaseController {
 
     @ApiOperation("每日报表车间主任")
     @PostMapping("/shopPerson")
-    public ResponseResult<PageVo<Map<String,Object>>> shopPerson(@RequestParam(value = "current",defaultValue = "0") Integer current,
+    public ResponseResult<PageVo<DailyReportVo>> shopPerson(@RequestParam(value = "current",defaultValue = "0") Integer current,
                                                                          @RequestParam(value = "size",defaultValue = "10") Integer size) throws Exception {
         SecurityUser currentUser = getCurrentUser();
-        PageVo<Map<String,Object>> ShopPersonMap=dailyReportService.selectShopPerson(currentUser.getName(),current,size);
+        PageVo<DailyReportVo> ShopPersonMap=dailyReportService.selectShopPerson(currentUser.getId().toString(),current,size);
         return ResultUtil.success(ShopPersonMap);
     }
 

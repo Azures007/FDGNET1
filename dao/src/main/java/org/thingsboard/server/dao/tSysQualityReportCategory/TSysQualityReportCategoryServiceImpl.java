@@ -6,14 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.*;
-import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.ProcessInfoDto;
 import org.thingsboard.server.dao.dto.SysQualityReportCategoryDto;
-import org.thingsboard.server.dao.dto.TSysCraftInfoSaveDto;
 import org.thingsboard.server.dao.dto.TSysQualityReportCategorySearchDto;
-import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportCategoryRepository;
-import org.thingsboard.server.dao.sql.TSysQualityReport.TSysQualityReportItemRepository;
-import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportCategoryService;
+import org.thingsboard.server.dao.sql.tSysQualityReport.TSysQualityReportCategoryRepository;
+import org.thingsboard.server.dao.sql.tSysQualityReport.TSysQualityReportItemRepository;
 import org.thingsboard.server.dao.vo.PageVo;
 
 import java.util.ArrayList;
@@ -87,7 +83,7 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
 
     @Override
     public PageVo<SysQualityReportCategoryDto> getCategoryList(Integer current, Integer size, TSysQualityReportCategorySearchDto searchDto) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createdTime");
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = PageRequest.of(current, size, sort);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("frequency", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -103,19 +99,19 @@ public class TSysQualityReportCategoryServiceImpl implements TSysQualityReportCa
         BeanUtils.copyProperties(searchDto, category);
 
         Example<TSysQualityReportCategory> example = Example.of(category, matcher);
-        Page<TSysQualityReportCategory> craftInfos = reportCategoryRepository.findAll(example, pageable);
+        Page<TSysQualityReportCategory> categoryInfos = reportCategoryRepository.findAll(example, pageable);
         List<SysQualityReportCategoryDto> dtos = new ArrayList<>();
-        for (TSysQualityReportCategory info : craftInfos) {
+        for (TSysQualityReportCategory info : categoryInfos) {
             SysQualityReportCategoryDto categoryDto = new SysQualityReportCategoryDto();
             BeanUtils.copyProperties(info, categoryDto);
-            List<TSysQualityReportItem> itemList = reportItemRepository.findByCategoryId(info.getId(), Sort.by(Sort.Direction.ASC, "createdTime"));
+            List<TSysQualityReportItem> itemList = reportItemRepository.findByCategoryId(info.getId(), Sort.by(Sort.Direction.ASC, "id"));
             categoryDto.setItemList(itemList);
             categoryDto.setEnabled(info.getEnabled());
             dtos.add(categoryDto);
         }
         PageVo<SysQualityReportCategoryDto> pageVo = new PageVo<>();
         pageVo.setList(dtos);
-        pageVo.setTotal((int) craftInfos.getTotalElements());
+        pageVo.setTotal((int) categoryInfos.getTotalElements());
         pageVo.setCurrent(current);
         pageVo.setSize(size);
         return pageVo;
