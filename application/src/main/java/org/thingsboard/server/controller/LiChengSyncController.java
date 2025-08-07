@@ -8,17 +8,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.thingsboard.server.common.data.LichengConstants;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.TSysDevice.TSysDeviceService;
-import org.thingsboard.server.dao.device.DeviceService;
 import org.thingsboard.server.dao.licheng.LiChengService;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/licheng")

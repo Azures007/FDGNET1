@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.thingsboard.server.common.data.TsysDevice;
+import org.thingsboard.server.common.data.mes.sys.TsysDevice;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.TSysDevice.TSysDeviceService;
 import org.thingsboard.server.dao.dto.TSysDeviceDto;
-import org.thingsboard.server.dao.sql.tSysDevice.TSysDeviceRepository;
+import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.utils.ExcelUtil;
 import org.thingsboard.server.vo.DeviceExcelVo;
 

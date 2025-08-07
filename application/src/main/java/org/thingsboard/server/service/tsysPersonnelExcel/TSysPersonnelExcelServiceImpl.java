@@ -5,16 +5,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.thingsboard.server.common.data.TSysPersonnelInfo;
-import org.thingsboard.server.common.data.TsysDevice;
-import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysPersonnelInfoRepository;
+import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
+import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.utils.ExcelUtil;
-import org.thingsboard.server.vo.DeviceExcelVo;
 import org.thingsboard.server.vo.PersonnelExcelVo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service

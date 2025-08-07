@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.tSysAbrasiveSpecification;
 
-import org.thingsboard.server.common.data.TSysAbrasiveSpecification;
+import org.thingsboard.server.common.data.mes.sys.TSysAbrasiveSpecification;
 import org.thingsboard.server.dao.dto.tSysAbrasiveSpecification.TSysAbrasiveSpecificationDto;
 import org.thingsboard.server.dao.vo.PageVo;
 

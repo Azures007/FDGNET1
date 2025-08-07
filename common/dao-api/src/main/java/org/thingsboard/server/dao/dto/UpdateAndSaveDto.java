@@ -3,7 +3,7 @@ package org.thingsboard.server.dao.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysUserDetail;
+import org.thingsboard.server.common.data.mes.sys.TSysUserDetail;
 
 import javax.persistence.Column;
 import java.util.Date;

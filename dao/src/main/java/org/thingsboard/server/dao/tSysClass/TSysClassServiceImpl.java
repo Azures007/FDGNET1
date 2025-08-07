@@ -16,14 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.thingsboard.common.util.Utils;
 import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.TSysClassDto;
-import org.thingsboard.server.dao.sql.tSysClass.ClassGroupLeaderRepository;
-import org.thingsboard.server.dao.sql.tSysClass.TSysClassRepository;
-import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscRepository;
-import org.thingsboard.server.dao.sql.tSysPersonnelInfo.ClassPersonnelRepository;
-import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysPersonnelInfoRepository;
-import org.thingsboard.server.dao.sql.user.UserDetailRepository;
+import org.thingsboard.server.dao.sql.mes.tSysClass.ClassGroupLeaderRepository;
+import org.thingsboard.server.dao.sql.mes.tSysClass.TSysClassRepository;
+import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
+import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.ClassPersonnelRepository;
+import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
+import org.thingsboard.server.dao.sql.mes.user.UserDetailRepository;
 import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.*;
 
@@ -57,7 +58,7 @@ public class TSysClassServiceImpl implements TSysClassService {
     @Qualifier("userServiceImpl")
     private UserService userService;
     @Override
-    public Page<TSysClass> tSysClassList(String userId,Integer current, Integer size, TSysClassDto tSysClassDto) {
+    public Page<TSysClass> tSysClassList(String userId, Integer current, Integer size, TSysClassDto tSysClassDto) {
         String pkOrg = userService.getUserCurrentPkOrg(userId);
         Sort sort = Sort.by(Sort.Direction.DESC, "crt_time");
         Pageable pageable = PageRequest.of(current, size, sort);

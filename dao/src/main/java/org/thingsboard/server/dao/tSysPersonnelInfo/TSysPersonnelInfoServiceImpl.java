@@ -8,16 +8,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.TSysPersonnelInfo;
-import org.thingsboard.server.common.data.TSysProcessInfo;
-import org.thingsboard.server.common.data.TSysUserDevices;
+import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
+import org.thingsboard.server.common.data.mes.sys.TSysUserDevices;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.TSysPersonnelInfoDto;
 import org.thingsboard.server.dao.dto.VerifyDevicesDto;
-import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysPersonnelInfoRepository;
-import org.thingsboard.server.dao.sql.tSysPersonnelInfo.TSysUserDevicesRepository;
+import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
+import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysUserDevicesRepository;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 

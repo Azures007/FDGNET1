@@ -1,23 +1,15 @@
 package org.thingsboard.server.dao.tSysCodeDsc;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.TSysCodeDsc;
-import org.thingsboard.server.common.data.TSysCodeDscVersion;
-import org.thingsboard.server.common.data.TSysQualityPlanConfig;
-import org.thingsboard.server.common.data.web.ResponseResult;
-import org.thingsboard.server.common.data.web.ResultUtil;
+import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
+import org.thingsboard.server.common.data.mes.sys.TSysCodeDscVersion;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.TSysCodeDscDto;
-import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscRepository;
-import org.thingsboard.server.dao.sql.tSysCodeDsc.TSysCodeDscVersionRepository;
-import org.thingsboard.server.dao.vo.AppVersionVo;
+import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscVersionRepository;
 
 import java.util.*;
 

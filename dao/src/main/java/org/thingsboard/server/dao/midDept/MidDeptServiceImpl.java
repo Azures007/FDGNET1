@@ -4,12 +4,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.MidDept;
-import org.thingsboard.server.common.data.MidOrg;
+import org.thingsboard.server.common.data.mes.mid.MidDept;
+import org.thingsboard.server.common.data.mes.mid.MidOrg;
 import org.thingsboard.server.dao.dto.MidDeptDto;
 import org.thingsboard.server.dao.midDetp.MidDeptService;
-import org.thingsboard.server.dao.sql.licheng.MidDeptRepository;
-import org.thingsboard.server.dao.sql.licheng.MidOrgRepository;
+import org.thingsboard.server.dao.sql.mes.licheng.MidDeptRepository;
+import org.thingsboard.server.dao.sql.mes.licheng.MidOrgRepository;
 import org.thingsboard.server.dao.vo.PageVo;
 
 @Service

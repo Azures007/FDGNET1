@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.sync;
 
-import org.thingsboard.server.common.data.TSyncMaterial;
+import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.dao.dto.ListMaterialDto;
 import org.thingsboard.server.dao.dto.TSyncMaterialSaveDto;
 import org.thingsboard.server.dao.vo.ListMaterialFiterVo;

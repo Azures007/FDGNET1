@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysPersonnelInfo;
-import org.thingsboard.server.common.data.TSysProcessInfo;
+import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
+import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
 
 import java.util.List;
 

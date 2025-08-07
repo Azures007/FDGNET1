@@ -2,7 +2,7 @@ package org.thingsboard.server.dao.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.thingsboard.server.common.data.TSysMenu;
+import org.thingsboard.server.common.data.mes.sys.TSysMenu;
 
 import java.util.List;
 

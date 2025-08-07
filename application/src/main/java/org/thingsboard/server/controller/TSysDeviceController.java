@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.thingsboard.server.common.data.TsysDevice;
+import org.thingsboard.server.common.data.mes.sys.TsysDevice;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;

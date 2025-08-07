@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.order;
 
-import org.thingsboard.server.common.data.TBusOrderHead;
-import org.thingsboard.server.common.data.TBusOrderUpdate;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderUpdate;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.dto.OrderTaskSelectDto;
 import org.thingsboard.server.dao.dto.ShiftRecordDto;

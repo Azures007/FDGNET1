@@ -2,8 +2,7 @@ package org.thingsboard.server.controller;
 
 import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.TSysMenu;
-import org.thingsboard.server.common.data.TSysRole;
+import org.thingsboard.server.common.data.mes.sys.TSysMenu;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;

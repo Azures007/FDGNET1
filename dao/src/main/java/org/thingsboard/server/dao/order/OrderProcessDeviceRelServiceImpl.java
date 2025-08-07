@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.StringUtils;
-import org.thingsboard.server.common.data.TBusOrderProcessDeviceRel;
-import org.thingsboard.server.common.data.TsysDevice;
-import org.thingsboard.server.dao.sql.order.OrderProcessDeviceRelRepository;
-import org.thingsboard.server.dao.sql.tSysDevice.TSysDeviceRepository;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessDeviceRel;
+import org.thingsboard.server.common.data.mes.sys.TsysDevice;
+import org.thingsboard.server.dao.sql.mes.order.OrderProcessDeviceRelRepository;
+import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 
 import java.util.ArrayList;
 import java.util.Date;

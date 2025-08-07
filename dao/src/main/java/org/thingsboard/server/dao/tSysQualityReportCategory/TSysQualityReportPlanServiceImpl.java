@@ -7,9 +7,11 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityReportPlan;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityReportPlanRel;
 import org.thingsboard.server.dao.dto.*;
-import org.thingsboard.server.dao.sql.tSysQualityReport.TSysQualityReportPlanRelRepository;
-import org.thingsboard.server.dao.sql.tSysQualityReport.TSysQualityReportPlanRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityReport.TSysQualityReportPlanRelRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityReport.TSysQualityReportPlanRepository;
 import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.PageVo;
 

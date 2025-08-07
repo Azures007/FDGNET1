@@ -8,18 +8,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysCodeDsc;
-import org.thingsboard.server.common.data.TSysQualityCategory;
-import org.thingsboard.server.common.data.TSysQualityCategoryConfig;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCategory;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
-import org.thingsboard.server.dao.ImportParam.TSysClassImportParam;
 import org.thingsboard.server.dao.ImportParam.TSysQualityCategoryImportParam;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.TSysClassDto;
-import org.thingsboard.server.dao.dto.TSysCodeDscDto;
 import org.thingsboard.server.dao.dto.TSysQualityCategoryDto;
 import org.thingsboard.server.dao.tSysQualityCategory.TSysQualityCategoryService;
 import org.thingsboard.server.dao.vo.PageVo;
@@ -27,7 +21,7 @@ import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.Date;
-import java.util.List;
+
 /**
  * @author 陈懋燊
  * @project youchen_IOTServer

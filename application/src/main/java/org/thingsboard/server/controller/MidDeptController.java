@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.MidDept;
+import org.thingsboard.server.common.data.mes.mid.MidDept;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.dto.MidDeptDto;

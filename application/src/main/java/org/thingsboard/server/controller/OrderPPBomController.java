@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.TBusOrderPPBom;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderPPBom;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.dto.TBusOrderPPBomDto;

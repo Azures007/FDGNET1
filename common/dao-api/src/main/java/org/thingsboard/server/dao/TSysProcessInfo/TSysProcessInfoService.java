@@ -1,8 +1,8 @@
 package org.thingsboard.server.dao.TSysProcessInfo;
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysProcessInfo;
+import org.thingsboard.server.common.data.mes.sys.TSysClass;
+import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.dto.TSysProcessInfoDto;
 

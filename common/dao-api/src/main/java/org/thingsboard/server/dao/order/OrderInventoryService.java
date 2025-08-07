@@ -2,7 +2,7 @@ package org.thingsboard.server.dao.order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.TSysCodeDsc;
+import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.dto.OrderProcessRecordSaveDto;
 import org.thingsboard.server.dao.dto.OrderProcessRecordSearchDto;

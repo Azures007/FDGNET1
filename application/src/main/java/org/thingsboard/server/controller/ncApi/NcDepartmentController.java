@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.nc_department.NcDepartment;
+import org.thingsboard.server.common.data.mes.ncDepartment.NcDepartment;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.nc_department.NcDepartmentService;

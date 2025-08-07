@@ -3,8 +3,8 @@ package org.thingsboard.server.dao.nc_org;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.nc_org.NcOrganization;
-import org.thingsboard.server.dao.sql.nc_org.NcOrganizationRepository;
+import org.thingsboard.server.common.data.mes.ncOrg.NcOrganization;
+import org.thingsboard.server.dao.sql.mes.ncOrg.NcOrganizationRepository;
 
 import java.util.List;
 

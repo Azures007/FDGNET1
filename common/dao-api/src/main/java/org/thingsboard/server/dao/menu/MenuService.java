@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.menu;
 
-import org.thingsboard.server.common.data.TSysMenu;
+import org.thingsboard.server.common.data.mes.sys.TSysMenu;
 import org.thingsboard.server.dao.dto.SetRoleMenuDto;
 import org.thingsboard.server.dao.vo.MenuListVo;
 import org.thingsboard.server.dao.vo.PageVo;

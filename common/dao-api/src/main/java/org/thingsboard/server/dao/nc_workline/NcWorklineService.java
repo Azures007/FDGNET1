@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.nc_workline;
 
-import org.thingsboard.server.common.data.nc_workline.NcWorkline;
+import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import java.util.List;
 
 public interface NcWorklineService {

@@ -4,24 +4,16 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysProcessInfo;
-import org.thingsboard.server.common.data.TSysQualityReportCategory;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.TSysProcessInfo.TSysProcessInfoService;
 import org.thingsboard.server.dao.dto.SysQualityReportCategoryDto;
-import org.thingsboard.server.dao.dto.TSysCraftSearchDto;
-import org.thingsboard.server.dao.dto.TSysProcessInfoDto;
 import org.thingsboard.server.dao.dto.TSysQualityReportCategorySearchDto;
 import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportCategoryService;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Auther: l

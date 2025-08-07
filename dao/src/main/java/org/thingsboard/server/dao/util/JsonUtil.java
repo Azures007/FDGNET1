@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.util;
 
 import com.alibaba.fastjson.JSON;
-import org.thingsboard.server.common.data.TSysFieldConfig;
+import org.thingsboard.server.common.data.mes.sys.TSysFieldConfig;
 
 import java.util.*;
 

@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.thingsboard.server.common.data.TSysPersonnelInfo;
-import org.thingsboard.server.common.data.TSysUserDevices;
+import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
+import org.thingsboard.server.common.data.mes.sys.TSysUserDevices;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
@@ -24,7 +24,6 @@ import org.thingsboard.server.service.security.model.SecurityUser;
 import org.thingsboard.server.service.tsysPersonnelExcel.TSysPersonnelExcelService;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
 import java.util.Date;
 
 @Api(value = "人员接口", tags = "人员接口")

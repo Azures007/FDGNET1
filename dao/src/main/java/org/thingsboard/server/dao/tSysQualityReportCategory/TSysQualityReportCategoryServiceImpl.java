@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityReportCategory;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityReportItem;
 import org.thingsboard.server.dao.dto.SysQualityReportCategoryDto;
 import org.thingsboard.server.dao.dto.TSysQualityReportCategorySearchDto;
-import org.thingsboard.server.dao.sql.tSysQualityReport.TSysQualityReportCategoryRepository;
-import org.thingsboard.server.dao.sql.tSysQualityReport.TSysQualityReportItemRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityReport.TSysQualityReportCategoryRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityReport.TSysQualityReportItemRepository;
 import org.thingsboard.server.dao.vo.PageVo;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.pd;
 
-import org.thingsboard.server.common.data.TSysPdRecord;
-import org.thingsboard.server.common.data.nc_inventory.NcInventory;
+import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
+import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
 import org.thingsboard.server.dao.dto.PdMaterialsDto;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.midOrg;
 
-import org.thingsboard.server.common.data.MidOrg;
+import org.thingsboard.server.common.data.mes.mid.MidOrg;
 import org.thingsboard.server.dao.dto.MidOrgDto;
 import org.thingsboard.server.dao.vo.PageVo;
 

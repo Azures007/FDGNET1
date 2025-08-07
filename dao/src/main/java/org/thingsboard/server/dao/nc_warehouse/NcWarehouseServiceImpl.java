@@ -3,13 +3,10 @@ package org.thingsboard.server.dao.nc_warehouse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
-import org.thingsboard.server.dao.sql.nc_warehouse.NcWarehouseRepository;
+import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
+import org.thingsboard.server.dao.sql.mes.ncWarehouse.NcWarehouseRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class NcWarehouseServiceImpl implements NcWarehouseService {

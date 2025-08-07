@@ -2,9 +2,9 @@ package org.thingsboard.server.dao.tSysClass;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysClassGroupLeaderRel;
-import org.thingsboard.server.common.data.TSysClassPersonnelRel;
+import org.thingsboard.server.common.data.mes.sys.TSysClass;
+import org.thingsboard.server.common.data.mes.sys.TSysClassGroupLeaderRel;
+import org.thingsboard.server.common.data.mes.sys.TSysClassPersonnelRel;
 import org.thingsboard.server.dao.dto.TSysClassDto;
 import org.thingsboard.server.dao.vo.*;
 

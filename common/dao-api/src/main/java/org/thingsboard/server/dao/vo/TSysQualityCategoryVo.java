@@ -3,10 +3,9 @@ package org.thingsboard.server.dao.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysQualityCategory;
-import org.thingsboard.server.common.data.TSysQualityCategoryConfig;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCategory;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCategoryConfig;
 
-import javax.persistence.Column;
 import java.util.List;
 
 @Data

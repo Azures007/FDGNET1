@@ -1,10 +1,8 @@
 package org.thingsboard.server.dao.ImportParam;
 
 import io.swagger.annotations.ApiModelProperty;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysClassGroupLeaderRel;
-import org.thingsboard.server.common.data.TSysQualityCategory;
-import org.thingsboard.server.common.data.TSysQualityCategoryConfig;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCategory;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCategoryConfig;
 
 import java.util.List;
 

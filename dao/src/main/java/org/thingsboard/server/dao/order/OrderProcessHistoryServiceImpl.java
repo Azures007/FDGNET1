@@ -5,10 +5,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.LichengConstants;
-import org.thingsboard.server.common.data.TBusOrderProcessHistory;
+import org.thingsboard.server.common.data.mes.LichengConstants;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
 import org.thingsboard.server.dao.dto.TBusOrderProcessHistoryDto;
-import org.thingsboard.server.dao.sql.order.OrderProcessHistoryRepository;
+import org.thingsboard.server.dao.sql.mes.order.OrderProcessHistoryRepository;
 
 import java.util.List;
 

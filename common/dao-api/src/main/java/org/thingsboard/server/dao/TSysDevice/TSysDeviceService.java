@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.TSysDevice;
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TsysDevice;
+import org.thingsboard.server.common.data.mes.sys.TsysDevice;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.dto.TSysDeviceSearchDto;
 import org.thingsboard.server.dao.dto.TSysDeviceDto;

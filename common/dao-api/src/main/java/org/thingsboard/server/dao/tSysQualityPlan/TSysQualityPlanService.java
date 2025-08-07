@@ -1,10 +1,10 @@
 package org.thingsboard.server.dao.tSysQualityPlan;
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.*;
-import org.thingsboard.server.dao.dto.TSysQualityCategoryDto;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlan;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanConfig;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanJudgment;
 import org.thingsboard.server.dao.dto.TSysQualityPlanDto;
-import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 import org.thingsboard.server.dao.vo.TSysQualityPlanVo;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public interface TSysQualityPlanService {
      * 返回质检方案列表
      * @return
      */
-    Page<TSysQualityPlan> tSysQualityPlanList(String userId,Integer current, Integer size,String sortField,String sortOrder,  TSysQualityPlanDto tSysQualityPlanDto);
+    Page<TSysQualityPlan> tSysQualityPlanList(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysQualityPlanDto tSysQualityPlanDto);
 
 
     /**

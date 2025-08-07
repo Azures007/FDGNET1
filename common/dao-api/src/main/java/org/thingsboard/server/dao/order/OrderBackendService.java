@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.order;
 
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysCraftInfo;
+import org.thingsboard.server.common.data.mes.sys.TSysClass;
+import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
 import org.thingsboard.server.dao.dto.OrderChangeClassSaveDto;
 import org.thingsboard.server.dao.dto.OrderStartOrderSaveDto;
 

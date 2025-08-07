@@ -80,7 +80,6 @@ import org.thingsboard.server.dao.exception.DataValidationException;
 import org.thingsboard.server.dao.ota.OtaPackageService;
 import org.thingsboard.server.dao.service.DataValidator;
 import org.thingsboard.server.dao.service.PaginatedRemover;
-import org.thingsboard.server.dao.sql.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.dao.tenant.TbTenantProfileCache;
 import org.thingsboard.server.dao.tenant.TenantDao;
 

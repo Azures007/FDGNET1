@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.TSysPdRecord;
-import org.thingsboard.server.common.data.TSysPdRecordSplit;
-import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
+import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
+import org.thingsboard.server.common.data.mes.sys.TSysPdRecordSplit;
+import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
 import org.thingsboard.server.dao.dto.TSysPdRecordDto;
-import org.thingsboard.server.dao.sql.pd.TSysPdRecordRepository;
-import org.thingsboard.server.dao.sql.pd.TSysPdRecordSplitRepository;
+import org.thingsboard.server.dao.sql.mes.pd.TSysPdRecordRepository;
+import org.thingsboard.server.dao.sql.mes.pd.TSysPdRecordSplitRepository;
 import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.TSysPdRecordVo;
 

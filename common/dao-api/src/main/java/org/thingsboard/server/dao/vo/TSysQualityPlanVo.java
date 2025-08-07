@@ -3,9 +3,9 @@ package org.thingsboard.server.dao.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysQualityPlan;
-import org.thingsboard.server.common.data.TSysQualityPlanConfig;
-import org.thingsboard.server.common.data.TSysQualityPlanJudgment;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlan;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanConfig;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanJudgment;
 
 import java.util.List;
 

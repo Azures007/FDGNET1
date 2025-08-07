@@ -1,23 +1,8 @@
 package org.thingsboard.server.controller.quality;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.TSysCodeDsc;
-import org.thingsboard.server.common.data.web.ResponseResult;
-import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
-import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.TSysCodeDscDto;
-import org.thingsboard.server.dao.vo.PageVo;
-import org.thingsboard.server.service.security.model.SecurityUser;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author 陈懋燊

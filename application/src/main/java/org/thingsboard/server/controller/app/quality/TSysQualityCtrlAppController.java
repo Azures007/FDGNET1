@@ -7,8 +7,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.TSysQualityCtrl;
-import org.thingsboard.server.common.data.TSysQualityPlan;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCtrl;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlan;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
@@ -21,7 +21,6 @@ import org.thingsboard.server.dao.tSysQualityCtrl.TSysQualityCtrlService;
 import org.thingsboard.server.dao.tSysQualityPlan.TSysQualityPlanService;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.dao.vo.TSysQualityCtrlVo;
-import org.thingsboard.server.dao.vo.TSysQualityPlanVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.Date;

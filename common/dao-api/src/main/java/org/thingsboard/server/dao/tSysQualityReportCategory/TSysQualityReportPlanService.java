@@ -1,8 +1,5 @@
 package org.thingsboard.server.dao.tSysQualityReportCategory;
 
-import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TSysQualityReportCategory;
-import org.thingsboard.server.common.data.TSysQualityReportPlan;
 import org.thingsboard.server.dao.dto.*;
 import org.thingsboard.server.dao.vo.PageVo;
 

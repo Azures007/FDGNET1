@@ -3,13 +3,8 @@ package org.thingsboard.server.dao.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysQualityReportPlanRel;
 
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author hhh

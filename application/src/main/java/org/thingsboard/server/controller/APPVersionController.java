@@ -4,17 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.thingsboard.server.common.data.TSysProcessInfo;
 import org.thingsboard.server.common.data.web.ResponseResult;
-import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscService;
 import org.thingsboard.server.dao.vo.AppVersionVo;
-import org.thingsboard.server.service.security.model.SecurityUser;
-
-import java.util.Date;
 
 /**
  * @Auther: l

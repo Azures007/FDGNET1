@@ -9,21 +9,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.dao.dto.TSysQualityCtrlDto;
-import org.thingsboard.server.dao.sql.tSysQualityCtrl.TSysQualityCtrlDetailRepository;
-import org.thingsboard.server.dao.sql.tSysQualityCtrl.TSysQualityCtrlRepository;
-import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanConfigRepository;
-import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
-import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityCtrl.TSysQualityCtrlDetailRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityCtrl.TSysQualityCtrlRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanConfigRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanRepository;
 import org.thingsboard.server.dao.util.JsonUtil;
 import org.thingsboard.server.dao.util.StringConverterUtil;
 import org.thingsboard.server.dao.vo.TSysQualityCtrlVo;
-import org.thingsboard.server.dao.vo.TSysQualityPlanVo;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author 陈懋燊

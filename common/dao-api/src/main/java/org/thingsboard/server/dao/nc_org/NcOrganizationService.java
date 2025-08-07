@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.nc_org;
 
-import org.thingsboard.server.common.data.nc_org.NcOrganization;
+import org.thingsboard.server.common.data.mes.ncOrg.NcOrganization;
 import java.util.List;
 
 public interface NcOrganizationService {

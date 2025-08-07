@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.mes.sys.TSysMenu;
+import org.thingsboard.server.common.data.mes.sys.TSysRoleMenu;
+import org.thingsboard.server.common.data.mes.sys.TSysRoleUser;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.SetRoleMenuDto;
-import org.thingsboard.server.dao.sql.menu.MenuRepository;
-import org.thingsboard.server.dao.sql.menu.MenuRoleRepository;
-import org.thingsboard.server.dao.sql.role.RoleUserRepository;
+import org.thingsboard.server.dao.sql.mes.menu.MenuRepository;
+import org.thingsboard.server.dao.sql.mes.menu.MenuRoleRepository;
+import org.thingsboard.server.dao.sql.mes.role.RoleUserRepository;
 import org.thingsboard.server.dao.vo.MenuListVo;
 import org.thingsboard.server.dao.vo.PageVo;
 

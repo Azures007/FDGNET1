@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.chargingbasket;
 
-import org.thingsboard.server.common.data.TBusOrderBindCode;
-import org.thingsboard.server.common.data.TSysChargingBasket;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderBindCode;
+import org.thingsboard.server.common.data.mes.sys.TSysChargingBasket;
 import org.thingsboard.server.dao.dto.OrderBindCodeDto;
 import org.thingsboard.server.dao.dto.PageChargingBasketDto;
 import org.thingsboard.server.dao.vo.OrderBindCodeVo;

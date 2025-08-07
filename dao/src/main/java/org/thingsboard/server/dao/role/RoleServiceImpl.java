@@ -6,19 +6,18 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.TBusOrderPPBom;
-import org.thingsboard.server.common.data.TSysRole;
-import org.thingsboard.server.common.data.TSysRoleUser;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderPPBom;
+import org.thingsboard.server.common.data.mes.sys.TSysRole;
+import org.thingsboard.server.common.data.mes.sys.TSysRoleUser;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.ListRoleDto;
-import org.thingsboard.server.dao.sql.order.OrderPPBomRepository;
-import org.thingsboard.server.dao.sql.role.RoleRepository;
-import org.thingsboard.server.dao.sql.role.RoleUserRepository;
+import org.thingsboard.server.dao.sql.mes.order.OrderPPBomRepository;
+import org.thingsboard.server.dao.sql.mes.role.RoleRepository;
+import org.thingsboard.server.dao.sql.mes.role.RoleUserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author lik

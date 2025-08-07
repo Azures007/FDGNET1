@@ -5,11 +5,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysPersonnelInfo;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
@@ -25,9 +22,6 @@ import org.thingsboard.server.dao.vo.TSyncMaterialVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Api(value = "YC每日报表", tags = "YC每日报表")
 @RequestMapping("/api/app/day")

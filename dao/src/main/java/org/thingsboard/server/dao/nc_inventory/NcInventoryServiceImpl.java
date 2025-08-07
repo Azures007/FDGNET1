@@ -1,27 +1,19 @@
 package org.thingsboard.server.dao.nc_inventory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.EntityUtils;
-import org.thingsboard.server.common.data.TBusOrderHead;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysUserDetail;
-import org.thingsboard.server.common.data.nc_inventory.NcInventory;
-import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
-import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.sql.nc_inventory.NcInventoryRepository;
+import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
+import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
+import org.thingsboard.server.dao.sql.mes.ncInventory.NcInventoryRepository;
 import org.thingsboard.server.dao.user.UserService;
-import org.thingsboard.server.dao.vo.ClassGroupLeaderExpVo;
 import org.thingsboard.server.dao.vo.PageVo;
 
 import javax.persistence.criteria.Predicate;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.thingsboard.server.common.data.TBusOrderProcessRecord;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessRecord;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.order;
 
-import org.thingsboard.server.common.data.TBusOrderProcessPersonRel;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessPersonRel;
 
 import java.util.List;
 

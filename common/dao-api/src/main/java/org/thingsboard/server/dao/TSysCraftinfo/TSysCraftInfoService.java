@@ -1,8 +1,8 @@
 package org.thingsboard.server.dao.TSysCraftinfo;
 
-import org.thingsboard.server.common.data.TSysCraftInfo;
-import org.thingsboard.server.common.data.TSysCraftProcessRel;
-import org.thingsboard.server.common.data.TSysProcessInfo;
+import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
+import org.thingsboard.server.common.data.mes.sys.TSysCraftProcessRel;
+import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.dto.ListMaterialDto;
 import org.thingsboard.server.dao.dto.TSysCraftInfoSaveDto;

@@ -3,7 +3,7 @@ package org.thingsboard.server.controller.ncApi;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.nc_inventory.NcInventory;
+import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.nc_inventory.NcInventoryService;

@@ -2,7 +2,6 @@ package org.thingsboard.server.dao.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysQualityReportPlanRel;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;

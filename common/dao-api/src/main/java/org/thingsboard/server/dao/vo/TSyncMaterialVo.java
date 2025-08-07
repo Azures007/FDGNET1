@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.thingsboard.server.common.data.TSyncMaterialBom;
+import org.thingsboard.server.common.data.mes.sys.TSyncMaterialBom;
 
 import javax.persistence.Column;
 import java.util.Date;

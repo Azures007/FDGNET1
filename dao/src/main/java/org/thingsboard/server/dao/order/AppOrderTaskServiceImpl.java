@@ -11,22 +11,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.LichengConstants;
-import org.thingsboard.server.common.data.TBusOrderHead;
-import org.thingsboard.server.common.data.TBusOrderPPBom;
+import org.thingsboard.server.common.data.mes.LichengConstants;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.OrderTaskSelectDto;
-import org.thingsboard.server.dao.sql.order.AppOrderTaskRepository;
-import org.thingsboard.server.dao.sql.order.OrderHeadRepository;
+import org.thingsboard.server.dao.sql.mes.order.AppOrderTaskRepository;
+import org.thingsboard.server.dao.sql.mes.order.OrderHeadRepository;
 import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.vo.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import static org.thingsboard.server.common.data.LichengConstants.PROCESS_NUMBER_BAOZHUANG;
-import static org.thingsboard.server.common.data.LichengConstants.PROCESS_NUMBER_LASHENMO;
 
 @Service
 @Slf4j

@@ -2,8 +2,8 @@ package org.thingsboard.server.dao.tSysPersonnelInfo;
 
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TSysPersonnelInfo;
-import org.thingsboard.server.common.data.TSysUserDevices;
+import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
+import org.thingsboard.server.common.data.mes.sys.TSysUserDevices;
 import org.thingsboard.server.dao.dto.TSysPersonnelInfoDto;
 import org.thingsboard.server.dao.dto.VerifyDevicesDto;
 

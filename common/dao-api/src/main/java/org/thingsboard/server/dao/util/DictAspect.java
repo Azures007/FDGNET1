@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
-import org.thingsboard.server.common.data.TSysCodeDsc;
+import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.annotation.Dict;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscService;

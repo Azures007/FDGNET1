@@ -3,7 +3,7 @@ package org.thingsboard.server.dao.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysMessageOrder;
+import org.thingsboard.server.common.data.mes.sys.TSysMessageOrder;
 
 import java.util.List;
 @Data

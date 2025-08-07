@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.nc_warehouse;
 
-import org.thingsboard.server.common.data.nc_warehouse.NcWarehouse;
+import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
 import java.util.List;
 
 public interface NcWarehouseService {

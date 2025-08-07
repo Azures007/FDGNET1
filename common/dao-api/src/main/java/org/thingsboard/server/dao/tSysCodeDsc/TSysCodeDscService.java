@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.tSysCodeDsc;
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TSysCodeDsc;
+import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.dto.TSysCodeDscDto;
 import org.thingsboard.server.dao.vo.AppVersionVo;

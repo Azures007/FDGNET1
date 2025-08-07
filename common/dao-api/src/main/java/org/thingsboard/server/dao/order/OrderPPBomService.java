@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.order;
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TBusOrderPPBom;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderPPBom;
 import org.thingsboard.server.dao.dto.TBusOrderPPBomDto;
 
 public interface OrderPPBomService {

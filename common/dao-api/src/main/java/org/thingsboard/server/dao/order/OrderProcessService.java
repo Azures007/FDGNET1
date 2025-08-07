@@ -1,8 +1,8 @@
 package org.thingsboard.server.dao.order;
 
-import org.thingsboard.server.common.data.TBusOrderProcess;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysPersonnelInfo;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcess;
+import org.thingsboard.server.common.data.mes.sys.TSysClass;
+import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
 import org.thingsboard.server.common.data.web.ResponseResult;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package org.thingsboard.server.dao.orderProcess;
 
-import org.thingsboard.server.common.data.MidMaterial;
-import org.thingsboard.server.common.data.TBusOrderProcessRecord;
-import org.thingsboard.server.common.data.TSysProcessInfo;
+import org.thingsboard.server.common.data.mes.mid.MidMaterial;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessRecord;
+import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.dto.*;
 import org.thingsboard.server.dao.vo.*;

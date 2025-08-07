@@ -1,16 +1,8 @@
 package org.thingsboard.server.dao.tSysQualityReportCategory;
 
-import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysProcessInfo;
-import org.thingsboard.server.common.data.TSysQualityReportCategory;
-import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.dto.SysQualityReportCategoryDto;
-import org.thingsboard.server.dao.dto.TSysProcessInfoDto;
 import org.thingsboard.server.dao.dto.TSysQualityReportCategorySearchDto;
 import org.thingsboard.server.dao.vo.PageVo;
-
-import java.util.List;
 
 /**
  * @Auther: l

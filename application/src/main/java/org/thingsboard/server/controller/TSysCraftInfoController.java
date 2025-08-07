@@ -3,7 +3,7 @@ package org.thingsboard.server.controller;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.TSysCraftProcessRel;
+import org.thingsboard.server.common.data.mes.sys.TSysCraftProcessRel;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.TSysCraftinfo.TSysCraftInfoService;

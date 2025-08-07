@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.nc_department;
 
-import org.thingsboard.server.common.data.nc_department.NcDepartment;
+import org.thingsboard.server.common.data.mes.ncDepartment.NcDepartment;
 import java.util.List;
 
 public interface NcDepartmentService {

@@ -1,21 +1,19 @@
 package org.thingsboard.server.dao.tSysAbrasiveSpecification;
 
-import jnr.ffi.annotations.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.LichengConstants;
-import org.thingsboard.server.common.data.MidDept;
-import org.thingsboard.server.common.data.MidOrg;
-import org.thingsboard.server.common.data.TSysAbrasiveSpecification;
+import org.thingsboard.server.common.data.mes.LichengConstants;
+import org.thingsboard.server.common.data.mes.mid.MidDept;
+import org.thingsboard.server.common.data.mes.mid.MidOrg;
+import org.thingsboard.server.common.data.mes.sys.TSysAbrasiveSpecification;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.dto.tSysAbrasiveSpecification.TSysAbrasiveSpecificationDto;
-import org.thingsboard.server.dao.midDetp.MidDeptService;
-import org.thingsboard.server.dao.sql.licheng.MidDeptRepository;
-import org.thingsboard.server.dao.sql.licheng.MidOrgRepository;
-import org.thingsboard.server.dao.sql.tSysAbrasiveSpecification.TSysAbrasiveSpecificationRepository;
+import org.thingsboard.server.dao.sql.mes.licheng.MidDeptRepository;
+import org.thingsboard.server.dao.sql.mes.licheng.MidOrgRepository;
+import org.thingsboard.server.dao.sql.mes.tSysAbrasiveSpecification.TSysAbrasiveSpecificationRepository;
 import org.thingsboard.server.dao.vo.PageVo;
 
 import javax.persistence.criteria.Predicate;

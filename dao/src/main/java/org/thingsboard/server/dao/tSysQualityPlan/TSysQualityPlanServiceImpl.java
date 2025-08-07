@@ -1,6 +1,5 @@
 package org.thingsboard.server.dao.tSysQualityPlan;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -11,18 +10,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.*;
-import org.thingsboard.server.dao.dto.TSysQualityCategoryDto;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlan;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanConfig;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanJudgment;
 import org.thingsboard.server.dao.dto.TSysQualityPlanDto;
-import org.thingsboard.server.dao.sql.tSysQualityCategory.TSysQualityCategoryConfigRepository;
-import org.thingsboard.server.dao.sql.tSysQualityCategory.TSysQualityCategoryRepository;
-import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanConfigRepository;
-import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
-import org.thingsboard.server.dao.sql.tSysQualityPlan.TSysQualityPlanRepository;
-import org.thingsboard.server.dao.tSysQualityPlan.TSysQualityPlanService;
+import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanConfigRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
+import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanRepository;
 import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.util.StringConverterUtil;
-import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 import org.thingsboard.server.dao.vo.TSysQualityPlanVo;
 
 import java.util.List;
@@ -50,7 +46,7 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
     protected UserService userService;
 
     @Override
-    public Page<TSysQualityPlan> tSysQualityPlanList(String userId,Integer current,
+    public Page<TSysQualityPlan> tSysQualityPlanList(String userId, Integer current,
                                                      Integer size,
                                                      String sortField,
                                                      String sortOrder,

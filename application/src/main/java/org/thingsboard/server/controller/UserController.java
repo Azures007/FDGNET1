@@ -15,7 +15,6 @@
  */
 package org.thingsboard.server.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.annotations.*;
@@ -27,14 +26,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.rule.engine.api.MailService;
 import org.thingsboard.server.common.data.EntityType;
-import org.thingsboard.server.common.data.TSysRoleUser;
-import org.thingsboard.server.common.data.TSysUserDetail;
+import org.thingsboard.server.common.data.mes.sys.TSysRoleUser;
+import org.thingsboard.server.common.data.mes.sys.TSysUserDetail;
 import org.thingsboard.server.common.data.User;
 import org.thingsboard.server.common.data.audit.ActionType;
 import org.thingsboard.server.common.data.edge.EdgeEventActionType;
@@ -44,8 +42,8 @@ import org.thingsboard.server.common.data.id.CustomerId;
 import org.thingsboard.server.common.data.id.EdgeId;
 import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.id.UserId;
-import org.thingsboard.server.common.data.nc_org.NcOrganization;
-import org.thingsboard.server.common.data.nc_workline.NcWorkline;
+import org.thingsboard.server.common.data.mes.ncOrg.NcOrganization;
+import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.security.Authority;

@@ -1,10 +1,8 @@
 package org.thingsboard.server.dao.dto;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysQualityReportItem;
-import org.thingsboard.server.common.data.TSysQualityReportPlanRel;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityReportPlanRel;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;

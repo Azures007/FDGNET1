@@ -5,9 +5,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.thingsboard.server.common.data.TBusOrderPPBom;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderPPBom;
 import org.thingsboard.server.dao.dto.TBusOrderPPBomDto;
-import org.thingsboard.server.dao.sql.order.OrderPPBomRepository;
+import org.thingsboard.server.dao.sql.mes.order.OrderPPBomRepository;
 
 /**
  * @author hhh

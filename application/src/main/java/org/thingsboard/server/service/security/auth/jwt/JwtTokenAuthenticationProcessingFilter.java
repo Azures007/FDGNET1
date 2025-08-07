@@ -16,7 +16,6 @@
 package org.thingsboard.server.service.security.auth.jwt;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -24,12 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
-import org.thingsboard.server.common.data.TSysRoleUser;
-import org.thingsboard.server.dao.sql.role.RoleUserRepository;
 import org.thingsboard.server.service.security.auth.JwtAuthenticationToken;
 import org.thingsboard.server.service.security.auth.jwt.extractor.TokenExtractor;
-import org.thingsboard.server.service.security.model.SecurityUser;
 import org.thingsboard.server.service.security.model.token.RawAccessJwtToken;
 
 import javax.servlet.FilterChain;

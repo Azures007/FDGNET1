@@ -1,7 +1,8 @@
 package org.thingsboard.server.dao.tSysQualityCtrl;
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCtrl;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCtrlDetail;
 import org.thingsboard.server.dao.dto.TSysQualityCtrlDto;
 import org.thingsboard.server.dao.vo.TSysQualityCtrlVo;
 

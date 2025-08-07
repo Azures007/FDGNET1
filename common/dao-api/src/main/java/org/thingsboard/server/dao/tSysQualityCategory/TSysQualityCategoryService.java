@@ -1,8 +1,9 @@
 package org.thingsboard.server.dao.tSysQualityCategory;
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.*;
-import org.thingsboard.server.dao.dto.TSysClassDto;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCategory;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCategoryConfig;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanConfig;
 import org.thingsboard.server.dao.dto.TSysQualityCategoryDto;
 import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
 
@@ -20,7 +21,7 @@ public interface TSysQualityCategoryService {
      * 返回质检分类列表
      * @return
      */
-    Page<TSysQualityCategory> tSysQualityCategoryList(Integer current, Integer size,String sortField,String sortOrder, TSysQualityCategoryDto tSysQualityCategoryDto);
+    Page<TSysQualityCategory> tSysQualityCategoryList(Integer current, Integer size, String sortField, String sortOrder, TSysQualityCategoryDto tSysQualityCategoryDto);
 
     /**
      * 返回质检分类列表

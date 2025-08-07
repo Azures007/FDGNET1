@@ -17,7 +17,7 @@ import com.google.common.collect.Table;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.thingsboard.server.common.data.ReadWriteHashMap;
-import org.thingsboard.server.common.data.TSysCodeDsc;
+import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.User;
 import org.thingsboard.server.common.data.id.CustomerId;
 import org.thingsboard.server.common.data.id.TenantId;

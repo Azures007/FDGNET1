@@ -1,7 +1,9 @@
 package org.thingsboard.server.dao.ImportParam;
 
 import io.swagger.annotations.ApiModelProperty;
-import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlan;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanConfig;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanJudgment;
 
 import java.util.List;
 

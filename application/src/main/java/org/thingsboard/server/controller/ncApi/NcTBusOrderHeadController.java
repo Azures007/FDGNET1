@@ -6,13 +6,12 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.nc_order.NcTBusOrderHead;
+import org.thingsboard.server.common.data.mes.ncOrder.NcTBusOrderHead;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.nc_order.NcTBusOrderHeadService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/outapi/nc/order")

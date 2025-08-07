@@ -1,23 +1,16 @@
 package org.thingsboard.server.controller;
 
 import io.swagger.annotations.Api;
-import org.hibernate.SQLQuery;
-import org.hibernate.query.NativeQuery;
-import org.hibernate.query.internal.NativeQueryImpl;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.TSysClass;
+import org.thingsboard.server.common.data.mes.sys.TSysClass;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.dao.message.MessageService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 测试专用

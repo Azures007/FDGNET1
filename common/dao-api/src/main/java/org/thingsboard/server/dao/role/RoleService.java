@@ -1,8 +1,8 @@
 package org.thingsboard.server.dao.role;
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TSysRole;
-import org.thingsboard.server.common.data.TSysRoleUser;
+import org.thingsboard.server.common.data.mes.sys.TSysRole;
+import org.thingsboard.server.common.data.mes.sys.TSysRoleUser;
 import org.thingsboard.server.dao.dto.ListRoleDto;
 
 /**

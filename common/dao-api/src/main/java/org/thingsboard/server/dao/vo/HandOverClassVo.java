@@ -2,9 +2,6 @@ package org.thingsboard.server.dao.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysClass;
-
-import java.util.List;
 
 /**
  * @Auther: l

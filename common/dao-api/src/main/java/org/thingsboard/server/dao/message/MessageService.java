@@ -1,6 +1,6 @@
 package org.thingsboard.server.dao.message;
 
-import org.thingsboard.server.common.data.TSysMessageOrder;
+import org.thingsboard.server.common.data.mes.sys.TSysMessageOrder;
 import org.thingsboard.server.dao.vo.MessageSizeVo;
 import org.thingsboard.server.dao.vo.PageVo;
 import org.thingsboard.server.dao.vo.ProcessAlarmVo;

@@ -3,7 +3,7 @@ package org.thingsboard.server.dao.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysClass;
+import org.thingsboard.server.common.data.mes.sys.TSysClass;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;

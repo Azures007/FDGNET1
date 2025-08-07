@@ -8,8 +8,8 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.StringUtils;
-import org.thingsboard.server.common.data.TSysDeviceIot;
-import org.thingsboard.server.common.data.TsysDevice;
+import org.thingsboard.server.common.data.mes.sys.TSysDeviceIot;
+import org.thingsboard.server.common.data.mes.sys.TsysDevice;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.constant.GlobalConstant;
@@ -17,16 +17,15 @@ import org.thingsboard.server.dao.dto.TSysDeviceDto;
 import org.thingsboard.server.dao.dto.TSysDeviceSearchDto;
 import org.thingsboard.server.dao.order.OrderProcessDeviceRelService;
 import org.thingsboard.server.dao.order.OrderProcessPersonRelService;
-import org.thingsboard.server.dao.sql.device.TSysDeviceIotRepository;
-import org.thingsboard.server.dao.sql.order.OrderProcessPersonRelRepository;
-import org.thingsboard.server.dao.sql.tSysDevice.TSysDeviceRepository;
+import org.thingsboard.server.dao.sql.mes.device.TSysDeviceIotRepository;
+import org.thingsboard.server.dao.sql.mes.order.OrderProcessPersonRelRepository;
+import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.dao.user.UserService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
 
 /**
  * @Auther: l

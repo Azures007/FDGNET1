@@ -2,8 +2,8 @@ package org.thingsboard.server.dao.ImportParam;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.thingsboard.server.common.data.TSysClass;
-import org.thingsboard.server.common.data.TSysClassGroupLeaderRel;
+import org.thingsboard.server.common.data.mes.sys.TSysClass;
+import org.thingsboard.server.common.data.mes.sys.TSysClassGroupLeaderRel;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package org.thingsboard.server.dao.order;
 
 import org.springframework.data.domain.Page;
-import org.thingsboard.server.common.data.TBusOrderProcessHistory;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
 import org.thingsboard.server.dao.dto.TBusOrderProcessHistoryDto;
 
 import java.util.List;

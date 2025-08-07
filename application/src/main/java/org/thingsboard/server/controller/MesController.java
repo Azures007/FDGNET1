@@ -5,15 +5,13 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.LichengConstants;
-import org.thingsboard.server.common.data.TSysMessageOrder;
+import org.thingsboard.server.common.data.mes.sys.TSysMessageOrder;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.vo.*;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

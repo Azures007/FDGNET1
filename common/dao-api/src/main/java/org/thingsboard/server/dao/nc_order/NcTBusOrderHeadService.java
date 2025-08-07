@@ -1,7 +1,6 @@
 package org.thingsboard.server.dao.nc_order;
 
-import org.thingsboard.server.common.data.TBusOrderHead;
-import org.thingsboard.server.common.data.nc_order.NcTBusOrderHead;
+import org.thingsboard.server.common.data.mes.ncOrder.NcTBusOrderHead;
 
 import java.util.List;
 import java.util.Optional;
