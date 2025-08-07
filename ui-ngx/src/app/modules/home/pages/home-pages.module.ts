@@ -54,6 +54,7 @@ import { SpecificationModule } from '@home/pages/specification/specification.mod
 import { MenuModule } from '@home/pages/menu/menu.module';
 import { QualityModule } from '@home/pages/quality/quality.module';
 import { InventoryMgtModule } from '@home/pages/invetory-mgt/invetory-mgt.module';
+import { PdMgtModule } from '@home/pages/pd-mgt/pd-mgt.module';
 
 @NgModule({
   exports: [
@@ -89,7 +90,8 @@ import { InventoryMgtModule } from '@home/pages/invetory-mgt/invetory-mgt.module
     SpecificationModule,
     MenuModule,
     QualityModule,
-    InventoryMgtModule
+    InventoryMgtModule,
+    PdMgtModule,
   ],
   providers: [
     {

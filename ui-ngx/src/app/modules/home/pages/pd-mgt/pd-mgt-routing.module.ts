@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Authority } from '@shared/models/authority.enum';
-import { InventoryMgtComponent } from './inventory-mgt.component';
+import { PdMgtComponent } from './pd-mgt.component';
 
 const routes: Routes = [
   {
-    path: 'invetory-mgt',
-    component: InventoryMgtComponent,
+    path: 'pd-mgt',
+    component: PdMgtComponent,
     data: {
       auth: [Authority.TENANT_ADMIN],
-      title: '线边仓库存管理',
+      title: '盘点记录',
       breadcrumb: {
-        label: '线边仓库存管理',
+        label: '盘点记录',
         icon: 'devices_other'
       }
     },
@@ -22,4 +22,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class InventoryMgtRoutingModule { }
+export class PdMgtRoutingModule { }

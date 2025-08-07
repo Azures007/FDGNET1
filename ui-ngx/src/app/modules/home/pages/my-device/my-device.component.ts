@@ -106,9 +106,7 @@ export class MyDeviceComponent implements OnInit {
       this.processList = res.data.content;
       this.setMyMap();
     });
-    this.accountService.fetchBaseList({
-      type: 'base',
-    }).subscribe(res => {
+    this.accountService.getOrgList().subscribe(res => {
       this.pkOrgList = res.data.map(item => {
         return {
           name: item.org_name,

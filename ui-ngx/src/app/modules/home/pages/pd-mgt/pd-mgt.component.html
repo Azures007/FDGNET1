@@ -1,0 +1,109 @@
+<div class="page-container flex-column">
+  <div class="page-header">
+
+    <div class="row-block cols4">
+      <label class="label">盘点日期</label>
+      <mat-form-field appearance="fill" class="dateRange">
+        <mat-date-range-input [formGroup]="pdRange" [rangePicker]="picker">
+          <input readonly formControlName="start" matStartDate placeholder="开始日期">
+          <input readonly formControlName="end" matEndDate placeholder="结束日期">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker fontSize="12" #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+
+    <div class="row-block cols4">
+      <label class="label">盘点线边仓</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.pdWorkshopName" />
+    </div>
+    <div class="row-block cols4">
+      <label class="label"></label>
+      <div class="btn-group">
+        <button class="search_btn" (click)="getTableData()">
+          <mat-icon class="material-icons svgIcon">search</mat-icon>查询
+        </button>
+        <button class="search_btn" (click)="reset()">
+          <mat-icon class="material-icons svgIcon">search</mat-icon>重置
+        </button>
+        <!-- <button class="search_btn" (click)="export()">
+          <mat-icon class="material-icons svgIcon">vertical_align_bottom</mat-icon>
+          导出
+        </button> -->
+      </div>
+
+    </div>
+
+
+  </div>
+  <div class="tags">
+    <div class="tag" (click)="changeTable(1)" [ngClass]="{'active': curTable === 1}">
+      盘点记录
+    </div>
+    <div class="tag" (click)="changeTable(2)" [ngClass]="{'active': curTable === 2}">
+      还原盘点记录
+    </div>
+  </div>
+  <div class="page-content">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <!--- Note that these columns can be defined in any order.
+                      The actual rendered columns are set as a property on the row definition" -->
+      <!-- Position Column -->
+      <ng-container matColumnDef="no">
+        <th mat-header-cell *matHeaderCellDef> 序号 </th>
+        <td mat-cell *matCellDef="let element;index as i"> {{i+1}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="pdTimeStr">
+        <th mat-header-cell *matHeaderCellDef> 盘点日期 </th>
+        <td mat-cell *matCellDef="let element"> {{element.pdTimeStr}} </td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="materialNumber">
+        <th mat-header-cell *matHeaderCellDef> 材料编码 </th>
+        <td mat-cell *matCellDef="let element"> {{element.materialNumber}} </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="materialName">
+        <th mat-header-cell *matHeaderCellDef> 材料名称 </th>
+        <td mat-cell *matCellDef="let element"> {{element.materialName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="materialSpecifications">
+        <th mat-header-cell *matHeaderCellDef> 规格 </th>
+        <td mat-cell *matCellDef="let element"> {{element.materialSpecifications}} </td>
+      </ng-container>
+      <ng-container matColumnDef="pdUnit">
+        <th mat-header-cell *matHeaderCellDef> 单位 </th>
+        <td mat-cell *matCellDef="let element"> {{element.pdUnit}} </td>
+      </ng-container>
+      <ng-container matColumnDef="pdQty">
+        <th mat-header-cell *matHeaderCellDef> 盘点余量 </th>
+        <td mat-cell *matCellDef="let element"> {{ element.pdQty }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="pdCreatedName">
+        <th mat-header-cell *matHeaderCellDef> 盘点人 </th>
+        <td mat-cell *matCellDef="let element"> {{element.pdCreatedName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="isReturn">
+        <th mat-header-cell *matHeaderCellDef> 是否为还原材料 </th>
+        <td mat-cell *matCellDef="let element"> {{element.isReturn}} </td>
+      </ng-container>
+      <ng-container matColumnDef="pdWorkshopLeaderName">
+        <th mat-header-cell *matHeaderCellDef> 车间主任 </th>
+        <td mat-cell *matCellDef="let element"> {{element.pdWorkshopLeaderName}} </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
+      aria-label="选择要跳转的页面" (page)="getNotices($event)">
+    </mat-paginator>
+  </div>
+</div>
