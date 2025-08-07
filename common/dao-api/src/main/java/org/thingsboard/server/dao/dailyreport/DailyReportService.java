@@ -12,7 +12,7 @@ import java.util.Map;
 public interface DailyReportService {
 
 
-    PageVo<Map<String, Object>> selectShopPerson(String name, Integer current, Integer size);
+    PageVo<DailyReportVo> selectShopPerson(String id, Integer current, Integer size);
 
     String getBillNo(DailyReportVo dailyReportVo) throws SQLException;
 

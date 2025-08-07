@@ -118,4 +118,6 @@ public interface TSysPersonnelInfoRepository extends JpaRepository<TSysPersonnel
             ")"
             ,nativeQuery = true)
     List<Integer> findAllByPersonnel(@Param("personelId") Integer personnelId);
+
+    TSysPersonnelInfo findAllByUserId(@Param("userId") String userId);
 }

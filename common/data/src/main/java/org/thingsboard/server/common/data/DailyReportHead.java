@@ -50,7 +50,7 @@ public class DailyReportHead {
 
     @ApiModelProperty("创建人")
     @Column(name = "created_name")
-    private String createdMame;
+    private String createdName;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty("创建时间")
