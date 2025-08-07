@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityCtrl;
-import org.thingsboard.server.dao.dto.TSysQualityCtrlDto;
+import org.thingsboard.server.dao.mes.dto.TSysQualityCtrlDto;
 
 /**
  * @author 陈懋燊

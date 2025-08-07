@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.ncOrder.NcTBusOrderHead;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.nc_order.NcTBusOrderHeadService;
+import org.thingsboard.server.dao.mes.ncOrder.NcTBusOrderHeadService;
 
 import java.util.List;
 

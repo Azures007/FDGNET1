@@ -15,11 +15,11 @@ import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.TSysPersonnelInfoDto;
-import org.thingsboard.server.dao.dto.VerifyDevicesDto;
-import org.thingsboard.server.dao.vo.GetPersonnelByDevicesVo;
-import org.thingsboard.server.dao.vo.PageVo;
-import org.thingsboard.server.dao.vo.UserVo;
+import org.thingsboard.server.dao.mes.dto.TSysPersonnelInfoDto;
+import org.thingsboard.server.dao.mes.dto.VerifyDevicesDto;
+import org.thingsboard.server.dao.mes.vo.GetPersonnelByDevicesVo;
+import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.mes.vo.UserVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 import org.thingsboard.server.service.tsysPersonnelExcel.TSysPersonnelExcelService;
 

@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.thingsboard.server.common.data.mes.sys.TsysDevice;
+import org.thingsboard.server.common.data.mes.sys.TSysDevice;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.TSysDevice.TSysDeviceService;
-import org.thingsboard.server.dao.dto.TSysDeviceDto;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.TSysDevice.TSysDeviceService;
+import org.thingsboard.server.dao.mes.dto.TSysDeviceDto;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.service.TSysDevice.TSysDeviceExcelService;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
@@ -37,17 +37,17 @@ public class TSysDeviceController extends BaseController{
 
     @ApiOperation("查询设备信息列表")
     @PostMapping("/getDevice")
-    public ResponseResult<PageVo<TsysDevice>> getDevice(@RequestParam(value = "current",defaultValue = "0") Integer current,
-                                    @RequestParam(value = "size",defaultValue = "10") Integer size,@RequestBody TSysDeviceDto deviceDto) throws Exception {
+    public ResponseResult<PageVo<TSysDevice>> getDevice(@RequestParam(value = "current",defaultValue = "0") Integer current,
+                                                        @RequestParam(value = "size",defaultValue = "10") Integer size, @RequestBody TSysDeviceDto deviceDto) throws Exception {
         SecurityUser currentUser = getCurrentUser();
-        Page<TsysDevice> devices =deviceService.tSysDeviceList(currentUser.getId().toString(),current,size,deviceDto,-1);
-        PageVo<TsysDevice> pageVo=new PageVo<>(devices);
+        Page<TSysDevice> devices =deviceService.tSysDeviceList(currentUser.getId().toString(),current,size,deviceDto,-1);
+        PageVo<TSysDevice> pageVo=new PageVo<>(devices);
         return ResultUtil.success(pageVo);
     }
 
     @ApiOperation("保存/修改设备信息（id为空则表示新增，id不为空表示修改）")
     @PostMapping("/saveDevice")
-   public ResponseResult saveDevice(@RequestBody TsysDevice device) throws Exception {
+   public ResponseResult saveDevice(@RequestBody TSysDevice device) throws Exception {
         SecurityUser currentUser = getCurrentUser();
         device.setUpdatedUser(currentUser.getName());
         device.setUpdatedTime(new Date());
@@ -72,7 +72,7 @@ public class TSysDeviceController extends BaseController{
     @ApiOperation("设备详情")
     @GetMapping("/getTSysDevice")
     public ResponseResult getTSysDevice(@RequestParam(value = "deviceId") Integer deviceId) throws Exception {
-        TsysDevice device=deviceService.getTSysDevice(deviceId);
+        TSysDevice device=deviceService.getTSysDevice(deviceId);
         return ResultUtil.success(device);
     }
 

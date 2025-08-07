@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.nc_workline.NcWorklineService;
+import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
 
 import java.util.List;
 

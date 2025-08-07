@@ -2,7 +2,7 @@ package org.thingsboard.server.service.TSysDevice;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.thingsboard.server.common.data.web.ResponseResult;
-import org.thingsboard.server.dao.dto.TSysDeviceDto;
+import org.thingsboard.server.dao.mes.dto.TSysDeviceDto;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

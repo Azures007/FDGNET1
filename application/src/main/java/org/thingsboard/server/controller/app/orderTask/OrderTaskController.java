@@ -9,11 +9,11 @@ import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
-import org.thingsboard.server.dao.TSysProcessInfo.TSysProcessInfoService;
-import org.thingsboard.server.dao.dto.OrderTaskSelectDto;
-import org.thingsboard.server.dao.vo.PageVo;
-import org.thingsboard.server.dao.vo.TaskListFinishVo;
-import org.thingsboard.server.dao.vo.TaskListVo;
+import org.thingsboard.server.dao.mes.TSysProcessInfo.TSysProcessInfoService;
+import org.thingsboard.server.dao.mes.dto.OrderTaskSelectDto;
+import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.mes.vo.TaskListFinishVo;
+import org.thingsboard.server.dao.mes.vo.TaskListVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.text.ParseException;

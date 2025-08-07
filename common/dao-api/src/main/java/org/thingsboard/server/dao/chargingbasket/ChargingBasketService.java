@@ -2,10 +2,10 @@ package org.thingsboard.server.dao.chargingbasket;
 
 import org.thingsboard.server.common.data.mes.bus.TBusOrderBindCode;
 import org.thingsboard.server.common.data.mes.sys.TSysChargingBasket;
-import org.thingsboard.server.dao.dto.OrderBindCodeDto;
-import org.thingsboard.server.dao.dto.PageChargingBasketDto;
-import org.thingsboard.server.dao.vo.OrderBindCodeVo;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.dto.OrderBindCodeDto;
+import org.thingsboard.server.dao.mes.dto.PageChargingBasketDto;
+import org.thingsboard.server.dao.mes.vo.OrderBindCodeVo;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 
 import java.util.List;
 

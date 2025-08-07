@@ -1,6 +1,6 @@
 package org.thingsboard.server.service.TSysClass;
 
-import org.thingsboard.server.dao.dto.TSysClassDto;
+import org.thingsboard.server.dao.mes.dto.TSysClassDto;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

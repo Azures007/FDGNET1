@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
-import org.thingsboard.server.dao.dto.PdMaterialsDto;
+import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
 
 import java.util.List;
 

@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessRecord;
 import org.thingsboard.server.common.data.mes.sys.TSysClass;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
-import org.thingsboard.server.dao.dto.OrderProcessRecordSaveDto;
-import org.thingsboard.server.dao.dto.OrderProcessTimeDto;
+import org.thingsboard.server.dao.mes.dto.OrderProcessRecordSaveDto;
+import org.thingsboard.server.dao.mes.dto.OrderProcessTimeDto;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

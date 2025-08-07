@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
-import org.thingsboard.server.dao.dto.TBusOrderDto;
+import org.thingsboard.server.dao.mes.dto.TBusOrderDto;
 
 import java.util.Date;
 import java.util.List;

@@ -6,7 +6,7 @@ import lombok.Data;
 import org.thingsboard.server.common.data.mes.sys.TSysClass;
 import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
-import org.thingsboard.server.common.data.mes.sys.TsysDevice;
+import org.thingsboard.server.common.data.mes.sys.TSysDevice;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -67,7 +67,7 @@ public class TBusOrderProcessRecord {
     @OneToOne
     @ApiModelProperty("机台号（废弃）")
     @JoinColumn(name = "device_id")
-    private TsysDevice deviceId;
+    private TSysDevice deviceId;
 
     @OneToOne
     @ApiModelProperty("机排手（废弃）")

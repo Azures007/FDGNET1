@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.annotation.Dict;
 import org.thingsboard.server.common.data.web.ResponseResult;
-import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscService;
+import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;

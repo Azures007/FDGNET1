@@ -12,12 +12,12 @@ import org.thingsboard.server.common.data.mes.sys.TSysQualityCategory;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
-import org.thingsboard.server.dao.ImportParam.TSysQualityCategoryImportParam;
+import org.thingsboard.server.dao.mes.ImportParam.TSysQualityCategoryImportParam;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.TSysQualityCategoryDto;
-import org.thingsboard.server.dao.tSysQualityCategory.TSysQualityCategoryService;
-import org.thingsboard.server.dao.vo.PageVo;
-import org.thingsboard.server.dao.vo.TSysQualityCategoryVo;
+import org.thingsboard.server.dao.mes.dto.TSysQualityCategoryDto;
+import org.thingsboard.server.dao.mes.tSysQualityCategory.TSysQualityCategoryService;
+import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.mes.vo.TSysQualityCategoryVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.Date;

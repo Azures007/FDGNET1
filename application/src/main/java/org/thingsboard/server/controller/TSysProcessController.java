@@ -10,8 +10,8 @@ import org.thingsboard.server.common.data.mes.sys.TSysClass;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.TSysProcessInfo.TSysProcessInfoService;
-import org.thingsboard.server.dao.dto.TSysProcessInfoDto;
+import org.thingsboard.server.dao.mes.TSysProcessInfo.TSysProcessInfoService;
+import org.thingsboard.server.dao.mes.dto.TSysProcessInfoDto;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.Date;

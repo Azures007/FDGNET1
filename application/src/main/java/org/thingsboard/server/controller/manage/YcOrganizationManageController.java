@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.nc_org.NcOrganizationService;
+import org.thingsboard.server.dao.mes.ncOrg.NcOrganizationService;
 
 @RestController
 @RequestMapping("/api/manage/org")

@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.dto.*;
-import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportPlanService;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.dto.TSysQualityReportPlanDto;
+import org.thingsboard.server.dao.mes.dto.TSysQualityReportPlanSearchDto;
+import org.thingsboard.server.dao.mes.dto.TSysQualityReportPlanVo;
+import org.thingsboard.server.dao.mes.tSysQualityReportCategory.TSysQualityReportPlanService;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.Date;

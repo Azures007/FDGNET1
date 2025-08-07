@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.sys.TSysRoleUser;
-import org.thingsboard.server.dao.dto.PageUserDto;
+import org.thingsboard.server.dao.mes.dto.PageUserDto;
 
 import java.util.List;
 import java.util.Map;

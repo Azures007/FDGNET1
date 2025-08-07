@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.TSysCodeDscDto;
-import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscService;
+import org.thingsboard.server.dao.mes.dto.TSysCodeDscDto;
+import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

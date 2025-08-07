@@ -12,13 +12,15 @@ import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.dailyreport.DailyReportService;
-import org.thingsboard.server.dao.dto.*;
-import org.thingsboard.server.dao.sync.MaterialService;
-import org.thingsboard.server.dao.tSysQualityReportCategory.TSysQualityReportPlanService;
-import org.thingsboard.server.dao.vo.DailyReportVo;
-import org.thingsboard.server.dao.vo.OrderSimpleListVo;
-import org.thingsboard.server.dao.vo.PageVo;
-import org.thingsboard.server.dao.vo.TSyncMaterialVo;
+import org.thingsboard.server.dao.mes.dto.ListMaterialDto;
+import org.thingsboard.server.dao.mes.dto.TSysQualityReportPlanDto;
+import org.thingsboard.server.dao.mes.dto.TSysQualityReportPlanSearchDto;
+import org.thingsboard.server.dao.mes.sync.MaterialService;
+import org.thingsboard.server.dao.mes.tSysQualityReportCategory.TSysQualityReportPlanService;
+import org.thingsboard.server.dao.mes.vo.DailyReportVo;
+import org.thingsboard.server.dao.mes.vo.OrderSimpleListVo;
+import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.mes.vo.TSyncMaterialVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.time.LocalDate;
@@ -54,7 +56,7 @@ public class DailyReportController extends BaseController {
     @ApiOperation("每日报表方案")
     @PostMapping("/dailyProgram")
     public ResponseResult<PageVo<TSysQualityReportPlanDto>> dailyProgram(@RequestParam(value = "current",defaultValue = "0") Integer current,
-                                                                        @RequestParam(value = "size",defaultValue = "10") Integer size,
+                                                                         @RequestParam(value = "size",defaultValue = "10") Integer size,
                                                                          @RequestBody TSysQualityReportPlanSearchDto searchDto) throws Exception {
         SecurityUser currentUser = getCurrentUser();
         PageVo<TSysQualityReportPlanDto> categoryList = tSysQualityReportPlanService.getPlanList(currentUser.getId().toString(),current,size,searchDto);

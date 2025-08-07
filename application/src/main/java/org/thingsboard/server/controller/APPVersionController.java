@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.thingsboard.server.common.data.web.ResponseResult;
-import org.thingsboard.server.dao.tSysCodeDsc.TSysCodeDscService;
-import org.thingsboard.server.dao.vo.AppVersionVo;
+import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
+import org.thingsboard.server.dao.mes.vo.AppVersionVo;
 
 /**
  * @Auther: l

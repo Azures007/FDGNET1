@@ -7,10 +7,10 @@ import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.SetMenuDto;
-import org.thingsboard.server.dao.dto.SetRoleMenuDto;
-import org.thingsboard.server.dao.vo.MenuListVo;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.dto.SetMenuDto;
+import org.thingsboard.server.dao.mes.dto.SetRoleMenuDto;
+import org.thingsboard.server.dao.mes.vo.MenuListVo;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.ArrayList;

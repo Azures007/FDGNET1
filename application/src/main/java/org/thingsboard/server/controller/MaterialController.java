@@ -10,11 +10,11 @@ import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.ListMaterialDto;
-import org.thingsboard.server.dao.dto.TSyncMaterialSaveDto;
-import org.thingsboard.server.dao.vo.ListMaterialFiterVo;
-import org.thingsboard.server.dao.vo.PageVo;
-import org.thingsboard.server.dao.vo.TSyncMaterialVo;
+import org.thingsboard.server.dao.mes.dto.ListMaterialDto;
+import org.thingsboard.server.dao.mes.dto.TSyncMaterialSaveDto;
+import org.thingsboard.server.dao.mes.vo.ListMaterialFiterVo;
+import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.mes.vo.TSyncMaterialVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.Date;

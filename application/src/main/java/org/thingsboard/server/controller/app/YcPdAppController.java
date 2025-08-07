@@ -8,7 +8,7 @@ import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
-import org.thingsboard.server.dao.dto.PdMaterialsDto;
+import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
 
 import java.util.List;
 

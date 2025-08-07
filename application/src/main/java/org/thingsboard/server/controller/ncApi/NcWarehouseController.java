@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.nc_warehouse.NcWarehouseService;
+import org.thingsboard.server.dao.mes.ncWarehouse.NcWarehouseService;
 
 import java.util.List;
 

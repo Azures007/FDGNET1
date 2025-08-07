@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.mid.MidOrg;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.dto.MidOrgDto;
-import org.thingsboard.server.dao.midOrg.MidOrgService;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.dto.MidOrgDto;
+import org.thingsboard.server.dao.mes.midOrg.MidOrgService;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 
 @RestController
 @Api(value = "组织接口",tags = "组织接口")

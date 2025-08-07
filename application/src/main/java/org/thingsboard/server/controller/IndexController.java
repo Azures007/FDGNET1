@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.vo.GetOrderSizeVo;
-import org.thingsboard.server.dao.vo.UserClassVo;
+import org.thingsboard.server.dao.mes.vo.GetOrderSizeVo;
+import org.thingsboard.server.dao.mes.vo.UserClassVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 @RestController
 @Api(value = "首页接口",tags = "首页接口")

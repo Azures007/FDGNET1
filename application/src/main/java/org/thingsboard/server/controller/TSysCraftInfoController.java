@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.sys.TSysCraftProcessRel;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.TSysCraftinfo.TSysCraftInfoService;
-import org.thingsboard.server.dao.dto.ListMaterialDto;
-import org.thingsboard.server.dao.dto.TSysCraftInfoSaveDto;
-import org.thingsboard.server.dao.dto.TSysCraftSearchDto;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.TSysCraftinfo.TSysCraftInfoService;
+import org.thingsboard.server.dao.mes.dto.ListMaterialDto;
+import org.thingsboard.server.dao.mes.dto.TSysCraftInfoSaveDto;
+import org.thingsboard.server.dao.mes.dto.TSysCraftSearchDto;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.Date;

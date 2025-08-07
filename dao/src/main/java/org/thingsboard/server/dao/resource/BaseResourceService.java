@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.thingsboard.server.common.data.EntityType.TB_RESOURCE;
-import static org.thingsboard.server.dao.device.DeviceServiceImpl.INCORRECT_TENANT_ID;
+import static org.thingsboard.server.dao.mes.device.DeviceServiceImpl.INCORRECT_TENANT_ID;
 import static org.thingsboard.server.dao.service.Validator.validateId;
 
 @Service

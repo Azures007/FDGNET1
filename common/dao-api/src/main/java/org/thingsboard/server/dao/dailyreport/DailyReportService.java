@@ -1,13 +1,10 @@
 package org.thingsboard.server.dao.dailyreport;
 
-import org.thingsboard.server.dao.dto.DailyReportDto;
-import org.thingsboard.server.dao.vo.DailyReportVo;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.vo.DailyReportVo;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Map;
 
 public interface DailyReportService {
 

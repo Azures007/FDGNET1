@@ -11,8 +11,8 @@ import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
-import org.thingsboard.server.dao.nc_inventory.NcInventoryService;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.ncInventory.NcInventoryService;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 @Api(value = "YC库存管理", tags = "YC库存管理")

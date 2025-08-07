@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.sys.TSysClass;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
-import org.thingsboard.server.dao.message.MessageService;
+import org.thingsboard.server.dao.mes.message.MessageService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

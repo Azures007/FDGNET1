@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.TSysPdRecord.TSysPdRecordService;
-import org.thingsboard.server.dao.dto.TSysPdRecordDto;
-import org.thingsboard.server.dao.vo.PageVo;
-import org.thingsboard.server.dao.vo.TSysPdRecordVo;
+import org.thingsboard.server.dao.mes.TSysPdRecord.TSysPdRecordService;
+import org.thingsboard.server.dao.mes.dto.TSysPdRecordDto;
+import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.mes.vo.TSysPdRecordVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 /**

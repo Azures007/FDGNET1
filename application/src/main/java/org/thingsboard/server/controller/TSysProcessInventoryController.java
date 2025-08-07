@@ -16,12 +16,12 @@ import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.OrderProcessRecordSaveDto;
-import org.thingsboard.server.dao.dto.OrderProcessRecordSearchDto;
-import org.thingsboard.server.dao.order.OrderInventoryService;
-import org.thingsboard.server.dao.order.OrderProcessService;
+import org.thingsboard.server.dao.mes.dto.OrderProcessRecordSaveDto;
+import org.thingsboard.server.dao.mes.dto.OrderProcessRecordSearchDto;
+import org.thingsboard.server.dao.mes.order.OrderInventoryService;
+import org.thingsboard.server.dao.mes.order.OrderProcessService;
+import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.dao.sql.mes.tSysClass.TSysClassRepository;
-import org.thingsboard.server.dao.vo.*;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.ArrayList;

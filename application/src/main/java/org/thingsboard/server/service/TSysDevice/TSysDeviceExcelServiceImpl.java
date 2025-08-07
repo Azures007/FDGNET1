@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.thingsboard.server.common.data.mes.sys.TsysDevice;
+import org.thingsboard.server.common.data.mes.sys.TSysDevice;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.TSysDevice.TSysDeviceService;
-import org.thingsboard.server.dao.dto.TSysDeviceDto;
+import org.thingsboard.server.dao.mes.TSysDevice.TSysDeviceService;
+import org.thingsboard.server.dao.mes.dto.TSysDeviceDto;
 import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.utils.ExcelUtil;
 import org.thingsboard.server.vo.DeviceExcelVo;
@@ -36,9 +36,9 @@ public class TSysDeviceExcelServiceImpl implements TSysDeviceExcelService {
 
     @Override
     public void download(String userId,Integer current, Integer size, TSysDeviceDto deviceDto, HttpServletResponse response) throws IOException {
-        Page<TsysDevice> devicePage= deviceService.tSysDeviceList(userId,current,size,deviceDto,-1);
+        Page<TSysDevice> devicePage= deviceService.tSysDeviceList(userId,current,size,deviceDto,-1);
         List<DeviceExcelVo> excelVos=new ArrayList<>();
-        for (TsysDevice device : devicePage.getContent()) {
+        for (TSysDevice device : devicePage.getContent()) {
             DeviceExcelVo vo=new DeviceExcelVo();
             BeanUtils.copyProperties(device,vo);
                 if("1".equals(device.getEnabled())){
@@ -54,7 +54,7 @@ public class TSysDeviceExcelServiceImpl implements TSysDeviceExcelService {
     @Override
     public ResponseResult upload(MultipartFile file, String name) {
         List<Object> deviceExcelVos=ExcelUtil.readExcel(file,new DeviceExcelVo());
-        List<TsysDevice> devices=new ArrayList<>();
+        List<TSysDevice> devices=new ArrayList<>();
         List<String> strings=new ArrayList<>();
         for(int i=0;i<deviceExcelVos.size();i++){
             DeviceExcelVo vo= (DeviceExcelVo) deviceExcelVos.get(i);
@@ -67,13 +67,13 @@ public class TSysDeviceExcelServiceImpl implements TSysDeviceExcelService {
                     }
                 }
             }
-            List<TsysDevice> deviceList=tSysDeviceRepository.findByDeviceNumber(vo.getDeviceNumber());
-            for (TsysDevice device : deviceList) {
+            List<TSysDevice> deviceList=tSysDeviceRepository.findByDeviceNumber(vo.getDeviceNumber());
+            for (TSysDevice device : deviceList) {
                 if(device.getDeviceNumber()!=null&&device.getDeviceNumber().equals(vo.getDeviceNumber())){
                     return ResultUtil.error("系统存在相同的设备编码，请检查后上传");
                 }
             }
-            TsysDevice device=new TsysDevice();
+            TSysDevice device=new TSysDevice();
             BeanUtils.copyProperties(vo,device);
             device.setCreatedUser(name);
             device.setCreatedTime(new Date());

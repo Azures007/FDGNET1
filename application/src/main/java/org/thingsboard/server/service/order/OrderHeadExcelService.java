@@ -1,7 +1,7 @@
 package org.thingsboard.server.service.order;
 
-import org.thingsboard.server.dao.dto.TBusOrderDto;
-import org.thingsboard.server.dao.dto.TBusOrderHeadDto;
+import org.thingsboard.server.dao.mes.dto.TBusOrderDto;
+import org.thingsboard.server.dao.mes.dto.TBusOrderHeadDto;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

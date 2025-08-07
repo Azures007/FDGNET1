@@ -9,7 +9,7 @@ import org.thingsboard.server.common.data.mes.sys.TSysMessageOrder;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.vo.*;
+import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class MesController extends BaseController{
     })
     @GetMapping("/listMessage")
     public ResponseResult<PageVo<TSysMessageOrder>> listMessage(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                         @RequestParam(value = "size", defaultValue = "10") Integer size) throws Exception {
+                                                                @RequestParam(value = "size", defaultValue = "10") Integer size) throws Exception {
         String userId=String.valueOf(getCurrentUser().getId().getId());
         PageVo<TSysMessageOrder> messageVos=messageService.listMessage(current,size,userId);
         return ResultUtil.success(messageVos);
@@ -70,7 +70,7 @@ public class MesController extends BaseController{
     @ApiOperation("膜利用率工序开始与结束告警")
     @GetMapping("/alarmProcessStartAndEnd")
     public ResponseResult<List<ProcessAlarmVo>> alarmProcessStartAndEnd(@RequestParam(value = "orderNo",required = false) String orderNo,
-                                                                  @RequestParam(value = "orderProcessId",required = false)Integer orderProcessId) throws ThingsboardException {
+                                                                        @RequestParam(value = "orderProcessId",required = false)Integer orderProcessId) throws ThingsboardException {
         String userId = String.valueOf(getCurrentUser().getId().getId());
         List<ProcessAlarmVo> processAlarmVos=messageService.alarmProcessStartAndEnd(orderNo,orderProcessId,userId);
         return ResultUtil.success(processAlarmVos);

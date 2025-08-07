@@ -29,11 +29,11 @@ import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.security.UserCredentials;
-import org.thingsboard.server.dao.dto.PageUserDto;
-import org.thingsboard.server.dao.dto.UpdateAndSaveDto;
-import org.thingsboard.server.dao.vo.PageVo;
-import org.thingsboard.server.dao.vo.UserStatusVo;
-import org.thingsboard.server.dao.vo.UserVo;
+import org.thingsboard.server.dao.mes.dto.PageUserDto;
+import org.thingsboard.server.dao.mes.dto.UpdateAndSaveDto;
+import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.mes.vo.UserStatusVo;
+import org.thingsboard.server.dao.mes.vo.UserVo;
 
 import java.util.List;
 

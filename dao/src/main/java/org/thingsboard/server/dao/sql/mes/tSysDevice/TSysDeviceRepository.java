@@ -2,7 +2,7 @@ package org.thingsboard.server.dao.sql.mes.tSysDevice;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.thingsboard.server.common.data.mes.sys.TsysDevice;
+import org.thingsboard.server.common.data.mes.sys.TSysDevice;
 
 import java.util.List;
 
@@ -11,11 +11,11 @@ import java.util.List;
  * @Date: 2022/4/19 11:16
  * @Description:
  */
-public interface TSysDeviceRepository extends JpaRepository<TsysDevice,Integer> {
-    List<TsysDevice> findByDeviceNumber(String deviceNumber);
+public interface TSysDeviceRepository extends JpaRepository<TSysDevice,Integer> {
+    List<TSysDevice> findByDeviceNumber(String deviceNumber);
 
 
-    List<TsysDevice> findByBelongProcessIdAndEnabled(Integer belongProcessId, String enabled);
+    List<TSysDevice> findByBelongProcessIdAndEnabled(Integer belongProcessId, String enabled);
 
     @Query(value = "select * from (\n" +
             " select * from t_sys_device where device_id in (\n" +
@@ -32,8 +32,8 @@ public interface TSysDeviceRepository extends JpaRepository<TsysDevice,Integer> 
             " where a.device_person_group_id!=?3 and a.order_process_id=?4\n" +
             " )\n" +
             ") t where belong_process_id =?1 and enabled=?2",nativeQuery = true)
-    List<TsysDevice> findAllByDevicePersonGroupId(Integer belongProcessId, String enabled, String devicePersonGroupId, Integer orderProcessId);
+    List<TSysDevice> findAllByDevicePersonGroupId(Integer belongProcessId, String enabled, String devicePersonGroupId, Integer orderProcessId);
 
     @Query(value = "select * from t_sys_device t where belong_process_id =?1 and enabled=?2",nativeQuery = true)
-    List<TsysDevice> findAll(Integer belongProcessId, String enabled);
+    List<TSysDevice> findAll(Integer belongProcessId, String enabled);
 }

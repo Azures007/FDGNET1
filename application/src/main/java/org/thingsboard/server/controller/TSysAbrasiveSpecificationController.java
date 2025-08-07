@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.sys.TSysAbrasiveSpecification;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.dto.tSysAbrasiveSpecification.TSysAbrasiveSpecificationDto;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.dto.tSysAbrasiveSpecification.TSysAbrasiveSpecificationDto;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.Date;

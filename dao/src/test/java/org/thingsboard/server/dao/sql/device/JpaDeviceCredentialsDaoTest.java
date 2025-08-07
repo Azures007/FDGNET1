@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.thingsboard.server.common.data.security.DeviceCredentials;
 import org.thingsboard.server.dao.AbstractJpaDaoTest;
 import org.thingsboard.server.dao.device.DeviceCredentialsDao;
-import org.thingsboard.server.dao.service.AbstractServiceTest;
 
 import java.util.UUID;
 

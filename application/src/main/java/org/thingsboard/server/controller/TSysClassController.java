@@ -12,12 +12,12 @@ import org.thingsboard.server.common.data.mes.sys.TSysClassPersonnelRel;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.ImportParam.TSysClassImportParam;
+import org.thingsboard.server.dao.mes.ImportParam.TSysClassImportParam;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.TSysClassDto;
-import org.thingsboard.server.dao.vo.ClassGroupLeaderRelVo;
-import org.thingsboard.server.dao.vo.ClassPersinnelRelVo;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.dto.TSysClassDto;
+import org.thingsboard.server.dao.mes.vo.ClassGroupLeaderRelVo;
+import org.thingsboard.server.dao.mes.vo.ClassPersinnelRelVo;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.service.TSysClass.TSysClassExcelService;
 import org.thingsboard.server.service.security.model.SecurityUser;
 

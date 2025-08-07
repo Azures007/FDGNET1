@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.TSysDevice.TSysDeviceService;
-import org.thingsboard.server.dao.licheng.LiChengService;
+import org.thingsboard.server.dao.mes.TSysDevice.TSysDeviceService;
+import org.thingsboard.server.dao.mes.licheng.LiChengService;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;

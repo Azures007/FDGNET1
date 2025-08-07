@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderPPBom;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.dto.TBusOrderPPBomDto;
+import org.thingsboard.server.dao.mes.dto.TBusOrderPPBomDto;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 

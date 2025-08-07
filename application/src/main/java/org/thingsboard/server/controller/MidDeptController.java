@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.mid.MidDept;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.dto.MidDeptDto;
-import org.thingsboard.server.dao.midDetp.MidDeptService;
-import org.thingsboard.server.dao.vo.PageVo;
+import org.thingsboard.server.dao.mes.dto.MidDeptDto;
+import org.thingsboard.server.dao.mes.midDetp.MidDeptService;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 
 @RestController
 @Api(value = "车间接口",tags = "车间接口")

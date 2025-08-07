@@ -23,14 +23,14 @@ import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
 import org.thingsboard.server.common.data.mes.sys.TSysAbrasiveSpecification;
 import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
-import org.thingsboard.server.common.data.mes.sys.TsysDevice;
+import org.thingsboard.server.common.data.mes.sys.TSysDevice;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.dao.TSysDevice.TSysDeviceService;
-import org.thingsboard.server.dao.dto.*;
-import org.thingsboard.server.dao.orderProcess.OrderProcessRecordService;
+import org.thingsboard.server.dao.mes.TSysDevice.TSysDeviceService;
+import org.thingsboard.server.dao.mes.dto.*;
+import org.thingsboard.server.dao.mes.orderProcess.OrderProcessRecordService;
+import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.dao.timeseries.TimeseriesService;
-import org.thingsboard.server.dao.vo.*;
 import org.thingsboard.server.service.security.AccessValidator;
 import org.thingsboard.server.service.security.model.SecurityUser;
 import org.thingsboard.server.service.security.permission.Operation;
@@ -173,20 +173,20 @@ public class OrderProcessRecordController extends BaseController {
     @ApiOperation("机台号选择")
     @ApiImplicitParam(name = "belongProcessId", value = "所属工序id", required = true)
     @PostMapping("/deviceList")
-    public ResponseResult<PageVo<TsysDevice>> getDevice(@RequestParam(value = "current", defaultValue = "0") Integer current,
+    public ResponseResult<PageVo<TSysDevice>> getDevice(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                         @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                         @RequestParam("belongProcessId") Integer belongProcessId) throws Exception {
         SecurityUser user = getCurrentUser();
         TSysDeviceDto deviceDto = new TSysDeviceDto();
         deviceDto.setEnabled("0");
-        Page<TsysDevice> devices = deviceService.tSysDeviceList(user.getId().toString(),current, size, deviceDto, belongProcessId);
-        PageVo<TsysDevice> pageVo = new PageVo<>(devices);
+        Page<TSysDevice> devices = deviceService.tSysDeviceList(user.getId().toString(),current, size, deviceDto, belongProcessId);
+        PageVo<TSysDevice> pageVo = new PageVo<>(devices);
         return ResultUtil.success(pageVo);
     }
 
     @ApiOperation("机台号选择（多选机台号过滤）")
     @PostMapping("/deviceList2")
-    public ResponseResult<List<TsysDevice>> getDevice2(@RequestBody TSysDeviceSearchDto deviceDto) throws Exception {
+    public ResponseResult<List<TSysDevice>> getDevice2(@RequestBody TSysDeviceSearchDto deviceDto) throws Exception {
         deviceDto.setEnabled("1");
         var devices = deviceService.tSysDeviceList(deviceDto);
         return ResultUtil.success(devices);
@@ -194,7 +194,7 @@ public class OrderProcessRecordController extends BaseController {
 
     @ApiOperation("机排手选择")
     @PostMapping("/personList")
-    public ResponseResult<PageVo<TsysDevice>> personList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+    public ResponseResult<PageVo<TSysDevice>> personList(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                          @RequestParam(value = "name", required = false) String name,
                                                          @RequestParam(value = "station", required = false) String station) throws Exception {
