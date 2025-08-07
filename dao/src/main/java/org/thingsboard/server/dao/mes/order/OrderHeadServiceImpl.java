@@ -23,7 +23,6 @@ import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.TSysCraftinfo.TSysCraftInfoService;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.*;
 import org.thingsboard.server.dao.mes.dto.*;
 import org.thingsboard.server.dao.mes.message.MessageService;
 import org.thingsboard.server.dao.mes.orderProcess.AppOrderProcessRecordSubmitService;
@@ -43,7 +42,6 @@ import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 import org.thingsboard.server.dao.user.UserService;
-import org.thingsboard.server.dao.vo.*;
 
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;

@@ -27,7 +27,6 @@ import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.ClassPersonnelReposi
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.sql.mes.user.UserDetailRepository;
 import org.thingsboard.server.dao.user.UserService;
-import org.thingsboard.server.dao.vo.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

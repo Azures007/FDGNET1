@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.*;
 import org.thingsboard.server.common.data.mes.sys.*;
-import org.thingsboard.server.dao.dto.*;
 import org.thingsboard.server.dao.mes.dto.DailyReportDto;
 import org.thingsboard.server.dao.mes.dto.SysQualityReportCategoryDto;
 import org.thingsboard.server.dao.mes.dto.TSysClassDto;

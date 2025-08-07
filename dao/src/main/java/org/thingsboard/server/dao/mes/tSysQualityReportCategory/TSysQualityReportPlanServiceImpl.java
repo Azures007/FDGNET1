@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.*;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityReportPlan;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityReportPlanRel;
-import org.thingsboard.server.dao.dto.*;
 import org.thingsboard.server.dao.mes.dto.SysQualityReportCategoryDto;
 import org.thingsboard.server.dao.mes.dto.TSysQualityReportPlanDto;
 import org.thingsboard.server.dao.mes.dto.TSysQualityReportPlanSearchDto;

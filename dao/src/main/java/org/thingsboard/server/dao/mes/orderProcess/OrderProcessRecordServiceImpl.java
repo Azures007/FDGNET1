@@ -25,7 +25,6 @@ import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.TSysCraftinfo.TSysCraftInfoService;
 import org.thingsboard.server.dao.chargingbasket.ChargingBasketService;
 import org.thingsboard.server.dao.constant.GlobalConstant;
-import org.thingsboard.server.dao.dto.*;
 import org.thingsboard.server.dao.mes.dto.*;
 import org.thingsboard.server.dao.mes.order.*;
 import org.thingsboard.server.dao.mes.vo.*;
@@ -45,7 +44,6 @@ import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.ClassPersonnelRepository;
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.mes.tSysClass.TSysClassService;
-import org.thingsboard.server.dao.vo.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
