@@ -551,3 +551,32 @@ COMMENT ON COLUMN public.t_bus_inventory_inout.qty IS '变化数量';
 ALTER TABLE "public"."t_bus_order_head"
     ALTER COLUMN "body_pot_qty" SET DEFAULT 0;
 
+
+-- 创建净含量范围管理表
+CREATE TABLE t_sys_net_content_range (
+                                         id SERIAL PRIMARY KEY,
+                                         material_code VARCHAR(255),
+                                         material_name VARCHAR(255),
+                                         material_model VARCHAR(255),
+                                         material_id INTEGER,
+                                         lower_limit NUMERIC(10,2),
+                                         upper_limit NUMERIC(10,2),
+                                         status VARCHAR(20),
+                                         create_user VARCHAR(255),
+                                         create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 添加表注释
+COMMENT ON TABLE t_sys_net_content_range IS '净含量范围管理表';
+
+-- 添加字段注释
+COMMENT ON COLUMN t_sys_net_content_range.id IS '主键ID';
+COMMENT ON COLUMN t_sys_net_content_range.material_code IS '产品编码';
+COMMENT ON COLUMN t_sys_net_content_range.material_name IS '产品名称';
+COMMENT ON COLUMN t_sys_net_content_range.material_model IS '产品规格';
+COMMENT ON COLUMN t_sys_net_content_range.material_id IS '产品ID';
+COMMENT ON COLUMN t_sys_net_content_range.lower_limit IS '下限值(g)';
+COMMENT ON COLUMN t_sys_net_content_range.upper_limit IS '上限值(g)';
+COMMENT ON COLUMN t_sys_net_content_range.status IS '状态（启用/禁用）';
+COMMENT ON COLUMN t_sys_net_content_range.create_user IS '创建人';
+COMMENT ON COLUMN t_sys_net_content_range.create_time IS '创建时间';
