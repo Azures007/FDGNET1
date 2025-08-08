@@ -106,14 +106,33 @@ export class MyDeviceComponent implements OnInit {
       this.processList = res.data.content;
       this.setMyMap();
     });
-    this.accountService.getOrgList().subscribe(res => {
-      this.pkOrgList = res.data.map(item => {
-        return {
-          name: item.org_name,
-          id: item.pk_org,
-        }
-      });
-    })
+    // 获取用户当前选择的基地
+    this.authService.getCurrentLine().subscribe((res: any) => {
+      if (res.data && res.data.pkOrg) {
+        // 只显示用户当前选择的基地
+        const currentOrgId = res.data.pkOrg;
+        this.accountService.getOrgList().subscribe(orgRes => {
+          // 过滤出用户当前选择的基地
+          const currentOrg = orgRes.data.find(item => item.pk_org === currentOrgId);
+          if (currentOrg) {
+            this.pkOrgList = [{
+              name: currentOrg.org_name,
+              id: currentOrg.pk_org,
+            }];
+          }
+        });
+      } else {
+        // 如果没有当前选择的基地，则获取所有基地（回退方案）
+        this.accountService.getOrgList().subscribe(res => {
+          this.pkOrgList = res.data.map(item => {
+            return {
+              name: item.org_name,
+              id: item.pk_org,
+            }
+          });
+        });
+      }
+    });
   }
   //获取基地名称
   getOrgName(id) {
