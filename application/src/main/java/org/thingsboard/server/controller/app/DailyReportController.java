@@ -90,14 +90,15 @@ public class DailyReportController extends BaseController {
 
     @ApiOperation("每日报表提交保存")
     @PostMapping("/dailySave")
-    public ResponseResult dailySave(@RequestParam(value = "current",defaultValue = "0") Integer current,
-                                                             @RequestParam(value = "size",defaultValue = "10") Integer size,
-                                                             @RequestBody DailyReportVo dailyReportVo)throws Exception {
+    public ResponseResult<DailyReportVo> dailySave(@RequestParam(value = "current",defaultValue = "0") Integer current,
+                                                   @RequestParam(value = "size",defaultValue = "10") Integer size,
+                                                   @RequestBody DailyReportVo dailyReportVo
+                                                   )throws Exception {
         SecurityUser currentUser = getCurrentUser();
         dailyReportVo.setUpdatedName(currentUser.getName());
         dailyReportVo.setUpdatedTime(LocalDate.now());
-        dailyReportService.saveDaily(dailyReportVo);
-        return ResultUtil.success();
+        DailyReportVo save=dailyReportService.saveDaily(dailyReportVo);
+        return ResultUtil.success(save);
     }
 
     @ApiOperation("每日报表详情")

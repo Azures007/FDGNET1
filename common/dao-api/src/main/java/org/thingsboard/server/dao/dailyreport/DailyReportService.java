@@ -16,7 +16,7 @@ public interface DailyReportService {
     DailyReportVo getDailyDetail(DailyReportVo dailyReportVo);
 
 
-    void saveDaily(DailyReportVo dailyReportVo);
+    DailyReportVo saveDaily(DailyReportVo dailyReportVo);
 
     DailyReportVo DailyDetail(Integer id);
 

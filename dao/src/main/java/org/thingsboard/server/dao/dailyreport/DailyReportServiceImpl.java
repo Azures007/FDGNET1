@@ -61,6 +61,10 @@ public class DailyReportServiceImpl implements DailyReportService{
     @Autowired
     TSysPersonnelInfoRepository tSysPersonnelInfoRepository;
 
+    @Autowired
+    DailyReportService dailyReportService;
+
+
     @Value("${spring.datasource.url}")
     private String dbUrl;
 
@@ -77,7 +81,7 @@ public class DailyReportServiceImpl implements DailyReportService{
             return null;
         TSysClassDto tSysClassDto = new TSysClassDto();
         tSysClassDto.setName(currentUser.getClassName());
-        Page<TSysClass> classList = tSysClassService.tSysClassList(current, size, tSysClassDto);
+        Page<TSysClass> classList = tSysClassService.tSysClassList(id,current, size, tSysClassDto);
         List<DailyReportVo> ShopPersonMapList = new ArrayList<>();
         DailyReportVo ShopPersonMap = new DailyReportVo();
         for (TSysClass c : classList) {
@@ -131,14 +135,12 @@ public class DailyReportServiceImpl implements DailyReportService{
         for (SysQualityReportCategoryDto item : dtoList) {
             List<DailyReportItem> itemList=new ArrayList<>();
             DailyReportDto dto=new DailyReportDto();
-            dto.setId(item.getId());
             dto.setFrequency(item.getFrequency());
             dto.setFrequencyValue(item.getFrequencyValue());
             dto.setImportantItem(item.getImportantItem());
             List<TSysQualityReportItem> tSysQualityReportItems=item.getItemList();
             for (TSysQualityReportItem item1 : tSysQualityReportItems) {
                 DailyReportItem dailyReportItem=new DailyReportItem();
-                dailyReportItem.setId(item1.getId());
                 dailyReportItem.setFieldName(item1.getFieldName());
                 dailyReportItem.setFieldTypeId(item1.getFieldType());
                 dailyReportItem.setSpiltValue(item1.getDropdownFields());
@@ -153,7 +155,7 @@ public class DailyReportServiceImpl implements DailyReportService{
 
     @Override
     @Transactional
-    public void saveDaily(DailyReportVo dailyReportVo) {
+    public DailyReportVo saveDaily(DailyReportVo dailyReportVo) {
         DailyReportHead dailyReportHead = new DailyReportHead();
         BeanUtils.copyProperties(dailyReportVo, dailyReportHead);
         if (dailyReportHead.getId() == null ||dailyReportHead.getId()==0) {
@@ -181,16 +183,18 @@ public class DailyReportServiceImpl implements DailyReportService{
             DailyReportEntry rel = new DailyReportEntry();
             BeanUtils.copyProperties(item,rel);
             rel.setDailyreportId(dailyReportHead.getId());
-            rel.setId(0);
+            //rel.setId(0);
             rel=dailyReportEntryRepository.saveAndFlush(rel);
             List<DailyReportItem> itemList=item.getItemList();
             for (DailyReportItem item1 : itemList) {
                 item1.setDailyreportEntryId(rel.getId());
-                item1.setId(0);
+                //item1.setId(0);
                 dailyReportItemRepository.saveAndFlush(item1);
             }
             rels.add(rel);
         }
+        DailyReportVo planDetail= dailyReportService.DailyDetail(dailyReportHead.getId());
+        return planDetail;
     }
 
     @Override
