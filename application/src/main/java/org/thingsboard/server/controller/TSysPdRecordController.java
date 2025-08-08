@@ -10,11 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
+import org.thingsboard.server.service.pd.TSysPdRecordExcelService;
 import org.thingsboard.server.dao.mes.TSysPdRecord.TSysPdRecordService;
 import org.thingsboard.server.dao.mes.dto.TSysPdRecordDto;
 import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.vo.TSysPdRecordVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author 许文言
@@ -30,6 +34,9 @@ public class TSysPdRecordController extends BaseController {
 
     @Autowired
     private TSysPdRecordService tSysPdRecordService;
+
+    @Autowired
+    private TSysPdRecordExcelService tSysPdRecordExcelService;
 
     @ApiOperation("查询盘点记录列表")
     @ApiImplicitParams({
@@ -69,5 +76,31 @@ public class TSysPdRecordController extends BaseController {
         Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordListWithSplit(currentUser.getId().toString(), current, size, sortField, sortOrder, tSysPdRecordDto);
         PageVo<TSysPdRecordVo> pageVo = new PageVo<>(pdRecordList);
         return ResultUtil.success(pageVo);
+    }
+
+    /**
+     * excel导出
+     */
+    @ApiOperation("excel导出")
+    @PostMapping("/exportPdRecord")
+    public void download(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                         @RequestParam(value = "size", defaultValue = "10") Integer size,
+                         @RequestBody TSysPdRecordDto tSysPdRecordDto,
+                         HttpServletResponse response) throws IOException, ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        tSysPdRecordExcelService.download(currentUser.getId().toString(), current, size, tSysPdRecordDto, response);
+    }
+
+    /**
+     * excel导出（含还原材料）
+     */
+    @ApiOperation("excel导出（含还原材料）")
+    @PostMapping("/exportPdRecordWithSplit")
+    public void downloadWithSplit(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                  @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                  @RequestBody TSysPdRecordDto tSysPdRecordDto,
+                                  HttpServletResponse response) throws IOException, ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        tSysPdRecordExcelService.downloadWithSplit(currentUser.getId().toString(), current, size, tSysPdRecordDto, response);
     }
 }

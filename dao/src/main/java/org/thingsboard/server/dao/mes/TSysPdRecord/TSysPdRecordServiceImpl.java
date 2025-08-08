@@ -20,6 +20,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -178,7 +179,11 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                     vo.setMaterialSpecifications(splitRecord.getMaterialSpecifications());
                     vo.setPdUnit(splitRecord.getPdUnit());
                     vo.setPdUnitStr(splitRecord.getPdUnitStr());
-                    vo.setPdQty(splitRecord.getPdQty());
+                    if (splitRecord.getPdQty() != null) {
+                        vo.setPdQty(BigDecimal.valueOf(splitRecord.getPdQty()));
+                    } else {
+                        vo.setPdQty(null);
+                    }
                     vo.setPdCreatedName(splitRecord.getPdCreatedName());
                     vo.setPdCreatedId(splitRecord.getPdCreatedId());
                     vo.setPdWorkshopName(splitRecord.getPdWorkshopName());

@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * @author 许文言
  * @project youchen_IOTServer
@@ -42,7 +44,7 @@ public class TSysPdRecordVo {
     private String pdUnitStr;
 
     @ApiModelProperty("盘点数量")
-    private Double pdQty;
+    private BigDecimal pdQty;
 
     @ApiModelProperty("盘点人姓名")
     private String pdCreatedName;
