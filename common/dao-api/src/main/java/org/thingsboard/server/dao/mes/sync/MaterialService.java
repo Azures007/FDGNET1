@@ -3,6 +3,7 @@ package org.thingsboard.server.dao.mes.sync;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.dao.mes.dto.ListMaterialDto;
 import org.thingsboard.server.dao.mes.dto.TSyncMaterialSaveDto;
+import org.thingsboard.server.dao.mes.dto.TSysNetContentRangeDto;
 import org.thingsboard.server.dao.mes.vo.ListMaterialFiterVo;
 import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.vo.TSyncMaterialVo;
@@ -49,4 +50,14 @@ public interface MaterialService {
      * @return
      */
     ListMaterialFiterVo listMaterialFiter(String materialCode, Integer craftId, Integer kdOrgId, Integer kdDeptId, Integer current, Integer size);
+
+    /**
+     * 净含量查询物料列表
+     * @param current
+     * @param size
+     * @param tSysNetContentRangeDto
+     * @return
+     */
+    PageVo<TSyncMaterialVo> listNetMaterial(Integer current, Integer size, TSysNetContentRangeDto tSysNetContentRangeDto);
+
 }

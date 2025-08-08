@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
@@ -17,6 +18,7 @@ import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.mes.dto.ListMaterialDto;
 import org.thingsboard.server.dao.mes.dto.TSyncMaterialSaveDto;
+import org.thingsboard.server.dao.mes.dto.TSysNetContentRangeDto;
 import org.thingsboard.server.dao.sql.mes.licheng.MidMaterialRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialBomRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
@@ -28,6 +30,10 @@ import org.thingsboard.server.dao.mes.vo.TSyncMaterialVo;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -345,5 +351,50 @@ public class MaterialServiceImpl implements MaterialService {
                 tSyncMaterial.setMaterialStatus(GlobalConstant.enableTrue);
             }
         }
+    }
+
+    @Override
+    public PageVo<TSyncMaterialVo> listNetMaterial(Integer current, Integer size, TSysNetContentRangeDto tSysNetContentRangeDto) {
+        // 创建分页请求，按ID降序排列
+        PageRequest pageRequest = PageRequest.of(current, size, Sort.by(Sort.Direction.DESC, "id"));
+        // 创建查询条件
+        Specification<TSyncMaterial> specification = (Root<TSyncMaterial> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            // 根据产品编码查询
+            if (tSysNetContentRangeDto.getMaterialCode() != null && !tSysNetContentRangeDto.getMaterialCode().isEmpty()) {
+                predicates.add(cb.like(root.get("materialCode"), "%" + tSysNetContentRangeDto.getMaterialCode() + "%"));
+            }
+            // 根据产品名称查询
+            if (tSysNetContentRangeDto.getMaterialName() != null && !tSysNetContentRangeDto.getMaterialName().isEmpty()) {
+                predicates.add(cb.like(root.get("materialName"), "%" + tSysNetContentRangeDto.getMaterialName() + "%"));
+            }
+            // 根据产品规格查询
+            if (tSysNetContentRangeDto.getMaterialModel() != null && !tSysNetContentRangeDto.getMaterialModel().isEmpty()) {
+                predicates.add(cb.like(root.get("materialModel"), "%" + tSysNetContentRangeDto.getMaterialModel() + "%"));
+            }
+            // 根据状态查询
+            if (tSysNetContentRangeDto.getStatus() != null && !tSysNetContentRangeDto.getStatus().isEmpty()) {
+                predicates.add(cb.equal(root.get("materialStatus"), tSysNetContentRangeDto.getStatus()));
+            }
+            // 只查询启用状态的物料
+            predicates.add(cb.equal(root.get("materialStatus"), "1"));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        // 执行分页查询
+        Page<TSyncMaterial> pageResult = materialRepository.findAll(specification, pageRequest);
+        // 转换为VO对象
+        List<TSyncMaterialVo> voList = new ArrayList<>();
+        for (TSyncMaterial material : pageResult.getContent()) {
+            TSyncMaterialVo vo = new TSyncMaterialVo();
+            BeanUtils.copyProperties(material, vo);
+            voList.add(vo);
+        }
+        // 构造返回结果
+        PageVo<TSyncMaterialVo> pageVo = new PageVo<>();
+        pageVo.setList(voList);
+        pageVo.setTotal((int) pageResult.getTotalElements());
+        pageVo.setCurrent(current);
+        pageVo.setSize(size);
+        return pageVo;
     }
 }

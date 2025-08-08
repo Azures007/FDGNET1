@@ -3,6 +3,7 @@ package org.thingsboard.server.dao.sql.mes.sync;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Integer> {
+public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Integer>, JpaSpecificationExecutor<TSyncMaterial> {
     List<TSyncMaterial> getByMaterialCode(String materialCode);
 
     void deleteByMaterialCode(String materialCode);
