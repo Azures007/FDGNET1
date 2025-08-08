@@ -45,5 +45,11 @@ public interface TSysNetContentRangeService {
      * @return
      */
     TSysNetContentRange updateNetContentRangeStatus(Integer id, String status);
-
+    
+    /**
+     * 根据物料编码查询净含量范围（取第一条记录）
+     * @param materialCode
+     * @return
+     */
+    TSysNetContentRange getNetContentRangeByMaterialCode(String materialCode);
 }

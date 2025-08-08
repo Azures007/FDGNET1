@@ -151,4 +151,18 @@ public class TSysNetContentRangeController extends BaseController {
         TSysNetContentRange updated = tSysNetContentRangeService.updateNetContentRangeStatus(id, status);
         return ResultUtil.success(updated);
     }
+    
+    /**
+     * 根据物料编码查询净含量范围（取第一条记录）
+     *
+     * @param materialCode
+     * @return
+     */
+    @ApiOperation("根据物料编码查询净含量范围")
+    @ApiImplicitParam(name = "materialCode", value = "物料编码", required = true)
+    @GetMapping("/getNetContentRangeByMaterialCode")
+    public ResponseResult<TSysNetContentRange> getNetContentRangeByMaterialCode(@RequestParam String materialCode) throws ThingsboardException {
+        TSysNetContentRange netContentRange = tSysNetContentRangeService.getNetContentRangeByMaterialCode(materialCode);
+        return ResultUtil.success(netContentRange);
+    }
 }

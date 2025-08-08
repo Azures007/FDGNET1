@@ -128,4 +128,16 @@ public class TSysNetContentRangeServiceImpl implements TSysNetContentRangeServic
         }
         return null;
     }
+    
+    @Override
+    public TSysNetContentRange getNetContentRangeByMaterialCode(String materialCode) {
+        Specification<TSysNetContentRange> specification = (Root<TSysNetContentRange> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("materialCode"), materialCode));
+            predicates.add(cb.equal(root.get("status"), "1"));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        List<TSysNetContentRange> results = tSysNetContentRangeRepository.findAll(specification);
+        return results.isEmpty() ? null : results.get(0);
+    }
 }
