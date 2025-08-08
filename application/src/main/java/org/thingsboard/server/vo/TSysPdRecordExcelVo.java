@@ -5,6 +5,8 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class TSysPdRecordExcelVo extends BaseRowModel {
 
@@ -27,7 +29,7 @@ public class TSysPdRecordExcelVo extends BaseRowModel {
     private String pdUnit;
 
     @ExcelProperty("盘点余量")
-    private Double pdQty;
+    private BigDecimal pdQty;
 
     @ExcelProperty("盘点人")
     private String pdCreatedName;
