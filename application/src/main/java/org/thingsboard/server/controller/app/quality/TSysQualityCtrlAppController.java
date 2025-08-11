@@ -75,7 +75,7 @@ public class TSysQualityCtrlAppController extends BaseController {
 
     })
     @PostMapping("/qualityCtrlList")
-    public ResponseResult<PageVo<TSysQualityPlan>> qualityCtrlList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+    public ResponseResult<PageVo<TSysQualityCtrl>> qualityCtrlList(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                    @RequestParam(value = "sortField", defaultValue = "") String sortField,
                                                                    @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
