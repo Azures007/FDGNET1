@@ -311,7 +311,7 @@ export class MyDeviceComponent implements OnInit {
       enable: enbled,
     }
     let changeToen = "";
-    if (enbled == 0) {
+    if (enbled == 1) {
       changeToen = "启用"
     } else {
       changeToen = "禁用"

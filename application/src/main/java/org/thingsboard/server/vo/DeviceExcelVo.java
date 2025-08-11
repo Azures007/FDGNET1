@@ -18,8 +18,8 @@ public class DeviceExcelVo extends BaseRowModel {
     @ExcelProperty(value = "设备编号",index = 1)
     private String deviceNumber;
 
-    @ExcelProperty(value = "车间",index = 2)
-    private String workshop;
+    @ExcelProperty(value = "基地",index = 2)
+    private String pkOrgName;
 
     @ExcelProperty(value = "备注",index = 3)
     private String note;

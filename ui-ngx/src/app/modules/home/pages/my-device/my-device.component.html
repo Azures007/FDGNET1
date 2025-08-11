@@ -13,8 +13,8 @@
             <div class="label">状态:</div>
             <select required [(ngModel)]="searchFormGroup.value.enabled">
                 <option value="">全部</option>
-                <option value="0">启用</option>
-                <option value="1">禁用</option>
+                <option value="1">启用</option>
+                <option value="0">禁用</option>
             </select>
         </div>
         <button class="search_btn" (click)="getTableData()">
@@ -82,7 +82,7 @@
 
                 <ng-container matColumnDef="enabled">
                     <th mat-header-cell *matHeaderCellDef> 状态 </th>
-                    <td mat-cell *matCellDef="let element" [ngClass]="{'enabled':element.enabled == 0,'disabled':element.enabled == 1}"> {{element.enabled == 0?"启用":"禁用"}} </td>
+                    <td mat-cell *matCellDef="let element" [ngClass]="{'enabled':element.enabled == 1,'disabled':element.enabled == 0}"> {{element.enabled == 1?"启用":"禁用"}} </td>
 
                 </ng-container>
 
@@ -90,13 +90,13 @@
                     <th mat-header-cell *matHeaderCellDef> 操作 </th>
                     <td mat-cell *matCellDef="let element">
                         <button *ngIf="set.has('/mydevice/edit')" class="mini_btn edit_btn" (click)="lookDia(element,0)">编辑</button>
-                        <button class="mini_btn enter_btn" (click)="enterDia(element,0)"
-                            *ngIf="element.enabled == 1 && set.has('/mydevice/enable')">启用</button>
-                        <button class="mini_btn disable_btn" (click)="enterDia(element,1)"
-                            *ngIf="element.enabled == 0 && set.has('/mydevice/disable')">禁用</button>
+                        <button class="mini_btn enter_btn" (click)="enterDia(element,1)"
+                            *ngIf="element.enabled == 0 && set.has('/mydevice/enable')">启用</button>
+                        <button class="mini_btn disable_btn" (click)="enterDia(element,0)"
+                            *ngIf="element.enabled == 1 && set.has('/mydevice/disable')">禁用</button>
                         <button *ngIf="set.has('/mydevice/detail')" class="mini_btn look_btn" (click)="lookDia(element,1)">查看</button>
                         <button class="mini_btn del_btn" (click)="delDia(element)"
-                            *ngIf="element.enabled == 1 && set.has('/mydevice/del')">删除</button>
+                            *ngIf="element.enabled == 0 && set.has('/mydevice/del')">删除</button>
                     </td>
                 </ng-container>
 

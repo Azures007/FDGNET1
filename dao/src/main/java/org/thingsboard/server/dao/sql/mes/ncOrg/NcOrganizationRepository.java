@@ -17,4 +17,6 @@ public interface NcOrganizationRepository extends JpaRepository<NcOrganization, 
 
     List<NcOrganization> findByStatus(String status);
     List<NcOrganization> findByPkOrgInAndStatus(List<String> pkOrg, String status);
+
+    List<NcOrganization> findByOrgName(String orgName);
 }

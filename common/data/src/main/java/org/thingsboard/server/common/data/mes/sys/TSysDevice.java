@@ -37,7 +37,7 @@ public class TSysDevice {
     @Column(name = "status")
     private Integer status;
     @ApiModelProperty("是否启用 0：禁用 1：启用")
-    private String enabled="0";
+    private String enabled;
     @ApiModelProperty("创建人")
     @Column(name = "created_user")
     private String createdUser;
