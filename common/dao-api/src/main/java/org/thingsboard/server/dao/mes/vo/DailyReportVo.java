@@ -66,6 +66,9 @@ public class DailyReportVo {
     @ApiModelProperty("保存还是提交状态/保存是ture,提交是false")
     private Boolean saveStaus;
 
+    @ApiModelProperty("是否提交复核,是ture,否是false")
+    private Boolean submit;
+
     @ApiModelProperty("明细数据列表")
     private List<DailyReportDto> itemList;
 }

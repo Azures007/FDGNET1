@@ -175,6 +175,9 @@ public class DailyReportServiceImpl implements DailyReportService{
         else {
             dailyReportHead.setSaveStaus(false);
         }
+        if(dailyReportVo.getSubmit()) {
+            dailyReportHead.setSubmit(true);
+        }
         dailyReportHead = dailyReportRepository.saveAndFlush(dailyReportHead);
         //插入明细
         List<DailyReportDto> items = dailyReportVo.getItemList();
@@ -218,6 +221,22 @@ public class DailyReportServiceImpl implements DailyReportService{
     @Override
     public PageVo<DailyReportVo> getDailyList(Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
         List<DailyReportHead> plan = dailyReportRepository.findAllByCreatedTimeBetween(startTime,endTime);
+        List<DailyReportVo> saveVos = new ArrayList<>();
+        for (DailyReportHead item : plan) {
+            DailyReportVo saveVo = new DailyReportVo();
+            BeanUtils.copyProperties(item,saveVo);
+            saveVos.add(saveVo);
+        }
+        PageVo<DailyReportVo> pageVo = new PageVo<>();
+        pageVo.setList(saveVos);
+        pageVo.setCurrent(current);
+        pageVo.setSize(size);
+        return pageVo;
+    }
+
+    @Override
+    public PageVo<DailyReportVo> getDailySubmitList(Integer current, Integer size) {
+        List<DailyReportHead> plan = dailyReportRepository.findAllBySubmit(true);
         List<DailyReportVo> saveVos = new ArrayList<>();
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();

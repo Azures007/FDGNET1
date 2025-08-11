@@ -22,4 +22,6 @@ public interface DailyReportService {
 
 
     PageVo<DailyReportVo> getDailyList(Integer current, Integer size, LocalDate startTime, LocalDate endTime);
+
+    PageVo<DailyReportVo> getDailySubmitList(Integer current, Integer size);
 }

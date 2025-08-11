@@ -16,4 +16,6 @@ public interface DailyReportRepository extends JpaRepository<DailyReportHead,Int
             "where t.bill_no=:billNoParam", nativeQuery = true)
     String getHaveBillNo(@Param("billNoParam") String billNoParam);
     List<DailyReportHead> findAllByCreatedTimeBetween (LocalDate startTime, LocalDate endTime);
+
+    List<DailyReportHead> findAllBySubmit(boolean submit);
 }

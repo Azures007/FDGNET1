@@ -82,4 +82,8 @@ public class DailyReportHead {
     @Column(name = "save_staus")
     private boolean saveStaus;
 
+    @ApiModelProperty("是否提交复核,是ture,否是false")
+    @Column(name = "submit")
+    private Boolean submit;
+
 }

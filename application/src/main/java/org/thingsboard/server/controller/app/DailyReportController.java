@@ -117,4 +117,13 @@ public class DailyReportController extends BaseController {
         PageVo<DailyReportVo> categoryList = dailyReportService.getDailyList(current,size,startTime,endTime);
         return ResultUtil.success(categoryList);
     }
+
+    @ApiOperation("每日报表提交复核列表")
+    @PostMapping("/getDailySubmitList")
+    public ResponseResult<PageVo<DailyReportVo>> getDailySubmitList(@RequestParam(value = "current",defaultValue = "0") Integer current,
+                                                              @RequestParam(value = "size",defaultValue = "10") Integer size
+                                                              ) throws Exception {
+        PageVo<DailyReportVo> categoryList = dailyReportService.getDailySubmitList(current,size);
+        return ResultUtil.success(categoryList);
+    }
 }
