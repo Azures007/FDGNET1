@@ -79,7 +79,9 @@ public class TSysQualityCtrl {
     @Column(name = "update_user")
     private String updateUser;
 
-
+    @ApiModelProperty("车间主任")
+    @Column(name = "manager")
+    private String manager;
 
 
 
