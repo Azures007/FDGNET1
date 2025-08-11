@@ -53,12 +53,12 @@ export class PdMgtComponent implements OnInit {
   length: number;
   pageSize = 50;
   pageIndex = 0;
-  pageSizeOptions: number[] = [50, 100, 300,200,500];
+  pageSizeOptions: number[] = [50, 100, 300, 200, 500];
   total = 0;
   // pageEvent: PageEvent;
 
   //table
-  displayedColumns: string[] = ['no', 'pdTimeStr', 'materialNumber', 'materialName','materialSpecifications', 'pdUnit',  'pdQty', 'pdCreatedName', 'isReturn', 'pdWorkshopLeaderName'];
+  displayedColumns: string[] = ['no', 'pdTimeStr', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'isReturn', 'pdWorkshopLeaderName'];
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -81,8 +81,8 @@ export class PdMgtComponent implements OnInit {
     let par = {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
-      body:{
-        pdWorkshopName:this.searchFormGroup.value.pdWorkshopName,
+      body: {
+        pdWorkshopName: this.searchFormGroup.value.pdWorkshopName,
         startTime: this.pdRange.value.start,
         endTime: this.pdRange.value.end,
       }
@@ -102,10 +102,43 @@ export class PdMgtComponent implements OnInit {
 
   export() {
     let par = {
-      pdWorkshopName:this.searchFormGroup.value.pdWorkshopName,
-      startTime: this.pdRange.value.start,
-      endTime: this.pdRange.value.end,
+      current: this.searchFormGroup.value.current,
+      size: this.searchFormGroup.value.size,
+      body: {
+        pdWorkshopName: this.searchFormGroup.value.pdWorkshopName,
+        startTime: this.pdRange.value.start,
+        endTime: this.pdRange.value.end,
+      }
     }
+    if (this.curTable === 1) {
+      this.pdMgtService.exportPdRecordList(par).subscribe(res => {
+        var name = res.headers.get('content-disposition')//获取文件名，（后台返回的文件名在响应头当中）
+        name = decodeURIComponent(name)//由于中文通常都是乱码，所以需要解码
+        name = name.substring(name.indexOf("=") + 1)//数据处理获得名字
+        this.downloadFile(res.body, name)//数据流都存在body中
+      })
+    } else {
+      this.pdMgtService.exportRestorePdRecordList(par).subscribe(res => {
+        var name = res.headers.get('content-disposition')//获取文件名，（后台返回的文件名在响应头当中）
+        name = decodeURIComponent(name)//由于中文通常都是乱码，所以需要解码
+        name = name.substring(name.indexOf("=") + 1)//数据处理获得名字
+        this.downloadFile(res.body, name)//数据流都存在body中
+      })
+    }
+
+  }
+  downloadFile(data, name) {
+    const contentType = "application/x-zip-compressed";
+    const blob = new Blob([data], { type: contentType });
+    const url = window.URL.createObjectURL(blob);
+    // 打开新窗口方式进行下载
+    // window.open(url);
+    // 以动态创建a标签进行下载
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   changeTable(index) {
@@ -116,7 +149,7 @@ export class PdMgtComponent implements OnInit {
   //翻页事件
   getNotices($event): any {
     // 点击paginator事件，获取pageIndex，重新加载页面
-    this.searchFormGroup.value.current= $event.pageIndex;
+    this.searchFormGroup.value.current = $event.pageIndex;
     this.searchFormGroup.value.size = $event.pageSize;
     this.getTableData();
   }

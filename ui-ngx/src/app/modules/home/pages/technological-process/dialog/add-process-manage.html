@@ -25,19 +25,16 @@
     </mat-form-field>
   </div>
 
-  <!-- <div class="row-block">
-    <div class="label"><span class="red-star">*</span>ERP工序标识:</div>
+  <div class="row-block">
+    <div class="label">报工类型:</div>
     <mat-form-field appearance="fill" class="select">
-      <mat-select formControlName="erpProcessNumber">
-        <mat-option *ngFor="let item of erpProcessList" [value]="item.codeValue">
+      <mat-select multiple formControlName="reportType">
+        <mat-option *ngFor="let item of reportTypeList" [value]="item.codeValue">
           {{item.codeDsc}}
         </mat-option>
       </mat-select>
-      <mat-error *ngIf="dataForm.hasError('required','erpProcessNumber')">
-        请选择<strong>ERP工序标识</strong>
-      </mat-error>
     </mat-form-field>
-  </div> -->
+  </div>
 
 
   <div class="row-block">

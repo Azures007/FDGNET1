@@ -58,6 +58,11 @@
         <td mat-cell *matCellDef="let element"> {{element.processNumber}} </td>
       </ng-container>
 
+      <ng-container matColumnDef="reportType">
+        <th mat-header-cell *matHeaderCellDef> 报工类型 </th>
+        <td mat-cell *matCellDef="let element"> {{getReportTypeLabel(element.reportType)}} </td>
+      </ng-container>
+
       <!-- <ng-container matColumnDef="erpProcessNumber">
         <th mat-header-cell *matHeaderCellDef> ERP工序标识 </th>
         <td mat-cell *matCellDef="let element"> {{element.erpProcessNumber?handleHash(element.erpProcessNumber):'未绑定'}}

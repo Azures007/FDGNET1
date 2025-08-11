@@ -31,7 +31,7 @@ export class AddProcessManageComponent implements OnInit {
     processId: '',
     processName: '',
     processNumber: '',
-    // erpProcessNumber: '',
+    reportType: [],
     updatedTime: '',
     updatedUser: '',
     // fingerprintAuthentication:""
@@ -51,6 +51,7 @@ export class AddProcessManageComponent implements OnInit {
   }];
 
   erpProcessList = [];
+  reportTypeList = [];
 
 
   get modalTitle() {
@@ -58,12 +59,14 @@ export class AddProcessManageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getReportTypeList();
+
     this.getErpProList();
     if (this.utils.isEmpty(this.injectData)) {
       this.dataForm = this.fb.group({
         processName: ['', [Validators.required]],
         processNumber: ['', [Validators.required]],
-        // erpProcessNumber: ['', [Validators.required]],
+        reportType: [[]],
         enabled: ['', [Validators.required]],
         // bySetImport: [0, [Validators.required]],
         // bySetExport: [0, [Validators.required]],
@@ -76,7 +79,7 @@ export class AddProcessManageComponent implements OnInit {
       const obj = {
         processName: '',
         processNumber: "",
-        // erpProcessNumber: "",
+        reportType: [],
         enabled: 0,
         processDetail: '',
         // bySetImport: 0,
@@ -95,7 +98,7 @@ export class AddProcessManageComponent implements OnInit {
         this.dataForm = this.fb.group({
           processName: [{ value: obj.processName, disabled: true }, [Validators.required]],
           processNumber: [{ value: obj.processNumber, disabled: true }, [Validators.required]],
-          // erpProcessNumber: [{ value: obj.erpProcessNumber, disabled: true }, [Validators.required]],
+          reportType: [{ value: obj.reportType ? (obj.reportType as unknown as string).split(',') : [], disabled: true }, []],
           enabled: [{ value: obj.enabled, disabled: true }, [Validators.required]],
           // bySetImport: [{ value: obj.bySetImport ? Number(obj.bySetImport) : 0, disabled: true }, [Validators.required]],
           // bySetExport: [{ value: obj.bySetExport ? Number(obj.bySetExport) : 0, disabled: true }, [Validators.required]],
@@ -108,7 +111,7 @@ export class AddProcessManageComponent implements OnInit {
         this.dataForm = this.fb.group({
           processName: [{ value: obj.processName, disabled: false }, [Validators.required]],
           processNumber: [{ value: obj.processNumber, disabled: false }, [Validators.required]],
-          // erpProcessNumber: [{ value: obj.erpProcessNumber, disabled: false }, [Validators.required]],
+          reportType: [{ value: obj.reportType ? (obj.reportType as unknown as string).split(',') : [], disabled: false }, []],
           enabled: [{ value: obj.enabled, disabled: false }, [Validators.required]],
           // bySetImport: [{ value: obj.bySetImport ? Number(obj.bySetImport) : 0, disabled: false }, [Validators.required]],
           // bySetExport: [{ value: obj.bySetExport ? Number(obj.bySetExport) : 0, disabled: false }, [Validators.required]],
@@ -134,6 +137,18 @@ export class AddProcessManageComponent implements OnInit {
       this.erpProcessList = res.data.list;
     })
   }
+  //获取报工类型
+  getReportTypeList() {
+    let par = {
+      current: 0,
+      size: 999,
+      codeClId: 'PRCESS_REPORTYPE0000',
+      enabledSt: 1
+    }
+    this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {
+      this.reportTypeList = res.data.list;
+    })
+  }
 
 
   // 关闭新增角色弹窗
@@ -148,7 +163,11 @@ export class AddProcessManageComponent implements OnInit {
     if (this.dataForm.valid) {
 
       Object.keys(this.dataForm.value).forEach(key => {
-        this.addParams[key] = this.dataForm.value[key];
+        if (key === 'reportType') {
+          this.addParams[key] = this.dataForm.value[key].join(',');
+        } else {
+          this.addParams[key] = this.dataForm.value[key];
+        }
       });
 
       this.addParams.createdTime = this.utils.dateFormat(new Date(), 'yyyy-MM-ddThh:mm:ssZ');

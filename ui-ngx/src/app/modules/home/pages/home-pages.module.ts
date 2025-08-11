@@ -55,6 +55,8 @@ import { MenuModule } from '@home/pages/menu/menu.module';
 import { QualityModule } from '@home/pages/quality/quality.module';
 import { InventoryMgtModule } from '@home/pages/invetory-mgt/invetory-mgt.module';
 import { PdMgtModule } from '@home/pages/pd-mgt/pd-mgt.module';
+import { ContentModule } from '@home/pages/content/content.module';
+
 
 @NgModule({
   exports: [
@@ -92,6 +94,7 @@ import { PdMgtModule } from '@home/pages/pd-mgt/pd-mgt.module';
     QualityModule,
     InventoryMgtModule,
     PdMgtModule,
+    ContentModule
   ],
   providers: [
     {

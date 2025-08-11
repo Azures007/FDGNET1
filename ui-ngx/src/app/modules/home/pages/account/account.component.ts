@@ -359,4 +359,11 @@ export class AccountComponent implements OnInit {
     this.searchFormGroup.value.size = $event.pageSize;
     this.getTableData();
   }
+  resetSearchForm() {
+    this.searchFormGroup.value.name = "";
+    this.searchFormGroup.value.username = "";
+    this.searchFormGroup.value.userStatus = "";
+    this.getTableData();
+  }
+
 }

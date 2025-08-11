@@ -10,6 +10,7 @@ import { AlertDialogComponent } from '@shared/components/dialog/alert-dialog.com
 import { TechnologicalService } from '@app/core/http/technological.service';
 import { AddProcessManageComponent } from './dialog/add-process-manage.component';
 import { ProcessSettingComponent } from './dialog/process-setting.component';
+import { DictionaryService } from '@app/core/http/dictionary.service';
 
 @Component({
   selector: 'tb-process-management',
@@ -26,7 +27,7 @@ export class ProcessManagementComponent implements OnInit {
   total = 0;
   dataSource = [];
 
-  displayedColumns: string[] = ['no', 'processName', 'processNumber', 'processDetail','enabled', 'customColumn1',];
+  displayedColumns: string[] = ['no', 'processName', 'processNumber', 'reportType', 'processDetail','enabled', 'customColumn1',];
 
   // 搜索参数
   searchFormGroup = this.fb.group({
@@ -49,17 +50,19 @@ export class ProcessManagementComponent implements OnInit {
     { value: 0, label: '禁用' },
   ];
 
+  reportTypeList = [];
 
 
 
   clickedRows = new Set();
 
-  constructor(private utils: Utils, public fb: FormBuilder, public dialog: MatDialog, private api: TechnologicalService) {
+  constructor(private utils: Utils, public fb: FormBuilder, public dialog: MatDialog, private api: TechnologicalService, private dictionaryService: DictionaryService) {
 
   }
 
   ngOnInit() {
     this.setMyMap();
+    this.getReportTypeList();
   }
 
 
@@ -211,6 +214,30 @@ export class ProcessManagementComponent implements OnInit {
         });
         break;
     }
+  }
+  getReportTypeList() {
+    let par = {
+      current: 0,
+      size: 999,
+      codeClId: 'PRCESS_REPORTYPE0000',
+      enabledSt: 1
+    }
+    this.dictionaryService.fetchGetTypeTableList(par).subscribe(res => {
+      this.reportTypeList = res.data.list;
+    })
+  }
+  getReportTypeLabel(value) {
+    if (!value) {
+      return '';
+    }
+    value = value.split(',');
+    let str = [];
+    this.reportTypeList.forEach(item => {
+      if (value.includes(item.codeValue)) {
+        str.push(item.codeDsc);
+      }
+    })
+    return str.join(',');
   }
 
   // 弹窗

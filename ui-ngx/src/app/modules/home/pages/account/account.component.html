@@ -17,8 +17,11 @@
                 <option value="0">禁用</option>
             </select>
         </div>
-        <button class="search_btn" (click)="getTableData()">
+        <button class="search_btn" (click)="getTableData()" style="margin-right: 10px;">
             <mat-icon>search</mat-icon> 查询
+        </button>
+        <button class="search_btn" (click)="resetSearchForm()">
+            <mat-icon>refresh</mat-icon> 重置
         </button>
 
     </div>
@@ -79,10 +82,10 @@
                         <button class="mini_btn edit_btn" (click)="lookUser(element,0)" *ngIf="set.has('/account/edit')">编辑</button>
                         <button class="mini_btn enter_btn" (click)="enterDia(element,1)"
                             *ngIf="element.user_status == 0 && set.has('/account/enable')">启用</button>
-                        <button class="mini_btn disable_btn" (click)="enterDia(element,0)" 
+                        <button class="mini_btn disable_btn" (click)="enterDia(element,0)"
                             *ngIf="element.user_status == 1 && set.has('/account/disable')">禁用</button>
                         <button class="mini_btn look_btn" (click)="lookUser(element,1)">查看</button>
-                        <button class="mini_btn del_btn" (click)="delDia(element)" 
+                        <button class="mini_btn del_btn" (click)="delDia(element)"
                             *ngIf="element.user_status == 0 && set.has('/account/del')">删除</button>
                         <button class="mini_btn page_btn del_btn" (click)="resetPwd(element)" *ngIf="set.has('/account/reset')">重置密码</button>
 
