@@ -3,6 +3,7 @@ package org.thingsboard.server.common.data.mes.sys;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.thingsboard.server.common.data.mes.BaseEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,7 +17,7 @@ import java.util.Date;
 @ApiModel("工艺表")
 @Data
 @Table(name = "t_sys_craft_info")
-public class TSysCraftInfo {
+public class TSysCraftInfo extends BaseEntity {
     @Id
     @Column(name = "craft_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,26 +42,6 @@ public class TSysCraftInfo {
     @ApiModelProperty("工艺说明")
     @Column(name = "craft_detail")
     private String craftDetail;
-
-    @ApiModelProperty("是否启用 0：禁用 1：启用")
-    @Column(name = "enabled")
-    private Integer enabled=1;
-
-    @ApiModelProperty("创建人")
-    @Column(name = "created_user")
-    private String createdUser;
-
-    @ApiModelProperty("创建日期")
-    @Column(name = "created_time")
-    private Date createdTime;
-
-    @ApiModelProperty("修改日期")
-    @Column(name = "updated_time")
-    private Date updatedTime;
-
-    @ApiModelProperty("修改人")
-    @Column(name = "updated_user")
-    private String updatedUser;
 
     @ApiModelProperty("前道工艺路线id")
     @Column(name = "prev_craft_id")

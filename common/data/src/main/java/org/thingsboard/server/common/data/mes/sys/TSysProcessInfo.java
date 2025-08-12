@@ -3,6 +3,7 @@ package org.thingsboard.server.common.data.mes.sys;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.thingsboard.server.common.data.mes.BaseEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,7 +17,7 @@ import java.util.Date;
 @Entity
 @Table(name = "t_sys_process_info")
 @ApiModel("工序表")
-public class TSysProcessInfo {
+public class TSysProcessInfo extends BaseEntity {
     @Id
     @Column(name = "process_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,26 +34,6 @@ public class TSysProcessInfo {
     @ApiModelProperty("工序说明")
     @Column(name = "process_detail")
     private String processDetail;
-
-    @ApiModelProperty("是否启用 0：禁用 1：启用")
-    @Column(name = "enabled")
-    private Integer enabled;
-
-    @ApiModelProperty("创建人")
-    @Column(name = "created_user")
-    private String createdUser;
-
-    @ApiModelProperty("创建日期")
-    @Column(name = "created_time")
-    private Date createdTime;
-
-    @ApiModelProperty("修改日期")
-    @Column(name = "updated_time")
-    private Date updatedTime;
-
-    @ApiModelProperty("修改人")
-    @Column(name = "updated_user")
-    private String updatedUser;
 
     @ApiModelProperty("ERP工序标识")
     @Column(name = "erp_process_number")
