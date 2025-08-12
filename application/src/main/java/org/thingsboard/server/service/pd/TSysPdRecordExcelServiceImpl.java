@@ -9,6 +9,7 @@ import org.thingsboard.server.dao.mes.dto.TSysPdRecordDto;
 import org.thingsboard.server.dao.mes.vo.TSysPdRecordVo;
 import org.thingsboard.server.utils.ExcelUtil;
 import org.thingsboard.server.vo.TSysPdRecordExcelVo;
+import org.thingsboard.server.vo.TSysPdRecordExcelWithoutReturnVo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,14 +26,7 @@ public class TSysPdRecordExcelServiceImpl implements TSysPdRecordExcelService {
     @Override
     public void download(String userId, Integer current, Integer size,
                          TSysPdRecordDto tSysPdRecordDto, HttpServletResponse response) throws IOException {
-        var page = tSysPdRecordService.tSysPdRecordList(userId, current, size, "", "", tSysPdRecordDto);
-        List<TSysPdRecordExcelVo> excelVos = new ArrayList<>();
-        for (TSysPdRecordVo vo : page.getContent()) {
-            TSysPdRecordExcelVo excelVo = new TSysPdRecordExcelVo();
-            BeanUtils.copyProperties(vo, excelVo);
-            excelVos.add(excelVo);
-        }
-        ExcelUtil.writeExcel(response, excelVos, System.currentTimeMillis() + "", "sheet1", new TSysPdRecordExcelVo());
+        downloadWithoutReturn(userId, current, size, tSysPdRecordDto, response);
     }
 
     @Override
@@ -40,11 +34,30 @@ public class TSysPdRecordExcelServiceImpl implements TSysPdRecordExcelService {
                                   TSysPdRecordDto tSysPdRecordDto, HttpServletResponse response) throws IOException {
         var page = tSysPdRecordService.tSysPdRecordListWithSplit(userId, current, size, "", "", tSysPdRecordDto);
         List<TSysPdRecordExcelVo> excelVos = new ArrayList<>();
+        int index = 1;
         for (TSysPdRecordVo vo : page.getContent()) {
             TSysPdRecordExcelVo excelVo = new TSysPdRecordExcelVo();
             BeanUtils.copyProperties(vo, excelVo);
+            // 使用顺序序号而不是数据库ID
+            excelVo.setPdRecordId(index++);
             excelVos.add(excelVo);
         }
         ExcelUtil.writeExcel(response, excelVos, System.currentTimeMillis() + "", "sheet1", new TSysPdRecordExcelVo());
+    }
+
+    @Override
+    public void downloadWithoutReturn(String userId, Integer current, Integer size,
+                                      TSysPdRecordDto tSysPdRecordDto, HttpServletResponse response) throws IOException {
+        var page = tSysPdRecordService.tSysPdRecordList(userId, current, size, "", "", tSysPdRecordDto);
+        List<TSysPdRecordExcelWithoutReturnVo> excelVos = new ArrayList<>();
+        int index = 1;
+        for (TSysPdRecordVo vo : page.getContent()) {
+            TSysPdRecordExcelWithoutReturnVo excelVo = new TSysPdRecordExcelWithoutReturnVo();
+            BeanUtils.copyProperties(vo, excelVo);
+            // 使用顺序序号而不是数据库ID
+            excelVo.setPdRecordId(index++);
+            excelVos.add(excelVo);
+        }
+        ExcelUtil.writeExcel(response, excelVos, System.currentTimeMillis() + "", "sheet1", new TSysPdRecordExcelWithoutReturnVo());
     }
 }

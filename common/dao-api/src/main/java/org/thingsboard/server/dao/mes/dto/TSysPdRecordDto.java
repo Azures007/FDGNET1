@@ -26,4 +26,8 @@ public class TSysPdRecordDto {
     @ApiModelProperty("盘点线边仓")
     private String pdWorkshopName;
 
+    @ApiModelProperty("材料名称")
+    private String materialName;
+
+
 }

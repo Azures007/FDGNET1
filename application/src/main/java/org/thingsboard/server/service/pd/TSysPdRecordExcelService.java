@@ -8,4 +8,7 @@ public interface TSysPdRecordExcelService {
     void download(String userId, Integer current, Integer size, TSysPdRecordDto tSysPdRecordDto, HttpServletResponse response) throws IOException;
 
     void downloadWithSplit(String userId, Integer current, Integer size, TSysPdRecordDto tSysPdRecordDto, HttpServletResponse response) throws IOException;
+
+    void downloadWithoutReturn(String userId, Integer current, Integer size, TSysPdRecordDto tSysPdRecordDto, HttpServletResponse response) throws IOException;
+
 }

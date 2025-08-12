@@ -19,6 +19,7 @@ import org.thingsboard.server.service.security.model.SecurityUser;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Calendar;
 
 /**
  * @author 许文言
@@ -53,6 +54,12 @@ public class TSysPdRecordController extends BaseController {
                                                                   @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                   @RequestBody TSysPdRecordDto tSysPdRecordDto) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
+        if (tSysPdRecordDto.getEndTime() != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(tSysPdRecordDto.getEndTime());
+            calendar.add(Calendar.HOUR_OF_DAY, 24);
+            tSysPdRecordDto.setEndTime(calendar.getTime());
+        }
         Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordList(currentUser.getId().toString(),current, size,sortField,sortOrder, tSysPdRecordDto);
         PageVo<TSysPdRecordVo> pageVo = new PageVo<>(pdRecordList);
         return ResultUtil.success(pageVo);
@@ -73,6 +80,12 @@ public class TSysPdRecordController extends BaseController {
                                                                         @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                         @RequestBody TSysPdRecordDto tSysPdRecordDto) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
+        if (tSysPdRecordDto.getEndTime() != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(tSysPdRecordDto.getEndTime());
+            calendar.add(Calendar.HOUR_OF_DAY, 24);
+            tSysPdRecordDto.setEndTime(calendar.getTime());
+        }
         Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordListWithSplit(currentUser.getId().toString(), current, size, sortField, sortOrder, tSysPdRecordDto);
         PageVo<TSysPdRecordVo> pageVo = new PageVo<>(pdRecordList);
         return ResultUtil.success(pageVo);

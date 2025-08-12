@@ -79,6 +79,9 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             if (tSysPdRecordDto.getPdWorkshopName() != null && !tSysPdRecordDto.getPdWorkshopName().isEmpty()) {
                 predicates.add(cb.like(root.get("pdWorkshopName"), "%" + tSysPdRecordDto.getPdWorkshopName() + "%"));
             }
+            if (tSysPdRecordDto.getMaterialName() != null && !tSysPdRecordDto.getMaterialName().isEmpty()) {
+                predicates.add(cb.like(root.get("materialName"), "%" + tSysPdRecordDto.getMaterialName() + "%"));
+            }
             if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
                 List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
                 predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
@@ -142,6 +145,9 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             }
             if (tSysPdRecordDto.getPdWorkshopName() != null && !tSysPdRecordDto.getPdWorkshopName().isEmpty()) {
                 predicates.add(cb.like(root.get("pdWorkshopName"), "%" + tSysPdRecordDto.getPdWorkshopName() + "%"));
+            }
+            if (tSysPdRecordDto.getMaterialName() != null && !tSysPdRecordDto.getMaterialName().isEmpty()) {
+                predicates.add(cb.like(root.get("materialName"), "%" + tSysPdRecordDto.getMaterialName() + "%"));
             }
             if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
                 List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
