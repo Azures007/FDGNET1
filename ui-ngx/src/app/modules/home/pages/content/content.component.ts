@@ -144,8 +144,8 @@ export class ContentComponent implements OnInit {
       changeToen = "启用"
     }
     this.dialogService.confirm(
-      `是否要${changeToen}该人员?`,
-      `确定后,该人员将${changeToen}`,
+      `是否要${changeToen}该净含量范围?`,
+      `确定后,该净含量范围将${changeToen}`,
       this.translate.instant('action.no'),
       this.translate.instant('action.yes'),
       true

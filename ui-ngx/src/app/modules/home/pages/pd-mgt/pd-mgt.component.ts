@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from '@core/core.state';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { PdMgtService } from '@app/core/http/pd-mgt.service';
+import { Utils } from '../order-management/w-utils';
 
 export interface PeriodicElement {
   name: string;
@@ -30,6 +31,7 @@ export class PdMgtComponent implements OnInit {
     current: 0,
     size: 50,
     pdWorkshopName: "",
+    materialName: "",
   });
 
   //新增角色参数
@@ -58,7 +60,7 @@ export class PdMgtComponent implements OnInit {
   // pageEvent: PageEvent;
 
   //table
-  displayedColumns: string[] = ['no', 'pdTimeStr', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'isReturn', 'pdWorkshopLeaderName'];
+  displayedColumns: string[] = ['no', 'pdTimeStr', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName'];
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -70,6 +72,7 @@ export class PdMgtComponent implements OnInit {
   constructor(protected store: Store<AppState>,
     public fb: FormBuilder,
     private pdMgtService: PdMgtService,
+    private utils: Utils,
   ) { }
 
   ngOnInit(): void {
@@ -83,8 +86,10 @@ export class PdMgtComponent implements OnInit {
       size: this.searchFormGroup.value.size,
       body: {
         pdWorkshopName: this.searchFormGroup.value.pdWorkshopName,
-        startTime: this.pdRange.value.start,
-        endTime: this.pdRange.value.end,
+        materialName: this.searchFormGroup.value.materialName,
+        //endTime: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
+        startTime: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
+        endTime: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
       }
     }
     if (this.curTable === 1) {
@@ -106,8 +111,9 @@ export class PdMgtComponent implements OnInit {
       size: this.searchFormGroup.value.size,
       body: {
         pdWorkshopName: this.searchFormGroup.value.pdWorkshopName,
-        startTime: this.pdRange.value.start,
-        endTime: this.pdRange.value.end,
+        materialName: this.searchFormGroup.value.materialName,
+        startTime: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
+        endTime: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
       }
     }
     if (this.curTable === 1) {
@@ -143,6 +149,12 @@ export class PdMgtComponent implements OnInit {
 
   changeTable(index) {
     this.curTable = index;
+    if (index === 1) {
+      this.displayedColumns = ['no', 'pdTimeStr', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName'];
+    } else {
+      this.displayedColumns = ['no', 'pdTimeStr', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'isReturn', 'pdWorkshopLeaderName'];
+
+    }
     this.getTableData();
   }
 
@@ -155,6 +167,7 @@ export class PdMgtComponent implements OnInit {
   }
   reset() {
     this.searchFormGroup.value.pdWorkshopName = '';
+    this.searchFormGroup.value.materialName = '';
     this.pdRange = new FormGroup({
       start: new FormControl(null),
       end: new FormControl(null),

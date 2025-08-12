@@ -18,7 +18,7 @@ export class ChooseMaterialComponent implements OnInit {
     private MaterialService: MaterialService,
   ) { }
   dataSource = [];
-  displayedColumns: string[] = ['ncMaterialCategory', 'materialName', 'materialCode', 'customColumn1'];
+  displayedColumns: string[] = ['ncMaterialCategory', 'materialName', 'materialCode', 'materialModel', 'customColumn1'];
   total = 0;
   searchFormGroup = this.fb.group({
     current: 0,
