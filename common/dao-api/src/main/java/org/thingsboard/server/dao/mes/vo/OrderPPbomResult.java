@@ -72,13 +72,13 @@ public class OrderPPbomResult {
     @ApiModelProperty("子项类型")
     private String midPpbomEntryItemType;
 
-    @ApiModelProperty("累计投入")
+    @ApiModelProperty("累计投入(累计重量)")
     private Float recordQtyTotal = 0f;
 
     @ApiModelProperty("个人投入")
     private Float recordQtyPersonal = 0f;
 
-    @ApiModelProperty("投入次数")
+    @ApiModelProperty("投入次数（累计锅数）")
     private String personalCount;
 
     @ApiModelProperty("投入单位编码")
@@ -91,4 +91,13 @@ public class OrderPPbomResult {
     private String flag = "0";
 
     private String personalCountBak;
+
+    @ApiModelProperty("未完成重量")
+    private Float unCompleteQty;
+
+    @ApiModelProperty("累计完成率")
+    private String completeRate;
+
+    @ApiModelProperty("未完成率")
+    private String unCompleteRate;
 }
