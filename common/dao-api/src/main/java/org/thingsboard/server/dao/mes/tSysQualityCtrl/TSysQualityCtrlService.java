@@ -56,5 +56,10 @@ public interface TSysQualityCtrlService {
      */
     TSysQualityCtrlVo getQualityPlanById(Integer planId);
 
-
+    /**
+     * 根据ID获取质检管控及明细信息
+     * @param id
+     * @return
+     */
+    TSysQualityCtrlVo getQualityCtrlById(Integer id);
 }

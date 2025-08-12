@@ -116,6 +116,17 @@ public class TSysQualityCtrlAppController extends BaseController {
         return ResultUtil.success();
     }
 
+    //根据id查看品质管控
+    @ApiOperation("根据id查看品质管控")
+    @PostMapping("/getQualityCtrlById")
+    public ResponseResult<TSysQualityCtrlVo> getQualityCtrlById(@RequestParam("id") Integer id) throws Exception {
+        TSysQualityCtrlVo vo = tSysQualityCtrlService.getQualityCtrlById(id);
+        if (vo == null) {
+            return ResultUtil.error("未找到该数据");
+        } else {
+            return ResultUtil.success(vo);
+        }
+    }
 
 
 

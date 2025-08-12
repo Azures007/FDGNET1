@@ -185,4 +185,18 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
 
         return vo;
     }
+
+    @Override
+    public TSysQualityCtrlVo getQualityCtrlById(Integer id) {
+        TSysQualityCtrlVo vo = new TSysQualityCtrlVo();
+        TSysQualityCtrl tSysQualityCtrl = tSysQualityCtrlRepository.findById(id).orElse(null);
+
+        if (tSysQualityCtrl != null) {
+            BeanUtils.copyProperties(tSysQualityCtrl, vo);
+            List<TSysQualityCtrlDetail> tSysQualityCtrlDetailList = tSysQualityCtrlDetailRepository.findByCtrlId(id);
+            vo.setTSysQualityCtrlDetailList(tSysQualityCtrlDetailList);
+        }
+
+        return vo;
+    }
 }
