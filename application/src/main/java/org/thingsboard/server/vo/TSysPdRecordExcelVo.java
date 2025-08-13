@@ -34,6 +34,9 @@ public class TSysPdRecordExcelVo extends BaseRowModel {
     @ExcelProperty("盘点人")
     private String pdCreatedName;
 
+    @ExcelProperty("盘点车间名称")
+    private String pdWorkshopName;
+
     @ExcelProperty("是否为还原材料")
     private String isReturn;
 

@@ -127,15 +127,17 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
      */
     @Override
     public Page<TSysPdRecordVo> tSysPdRecordListWithSplit(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto) {
-        String cwkid =userService.getUserCurrentCwkid(userId);
+        String cwkid = userService.getUserCurrentCwkid(userId);
         String pkOrg = userService.getUserCurrentPkOrg(userId);
-        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId, pkOrg, cwkid);
         Sort sort = Sort.by(Sort.Direction.ASC, "createdTime");
         if ("desc".equalsIgnoreCase(sortOrder)) {
             sort = Sort.by(Sort.Direction.DESC, "createdTime");
         }
         Pageable pageable = PageRequest.of(current, size, sort);
-        Specification<TSysPdRecord> specification = (Root<TSysPdRecord> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+
+        // 构建基础查询条件（不包含物料名称条件）
+        Specification<TSysPdRecord> baseSpecification = (Root<TSysPdRecord> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (tSysPdRecordDto.getStartTime() != null) {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("pdTime"), tSysPdRecordDto.getStartTime()));
@@ -146,34 +148,89 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             if (tSysPdRecordDto.getPdWorkshopName() != null && !tSysPdRecordDto.getPdWorkshopName().isEmpty()) {
                 predicates.add(cb.like(root.get("pdWorkshopName"), "%" + tSysPdRecordDto.getPdWorkshopName() + "%"));
             }
-            if (tSysPdRecordDto.getMaterialName() != null && !tSysPdRecordDto.getMaterialName().isEmpty()) {
-                predicates.add(cb.like(root.get("materialName"), "%" + tSysPdRecordDto.getMaterialName() + "%"));
-            }
-            if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
+            if (ncWarehouses != null && !ncWarehouses.isEmpty()) {
                 List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
                 predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
             }
             predicates.add(cb.equal(root.get("byDeleted"), "0"));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-        Page<TSysPdRecord> pdRecordPage = tSysPdRecordRepository.findAll(specification, pageable);
+
+        // 先查询所有符合条件的主表记录
+        Page<TSysPdRecord> pdRecordPage = tSysPdRecordRepository.findAll(baseSpecification, pageable);
+
+        // 获取所有主表记录的ID
         List<Integer> recordIds = pdRecordPage.getContent().stream()
                 .map(TSysPdRecord::getRePdRecordId)
-                .filter(Objects::nonNull) // 过滤掉null值
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+
+        // 查询所有相关的拆分记录
         List<TSysPdRecordSplit> allSplitRecords = new ArrayList<>();
         if (!recordIds.isEmpty()) {
             allSplitRecords = tSysPdRecordSplitRepository.findByRePdRecordIdIn(recordIds);
         }
-        Map<Integer, List<TSysPdRecordSplit>> splitRecordsGroupedByRePdId = allSplitRecords.stream()
+
+        // 如果有物料名称筛选条件
+        List<TSysPdRecordSplit> filteredSplitRecords = allSplitRecords;
+        if (tSysPdRecordDto.getMaterialName() != null && !tSysPdRecordDto.getMaterialName().isEmpty()) {
+            // 筛选主表中符合条件的记录
+            List<TSysPdRecord> materialFilteredMainRecords = pdRecordPage.getContent().stream()
+                    .filter(record -> record.getMaterialName() != null &&
+                            record.getMaterialName().contains(tSysPdRecordDto.getMaterialName()))
+                    .collect(Collectors.toList());
+
+            // 筛选拆分表中符合条件的记录
+            filteredSplitRecords = allSplitRecords.stream()
+                    .filter(split -> split.getMaterialName() != null &&
+                            split.getMaterialName().contains(tSysPdRecordDto.getMaterialName()))
+                    .collect(Collectors.toList());
+
+            // 获取包含符合条件拆分记录的主表记录ID
+            Set<Integer> mainRecordIdsWithMatchingSplits = filteredSplitRecords.stream()
+                    .map(TSysPdRecordSplit::getRePdRecordId)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+
+            // 合并主表匹配记录和有匹配拆分记录的主表记录
+            Set<Integer> finalRecordIdsToShow = new HashSet<>();
+
+            // 添加主表直接匹配的记录ID
+            materialFilteredMainRecords.stream()
+                    .map(TSysPdRecord::getRePdRecordId)
+                    .filter(Objects::nonNull)
+                    .forEach(finalRecordIdsToShow::add);
+
+            // 添加有匹配拆分记录的主表记录ID
+            finalRecordIdsToShow.addAll(mainRecordIdsWithMatchingSplits);
+
+            // 重新过滤主表记录，只保留需要显示的记录
+            List<TSysPdRecord> finalMainRecords = pdRecordPage.getContent().stream()
+                    .filter(record -> {
+                        Integer rePdRecordId = record.getRePdRecordId();
+                        // 保留没有关联ID的记录或者在需要显示集合中的记录
+                        return rePdRecordId == null || finalRecordIdsToShow.contains(rePdRecordId);
+                    })
+                    .collect(Collectors.toList());
+
+            // 更新主表记录列表
+            pdRecordPage = new PageImpl<>(finalMainRecords, pageable, finalMainRecords.size());
+        }
+
+        // 按主表记录ID分组拆分记录
+        Map<Integer, List<TSysPdRecordSplit>> splitRecordsGroupedByRePdId = filteredSplitRecords.stream()
                 .collect(Collectors.groupingBy(
                         TSysPdRecordSplit::getRePdRecordId,
                         LinkedHashMap::new,
                         Collectors.toList()
                 ));
+
+        // 构建返回结果
         List<TSysPdRecordVo> voList = new ArrayList<>();
         for (TSysPdRecord record : pdRecordPage.getContent()) {
             Integer recordRePdId = record.getRePdRecordId();
+
+            // 如果该主记录有匹配的拆分记录
             if (recordRePdId != null && splitRecordsGroupedByRePdId.containsKey(recordRePdId)) {
                 List<TSysPdRecordSplit> splitRecords = splitRecordsGroupedByRePdId.get(recordRePdId);
                 for (TSysPdRecordSplit splitRecord : splitRecords) {
@@ -209,21 +266,37 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                     vo.setIsReturn("是");
                     voList.add(vo);
                 }
-            } else {
-                TSysPdRecordVo vo = new TSysPdRecordVo();
-                BeanUtils.copyProperties(record, vo);
-                if (record.getPdTime() != null) {
-                    vo.setPdTime(formatTimestampToString((Timestamp) record.getPdTime()));
+            }
+            // 显示主表记录（如果没有物料筛选或者主表记录本身符合条件）
+            else {
+                // 如果有物料名称筛选条件，需要检查主表记录是否符合条件
+                boolean shouldShowMainRecord = true;
+                if (tSysPdRecordDto.getMaterialName() != null && !tSysPdRecordDto.getMaterialName().isEmpty()) {
+                    shouldShowMainRecord = record.getMaterialName() != null &&
+                            record.getMaterialName().contains(tSysPdRecordDto.getMaterialName());
                 }
-                if (record.getCreatedTime() != null) {
-                    vo.setCreatedTime(formatTimestampToString((Timestamp) record.getCreatedTime()));
+
+                if (shouldShowMainRecord) {
+                    TSysPdRecordVo vo = new TSysPdRecordVo();
+                    BeanUtils.copyProperties(record, vo);
+                    if (record.getPdTime() != null) {
+                        vo.setPdTime(formatTimestampToString((Timestamp) record.getPdTime()));
+                    }
+                    if (record.getCreatedTime() != null) {
+                        vo.setCreatedTime(formatTimestampToString((Timestamp) record.getCreatedTime()));
+                    }
+                    vo.setIsReturn("否");
+                    voList.add(vo);
                 }
-                vo.setIsReturn("否");
-                voList.add(vo);
             }
         }
-        return new PageImpl<>(voList, pageable, pdRecordPage.getTotalElements());
+
+        // 计算总数
+        long totalElements = pdRecordPage.getTotalElements();
+        if (tSysPdRecordDto.getMaterialName() != null && !tSysPdRecordDto.getMaterialName().isEmpty()) {
+            totalElements = voList.size();
+        }
+
+        return new PageImpl<>(voList, pageable, totalElements);
     }
-
-
 }

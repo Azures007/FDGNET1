@@ -10,16 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.service.pd.TSysPdRecordExcelService;
 import org.thingsboard.server.dao.mes.TSysPdRecord.TSysPdRecordService;
 import org.thingsboard.server.dao.mes.dto.TSysPdRecordDto;
 import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.vo.TSysPdRecordVo;
+import org.thingsboard.server.service.pd.TSysPdRecordExcelService;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Calendar;
 
 /**
  * @author 许文言
@@ -54,12 +53,6 @@ public class TSysPdRecordController extends BaseController {
                                                                   @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                   @RequestBody TSysPdRecordDto tSysPdRecordDto) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
-        if (tSysPdRecordDto.getEndTime() != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(tSysPdRecordDto.getEndTime());
-            calendar.add(Calendar.HOUR_OF_DAY, 24);
-            tSysPdRecordDto.setEndTime(calendar.getTime());
-        }
         Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordList(currentUser.getId().toString(),current, size,sortField,sortOrder, tSysPdRecordDto);
         PageVo<TSysPdRecordVo> pageVo = new PageVo<>(pdRecordList);
         return ResultUtil.success(pageVo);
@@ -80,12 +73,6 @@ public class TSysPdRecordController extends BaseController {
                                                                         @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                         @RequestBody TSysPdRecordDto tSysPdRecordDto) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
-        if (tSysPdRecordDto.getEndTime() != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(tSysPdRecordDto.getEndTime());
-            calendar.add(Calendar.HOUR_OF_DAY, 24);
-            tSysPdRecordDto.setEndTime(calendar.getTime());
-        }
         Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordListWithSplit(currentUser.getId().toString(), current, size, sortField, sortOrder, tSysPdRecordDto);
         PageVo<TSysPdRecordVo> pageVo = new PageVo<>(pdRecordList);
         return ResultUtil.success(pageVo);
