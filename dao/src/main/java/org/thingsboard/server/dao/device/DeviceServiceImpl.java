@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.thingsboard.server.dao.mes.device;
+package org.thingsboard.server.dao.device;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;

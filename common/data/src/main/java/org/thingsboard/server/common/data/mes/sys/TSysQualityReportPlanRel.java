@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * @Auther: l
  * @Date: 2022/4/20 11:04
- * @Description:工序表
+ * @Description: 质检日报方案与类目关系表
  */
 @Data
 @Entity
