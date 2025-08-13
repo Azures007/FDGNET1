@@ -60,7 +60,7 @@ public class TSysQualityCtrlAppController extends BaseController {
                                                                    @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                    @RequestBody TSysQualityPlanDto tSysQualityPlanDto) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
-        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(currentUser.getId().toString(),current, size,sortField,sortOrder, tSysQualityPlanDto);
+        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(currentUser.getId().toString(), current, size, sortField, sortOrder, tSysQualityPlanDto);
         PageVo<TSysQualityPlan> pageVo = new PageVo<>(qualityPlanList);
         return ResultUtil.success(pageVo);
     }
@@ -81,7 +81,7 @@ public class TSysQualityCtrlAppController extends BaseController {
                                                                    @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                    @RequestBody TSysQualityCtrlDto tSysQualityCtrlDto) {
         Page<TSysQualityCtrl> qualityCtrlList = tSysQualityCtrlService.
-                tSysQualityCtrlList(current, size,sortField,sortOrder, tSysQualityCtrlDto);
+                tSysQualityCtrlList(current, size, sortField, sortOrder, tSysQualityCtrlDto);
         PageVo<TSysQualityCtrl> pageVo = new PageVo<>(qualityCtrlList);
         return ResultUtil.success(pageVo);
     }
@@ -100,20 +100,23 @@ public class TSysQualityCtrlAppController extends BaseController {
     }
 
 
-
-
-
-
     //保存品质管控表
     @ApiOperation("保存/修改质检方案信息（id为空则表示新增，id不为空表示修改）")
     @PostMapping("/saveQualityCtrl")
-    public ResponseResult saveQualityCtrl(@RequestBody TSysQualityCtrlImportParam tSysQualityCtrlImportParam) throws Exception {
+    public ResponseResult<TSysQualityCtrlImportParam> saveQualityCtrl(@RequestBody TSysQualityCtrlImportParam tSysQualityCtrlImportParam) throws Exception {
         SecurityUser currentUser = getCurrentUser();
         TSysQualityCtrl tSysQualityCtrl = tSysQualityCtrlImportParam.getTSysQualityCtrl();
         tSysQualityCtrl.setUpdateUser(currentUser.getName());
         tSysQualityCtrl.setUpdateTime(new Date());
-        tSysQualityCtrlService.saveTSysQualityCtrlAndDetail(tSysQualityCtrl,tSysQualityCtrlImportParam.getTSysQualityCtrlDetailList());
-        return ResultUtil.success();
+
+        // 保存数据
+        tSysQualityCtrlService.saveTSysQualityCtrlAndDetail(tSysQualityCtrl, tSysQualityCtrlImportParam.getTSysQualityCtrlDetailList());
+
+        // 直接修改原始参数中的TSysQualityCtrl对象状态并返回
+        tSysQualityCtrl.setStatus("0"); // 直接设置状态为0
+
+        // 返回原始参数对象，其中包含的是前端传回来的数据（只是status被修改为0）
+        return ResultUtil.success(tSysQualityCtrlImportParam);
     }
 
     //根据id查看品质管控
@@ -128,6 +131,25 @@ public class TSysQualityCtrlAppController extends BaseController {
         }
     }
 
+    @ApiOperation("查询复核列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+            @ApiImplicitParam(name = "sortField", value = "排序字段", readOnly = false),
+            @ApiImplicitParam(name = "sortOrder", value = "排序方式（asc/desc）", readOnly = false)
+
+    })
+    @PostMapping("/qualityCtrlCheckList")
+    public ResponseResult<PageVo<TSysQualityCtrl>> qualityCtrlCheckList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                                                        @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                        @RequestParam(value = "sortField", defaultValue = "") String sortField,
+                                                                        @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder) {
+
+        Page<TSysQualityCtrl> qualityCtrlCheckList = tSysQualityCtrlService
+                .tSysQualityCtrlCheckList(current, size, sortField, sortOrder);
+        PageVo<TSysQualityCtrl> pageVo = new PageVo<>(qualityCtrlCheckList);
+        return ResultUtil.success(pageVo);
+    }
 
 
 }

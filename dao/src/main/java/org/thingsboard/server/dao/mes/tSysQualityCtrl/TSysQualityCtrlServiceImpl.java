@@ -199,4 +199,21 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
 
         return vo;
     }
+
+    @Override
+    public Page<TSysQualityCtrl> tSysQualityCtrlCheckList(Integer current, Integer size, String sortField, String sortOrder) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+
+        if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))) {
+            String converterSortField = StringConverterUtil.camelToSnake(sortField);
+            sort = Sort.by(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, converterSortField);
+        }
+
+        Pageable pageable = PageRequest.of(current, size, sort);
+
+        // 假设状态"1"表示"已提交"，需要复核的记录
+        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findByStatus("1", pageable);
+
+        return tSysQualityCtrlPage;
+    }
 }
