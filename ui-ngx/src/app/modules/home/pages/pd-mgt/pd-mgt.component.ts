@@ -60,7 +60,7 @@ export class PdMgtComponent implements OnInit {
   // pageEvent: PageEvent;
 
   //table
-  displayedColumns: string[] = ['no', 'pdTimeStr', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName'];
+  displayedColumns: string[] = ['no', 'pdTime', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName'];
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -150,9 +150,9 @@ export class PdMgtComponent implements OnInit {
   changeTable(index) {
     this.curTable = index;
     if (index === 1) {
-      this.displayedColumns = ['no', 'pdTimeStr', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName'];
+      this.displayedColumns = ['no', 'pdTime', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName'];
     } else {
-      this.displayedColumns = ['no', 'pdTimeStr', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'isReturn', 'pdWorkshopLeaderName'];
+      this.displayedColumns = ['no', 'pdTime', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'isReturn', 'pdWorkshopLeaderName'];
 
     }
     this.getTableData();
