@@ -451,6 +451,8 @@ CREATE TABLE public.t_sys_quality_ctrl (
 
 -- Column comments
 
+COMMENT ON TABLE t_sys_quality_ctrl IS '质检控制表';
+
 COMMENT ON COLUMN public.t_sys_quality_ctrl.quality_ctrl_no IS '质检控制编号';
 COMMENT ON COLUMN public.t_sys_quality_ctrl.material_id IS '物料ID';
 COMMENT ON COLUMN public.t_sys_quality_ctrl.material_name IS '物料名称';
@@ -580,3 +582,215 @@ COMMENT ON COLUMN t_sys_net_content_range.upper_limit IS '上限值(g)';
 COMMENT ON COLUMN t_sys_net_content_range.status IS '状态（启用/禁用）';
 COMMENT ON COLUMN t_sys_net_content_range.create_user IS '创建人';
 COMMENT ON COLUMN t_sys_net_content_range.create_time IS '创建时间';
+
+
+-- 添加表注释
+COMMENT ON TABLE t_sys_craft_info IS '工艺路线表';
+
+COMMENT ON COLUMN t_sys_craft_info.craft_id IS '工艺路线ID';
+COMMENT ON COLUMN t_sys_craft_info.craft_name IS '工艺路线名称';
+COMMENT ON COLUMN t_sys_craft_info.craft_number IS '工艺路线编号';
+COMMENT ON COLUMN t_sys_craft_info.effective_time IS '生效时间';
+COMMENT ON COLUMN t_sys_craft_info.failure_time IS '失效时间';
+COMMENT ON COLUMN t_sys_craft_info.craft_detail IS '工艺说明';
+COMMENT ON COLUMN t_sys_craft_info.enabled IS '是否启用 0：禁用 1：启用';
+COMMENT ON COLUMN t_sys_craft_info.created_user IS '创建人';
+COMMENT ON COLUMN t_sys_craft_info.created_time IS '创建日期';
+COMMENT ON COLUMN t_sys_craft_info.updated_time IS '修改日期';
+COMMENT ON COLUMN t_sys_craft_info.updated_user IS '修改人';
+
+
+COMMENT ON TABLE t_sys_personnel_info IS '人员类';
+
+COMMENT ON COLUMN t_sys_personnel_info.personnel_id IS '人员ID';
+COMMENT ON COLUMN t_sys_personnel_info.name IS '姓名';
+COMMENT ON COLUMN t_sys_personnel_info.sex IS '性别';
+COMMENT ON COLUMN t_sys_personnel_info.phone IS '手机号';
+COMMENT ON COLUMN t_sys_personnel_info.station IS '岗位';
+COMMENT ON COLUMN t_sys_personnel_info.class_name IS '班组';
+COMMENT ON COLUMN t_sys_personnel_info.user_id IS '绑定的账号用户ID';
+COMMENT ON COLUMN t_sys_personnel_info.user_email IS '绑定用户的账号';
+COMMENT ON COLUMN t_sys_personnel_info.enabled_st IS '是否可用 0：禁用 1：启用';
+COMMENT ON COLUMN t_sys_personnel_info.crt_user IS '创建人';
+COMMENT ON COLUMN t_sys_personnel_info.crt_time IS '创建日期';
+COMMENT ON COLUMN t_sys_personnel_info.update_time IS '修改日期';
+COMMENT ON COLUMN t_sys_personnel_info.update_user IS '修改人';
+
+
+-- public.t_sys_quality_ctrl_detail definition
+
+-- Drop table
+
+-- DROP TABLE t_sys_quality_ctrl_detail;
+
+CREATE TABLE t_sys_quality_ctrl_detail (
+                                           id int4 NOT NULL DEFAULT nextval('t_sys_quality_ctrl_detil_id_seq'::regclass),
+                                           ctrl_id int4 NULL, -- 主表ID
+                                           category_id int4 NULL, -- 分类ID
+                                           inspection_item varchar(255) NULL, -- 检查项目
+                                           key_process varchar(255) NULL, -- 关键工序
+                                           key_process_name varchar(255) NULL, -- 关键工序名称
+                                           monitoring_method varchar(255) NULL, -- 监控方法
+                                           monitoring_method_name varchar(255) NULL, -- 监控方法名称
+                                           standard text NULL, -- 质检标准
+                                           judgment_data text NULL, -- 判定配置数据存储动态配置信息
+                                           config_data text NULL, -- 分类配置数据存储动态配置信息
+                                           create_time timestamp NULL DEFAULT CURRENT_TIMESTAMP, -- 创建时间
+                                           create_user varchar(255) NULL, -- 创建人
+                                           update_time timestamp NULL DEFAULT CURRENT_TIMESTAMP, -- 更新时间
+                                           update_user varchar(255) NULL, -- 更新人
+                                           machine_data text NULL, -- 机台配置数据存储动态配置信息
+                                           schedule_data text NULL, -- 班时配置数据存储动态配置信息
+                                           CONSTRAINT t_sys_quality_ctrl_detil_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_sys_quality_ctrl_detail IS '质检控制明细表';
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.ctrl_id IS '主表ID';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.category_id IS '分类ID';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.inspection_item IS '检查项目';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.key_process IS '关键工序';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.key_process_name IS '关键工序名称';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.monitoring_method IS '监控方法';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.monitoring_method_name IS '监控方法名称';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.standard IS '质检标准';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.judgment_data IS '判定配置数据存储动态配置信息';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.config_data IS '分类配置数据存储动态配置信息';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.create_time IS '创建时间';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.create_user IS '创建人';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.update_time IS '更新时间';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.update_user IS '更新人';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.machine_data IS '机台配置数据存储动态配置信息';
+COMMENT ON COLUMN public.t_sys_quality_ctrl_detail.schedule_data IS '班时配置数据存储动态配置信息';
+
+
+-- public.t_sys_quality_report_category definition
+
+-- Drop table
+
+-- DROP TABLE t_sys_quality_report_category;
+
+CREATE TABLE t_sys_quality_report_category (
+                                               id serial4 NOT NULL, -- 主键ID
+                                               frequency varchar NOT NULL, -- 频次，字典
+                                               important_item text NOT NULL, -- 重点项目
+                                               enabled int4 NOT NULL DEFAULT 0, -- 启用/禁用
+                                               created_name varchar(255) NULL, -- 创建人
+                                               created_time date NULL, -- 创建时间
+                                               updated_name varchar(255) NULL, -- 修改人
+                                               updated_time date NULL, -- 修改日期
+                                               remark varchar(255) NULL, -- 备注
+                                               frequency_value varchar NULL, -- 频次，字典值
+                                               CONSTRAINT t_sys_quality_report_pkey PRIMARY KEY (id)
+);
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_report_category.id IS '主键ID';
+COMMENT ON COLUMN public.t_sys_quality_report_category.frequency IS '频次，字典';
+COMMENT ON COLUMN public.t_sys_quality_report_category.important_item IS '重点项目';
+COMMENT ON COLUMN public.t_sys_quality_report_category.enabled IS '启用/禁用';
+COMMENT ON COLUMN public.t_sys_quality_report_category.created_name IS '创建人';
+COMMENT ON COLUMN public.t_sys_quality_report_category.created_time IS '创建时间';
+COMMENT ON COLUMN public.t_sys_quality_report_category.updated_name IS '修改人';
+COMMENT ON COLUMN public.t_sys_quality_report_category.updated_time IS '修改日期';
+COMMENT ON COLUMN public.t_sys_quality_report_category.remark IS '备注';
+COMMENT ON COLUMN public.t_sys_quality_report_category.frequency_value IS '频次，字典值';
+
+
+-- public.t_sys_quality_report_item definition
+
+-- Drop table
+
+-- DROP TABLE t_sys_quality_report_item;
+
+CREATE TABLE t_sys_quality_report_item (
+                                           id serial4 NOT NULL, -- 主键ID
+                                           category_id int4 NULL, -- 关联的日报类目表ID
+                                           field_name varchar(255) NULL, -- 达成（异常）情况描述
+                                           field_type varchar(255) NULL, -- 达成（异常）情况类型(下拉，或文本)
+                                           dropdown_fields varchar(255) NULL, -- 下拉框选项
+                                           required varchar(255) NULL, -- 是否必填
+                                           enabled varchar(255) NULL, -- 启用/禁用
+                                           created_name varchar(255) NULL, -- 创建人
+                                           created_time date NULL, -- 创建时间
+                                           updated_name varchar(255) NULL, -- 修改人
+                                           updated_time date NULL, -- 修改日期
+                                           CONSTRAINT t_sys_quality_report_item_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_sys_quality_report_item IS '质量日报项目表';
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_report_item.id IS '主键ID';
+COMMENT ON COLUMN public.t_sys_quality_report_item.category_id IS '关联的日报类目表ID';
+COMMENT ON COLUMN public.t_sys_quality_report_item.field_name IS '达成（异常）情况描述';
+COMMENT ON COLUMN public.t_sys_quality_report_item.field_type IS '达成（异常）情况类型(下拉，或文本)';
+COMMENT ON COLUMN public.t_sys_quality_report_item.dropdown_fields IS '下拉框选项';
+COMMENT ON COLUMN public.t_sys_quality_report_item.required IS '是否必填';
+COMMENT ON COLUMN public.t_sys_quality_report_item.enabled IS '启用/禁用';
+COMMENT ON COLUMN public.t_sys_quality_report_item.created_name IS '创建人';
+COMMENT ON COLUMN public.t_sys_quality_report_item.created_time IS '创建时间';
+COMMENT ON COLUMN public.t_sys_quality_report_item.updated_name IS '修改人';
+COMMENT ON COLUMN public.t_sys_quality_report_item.updated_time IS '修改日期';
+
+
+-- public.t_sys_quality_report_plan definition
+
+-- Drop table
+
+-- DROP TABLE t_sys_quality_report_plan;
+
+CREATE TABLE t_sys_quality_report_plan (
+                                           id serial4 NOT NULL, -- 主键ID
+                                           product_name varchar(255) NULL, -- 品名
+                                           prod_dept_id varchar(255) NULL, -- 生产部门ID
+                                           prod_line_id varchar(255) NULL, -- 生产线ID
+                                           remark varchar(255) NULL, -- 备注
+                                           created_name varchar(255) NULL, -- 创建人
+                                           created_time date NULL, -- 创建时间
+                                           updated_name varchar(255) NULL, -- 修改人
+                                           updated_time date NULL, -- 修改日期
+                                           prod_dept_name varchar NULL, -- 生产部门名称
+                                           prod_line_name varchar NULL, -- 生产线名称
+                                           enabled int4 NULL, -- 启用/禁用
+                                           CONSTRAINT t_sys_quality_report_plan_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_sys_quality_report_plan IS '质检日报方案表';
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_report_plan.id IS '主键ID';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.product_name IS '品名';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.prod_dept_id IS '生产部门ID';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.prod_line_id IS '生产线ID';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.remark IS '备注';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.created_name IS '创建人';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.created_time IS '创建时间';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.updated_name IS '修改人';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.updated_time IS '修改日期';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.prod_dept_name IS '生产部门名称';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.prod_line_name IS '生产线名称';
+COMMENT ON COLUMN public.t_sys_quality_report_plan.enabled IS '启用/禁用';
+
+
+-- public.t_sys_quality_report_plan_rel definition
+
+-- Drop table
+
+-- DROP TABLE t_sys_quality_report_plan_rel;
+
+CREATE TABLE t_sys_quality_report_plan_rel (
+                                               id serial4 NOT NULL, -- 主键ID
+                                               plan_id int4 NOT NULL, -- 质检日报方案ID
+                                               category_id int4 NOT NULL, -- 质检日报类目ID
+                                               CONSTRAINT t_sys_quality_report_plan_rel_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_sys_quality_report_plan_rel IS '质检日报方案与类目关系表';
+
+-- Column comments
+
+COMMENT ON COLUMN public.t_sys_quality_report_plan_rel.id IS '主键ID';
+COMMENT ON COLUMN public.t_sys_quality_report_plan_rel.plan_id IS '质检日报方案ID';
+COMMENT ON COLUMN public.t_sys_quality_report_plan_rel.category_id IS '质检日报类目ID';
