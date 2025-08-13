@@ -62,4 +62,10 @@ public interface TSysQualityCtrlService {
      * @return
      */
     TSysQualityCtrlVo getQualityCtrlById(Integer id);
+
+    /**
+     * 获取质检管控审核列表
+     * @return
+     */
+    Page<TSysQualityCtrl> tSysQualityCtrlCheckList(Integer current, Integer size, String sortField, String sortOrder);
 }
