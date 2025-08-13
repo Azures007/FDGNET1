@@ -40,6 +40,6 @@ public class BaseEntity {
     //后续处理，需要把所有功能都统一添加该字段
 //    @ApiModelProperty("备注")
 //    @Column(name = "remark")
-//    private Date remark;
+//    private String remark;
 
 }
