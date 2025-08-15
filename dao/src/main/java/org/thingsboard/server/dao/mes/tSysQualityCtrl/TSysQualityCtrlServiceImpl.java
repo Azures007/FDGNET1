@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.dao.mes.dto.TSysQualityCtrlDto;
+import org.thingsboard.server.dao.mes.vo.TSysQualityCtrlVo;
 import org.thingsboard.server.dao.sql.mes.tSysQualityCtrl.TSysQualityCtrlDetailRepository;
 import org.thingsboard.server.dao.sql.mes.tSysQualityCtrl.TSysQualityCtrlRepository;
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanConfigRepository;
@@ -18,10 +19,12 @@ import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanJudgmen
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanRepository;
 import org.thingsboard.server.dao.util.JsonUtil;
 import org.thingsboard.server.dao.util.StringConverterUtil;
-import org.thingsboard.server.dao.mes.vo.TSysQualityCtrlVo;
 
+import javax.persistence.criteria.Predicate;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author 陈懋燊
@@ -51,11 +54,12 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
 
     @Override
     public Page<TSysQualityCtrl> tSysQualityCtrlList(Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
 
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
             String converterSortField = StringConverterUtil.camelToSnake(sortField);
-            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
+            // 修复：排序时使用驼峰命名法字段名，而非转换后的下划线格式
+            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, sortField);
         }
 
         Pageable pageable = PageRequest.of(current, size, sort);
@@ -64,8 +68,26 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
 //                .withMatcher("enabledSt", ExampleMatcher.GenericPropertyMatchers.exact());
 ////        Example<TSysQualityPlan> example = Example.of(tSysClass, matcher);
 
+//        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findAllBy(tSysQualityCtrlDto, pageable);
 
-        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findAllBy(tSysQualityCtrlDto, pageable);
+        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findAll((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // 处理日期范围查询
+            if (tSysQualityCtrlDto.getInspectionStartTime() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(
+                        root.get("inspectionDate"), tSysQualityCtrlDto.getInspectionStartTime()));
+            }
+
+            if (tSysQualityCtrlDto.getInspectionEndTime() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(
+                        root.get("inspectionDate"), tSysQualityCtrlDto.getInspectionEndTime()));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        }, pageable);
+
+
 //        String code = "SCHEDULING0000";
 //        tSysQualityPlanPage.getContent().stream().forEach(tSysQualityPlan1 -> {
 //            tSysQualityPlan1.setSchedulingCodeDsc(GlobalConstant.getCodeDscName(code, tSysQualityPlan1.getScheduling()));
@@ -74,11 +96,20 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
     }
 
     @Override
-    public void saveTSysQualityCtrlAndDetail(TSysQualityCtrl tSysQualityCtrl, List<TSysQualityCtrlDetail> tSysQualityCtrlDetailList) {
+    public TSysQualityCtrlVo saveTSysQualityCtrlAndDetail(TSysQualityCtrl tSysQualityCtrl, List<TSysQualityCtrlDetail> tSysQualityCtrlDetailList) {
+        // 保存主表和明细表
         this.saveTSysQualityCtrl(tSysQualityCtrl);
-        this.saveTSysQualityCtrlDetails(tSysQualityCtrl.getId(),tSysQualityCtrlDetailList);
+        this.saveTSysQualityCtrlDetails(tSysQualityCtrl.getId(), tSysQualityCtrlDetailList);
 
+        // 构造并返回TSysQualityCtrlVo对象
+        TSysQualityCtrlVo vo = new TSysQualityCtrlVo();
+        BeanUtils.copyProperties(tSysQualityCtrl, vo);
+        vo.setTSysQualityCtrlDetailList(tSysQualityCtrlDetailList);
 
+        // 设置明细列表中的ctrlId
+        tSysQualityCtrlDetailList.forEach(detail -> detail.setCtrlId(tSysQualityCtrl.getId()));
+
+        return vo;
     }
 
     @Override

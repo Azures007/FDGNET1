@@ -28,8 +28,7 @@ public interface TSysQualityCtrlService {
      * @param tSysQualityCtrl
      * @param tSysQualityCtrlDetailList
      */
-    void saveTSysQualityCtrlAndDetail(TSysQualityCtrl tSysQualityCtrl, List<TSysQualityCtrlDetail> tSysQualityCtrlDetailList);
-
+    TSysQualityCtrlVo saveTSysQualityCtrlAndDetail(TSysQualityCtrl tSysQualityCtrl, List<TSysQualityCtrlDetail> tSysQualityCtrlDetailList);
     /**
      * 保存质检管控表
      * @param tSysQualityCtrl

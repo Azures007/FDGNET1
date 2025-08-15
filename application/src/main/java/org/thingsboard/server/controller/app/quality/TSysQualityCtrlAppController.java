@@ -103,20 +103,16 @@ public class TSysQualityCtrlAppController extends BaseController {
     //保存品质管控表
     @ApiOperation("保存/修改质检方案信息（id为空则表示新增，id不为空表示修改）")
     @PostMapping("/saveQualityCtrl")
-    public ResponseResult<TSysQualityCtrlImportParam> saveQualityCtrl(@RequestBody TSysQualityCtrlImportParam tSysQualityCtrlImportParam) throws Exception {
+    public ResponseResult<TSysQualityCtrlVo> saveQualityCtrl(@RequestBody TSysQualityCtrlImportParam tSysQualityCtrlImportParam) throws Exception {
         SecurityUser currentUser = getCurrentUser();
         TSysQualityCtrl tSysQualityCtrl = tSysQualityCtrlImportParam.getTSysQualityCtrl();
         tSysQualityCtrl.setUpdateUser(currentUser.getName());
         tSysQualityCtrl.setUpdateTime(new Date());
 
-        // 保存数据
-        tSysQualityCtrlService.saveTSysQualityCtrlAndDetail(tSysQualityCtrl, tSysQualityCtrlImportParam.getTSysQualityCtrlDetailList());
+        // 保存数据并获取返回的VO对象
+        TSysQualityCtrlVo result = tSysQualityCtrlService.saveTSysQualityCtrlAndDetail(tSysQualityCtrl, tSysQualityCtrlImportParam.getTSysQualityCtrlDetailList());
 
-        // 直接修改原始参数中的TSysQualityCtrl对象状态并返回
-        tSysQualityCtrl.setStatus("0"); // 直接设置状态为0
-
-        // 返回原始参数对象，其中包含的是前端传回来的数据（只是status被修改为0）
-        return ResultUtil.success(tSysQualityCtrlImportParam);
+        return ResultUtil.success(result);
     }
 
     //根据id查看品质管控

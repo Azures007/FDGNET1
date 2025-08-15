@@ -15,15 +15,16 @@ import org.thingsboard.server.dao.mes.dto.TSysQualityCtrlDto;
  * @description
  * @date 2025/7/18 14:42:49
  */
-public interface TSysQualityCtrlRepository extends JpaRepository<TSysQualityCtrl,Integer> , JpaSpecificationExecutor<TSysQualityCtrl> {
+public interface TSysQualityCtrlRepository extends JpaRepository<TSysQualityCtrl, Integer>, JpaSpecificationExecutor<TSysQualityCtrl> {
 
     @Query(value = "SELECT t.id, t.quality_ctrl_no, t.material_id, t.material_name, t.plan_id, t.plan_name, \n" +
             "t.production_line_id, t.production_line_name, \n" +
             "t.remarks, t.create_time, t.create_user, t.update_time, t.update_user, t.inspection_date,t.status,t.manager \n" +
             "FROM t_sys_quality_ctrl t \n" +
             "where 1=1 \n" +
-            "and (t.inspection_date >= :#{#tSysQualityCtrl.inspectionStartTime}) \n" +
-            "and (t.inspection_date <= :#{#tSysQualityCtrl.inspectionEndTime})",nativeQuery = true)
+            "and (:#{#tSysQualityCtrl.inspectionStartTime} is null or t.inspection_date >= :#{#tSysQualityCtrl.inspectionStartTime}) \n" +
+            "and (:#{#tSysQualityCtrl.inspectionEndTime} is null or t.inspection_date <= :#{#tSysQualityCtrl.inspectionEndTime})",
+            nativeQuery = true)
     Page<TSysQualityCtrl> findAllBy(@Param("tSysQualityCtrl") TSysQualityCtrlDto tSysQualityCtrl, Pageable pageable);
 
 
