@@ -15,7 +15,7 @@ import java.util.List;
  * @Description:
  */
 public interface MenuRepository extends JpaRepository<TSysMenu,Integer>, JpaSpecificationExecutor<TSysMenu> {
-    @Query(value = "select a.* from t_sys_menu a join t_sys_role_menu b on a.menu_id=b.menu_id where b.role_id=?1 order by menu_id asc",
+    @Query(value = "select a.* from t_sys_menu a join t_sys_role_menu b on a.menu_id=b.menu_id where b.role_id=?1 order by sort,menu_id asc",
             nativeQuery = true)
     List<TSysMenu> listMenuByRoleId(Integer roleId);
 
