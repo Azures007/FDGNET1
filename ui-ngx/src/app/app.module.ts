@@ -25,7 +25,8 @@ import { HomeModule } from '@home/home.module';
 
 import { AppComponent } from './app.component';
 import { DashboardRoutingModule } from '@modules/dashboard/dashboard-routing.module';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, RouteReuseStrategy } from '@angular/router';
+import { CustomRouteReuseStrategy } from './core/services/custom-route-reuse-strategy';
 
 
 const routes: Routes = [
@@ -37,7 +38,11 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers: [{
+      provide: RouteReuseStrategy,
+      useClass: CustomRouteReuseStrategy
+  }],
 })
 export class PageNotFoundRoutingModule { }
 

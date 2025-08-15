@@ -21,6 +21,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { guid } from '@core/utils';
+import { TabService } from '@app/core/services/tab.service';
 
 @Component({
   selector: 'tb-breadcrumb',
@@ -29,7 +30,15 @@ import { guid } from '@core/utils';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BreadcrumbComponent implements OnInit, OnDestroy {
+  tabs$ = this.tabService.tabs$;
 
+  trackByTabs = (index: number, tab: any): string => tab.link;
+
+  closeTab(url: string, event: MouseEvent): void {
+      event.stopPropagation();
+      event.preventDefault();
+      this.tabService.removeTab(url);
+  }
   activeComponentValue: any;
 
   @Input()
@@ -49,12 +58,14 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
     map( breadcrumbs => breadcrumbs[breadcrumbs.length - 1])
   );
 
-  constructor(private router: Router,
+  constructor(public router: Router,
               private activatedRoute: ActivatedRoute,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+            private tabService: TabService) {
   }
 
   ngOnInit(): void {
+    console.log(this.router, 1111)
   }
 
   ngOnDestroy(): void {

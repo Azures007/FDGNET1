@@ -15,11 +15,11 @@
     limitations under the License.
 
 -->
-<div fxFlex class="tb-breadcrumb" fxLayout="row">
-  <h1 fxFlex fxHide.gt-sm *ngIf="lastBreadcrumb$ | async; let breadcrumb">
+<div class="tb-breadcrumb">
+  <!-- <h1 fxFlex fxHide.gt-sm *ngIf="lastBreadcrumb$ | async; let breadcrumb">
     {{ breadcrumb.ignoreTranslate ? (breadcrumb.labelFunction ? breadcrumb.labelFunction() : breadcrumb.label) : (breadcrumb.label | translate) }}
-  </h1>
-  <span fxHide.lt-md fxLayout="row" *ngFor="let breadcrumb of breadcrumbs$ | async; trackBy: trackByBreadcrumbs; last as isLast;" [ngSwitch]="isLast">
+  </h1> -->
+  <!-- <span fxHide.lt-md fxLayout="row" *ngFor="let breadcrumb of breadcrumbs$ | async; trackBy: trackByBreadcrumbs; last as isLast;" [ngSwitch]="isLast">
 	    <a *ngSwitchCase="false" [routerLink]="breadcrumb.link" [queryParams]="breadcrumb.queryParams"
       style="background-color: #f4f6f7;
       border-radius: 2px;
@@ -28,7 +28,7 @@
       color: #999;
       display: flex;
       align-items: center">
-      
+
         <mat-icon *ngIf="breadcrumb.isMdiIcon" [svgIcon]="breadcrumb.icon">
 	    	</mat-icon>
         <mat-icon *ngIf="!breadcrumb.isMdiIcon" class="material-icons">
@@ -51,5 +51,27 @@
         {{ breadcrumb.ignoreTranslate ? (breadcrumb.labelFunction ? breadcrumb.labelFunction() : breadcrumb.label) : (breadcrumb.label | translate) }}
       </span>
 	    <span class="divider" [fxHide]="isLast"> > </span>
-	</span>
+	</span> -->
+
+  <!-- 新增页签部分 -->
+  <span class="tab-item" *ngFor="let tab of tabs$ | async; trackBy: trackByTabs">
+    <a [routerLink]="tab.link" class="link"
+       [ngClass]="{'active': tab.link === (router.url.split('?')[0] || '/')}"
+       style="background-color: #f4f6f7;
+              border-radius: 5px;
+              padding: 9px;
+              margin-right: 10px;
+              font-size: 13px;
+              display: flex;
+              align-items: center;
+              position: relative;">
+      {{tab.label}}
+      <mat-icon class="material-icons close-icon"
+          *ngIf="tab.link !== '/home' && (tabs$ | async)?.length > 1"
+          (click)="closeTab(tab.link, $event)"
+          style="font-size:14px;">
+          close
+      </mat-icon>
+    </a>
+  </span>
 </div>

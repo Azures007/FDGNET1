@@ -19,7 +19,11 @@
   .tb-breadcrumb {
     font-size: 18px;
     font-weight: 400;
-    overflow: hidden;
+    overflow-x: auto;
+
+    .tab-item {
+      display: inline-block;
+    }
 
     h1,
     a,
@@ -53,7 +57,20 @@
     .divider {
       padding: 0 20px;
       display: flex;
-    align-items: center;
+      align-items: center;
     }
   }
+}
+
+.close-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 12px;
+  height: 12px;
+}
+
+.tb-breadcrumb .active {
+  color: #FF9D44 !important;
+  font-weight: 500;
 }

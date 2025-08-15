@@ -62,7 +62,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         const url: string = state.url;
 
         let lastChild = state.root;
-      
+
         const urlSegments: string[] = [];
         if (lastChild.url) {
           urlSegments.push(...lastChild.url.map(segment => segment.path));

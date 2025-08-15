@@ -154,6 +154,7 @@ export class MenuService {
               homeSections = this.buildCustomerUserHome(authState);
               break;
           }
+          localStorage.setItem('menu', JSON.stringify(menuSections));
           this.menuSections$.next(menuSections);
           this.homeSections$.next(homeSections);
         }
@@ -693,7 +694,6 @@ export class MenuService {
     for (let i = 0; i < tem.length; i++) {
       sections.push(tem[i]);
     }
-    console.log(sections, '111')
     return sections;
   }
 
