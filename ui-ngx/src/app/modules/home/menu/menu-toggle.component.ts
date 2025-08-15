@@ -34,12 +34,14 @@ export class MenuToggleComponent implements OnInit {
   ngOnInit() {
   }
 
-  sectionActive(): boolean {
-    return this.router.isActive(this.section.path, false);
+  sectionActive(section): boolean {
+    console.log(section)
+    return this.router.url.includes(section.path) || section.pages.some(page => this.router.url.includes(page.path));
+    // return this.router.isActive(this.section.path, false);
   }
 
   sectionHeight(): string {
-    if (this.router.isActive(this.section.path, false)) {
+    if (this.sectionActive(this.section)) {
       return this.section.height;
     } else {
       return '0px';

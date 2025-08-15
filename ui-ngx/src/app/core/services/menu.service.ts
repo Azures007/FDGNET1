@@ -70,7 +70,7 @@ export class MenuService {
               updatedTime: null,
             }
             // res.data.push(obj2);
-            res.data.push(obj3);
+            // res.data.push(obj3);
             for (let i = 0; i < res.data.length; i++) {
               if (res.data[i].menuId == 10000 || res.data[i].menuId == 40000) {
 
