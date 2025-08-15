@@ -295,6 +295,12 @@ public class MenuServiceImpl implements MenuService {
             }
         }
         tSysMenu.setTSysMenus(tSysMenus);
+        //获取第一个子菜单项的path，赋值给父级菜单的path，用于处理后台管理前端的折叠默认菜单项
+        if (null!=tSysMenu.getMenuType() && "toggle".equals(tSysMenu.getMenuType())) {
+            if (!tSysMenus.isEmpty()) {
+                tSysMenu.setPath(tSysMenus.get(0).getPath());
+            }
+        }
     }
 
     /**
