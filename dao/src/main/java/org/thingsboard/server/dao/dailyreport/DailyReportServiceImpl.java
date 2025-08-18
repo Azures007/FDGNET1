@@ -231,22 +231,35 @@ public class DailyReportServiceImpl implements DailyReportService{
         pageVo.setList(saveVos);
         pageVo.setCurrent(current);
         pageVo.setSize(size);
+        pageVo.setTotal(saveVos.size());
         return pageVo;
     }
 
     @Override
     public PageVo<DailyReportVo> getDailySubmitList(Integer current, Integer size) {
+        //已经提交复核的数据
         List<DailyReportHead> plan = dailyReportRepository.findAllBySubmit(true);
+        //已经提交的数据
+        List<DailyReportHead> plan1 = dailyReportRepository.findAllBySaveStaus(false);
         List<DailyReportVo> saveVos = new ArrayList<>();
+
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();
             BeanUtils.copyProperties(item,saveVo);
             saveVos.add(saveVo);
         }
+
+        for (DailyReportHead item : plan1) {
+            DailyReportVo saveVo = new DailyReportVo();
+            BeanUtils.copyProperties(item, saveVo);
+            if (!saveVos.contains(saveVo))
+                saveVos.add(saveVo);
+        }
         PageVo<DailyReportVo> pageVo = new PageVo<>();
         pageVo.setList(saveVos);
         pageVo.setCurrent(current);
         pageVo.setSize(size);
+        pageVo.setTotal(saveVos.size());
         return pageVo;
     }
 
