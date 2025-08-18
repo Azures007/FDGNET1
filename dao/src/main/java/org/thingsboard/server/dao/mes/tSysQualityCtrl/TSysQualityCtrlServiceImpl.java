@@ -77,7 +77,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
 
             if (tSysQualityCtrlDto.getInspectionStartTime() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                        root.get("createTime"), tSysQualityCtrlDto.getInspectionStartTime()));
+                        root.get("inspectionDate"), tSysQualityCtrlDto.getInspectionStartTime()));
             }
 
             if (tSysQualityCtrlDto.getInspectionEndTime() != null) {
@@ -90,7 +90,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
                 calendar.set(Calendar.MILLISECOND, 999);
 
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                        root.get("createTime"), calendar.getTime()));
+                        root.get("inspectionDate"), calendar.getTime()));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
