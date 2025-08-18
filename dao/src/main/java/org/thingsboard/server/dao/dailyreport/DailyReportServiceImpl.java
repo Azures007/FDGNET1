@@ -197,6 +197,7 @@ public class DailyReportServiceImpl implements DailyReportService{
             rels.add(rel);
         }
         DailyReportVo planDetail= dailyReportService.DailyDetail(dailyReportHead.getId());
+
         return planDetail;
     }
 
@@ -210,7 +211,7 @@ public class DailyReportServiceImpl implements DailyReportService{
         for (DailyReportEntry item : items) {
             DailyReportDto rel = new DailyReportDto();
             BeanUtils.copyProperties(item,rel);
-            List<DailyReportItem> itemList=dailyReportItemRepository.findAllByDailyreportEntryId(item.getId());
+            List<DailyReportItem> itemList=dailyReportItemRepository.findAllByDailyreportEntryIdOrderById(item.getId());
             rel.setItemList(itemList);
             Dtoitem.add(rel);
         }
