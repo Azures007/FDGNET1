@@ -519,7 +519,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                 }
             }//"personanl_count" -> "9.0"
             orderPPbomResult.setPersonalCount(StringUtils.isNotBlank(orderPPbomResult.getPersonalCountBak()) ? orderPPbomResult.getPersonalCountBak() : orderPPbomResult.getPersonalCount());
-            orderPPbomResult.setUnCompleteQty(orderPPbomResult.getMustQty().floatValue()-orderPPbomResult.getRecordQtyTotal());
+            orderPPbomResult.setUnCompleteQty(Math.round((orderPPbomResult.getMustQty().floatValue()-orderPPbomResult.getRecordQtyTotal())*10000f)/10000f);
             orderPPbomResult.setUnCompleteRate(String.valueOf(Math.round(orderPPbomResult.getUnCompleteQty()/orderPPbomResult.getMustQty().floatValue()*100))+"%");
             orderPPbomResult.setCompleteRate(String.valueOf(Math.round((1-orderPPbomResult.getUnCompleteQty()/orderPPbomResult.getMustQty().floatValue())*100))+"%");
         });
