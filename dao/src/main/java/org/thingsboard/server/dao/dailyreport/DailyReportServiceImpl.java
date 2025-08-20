@@ -221,7 +221,7 @@ public class DailyReportServiceImpl implements DailyReportService{
 
     @Override
     public PageVo<DailyReportVo> getDailyList(Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
-        List<DailyReportHead> plan = dailyReportRepository.findAllByCreatedTimeBetween(startTime,endTime);
+        List<DailyReportHead> plan = dailyReportRepository.findAllByCreatedTimeBetweenOrderByIdDesc(startTime,endTime);
         List<DailyReportVo> saveVos = new ArrayList<>();
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();
@@ -239,9 +239,9 @@ public class DailyReportServiceImpl implements DailyReportService{
     @Override
     public PageVo<DailyReportVo> getDailySubmitList(Integer current, Integer size) {
         //已经提交复核的数据
-        List<DailyReportHead> plan = dailyReportRepository.findAllBySubmit(true);
+        List<DailyReportHead> plan = dailyReportRepository.findAllBySubmitOrderByIdDesc(true);
         //已经提交的数据
-        List<DailyReportHead> plan1 = dailyReportRepository.findAllBySaveStaus(false);
+        List<DailyReportHead> plan1 = dailyReportRepository.findAllBySaveStausOrderByIdDesc(false);
         List<DailyReportVo> saveVos = new ArrayList<>();
 
         for (DailyReportHead item : plan) {

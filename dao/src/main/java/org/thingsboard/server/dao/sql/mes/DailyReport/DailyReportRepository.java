@@ -16,9 +16,9 @@ public interface DailyReportRepository extends JpaRepository<DailyReportHead,Int
             "where t.bill_no LIKE :billNoParam || '%'  " +
             "order by bill_no desc LIMIT 1", nativeQuery = true)
     String getHaveBillNo(@Param("billNoParam") String billNoParam);
-    List<DailyReportHead> findAllByCreatedTimeBetween (LocalDate startTime, LocalDate endTime);
+    List<DailyReportHead> findAllByCreatedTimeBetweenOrderByIdDesc(LocalDate startTime, LocalDate endTime);
 
-    List<DailyReportHead> findAllBySubmit(boolean submit);
+    List<DailyReportHead> findAllBySubmitOrderByIdDesc(boolean submit);
 
-    List<DailyReportHead> findAllBySaveStaus(boolean saveStaus);
+    List<DailyReportHead> findAllBySaveStausOrderByIdDesc(boolean saveStaus);
 }
