@@ -87,5 +87,13 @@ public class TSysQualityCtrl {
     @Column(name = "shop_manager_id")
     private Integer shopManagerId;
 
+    @ApiModelProperty("机台数据")
+    @Column(name = "machine_data")
+    private String machineData;
+
+    @ApiModelProperty("班时数据")
+    @Column(name = "schedule_data")
+    private String scheduleData;
+
 
 }
