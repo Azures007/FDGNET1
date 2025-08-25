@@ -80,9 +80,20 @@ public class TSysQualityCtrl {
     private String updateUser;
 
     @ApiModelProperty("车间主任")
-    @Column(name = "manager")
-    private String manager;
+    @Column(name = "shop_manager_name")
+    private String shopManagerName;
 
+    @ApiModelProperty("车间主任id")
+    @Column(name = "shop_manager_id")
+    private Integer shopManagerId;
+
+    @ApiModelProperty("机台数据")
+    @Column(name = "machine_data")
+    private String machineData;
+
+    @ApiModelProperty("班时数据")
+    @Column(name = "schedule_data")
+    private String scheduleData;
 
 
 }

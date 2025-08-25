@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface DailyReportItemRepository extends JpaRepository<DailyReportItem,Integer> {
 
-    List<DailyReportItem> findAllByDailyreportEntryId (Integer id);
+    List<DailyReportItem> findAllByDailyreportEntryIdOrderById(Integer id);
 }

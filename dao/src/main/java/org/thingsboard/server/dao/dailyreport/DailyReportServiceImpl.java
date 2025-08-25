@@ -197,6 +197,7 @@ public class DailyReportServiceImpl implements DailyReportService{
             rels.add(rel);
         }
         DailyReportVo planDetail= dailyReportService.DailyDetail(dailyReportHead.getId());
+
         return planDetail;
     }
 
@@ -210,7 +211,7 @@ public class DailyReportServiceImpl implements DailyReportService{
         for (DailyReportEntry item : items) {
             DailyReportDto rel = new DailyReportDto();
             BeanUtils.copyProperties(item,rel);
-            List<DailyReportItem> itemList=dailyReportItemRepository.findAllByDailyreportEntryId(item.getId());
+            List<DailyReportItem> itemList=dailyReportItemRepository.findAllByDailyreportEntryIdOrderById(item.getId());
             rel.setItemList(itemList);
             Dtoitem.add(rel);
         }
@@ -220,7 +221,7 @@ public class DailyReportServiceImpl implements DailyReportService{
 
     @Override
     public PageVo<DailyReportVo> getDailyList(Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
-        List<DailyReportHead> plan = dailyReportRepository.findAllByCreatedTimeBetween(startTime,endTime);
+        List<DailyReportHead> plan = dailyReportRepository.findAllByCreatedTimeBetweenOrderByIdDesc(startTime,endTime);
         List<DailyReportVo> saveVos = new ArrayList<>();
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();
@@ -231,22 +232,35 @@ public class DailyReportServiceImpl implements DailyReportService{
         pageVo.setList(saveVos);
         pageVo.setCurrent(current);
         pageVo.setSize(size);
+        pageVo.setTotal(saveVos.size());
         return pageVo;
     }
 
     @Override
     public PageVo<DailyReportVo> getDailySubmitList(Integer current, Integer size) {
-        List<DailyReportHead> plan = dailyReportRepository.findAllBySubmit(true);
+        //已经提交复核的数据
+        List<DailyReportHead> plan = dailyReportRepository.findAllBySubmitOrderByIdDesc(true);
+        //已经提交的数据
+        List<DailyReportHead> plan1 = dailyReportRepository.findAllBySaveStausOrderByIdDesc(false);
         List<DailyReportVo> saveVos = new ArrayList<>();
+
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();
             BeanUtils.copyProperties(item,saveVo);
             saveVos.add(saveVo);
         }
+
+        for (DailyReportHead item : plan1) {
+            DailyReportVo saveVo = new DailyReportVo();
+            BeanUtils.copyProperties(item, saveVo);
+            if (!saveVos.contains(saveVo))
+                saveVos.add(saveVo);
+        }
         PageVo<DailyReportVo> pageVo = new PageVo<>();
         pageVo.setList(saveVos);
         pageVo.setCurrent(current);
         pageVo.setSize(size);
+        pageVo.setTotal(saveVos.size());
         return pageVo;
     }
 

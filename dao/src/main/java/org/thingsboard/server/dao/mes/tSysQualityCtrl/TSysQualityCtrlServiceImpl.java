@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.dao.mes.dto.TSysQualityCtrlDto;
 import org.thingsboard.server.dao.mes.vo.TSysQualityCtrlVo;
@@ -23,6 +24,7 @@ import org.thingsboard.server.dao.util.StringConverterUtil;
 import javax.persistence.criteria.Predicate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -73,15 +75,22 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
         Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 处理日期范围查询
             if (tSysQualityCtrlDto.getInspectionStartTime() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                        root.get("inspectionDate"), tSysQualityCtrlDto.getInspectionStartTime()));
+                        root.get("createTime"), tSysQualityCtrlDto.getInspectionStartTime()));
             }
 
             if (tSysQualityCtrlDto.getInspectionEndTime() != null) {
+                // 结束时间处理：将结束时间设置为当天的23:59:59，确保能查询到一整天的数据
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(tSysQualityCtrlDto.getInspectionEndTime());
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                calendar.set(Calendar.MILLISECOND, 999);
+
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                        root.get("inspectionDate"), tSysQualityCtrlDto.getInspectionEndTime()));
+                        root.get("createTime"), calendar.getTime()));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -96,6 +105,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
     }
 
     @Override
+    @Transactional
     public TSysQualityCtrlVo saveTSysQualityCtrlAndDetail(TSysQualityCtrl tSysQualityCtrl, List<TSysQualityCtrlDetail> tSysQualityCtrlDetailList) {
         // 保存主表和明细表
         this.saveTSysQualityCtrl(tSysQualityCtrl);
@@ -113,6 +123,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
     }
 
     @Override
+    @Transactional
     public void saveTSysQualityCtrl(TSysQualityCtrl tSysQualityCtrl) {
         if (tSysQualityCtrl.getId() == null) {
             //新增
@@ -145,6 +156,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
     }
 
     @Override
+    @Transactional
     public void saveTSysQualityCtrlDetails(Integer ctrlId, List<TSysQualityCtrlDetail> tSysQualityCtrlDetailList) {
         tSysQualityCtrlDetailRepository.deleteByCtrlId(ctrlId);
         tSysQualityCtrlDetailList.forEach(tSysQualityCtrlDetail -> tSysQualityCtrlDetail.setCtrlId(ctrlId));

@@ -406,7 +406,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
     // 个人投入，按操作员
     @Query(value = "select a.order_ppbom_id,sum(coalesce(record_qty,0)) as record_qty,max(record_unit) as record_unit," +
-            "sum(coalesce(a.import_pot,0)) personanl_count from t_bus_order_process_record a  \n" +
+            "(select sum(coalesce(import_pot,0)) from t_bus_order_process_record where record_type_bg ='REPORTYPE0001' and bus_type ='BG' and record_type ='1' and order_no =?1 and process_id =?2 and (material_id=?3 or -1=?3) and order_ppbom_id=a.order_ppbom_id) personanl_count from t_bus_order_process_record a  \n" +
             "where a.bus_type ='BG' and record_type ='1' and a.order_no =?1 and a.process_id =?2 \n" +
             "and (a.material_id=?3 or -1=?3) \n" +
             "group by a.order_ppbom_id ", nativeQuery = true)

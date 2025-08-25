@@ -64,13 +64,7 @@ public class TSysQualityCtrlDetail {
     @Column(name = "config_data")
     private String configData;
 
-    @ApiModelProperty("机台数据")
-    @Column(name = "machine_data")
-    private String machineData;
 
-    @ApiModelProperty("班时数据")
-    @Column(name = "schedule_data")
-    private String scheduleData;
 
     @ApiModelProperty("创建时间")
     @Column(name = "create_time")
