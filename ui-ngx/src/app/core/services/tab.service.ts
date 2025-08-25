@@ -19,7 +19,7 @@ export class TabService {
     get flatMenu() {
       const menu = [];
       this.menu.forEach(item => {
-        menu.push({
+        !item.pages?.length && menu.push({
           path: item.path,
           name: item.name,
         });
@@ -37,6 +37,9 @@ export class TabService {
     addTab(url: string) {
         const currentTabs = this.tabsSubject.value;
         if (!currentTabs.find(t => t.link === url)) {
+            if (!this.flatMenu.find((item: any) => item.path === url)?.name) {
+              return;
+            }
             const newTab = {
                 link: url,
                 label: this.flatMenu.find((item: any) => item.path === url)?.name || this.getLabelFromUrl(url),
