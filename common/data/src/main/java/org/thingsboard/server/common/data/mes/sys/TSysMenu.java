@@ -30,6 +30,9 @@ public class TSysMenu {
     @ApiModelProperty("菜单说明")
     @Column(name = "menu_explain")
     private String menuExplain;
+    @ApiModelProperty("图标（新字段）")
+    @Column(name = "menu_icon")
+    private String menuIcon;
     @ApiModelProperty("菜单路径")
     @Column(name = "path")
     private String path;

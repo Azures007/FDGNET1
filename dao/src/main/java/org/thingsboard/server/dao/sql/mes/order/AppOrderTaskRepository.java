@@ -575,7 +575,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "left join t_sys_personnel_info b2 on a2.old_hand_over_person_id =b2.personnel_id \n" +
             "left join t_sys_process_info d on a2.process_id =d.process_id \n" +
             "left join t_sys_process_info g on g.process_id = a.current_process \n" +
-            "JOIN t_sys_process_class_rel t2 ON t2.process_id = g.process_id \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = a2.process_id \n" +
             "left join (select r1.record_type_pd,sum(record_qty) as record_qty,sum(record_manual_qty) as record_manual_qty,max(record_unit) as record_unit,order_process_id \n" +
             "from t_bus_order_process_record r1 where r1.record_type='3' and r1.bus_type='BG' \n" +
             "group by order_process_id,record_type_pd) r3 on a1.order_process_id=r3.order_process_id\n" +
