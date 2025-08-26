@@ -18,7 +18,7 @@
                         (click)="chooseCurrent(personItem)">
                         <span>{{personItem.name}}</span>
                         <span>{{personItem.sex}}</span>
-                        <span>{{handleStation(personItem.station)}}</span>
+                        <!--<span>{{handleStation(personItem.station)}}</span>-->
                         <span>{{personItem.phone}}</span>
                     </li>
                 </ul>
@@ -37,7 +37,7 @@
                     <li *ngFor="let personItem of dataCheck;index as i">
                         <span>{{personItem.name}}</span>
                         <span>{{personItem.sex}}</span>
-                        <span>{{handleStation(personItem.station)}}</span>
+                        <!--<span>{{handleStation(personItem.station)}}</span>-->
                         <span>{{personItem.phone}}</span>
                         <button class="remove_btn" (click)="remove(i)">移除</button>
                     </li>
