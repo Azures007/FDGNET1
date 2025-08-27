@@ -126,7 +126,6 @@ public class NcTBusOrderHead {
 
     @ApiModelProperty("创建人")
     @Column(name = "created_name")
-    @JsonIgnore
     private String createdName;
 
     @ApiModelProperty("创建时间")
@@ -143,6 +142,5 @@ public class NcTBusOrderHead {
 
     @ApiModelProperty("单位")
     @Column(name = "body_unit")
-    @JsonIgnore
     private String unit;
 }

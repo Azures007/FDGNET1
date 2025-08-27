@@ -79,3 +79,6 @@ ui-ngx/node_modules/*
 /nbdist/
 /.nb-gradle/
 ui-ngx/proxy.conf.js
+/nul
+/ruoyi-ui/dist/*
+/ruoyi-ui/node_modules/*
