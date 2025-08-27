@@ -1733,13 +1733,14 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         ChopAndMixTotalData allData = new ChopAndMixTotalData();
         //计划数量=计划生产数量（订单表获取）
         Float bodyPlanPrdQty = 0F;
-        if (tBusOrderHead.getBodyUnit().equals("kg")) {
+        /*if (tBusOrderHead.getBodyUnit().equals("kg")) {
             bodyPlanPrdQty = tBusOrderHead.getBodyPlanPrdQty();
         } else {
             BigDecimal bigDecimal = new BigDecimal(tBusOrderHead.getBodyPlanPrdQty().toString());
             BigDecimal bigDecimal2 = new BigDecimal("0.001");
             bodyPlanPrdQty = bigDecimal.multiply(bigDecimal2).floatValue();
-        }
+        }*/
+        bodyPlanPrdQty = tBusOrderHead.getBodyPlanPrdQty();
         allData.setBodyPlanPrdQty(bodyPlanPrdQty);
         //计划锅数=订单表“锅数”（数量后缀加单位锅）
         Integer bodyPotQty = tBusOrderHead.getBodyPotQty()==null?0:tBusOrderHead.getBodyPotQty();
