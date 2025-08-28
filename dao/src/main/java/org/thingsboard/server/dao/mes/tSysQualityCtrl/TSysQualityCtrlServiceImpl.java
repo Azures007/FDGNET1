@@ -130,10 +130,19 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
             tSysQualityCtrl.setCreateUser(tSysQualityCtrl.getUpdateUser());
             tSysQualityCtrl.setCreateTime(tSysQualityCtrl.getUpdateTime());
         }
+
+        TSysQualityCtrl existingRecord = null;
+        if (tSysQualityCtrl.getId() != null) {
+            existingRecord = tSysQualityCtrlRepository.findById(tSysQualityCtrl.getId()).orElse(null);
+        }
+
         //todo 判定当前状态，如果是提交则添加质检时间(状态枚举还没设置先假定提交为1)
         //保存：0  提交：1  已复核：2
         if ("1".equals(tSysQualityCtrl.getStatus())){
             tSysQualityCtrl.setInspectionDate(new Date());
+        } else if ("2".equals(tSysQualityCtrl.getStatus()) && existingRecord != null) {
+            // 已复核状态时保留原有的质检时间
+            tSysQualityCtrl.setInspectionDate(existingRecord.getInspectionDate());
         }
 
 //        if (StringUtils.isNotEmpty(tSysQualityCtrl.getPlanName())) {
@@ -245,7 +254,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
 
     @Override
     public Page<TSysQualityCtrl> tSysQualityCtrlCheckList(Integer current, Integer size, String sortField, String sortOrder) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "create_time");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
 
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))) {
             String converterSortField = StringConverterUtil.camelToSnake(sortField);
@@ -255,7 +264,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
         Pageable pageable = PageRequest.of(current, size, sort);
 
         // 假设状态"1"表示"已提交"，需要复核的记录
-        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findByStatus("1", pageable);
+        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findByStatusIn(List.of("1", "2"), pageable);
 
         return tSysQualityCtrlPage;
     }

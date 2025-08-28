@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityCtrl;
 import org.thingsboard.server.dao.mes.dto.TSysQualityCtrlDto;
 
+import java.util.List;
+
 /**
  * @author 陈懋燊
  * @project youchen_IOTServer
@@ -38,5 +40,7 @@ public interface TSysQualityCtrlRepository extends JpaRepository<TSysQualityCtrl
             countQuery = "SELECT count(*) FROM t_sys_quality_ctrl t WHERE t.status = :status",
             nativeQuery = true)
     Page<TSysQualityCtrl> findByStatus(@Param("status") String status, Pageable pageable);
+
+    Page<TSysQualityCtrl> findByStatusIn(List<String> strings, Pageable pageable);
 
 }
