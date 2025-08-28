@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
@@ -100,7 +101,7 @@ public class NcTBusOrderHead {
 
     @Column(name = "body_plan_prd_qty")
     @ApiModelProperty("计划产量（件）")
-    private Float nnum;
+    private BigDecimal nnum;
 
     @Column(name = "body_plan_start_date")
     @Temporal(TemporalType.TIMESTAMP)
