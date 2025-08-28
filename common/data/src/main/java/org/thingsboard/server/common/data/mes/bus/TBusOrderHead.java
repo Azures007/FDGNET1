@@ -53,7 +53,7 @@ public class TBusOrderHead  {
 
     @ApiModelProperty("单据日期(下单时间)")
     @Column(name = "bill_date")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date billDate;
 
     @ApiModelProperty("单据状态")
@@ -182,12 +182,12 @@ public class TBusOrderHead  {
 
     @ApiModelProperty("明细-计划开工时间")
     @Column(name = "body_plan_start_date")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date bodyPlanStartDate;
 
     @ApiModelProperty("明细-计划完工时间")
     @Column(name = "body_plan_finish_date")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date bodyPlanFinishDate;
 
     @ApiModelProperty("ERP生产订单id")
