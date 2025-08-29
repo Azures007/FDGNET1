@@ -200,6 +200,17 @@ export class AddCateComponent implements OnInit {
       }
     }
   }
+  get isAllChecked() {
+    if(this.configs.length === 0) {
+      return false;
+    }
+    return this.configs.every(item => item.isChecked);
+  }
+  set isAllChecked(value) {
+    this.configs.forEach(item => {
+      item.isChecked = value;
+    })
+  }
   addConfig() {
     this.fieldNames.forEach(item => {
       let obj = {
@@ -217,7 +228,7 @@ export class AddCateComponent implements OnInit {
       }
       if (item.codeValue == 'QCCF0001') {
         obj.isEnabled = '1';
-        obj.fieldType = 'ZDLX0001';
+        obj.fieldType = 'ZDLX0005';
         obj.isRequired = '1';
       }
       if (item.codeValue == 'QCCF0002') {

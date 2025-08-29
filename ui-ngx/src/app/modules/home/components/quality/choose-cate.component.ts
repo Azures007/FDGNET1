@@ -111,6 +111,20 @@ export class ChooseCateComponent implements OnInit {
   handleChoose(item: any) {
     this.dialogRef.close(item);
   }
+  get isAllChecked() {
+    if(this.dataSource.filter(item => !item.disabled).length === 0) {
+      return false;
+    }
+    return this.dataSource.filter(item => !item.disabled).every(item => item.isChecked);
+  }
+  set isAllChecked(value) {
+    this.dataSource.forEach(item => {
+      !item.disabled && (item.isChecked = value);
+    })
+  }
+  get allCheckedDisabled() {
+    return this.dataSource.filter(item => !item.disabled).length === 0;
+  }
 
   //关闭弹窗
   addDialogClose(isSubmit: boolean) {

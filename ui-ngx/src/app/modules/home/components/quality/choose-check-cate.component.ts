@@ -32,6 +32,20 @@ export class ChooseCheckCateComponent implements OnInit {
   ngOnInit(): void {
     this.getTableData();
   }
+  get isAllChecked() {
+    if (this.dataSource.filter(item => !item.disabled).length === 0) {
+      return false;
+    }
+    return this.dataSource.filter(item => !item.disabled).every(item => item.isChecked);
+  }
+  set isAllChecked(value) {
+    this.dataSource.forEach(item => {
+      !item.disabled && (item.isChecked = value);
+    })
+  }
+  get allCheckedDisabled() {
+    return this.dataSource.filter(item => !item.disabled).length === 0;
+  }
   getTableData(): void {
     let par = {
       current: this.searchFormGroup.value.current,

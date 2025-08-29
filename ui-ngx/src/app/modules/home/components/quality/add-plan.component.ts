@@ -179,6 +179,18 @@ export class AddPlanComponent implements OnInit {
       this.fieldNames = res.data.list;
     })
   }
+  get isAllChecked() {
+    if(this.configs.length === 0) {
+      return false;
+    }
+    return this.configs.every(item => item.isChecked);
+  }
+  set isAllChecked(value) {
+    this.configs.forEach(item => {
+      item.isChecked = value;
+    })
+  }
+
   //关闭弹窗
   addDialogClose() {
     this.dialogRef.close();

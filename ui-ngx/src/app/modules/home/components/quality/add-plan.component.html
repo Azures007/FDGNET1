@@ -122,7 +122,7 @@
     <div class="setting-panl">
       <table class="table">
         <tr>
-          <th>选择</th>
+          <th><mat-checkbox [(ngModel)]="isAllChecked" [disabled]="formType === 'details'"></mat-checkbox></th>
           <th>序号</th>
           <th>检查项目</th>
           <th>关键工序</th>
