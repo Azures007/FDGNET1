@@ -91,15 +91,25 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             entity=repository.save(entity);
         }
         NcTBusOrderHead finalEntity = entity;
-        new Thread(() -> {
-            //订单自动绑定工艺路线
-            try {
-                TSysCraftInfo craft=orderBackendService.getCraftInfoByMaterial(finalEntity.getCode());
-                orderBackendService.startOrder(finalEntity.getOrderId(),craft.getCraftId(),craft.getCraftDetail());
-            } catch (Exception e) {
-                log.info("订单自动绑定工艺路线失败OrderId："+ finalEntity.getOrderId()+"," + e.getMessage());
-            }
-        }).start();
+        // 注册事务同步回调
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        // 在事务提交后启动新线程
+                        new Thread(() -> {
+                            //订单自动绑定工艺路线
+                            try {
+                                TSysCraftInfo craft=orderBackendService.getCraftInfoByMaterial(finalEntity.getCode());
+                                orderBackendService.startOrder(finalEntity.getOrderId(),craft.getCraftId(),craft.getCraftDetail());
+                            } catch (Exception e) {
+                                log.info("订单自动绑定工艺路线失败OrderId："+ finalEntity.getOrderId()+"," + e.getMessage());
+                            }
+                        }).start();
+                    }
+                }
+        );
+
 
         return entity;
     }
