@@ -65,9 +65,9 @@ public class YcPdServiceImpl implements YcPdService {
                 nameCollect.add(tSysPdRecord.getCreatedName());
                 String nameJoin = StringUtils.join(nameCollect, ", ");
                 tSysPdRecord.setPdCreatedName(nameJoin);
+                pdSplit = tSysPdRecord1.getPdRecordId();
             }
             tSysPdRecordRepository.updatePd(format, tSysPdRecord.getPdWorkshopNumber(), tSysPdRecord.getPdClassNumber());
-            pdSplit = tSysPdRecord1.getPdRecordId();
         } else {
             //复盘
             Integer pdRecordId = tSysPdRecord.getPdRecordId();
