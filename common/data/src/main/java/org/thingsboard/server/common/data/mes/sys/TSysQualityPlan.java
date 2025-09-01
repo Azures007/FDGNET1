@@ -1,5 +1,6 @@
 package org.thingsboard.server.common.data.mes.sys;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -51,6 +52,7 @@ public class TSysQualityPlan {
     private String isEnabled;
 
     @ApiModelProperty("创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @Column(name = "create_time")
     private Date createTime;
 
@@ -60,6 +62,7 @@ public class TSysQualityPlan {
 
     @ApiModelProperty("修改时间")
     @Column(name = "update_time")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date updateTime;
 
     @ApiModelProperty("修改人")

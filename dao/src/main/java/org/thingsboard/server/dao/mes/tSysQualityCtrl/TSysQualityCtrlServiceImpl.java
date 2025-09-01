@@ -22,6 +22,7 @@ import org.thingsboard.server.dao.util.JsonUtil;
 import org.thingsboard.server.dao.util.StringConverterUtil;
 
 import javax.persistence.criteria.Predicate;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -96,7 +97,16 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
 
-
+        tSysQualityCtrlPage.getContent().forEach(ctrl -> {
+            if (ctrl.getCreateTime() != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    ctrl.setCreateTime(sdf.parse(sdf.format(ctrl.getCreateTime())));
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 //        String code = "SCHEDULING0000";
 //        tSysQualityPlanPage.getContent().stream().forEach(tSysQualityPlan1 -> {
 //            tSysQualityPlan1.setSchedulingCodeDsc(GlobalConstant.getCodeDscName(code, tSysQualityPlan1.getScheduling()));
@@ -129,6 +139,9 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
             //新增
             tSysQualityCtrl.setCreateUser(tSysQualityCtrl.getUpdateUser());
             tSysQualityCtrl.setCreateTime(tSysQualityCtrl.getUpdateTime());
+        }else{
+            //获取当前时间
+            tSysQualityCtrl.setCreateTime(new Date());
         }
 
         TSysQualityCtrl existingRecord = null;

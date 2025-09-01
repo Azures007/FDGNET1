@@ -163,7 +163,7 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         List<TSysQualityPlanJudgment> tSysQualityPlanJudgmentList =tSysQualityPlanJudgmentRepository.findByPlanId(planId);
         vo.settSysQualityPlanJudgmentList(tSysQualityPlanJudgmentList);
 
-        List<TSysQualityPlanConfig> tSysQualityPlanConfigList =tSysQualityPlanConfigRepository.findByPlanId(planId);
+        List<TSysQualityPlanConfig> tSysQualityPlanConfigList =tSysQualityPlanConfigRepository.findByPlanIdOrderByIdAsc(planId);
         vo.settSysQualityPlanConfigList(tSysQualityPlanConfigList);
 
         if (null == tSysQualityPlan){
