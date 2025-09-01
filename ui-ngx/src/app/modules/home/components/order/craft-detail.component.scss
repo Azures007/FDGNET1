@@ -2,6 +2,7 @@
   max-height: 600px;
   overflow-y: scroll;
   .mat-cell,.mat-header-cell {
+    text-align: center;
     width: unset !important;
   }
 }
@@ -50,3 +51,6 @@
 			font-size: 16px;
 		}
 	}
+.footer {
+  margin-top: 30px;
+}

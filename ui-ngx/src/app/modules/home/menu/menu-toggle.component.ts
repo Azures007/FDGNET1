@@ -35,7 +35,6 @@ export class MenuToggleComponent implements OnInit {
   }
 
   sectionActive(section): boolean {
-    console.log(section)
     return this.router.url.includes(section.path) || section.pages.some(page => this.router.url.includes(page.path));
     // return this.router.isActive(this.section.path, false);
   }

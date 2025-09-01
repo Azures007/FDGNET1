@@ -177,7 +177,7 @@ export class OrderListComponent implements OnInit {
       return;
     }
     let dialogRef = this.dialog.open(CraftDetailComponent, {
-      width: "500px",
+      width: "800px",
       height: "auto",
       panelClass: 'custom-modalbox',
       data: {

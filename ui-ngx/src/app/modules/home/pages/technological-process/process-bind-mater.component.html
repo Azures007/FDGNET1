@@ -12,19 +12,19 @@
                     <input type="text" placeholder="输入物料名称或编码" [(ngModel)]="searchFormGroup.materialCode">
                     <button class="search_btn" (click)="searchList()">搜索</button>
                 </div>
-
-                <ul class="person_list">
-                    <li class="list_header">
-                        <span>物料名称</span>
-                        <span>物料编码</span>
-                    </li>
-                    <li *ngFor="let personItem of dataSource;index as i"
+                <!-- 改造成table -->
+                  <table class="person_list">
+                    <tr class="list_header">
+                        <td>物料名称</td>
+                        <td>物料编码</td>
+                    </tr>
+                    <tr *ngFor="let personItem of dataSource;index as i"
                         [ngClass]="{'check_item':(checkData.id!=undefined  && personItem.id == checkData.id)}"
                         (click)="chooseCurrent(personItem,i)">
-                        <span>{{personItem.materialName}}</span>
-                        <span>{{personItem.materialCode}}</span>
-                    </li>
-                </ul>
+                        <td>{{personItem.materialName}}</td>
+                        <td>{{personItem.materialCode}}</td>
+                    </tr>
+                </table>
             </div>
             <div class="list-footer">
                 <mat-paginator [length]="total" [pageSize]="searchFormGroup.size" [pageSizeOptions]="pageSizeOptions"
@@ -50,18 +50,21 @@
                     <button class="search_btn" (click)="searchCheckListReset()">重置</button>
                 </div>
 
-                <ul class="person_list">
-                    <li class="list_header">
-                        <span>物料名称</span>
-                        <span>物料编码</span>
-                        <span>11</span>
-                    </li>
-                    <li *ngFor="let personItem of dataCheck;index as i">
-                        <span>{{personItem.materialName}}</span>
-                        <span>{{personItem.materialCode}}</span>
-                        <button class="remove_btn" (click)="remove(personItem)">移除</button>
-                    </li>
-                </ul>
+                <!-- 改造成table -->
+                  <table class="person_list">
+                    <tr class="list_header">
+                        <td>物料名称</td>
+                        <td>物料编码</td>
+                        <td>操作</td>
+                    </tr>
+                    <tr *ngFor="let personItem of dataCheck;index as i">
+                        <td>{{personItem.materialName}}</td>
+                        <td>{{personItem.materialCode}}</td>
+                        <td>
+                            <button class="remove_btn" (click)="remove(personItem)">移除</button>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
