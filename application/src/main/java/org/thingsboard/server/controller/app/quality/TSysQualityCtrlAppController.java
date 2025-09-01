@@ -79,9 +79,10 @@ public class TSysQualityCtrlAppController extends BaseController {
                                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                    @RequestParam(value = "sortField", defaultValue = "") String sortField,
                                                                    @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
-                                                                   @RequestBody TSysQualityCtrlDto tSysQualityCtrlDto) {
+                                                                   @RequestBody TSysQualityCtrlDto tSysQualityCtrlDto) throws ThingsboardException {
+        SecurityUser securityUser=getCurrentUser();
         Page<TSysQualityCtrl> qualityCtrlList = tSysQualityCtrlService.
-                tSysQualityCtrlList(current, size, sortField, sortOrder, tSysQualityCtrlDto);
+                tSysQualityCtrlList(securityUser.getId().getId().toString(),current, size, sortField, sortOrder, tSysQualityCtrlDto);
         PageVo<TSysQualityCtrl> pageVo = new PageVo<>(qualityCtrlList);
         return ResultUtil.success(pageVo);
     }
@@ -143,10 +144,10 @@ public class TSysQualityCtrlAppController extends BaseController {
     public ResponseResult<PageVo<TSysQualityCtrl>> qualityCtrlCheckList(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                                         @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                         @RequestParam(value = "sortField", defaultValue = "") String sortField,
-                                                                        @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder) {
-
+                                                                        @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder) throws ThingsboardException {
+        SecurityUser securityUser=getCurrentUser();
         Page<TSysQualityCtrl> qualityCtrlCheckList = tSysQualityCtrlService
-                .tSysQualityCtrlCheckList(current, size, sortField, sortOrder);
+                .tSysQualityCtrlCheckList(securityUser.getId().getId().toString(),current, size, sortField, sortOrder);
         PageVo<TSysQualityCtrl> pageVo = new PageVo<>(qualityCtrlCheckList);
         return ResultUtil.success(pageVo);
     }

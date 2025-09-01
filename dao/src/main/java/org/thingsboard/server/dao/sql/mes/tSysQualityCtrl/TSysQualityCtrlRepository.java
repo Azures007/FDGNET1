@@ -41,6 +41,6 @@ public interface TSysQualityCtrlRepository extends JpaRepository<TSysQualityCtrl
             nativeQuery = true)
     Page<TSysQualityCtrl> findByStatus(@Param("status") String status, Pageable pageable);
 
-    Page<TSysQualityCtrl> findByStatusIn(List<String> strings, Pageable pageable);
+    Page<TSysQualityCtrl> findByProductionLineIdAndStatusIn(String productionLineId,List<String> strings, Pageable pageable);
 
 }
