@@ -18,6 +18,7 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
     @Query(value = "select * from t_bus_inventory tbi \n" +
             "where status ='生效' \n" +
             "and warehouse_id=:#{#pdMaterialsDto.warehouseCode} " +
+            "and (material_type=:#{#pdMaterialsDto.materialType} or material_type=:#{#pdMaterialsDto.materialType}='') " +
             "and (:#{#pdMaterialsDto.material} ='' or material_name like %:#{#pdMaterialsDto.material}% or material_code like %:#{#pdMaterialsDto.material}%)",nativeQuery = true)
     List<NcInventory> pdMaterials(@Param("pdMaterialsDto") PdMaterialsDto pdMaterialsDto);
 

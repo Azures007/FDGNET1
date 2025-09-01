@@ -16,6 +16,8 @@ public class PdMaterialsDto {
     @ApiModelProperty("仓库编码")
     private String warehouseCode;
 
+    @ApiModelProperty("物料分类：自制品")
+    private String materialType = "";
 
 
 }
