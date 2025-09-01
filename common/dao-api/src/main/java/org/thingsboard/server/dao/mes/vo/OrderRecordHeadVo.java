@@ -23,6 +23,9 @@ public class OrderRecordHeadVo {
     @ApiModelProperty("订单明细-物料名称")
     private String bodyMaterialName;
 
+    @ApiModelProperty("订单明细-物料编码")
+    private String bodyMaterialNumber;
+
     @ApiModelProperty("工序名称")
     private String processName;
 

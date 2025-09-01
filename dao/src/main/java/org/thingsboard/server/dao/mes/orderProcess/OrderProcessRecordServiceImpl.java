@@ -1072,7 +1072,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         HashMap<String, String> deviceGroupMap = new HashMap<>();
         HashMap<String, String> personStationGroupMap = new HashMap<>();
         recordVos.stream().forEach(recordVo -> {
-            recordVo.setRecordUnitStr(GlobalConstant.getCodeDscName("UNIT0000", recordVo.getRecordUnit()));
+            recordVo.setRecordUnitStr(recordVo.getRecordUnit());
             TBusOrderBindCode tBusOrderBindCode = orderBindCodeRepository.findByOrderProcessHistoryId(recordVo.getOrderProcessHistoryId());
             recordVo.setBindCodeNumber(tBusOrderBindCode == null ? "" : tBusOrderBindCode.getBindCodeNumber());
             if (recordVo.getRecordType().equals("5")) {
@@ -1155,6 +1155,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         BeanUtils.copyProperties(head, headVo);
         headVo.setRecordVoList(recordVos);
         headVo.setBodyMaterialName(head.getBodyMaterialName());
+        headVo.setBodyMaterialNumber(head.getBodyMaterialNumber());
         TSysProcessInfo tSysProcessInfo = tSysProcessInfoRepository.findById(searchDto.getProcessId()).get();
         headVo.setProcessName(tSysProcessInfo.getProcessName());
         headVo.setMaterials(materials);
