@@ -17,6 +17,7 @@ import org.thingsboard.server.dao.sql.mes.pd.TSysPdRecordSplitRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialBomRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -57,6 +58,7 @@ public class YcPdServiceImpl implements YcPdService {
             TSysPdRecord tSysPdRecord1 = tSysPdRecordRepository.findByGroup(format,
                     tSysPdRecord.getPdWorkshopNumber(), tSysPdRecord.getPdClassNumber());
             if (tSysPdRecord1 != null) {
+                //统计盘点人
                 String pdCreatedName = tSysPdRecord1.getPdCreatedName();
                 Set<String> nameCollect = Stream.of(pdCreatedName.split(","))
                         .map(String::trim)
@@ -65,9 +67,14 @@ public class YcPdServiceImpl implements YcPdService {
                 nameCollect.add(tSysPdRecord.getCreatedName());
                 String nameJoin = StringUtils.join(nameCollect, ", ");
                 tSysPdRecord.setPdCreatedName(nameJoin);
+                //统计累加盘点数量
+                BigDecimal pdQty = tSysPdRecord1.getPdQty();
+                tSysPdRecord.setPdQty(pdQty.add(tSysPdRecord.getPdQty()));
                 pdSplit = tSysPdRecord1.getPdRecordId();
+                tSysPdRecord1.setByDeleted("1");
+                tSysPdRecordRepository.saveAndFlush(tSysPdRecord1);
             }
-            tSysPdRecordRepository.updatePd(format, tSysPdRecord.getPdWorkshopNumber(), tSysPdRecord.getPdClassNumber());
+//            tSysPdRecordRepository.updatePd(format, tSysPdRecord.getPdWorkshopNumber(), tSysPdRecord.getPdClassNumber());
         } else {
             //复盘
             Integer pdRecordId = tSysPdRecord.getPdRecordId();
