@@ -141,7 +141,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
             tSysQualityCtrl.setCreateTime(tSysQualityCtrl.getUpdateTime());
         }else{
             //获取当前时间
-            tSysQualityCtrl.setCreateTime(new Date());
+            tSysQualityCtrl.setUpdateTime(new Date());
         }
 
         TSysQualityCtrl existingRecord = null;

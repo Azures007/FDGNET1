@@ -106,9 +106,11 @@ public class TSysQualityCtrlAppController extends BaseController {
     public ResponseResult<TSysQualityCtrlVo> saveQualityCtrl(@RequestBody TSysQualityCtrlImportParam tSysQualityCtrlImportParam) throws Exception {
         SecurityUser currentUser = getCurrentUser();
         TSysQualityCtrl tSysQualityCtrl = tSysQualityCtrlImportParam.getTSysQualityCtrl();
+        if(tSysQualityCtrl.getId() == null){
+            tSysQualityCtrl.setCreateUser(currentUser.getFirstName());
+            tSysQualityCtrl.setCreateTime(new Date());
+        }
         tSysQualityCtrl.setUpdateUser(currentUser.getFirstName());
-        tSysQualityCtrl.setCreateUser(currentUser.getFirstName());
-        tSysQualityCtrl.setCreateTime(new Date());
         tSysQualityCtrl.setUpdateTime(new Date());
 
         // 保存数据并获取返回的VO对象
