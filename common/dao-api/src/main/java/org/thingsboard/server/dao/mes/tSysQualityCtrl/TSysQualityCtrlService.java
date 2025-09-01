@@ -20,7 +20,7 @@ public interface TSysQualityCtrlService {
      * 返回质检管控列表
      * @return
      */
-    Page<TSysQualityCtrl> tSysQualityCtrlList(Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto);
+    Page<TSysQualityCtrl> tSysQualityCtrlList(String userId,Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto);
 
 
     /**
@@ -66,5 +66,5 @@ public interface TSysQualityCtrlService {
      * 获取质检管控审核列表
      * @return
      */
-    Page<TSysQualityCtrl> tSysQualityCtrlCheckList(Integer current, Integer size, String sortField, String sortOrder);
+    Page<TSysQualityCtrl> tSysQualityCtrlCheckList(String userId,Integer current, Integer size, String sortField, String sortOrder);
 }

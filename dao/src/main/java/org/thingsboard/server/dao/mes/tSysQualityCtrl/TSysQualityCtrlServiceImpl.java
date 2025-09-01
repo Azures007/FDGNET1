@@ -18,10 +18,12 @@ import org.thingsboard.server.dao.sql.mes.tSysQualityCtrl.TSysQualityCtrlReposit
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanConfigRepository;
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanRepository;
+import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.util.JsonUtil;
 import org.thingsboard.server.dao.util.StringConverterUtil;
 
 import javax.persistence.criteria.Predicate;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,11 +55,12 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
     @Autowired
     TSysQualityPlanJudgmentRepository tSysQualityPlanJudgmentRepository;
 
-
+    @Autowired
+    UserService userService;
     @Override
-    public Page<TSysQualityCtrl> tSysQualityCtrlList(Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto) {
+    public Page<TSysQualityCtrl> tSysQualityCtrlList(String userId,Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-
+        String cwkid =userService.getUserCurrentCwkid(userId);
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
             String converterSortField = StringConverterUtil.camelToSnake(sortField);
             // 修复：排序时使用驼峰命名法字段名，而非转换后的下划线格式
@@ -92,11 +95,20 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(
                         root.get("createTime"), calendar.getTime()));
             }
-
+            predicates.add(criteriaBuilder.equal(root.get("productionLineId"), cwkid));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
 
-
+        tSysQualityCtrlPage.getContent().forEach(ctrl -> {
+            if (ctrl.getCreateTime() != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    ctrl.setCreateTime(sdf.parse(sdf.format(ctrl.getCreateTime())));
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 //        String code = "SCHEDULING0000";
 //        tSysQualityPlanPage.getContent().stream().forEach(tSysQualityPlan1 -> {
 //            tSysQualityPlan1.setSchedulingCodeDsc(GlobalConstant.getCodeDscName(code, tSysQualityPlan1.getScheduling()));
@@ -129,6 +141,9 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
             //新增
             tSysQualityCtrl.setCreateUser(tSysQualityCtrl.getUpdateUser());
             tSysQualityCtrl.setCreateTime(tSysQualityCtrl.getUpdateTime());
+        }else{
+            //获取当前时间
+            tSysQualityCtrl.setUpdateTime(new Date());
         }
 
         TSysQualityCtrl existingRecord = null;
@@ -253,9 +268,9 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
     }
 
     @Override
-    public Page<TSysQualityCtrl> tSysQualityCtrlCheckList(Integer current, Integer size, String sortField, String sortOrder) {
+    public Page<TSysQualityCtrl> tSysQualityCtrlCheckList(String userId,Integer current, Integer size, String sortField, String sortOrder) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-
+        String cwkid =userService.getUserCurrentCwkid(userId);
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))) {
             String converterSortField = StringConverterUtil.camelToSnake(sortField);
             sort = Sort.by(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, converterSortField);
@@ -264,7 +279,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
         Pageable pageable = PageRequest.of(current, size, sort);
 
         // 假设状态"1"表示"已提交"，需要复核的记录
-        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findByStatusIn(List.of("1", "2"), pageable);
+        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findByProductionLineIdAndStatusIn(cwkid,List.of("1", "2"), pageable);
 
         return tSysQualityCtrlPage;
     }

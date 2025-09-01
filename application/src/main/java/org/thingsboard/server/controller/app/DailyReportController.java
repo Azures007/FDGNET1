@@ -114,7 +114,8 @@ public class DailyReportController extends BaseController {
                                                               @RequestParam(value = "size",defaultValue = "10") Integer size,
                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startTime,
                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime) throws Exception {
-        PageVo<DailyReportVo> categoryList = dailyReportService.getDailyList(current,size,startTime,endTime);
+        SecurityUser securityUser=getCurrentUser();
+        PageVo<DailyReportVo> categoryList = dailyReportService.getDailyList(securityUser.getId().getId().toString(),current,size,startTime,endTime);
         return ResultUtil.success(categoryList);
     }
 
@@ -123,7 +124,8 @@ public class DailyReportController extends BaseController {
     public ResponseResult<PageVo<DailyReportVo>> getDailySubmitList(@RequestParam(value = "current",defaultValue = "0") Integer current,
                                                               @RequestParam(value = "size",defaultValue = "10") Integer size
                                                               ) throws Exception {
-        PageVo<DailyReportVo> categoryList = dailyReportService.getDailySubmitList(current,size);
+        SecurityUser  securityUser=getCurrentUser();
+        PageVo<DailyReportVo> categoryList = dailyReportService.getDailySubmitList(securityUser.getId().getId().toString(),current,size);
         return ResultUtil.success(categoryList);
     }
 }

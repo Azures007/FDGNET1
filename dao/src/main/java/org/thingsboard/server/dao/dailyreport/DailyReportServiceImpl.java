@@ -25,6 +25,7 @@ import org.thingsboard.server.dao.mes.tSysPersonnelInfo.TSysPersonnelInfoService
 import org.thingsboard.server.dao.mes.tSysQualityReportCategory.TSysQualityReportCategoryService;
 import org.thingsboard.server.dao.mes.vo.DailyReportVo;
 import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.user.UserService;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -65,6 +66,8 @@ public class DailyReportServiceImpl implements DailyReportService{
     DailyReportService dailyReportService;
 
 
+    @Autowired
+    UserService userService;
     @Value("${spring.datasource.url}")
     private String dbUrl;
 
@@ -220,8 +223,10 @@ public class DailyReportServiceImpl implements DailyReportService{
     }
 
     @Override
-    public PageVo<DailyReportVo> getDailyList(Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
-        List<DailyReportHead> plan = dailyReportRepository.findAllByCreatedTimeBetweenOrderByIdDesc(startTime,endTime);
+    public PageVo<DailyReportVo> getDailyList(String userId,Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
+        //获取登录的产线
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndCreatedTimeBetweenOrderByIdDesc(cwkid,startTime,endTime);
         List<DailyReportVo> saveVos = new ArrayList<>();
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();
@@ -237,11 +242,13 @@ public class DailyReportServiceImpl implements DailyReportService{
     }
 
     @Override
-    public PageVo<DailyReportVo> getDailySubmitList(Integer current, Integer size) {
+    public PageVo<DailyReportVo> getDailySubmitList(String userId,Integer current, Integer size) {
+        //获取登录的产线
+        String cwkid =userService.getUserCurrentCwkid(userId);
         //已经提交复核的数据
-        List<DailyReportHead> plan = dailyReportRepository.findAllBySubmitOrderByIdDesc(true);
+        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndSubmitOrderByIdDesc(cwkid,true);
         //已经提交的数据
-        List<DailyReportHead> plan1 = dailyReportRepository.findAllBySaveStausOrderByIdDesc(false);
+        List<DailyReportHead> plan1 = dailyReportRepository.findAllByProdLineIdAndSaveStausOrderByIdDesc(cwkid,false);
         List<DailyReportVo> saveVos = new ArrayList<>();
 
         for (DailyReportHead item : plan) {

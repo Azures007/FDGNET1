@@ -18,4 +18,7 @@ public interface TSysQualityPlanConfigRepository extends JpaRepository<TSysQuali
     void deleteByPlanId(Integer planId);
 
     List<TSysQualityPlanConfig> findByPlanId(Integer planId);
+
+    List<TSysQualityPlanConfig> findByPlanIdOrderByIdAsc(Integer planId);
+
 }
