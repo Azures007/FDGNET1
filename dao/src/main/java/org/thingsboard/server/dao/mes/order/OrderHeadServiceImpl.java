@@ -1649,8 +1649,12 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 //        int processIndex = 1;
         if (order.getTBusOrderProcessSet() != null) {
             for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
+                // 修改点：在获取记录时增加对 report_status != 1 的过滤条件
                 List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
                 if (recordList != null) {
+                    // 过滤掉 report_status == 1 的记录
+                    recordList.removeIf(record -> Float.valueOf(0).equals(record.getRecordQty()));
+
                     for (TBusOrderProcessRecord record : recordList) {
                         OrderProcessVo execVo = new OrderProcessVo();
 //                        execVo.setIndex(processIndex++);
