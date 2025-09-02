@@ -40,4 +40,8 @@ public class DailyReportItem {
     @ApiModelProperty("达成情况类型值")
     @Column(name = "field_type_value")
     private String fieldTypeValue;
+
+    @ApiModelProperty("是否必填，1是是，0是否")
+    @Column(name = "required")
+    private String required;
 }

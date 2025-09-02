@@ -148,6 +148,7 @@ public class DailyReportServiceImpl implements DailyReportService{
                 dailyReportItem.setFieldName(item1.getFieldName());
                 dailyReportItem.setFieldTypeId(item1.getFieldType());
                 dailyReportItem.setSpiltValue(item1.getDropdownFields());
+                dailyReportItem.setRequired(item1.getRequired());
                 itemList.add(dailyReportItem);
             }
             dto.setItemList(itemList);
