@@ -56,7 +56,7 @@ public class YcPdServiceImpl implements YcPdService {
         if (tSysPdRecord.getPdType().equals("0")) {
             //盘点
             TSysPdRecord tSysPdRecord1 = tSysPdRecordRepository.findByGroup(format,
-                    tSysPdRecord.getPdWorkshopNumber(), tSysPdRecord.getPdClassNumber());
+                    tSysPdRecord.getMaterialNumber(), tSysPdRecord.getPdClassNumber());
             if (tSysPdRecord1 != null) {
                 //统计盘点人
                 String pdCreatedName = tSysPdRecord1.getPdCreatedName();
