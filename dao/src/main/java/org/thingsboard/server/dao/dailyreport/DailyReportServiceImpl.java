@@ -272,7 +272,7 @@ public class DailyReportServiceImpl implements DailyReportService{
     }
 
     private String dailyGetBillNo(String prefix) {
-        String date = new SimpleDateFormat("yyMMdd").format(new Date());
+        String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
         String billNo="";
         String billNoParam = prefix + date + "%";
         String obj = dailyReportRepository.getHaveBillNo(billNoParam);
