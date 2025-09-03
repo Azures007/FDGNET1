@@ -1649,7 +1649,6 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 //        int processIndex = 1;
         if (order.getTBusOrderProcessSet() != null) {
             for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
-                // 修改点：在获取记录时增加对 report_status != 1 的过滤条件
                 List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
                 if (recordList != null) {
                     // 过滤掉 report_status == 1 的记录
@@ -1667,7 +1666,8 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                         execVo.setQty(record.getRecordQty());
                         execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
                         execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
-                        execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
+//                        execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
+                        execVo.setPersonName(order.getCurrentPersonId() != null ? order.getCurrentPersonId().getName() : "");
                         if (record.getReportTime() != null) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             execVo.setReportTime(sdf.format(record.getReportTime()));
