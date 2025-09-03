@@ -142,7 +142,7 @@ export class AddProcessManageComponent implements OnInit {
     let par = {
       current: 0,
       size: 999,
-      codeClId: 'PRCESS_REPORTYPE0000',
+      codeClId: 'RECORDTYPE0000',
       enabledSt: 1
     }
     this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {

@@ -172,11 +172,23 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
             String date = dateFormat.format(new Date());
 
-            String strNum = String.format("%03d", tSysQualityCtrl.getId());
-            tSysQualityCtrl.setQualityCtrlNo("Q" +date+ strNum);
+            // 查询当天已存在的最大编号，确定当前序号
+            String prefix = "Q" + date;
+            String maxQualityCtrlNo = tSysQualityCtrlRepository.findMaxQualityCtrlNoByDate(prefix + "%");
+            int nextNum = 1;
+            if (maxQualityCtrlNo != null && !maxQualityCtrlNo.isEmpty()) {
+                // 从最大编号中提取序号部分并加1
+                String numStr = maxQualityCtrlNo.substring(prefix.length());
+                try {
+                    nextNum = Integer.parseInt(numStr) + 1;
+                } catch (NumberFormatException e) {
+                    nextNum = 1;
+                }
+            }
+            String strNum = String.format("%03d", nextNum);
+            tSysQualityCtrl.setQualityCtrlNo(prefix + strNum);
             tSysQualityCtrlRepository.saveAndFlush(tSysQualityCtrl);
         }
-
     }
 
     @Override

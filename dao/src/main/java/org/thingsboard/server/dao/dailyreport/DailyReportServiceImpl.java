@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -147,6 +148,7 @@ public class DailyReportServiceImpl implements DailyReportService{
                 dailyReportItem.setFieldName(item1.getFieldName());
                 dailyReportItem.setFieldTypeId(item1.getFieldType());
                 dailyReportItem.setSpiltValue(item1.getDropdownFields());
+                dailyReportItem.setRequired(item1.getRequired());
                 itemList.add(dailyReportItem);
             }
             dto.setItemList(itemList);
@@ -263,8 +265,11 @@ public class DailyReportServiceImpl implements DailyReportService{
             if (!saveVos.contains(saveVo))
                 saveVos.add(saveVo);
         }
+        List<DailyReportVo> sortedListDesc = saveVos.stream()
+                .sorted(Comparator.comparing(DailyReportVo::getCreatedTime).reversed())
+                .collect(Collectors.toList());
         PageVo<DailyReportVo> pageVo = new PageVo<>();
-        pageVo.setList(saveVos);
+        pageVo.setList(sortedListDesc);
         pageVo.setCurrent(current);
         pageVo.setSize(size);
         pageVo.setTotal(saveVos.size());

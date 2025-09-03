@@ -464,21 +464,22 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                     if(inventory.getQty()>=qty){
                         Float f=(float)(Math.round((inventory.getQty()-qty)*10000)/10000.0);
                         inventory.setQty(f);
-                        qty=0f;
+
                         NcInventoryInOut inventoriesInOut=new NcInventoryInOut();
                         inventoriesInOut.setBillId(inventory.getBillId());
                         inventoriesInOut.setOrderProcessHistoryId(history.getOrderProcessHistoryId());
                         inventoriesInOut.setQty(-1*qty);
                         inventoriesInOuts.add(inventoriesInOut);
+                        qty=0f;
                         break;
                     }else{
                         qty=(float)(Math.round((qty-inventory.getQty())*10000)/10000.0);
-                        inventory.setQty(0f);
                         NcInventoryInOut inventoriesInOut=new NcInventoryInOut();
                         inventoriesInOut.setBillId(inventory.getBillId());
                         inventoriesInOut.setOrderProcessHistoryId(history.getOrderProcessHistoryId());
                         inventoriesInOut.setQty(-1*inventory.getQty());
                         inventoriesInOuts.add(inventoriesInOut);
+                        inventory.setQty(0f);
                     }
                 }
                 if(qty>0){
