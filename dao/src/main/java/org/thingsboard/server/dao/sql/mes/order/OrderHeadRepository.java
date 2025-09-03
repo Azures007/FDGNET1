@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
 import org.thingsboard.server.dao.mes.dto.TBusOrderDto;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -581,4 +582,6 @@ public interface OrderHeadRepository extends JpaRepository<TBusOrderHead,Integer
     // 通过单据编号获取需求单号（首行记录）
     @Query(value = "select a.mid_mo_sale_order_no from t_bus_order_head a where a.bill_no=?1 and mid_mo_sale_order_no!='' and a.is_deleted='1' limit 1 \n", nativeQuery = true)
     String getMidMoSaleOrderNoByBillNo(String billNo);
+
+    List<TBusOrderHead> findAllByCpmohidIn(List<String> cpmohids);
 }

@@ -1,5 +1,6 @@
 package org.thingsboard.server.dao.mes.order;
 
+import com.youchen.push.service.DomainPushFacade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -29,11 +30,13 @@ import org.thingsboard.server.dao.sql.mes.tSysClass.TSysClassRepository;
 import org.thingsboard.server.dao.mes.tSysClass.TSysClassService;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 import org.thingsboard.server.dao.mes.tSysPersonnelInfo.TSysPersonnelInfoService;
+import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,6 +85,9 @@ public class OrderBackendServiceImpl implements OrderBackendService {
     MessageService messageService;
 
     @Autowired
+    DomainPushFacade domainPushFacade;
+
+    @Autowired
     TSysPersonnelInfoService personnelInfoService;
 
     @Autowired
@@ -89,6 +95,9 @@ public class OrderBackendServiceImpl implements OrderBackendService {
 
     @Autowired
     TSysCraftMaterialRelRepository craftMaterialRelRepository;
+
+    @Autowired
+    NcWorklineService ncWorklineService;
 
     @Async
     @Override
@@ -121,12 +130,16 @@ public class OrderBackendServiceImpl implements OrderBackendService {
                 throw new RuntimeException("通过工艺路线没有获取工艺工序关系表的数据");
             } else {
                 Set<TBusOrderProcess> tBusOrderProcessSet = new HashSet<>();
+                Map<Integer,List<Integer>> processClassIdsMap = new HashMap<>();
                 for (int i = 0; i < tSysCraftProcessRelList.size(); i++) {
                     var tSysCraftProcessRel=tSysCraftProcessRelList.get(i);
                     //获取工序
                     TSysProcessInfo processInfo = processInfoService.getAndCheck(tSysCraftProcessRel.getProcessId());
                     //通过工序获取工序设置表
                     List<TSysProcessClassRel> processClassRelList = processClassRelRepository.findByProcessId(processInfo.getProcessId());
+                    processClassIdsMap.put(processInfo.getProcessId(),processClassRelList.stream()
+                            .map(TSysProcessClassRel::getClassId)
+                            .collect(Collectors.toList()));
                     if (processClassRelList.size() <= 0) {
                         throw new RuntimeException("通过工序没有获取工序设置班别的数据");
                     } else {
@@ -180,6 +193,55 @@ public class OrderBackendServiceImpl implements OrderBackendService {
                 //tBusOrderHeadRt.setOrderStatus("1");//已开工
                 tBusOrderHeadRt.setOrderMatching(LichengConstants.ORDER_HEAD_MATCHING_1);//匹配
                 orderHeadRepository.save(tBusOrderHeadRt);
+
+                // 成功保存后，根据单据日期触发推送
+                try {
+                    Date billDate = tBusOrderHeadRt.getBillDate();
+                    if (billDate != null) {
+                        LocalDate billLocalDate = Instant.ofEpochMilli(billDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+                        LocalDate today = LocalDate.now();
+                        LocalDate tomorrow = today.plusDays(1);
+
+                        // 组装推送所需参数
+                        String baseId = tBusOrderHeadRt.getPrdOrg();
+                        String lineId = tBusOrderHeadRt.getCwkid();
+                        if (baseId == null || baseId.isEmpty()) {
+                            baseId = ncWorklineService.getBaseIdByLineId(lineId);
+                        }
+                        
+
+                        String orderNo = tBusOrderHeadRt.getOrderNo();
+                        String productName = tBusOrderHeadRt.getBodyMaterialName();
+                        String estimatedOutput = tBusOrderHeadRt.getBodyPlanPrdQty() == null ? null : String.valueOf(tBusOrderHeadRt.getBodyPlanPrdQty());
+                        String unit = tBusOrderHeadRt.getBodyUnit();
+                        String specification = tBusOrderHeadRt.getBodyMaterialSpecification();
+                        LocalDateTime plannedStartTime = tBusOrderHeadRt.getBodyPlanStartDate() == null ? null :
+                                Instant.ofEpochMilli(tBusOrderHeadRt.getBodyPlanStartDate().getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+                        LocalDateTime plannedCompletionTime = tBusOrderHeadRt.getBodyPlanFinishDate() == null ? null :
+                                Instant.ofEpochMilli(tBusOrderHeadRt.getBodyPlanFinishDate().getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+                        // 遍历每条工序执行记录，分别推送（按各自的 orderProcessId）
+                        for (TBusOrderProcess proc : tBusOrderProcessSetRt) {
+                            Integer orderProcessId = proc.getOrderProcessId();
+                            List<Integer> ClassIdList=processClassIdsMap.get(proc.getProcessId().getProcessId());
+                            ClassIdList=ClassIdList.stream().distinct().collect(Collectors.toList());
+                            if (ClassIdList != null&&!ClassIdList.isEmpty() && lineId != null && orderProcessId != null) {
+
+                                if (billLocalDate.isEqual(today)) {
+                                    domainPushFacade.pushOrderToday(baseId, lineId, ClassIdList, tBusOrderHeadRt.getOrderId(), orderNo, productName,
+                                            estimatedOutput, unit, specification, plannedStartTime, plannedCompletionTime, orderProcessId);
+                                } else if (billLocalDate.isEqual(tomorrow)) {
+                                    domainPushFacade.pushOrderTomorrow(baseId, lineId, ClassIdList, tBusOrderHeadRt.getOrderId(), orderNo, productName,
+                                            estimatedOutput, unit, specification, plannedStartTime, plannedCompletionTime, orderProcessId);
+                                }
+                            }
+
+                        }
+                    }
+                } catch (Exception ex) {
+                    log.warn("订单推送触发失败，orderId={}，原因={}", tBusOrderHeadRt.getOrderId(), ex.getMessage());
+                }
+
             }
         } catch (RuntimeException e1) {
             isSuccess = false;

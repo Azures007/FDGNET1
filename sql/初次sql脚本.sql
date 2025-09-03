@@ -1559,6 +1559,87 @@ COMMENT ON COLUMN t_sys_pd_record_split.pd_br IS '备注';
 COMMENT ON COLUMN t_sys_pd_record_split.re_pd_record_id IS '原盘点记录id';
 COMMENT ON COLUMN t_sys_pd_record_split.pd_time_str IS '盘点日期（格式yyyy-MM-dd）';
 
+-- 推送消息表
+CREATE TABLE t_bus_push_message (
+                                    id BIGSERIAL PRIMARY KEY,
+                                    user_id VARCHAR(100) NOT NULL,
+                                    type VARCHAR(50) NOT NULL,
+                                    title VARCHAR(200) NOT NULL,
+                                    base_id VARCHAR(50),
+                                    line_id VARCHAR(50),
+                                    class_id INTEGER,
+                                    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+                                    created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                    order_notification_id BIGINT,
+                                    review_notification_id BIGINT
+);
+
+-- 订单通知详情表
+CREATE TABLE t_bus_order_notification (
+                                          id BIGSERIAL PRIMARY KEY,
+                                          order_id INTEGER NOT NULL,
+                                          order_no VARCHAR(100) NOT NULL,
+                                          order_process_id INTEGER,
+                                          product_name VARCHAR(200) NOT NULL,
+                                          unit VARCHAR(20),
+                                          estimated_output VARCHAR(50),
+                                          specification VARCHAR(100),
+                                          planned_start_time TIMESTAMP,
+                                          planned_completion_time TIMESTAMP,
+                                          created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 复核通知详情表
+CREATE TABLE t_bus_review_notification (
+                                           id BIGSERIAL PRIMARY KEY,
+                                           doc_no VARCHAR(100) NOT NULL,
+                                           product_name VARCHAR(200) NOT NULL,
+                                           checker VARCHAR(100),
+                                           inspection_time TIMESTAMP,
+                                           created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 创建索引
+CREATE INDEX idx_push_message_user_id ON t_bus_push_message(user_id);
+CREATE INDEX idx_push_message_user_read ON t_bus_push_message(user_id, is_read);
+CREATE INDEX idx_push_message_created_time ON t_bus_push_message(created_time);
+CREATE INDEX idx_order_notification_order_no ON t_bus_order_notification(order_no);
+CREATE INDEX idx_review_notification_doc_no ON t_bus_review_notification(doc_no);
+
+-- 添加表注释
+COMMENT ON TABLE t_bus_push_message IS '推送消息表';
+COMMENT ON COLUMN t_bus_push_message.id IS '主键ID';
+COMMENT ON COLUMN t_bus_push_message.user_id IS '用户ID';
+COMMENT ON COLUMN t_bus_push_message.type IS '消息类型：order_today,order_tomorrow,order_cancelled,qc_review,qc_daily';
+COMMENT ON COLUMN t_bus_push_message.title IS '消息标题';
+COMMENT ON COLUMN t_bus_push_message.base_id IS '基地ID';
+COMMENT ON COLUMN t_bus_push_message.line_id IS '生产线ID';
+COMMENT ON COLUMN t_bus_push_message.class_id IS '班组ID';
+COMMENT ON COLUMN t_bus_push_message.is_read IS '是否已读';
+COMMENT ON COLUMN t_bus_push_message.created_time IS '创建时间';
+COMMENT ON COLUMN t_bus_push_message.order_notification_id IS '关联订单通知详情ID';
+COMMENT ON COLUMN t_bus_push_message.review_notification_id IS '关联复核通知详情ID';
+
+COMMENT ON TABLE t_bus_order_notification IS '订单通知详情表';
+COMMENT ON COLUMN t_bus_order_notification.id IS '主键ID';
+COMMENT ON COLUMN t_bus_order_notification.order_id IS '订单ID';
+COMMENT ON COLUMN t_bus_order_notification.order_no IS '订单号';
+COMMENT ON COLUMN t_bus_order_notification.order_process_id IS '订单执行表ID';
+COMMENT ON COLUMN t_bus_order_notification.product_name IS '产品名称';
+COMMENT ON COLUMN t_bus_order_notification.estimated_output IS '预计产量';
+COMMENT ON COLUMN t_bus_order_notification.specification IS '规格';
+COMMENT ON COLUMN t_bus_order_notification.planned_start_time IS '计划开工时间';
+COMMENT ON COLUMN t_bus_order_notification.planned_completion_time IS '计划完工时间';
+COMMENT ON COLUMN t_bus_order_notification.created_time IS '创建时间';
+
+COMMENT ON TABLE t_bus_review_notification IS '复核通知详情表';
+COMMENT ON COLUMN t_bus_review_notification.id IS '主键ID';
+COMMENT ON COLUMN t_bus_review_notification.doc_no IS '单据编号';
+COMMENT ON COLUMN t_bus_review_notification.product_name IS '产品名称';
+COMMENT ON COLUMN t_bus_review_notification.checker IS '检查人';
+COMMENT ON COLUMN t_bus_review_notification.inspection_time IS '检测时间';
+COMMENT ON COLUMN t_bus_review_notification.created_time IS '创建时间';
+
 -- 2025-9-3
 
 ALTER TABLE public.t_sys_pd_record ADD group_leader varchar NULL;

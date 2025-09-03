@@ -10,4 +10,6 @@ public interface NcWorklineService {
     List<NcWorkline> findByVwkcodeOrVwknameLike(String keyword);
 
     List<NcWorkline> findAllByCwkids(List<String> cwkids);
+
+    String getBaseIdByLineId(String cwkid);
 }

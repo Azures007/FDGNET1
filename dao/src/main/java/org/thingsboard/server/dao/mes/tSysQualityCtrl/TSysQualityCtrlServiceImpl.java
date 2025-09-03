@@ -19,6 +19,8 @@ import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanConfigR
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanRepository;
 import org.thingsboard.server.dao.user.UserService;
+import com.youchen.push.service.DomainPushFacade;
+import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
 import org.thingsboard.server.dao.util.JsonUtil;
 import org.thingsboard.server.dao.util.StringConverterUtil;
 
@@ -57,6 +59,10 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
 
     @Autowired
     UserService userService;
+    @Autowired
+    DomainPushFacade domainPushFacade;
+    @Autowired
+    NcWorklineService ncWorklineService;
     @Override
     public Page<TSysQualityCtrl> tSysQualityCtrlList(String userId,Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
@@ -130,6 +136,20 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
 
         // 设置明细列表中的ctrlId
         tSysQualityCtrlDetailList.forEach(detail -> detail.setCtrlId(tSysQualityCtrl.getId()));
+
+        // 提交(1)时触发通知（基地+产线+角色）
+        try {
+            if ("1".equals(tSysQualityCtrl.getStatus())) {
+                String lineId = tSysQualityCtrl.getProductionLineId();
+                String baseId = ncWorklineService.getBaseIdByLineId(lineId);
+                String docNo = tSysQualityCtrl.getQualityCtrlNo();
+                String productName = tSysQualityCtrl.getMaterialName();
+                String checker = tSysQualityCtrl.getCreateUser();
+                java.time.LocalDateTime inspectionTime = tSysQualityCtrl.getInspectionDate() == null ? java.time.LocalDateTime.now() :
+                        tSysQualityCtrl.getInspectionDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
+                domainPushFacade.pushQcReview(baseId, lineId, null, docNo, productName, checker, inspectionTime);
+            }
+        } catch (Exception ignore) {}
 
         return vo;
     }

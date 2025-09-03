@@ -7,17 +7,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import com.youchen.push.service.DomainPushFacade;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcess;
+import org.thingsboard.server.common.data.mes.sys.TSysProcessClassRel;
+import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
 import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
 import org.thingsboard.server.common.data.mes.ncOrder.NcTBusOrderHead;
 import org.thingsboard.server.dao.mes.order.OrderBackendService;
 import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftInfoRepository;
 import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftMaterialRelRepository;
+import org.thingsboard.server.dao.sql.mes.TSysProcessInfo.TSysProcessClassRelRepository;
 import org.thingsboard.server.dao.sql.mes.ncOrder.NcTBusOrderHeadRepository;
 import org.thingsboard.server.dao.sql.mes.ncOrder.NcTBusOrderPPBomRepository;
+import org.thingsboard.server.dao.sql.mes.order.OrderHeadRepository;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
@@ -36,6 +47,19 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
 
     @Autowired
     OrderBackendService orderBackendService;
+
+    @Autowired
+    DomainPushFacade domainPushFacade;
+
+    @Autowired
+    NcWorklineService ncWorklineService;
+
+    @Autowired
+    OrderHeadRepository orderHeadRepository;
+
+    @Autowired
+    TSysProcessClassRelRepository processClassRelRepository;
+
     @Override
     public List<NcTBusOrderHead> findAll() {
         return repository.findAll();
@@ -181,6 +205,42 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             String vbillcodeStr = String.join(",", vbillcodes);
             throw new IllegalArgumentException("订单已开工，请勿删除(单号："+vbillcodeStr+")");
         }
+        // 推送订单取消消息
+        List<TBusOrderHead> heads = orderHeadRepository.findAllByCpmohidIn(cpmohids);
+        for (TBusOrderHead head : heads) {
+            try {
+                String lineId = head.getCwkid();
+                String baseId = ncWorklineService.getBaseIdByLineId(lineId);
+                List<Integer> classIds = new ArrayList<>();
+                String orderNo = head.getOrderNo();
+                String productName = head.getBodyMaterialName();
+                String estimatedOutput = head.getBodyPlanPrdQty().toString();
+                String unit = head.getBodyUnit();
+                String specification = head.getBodyMaterialSpecification();
+                LocalDateTime plannedStartTime = head.getBodyPlanStartDate() == null ? null :
+                        Instant.ofEpochMilli(head.getBodyPlanStartDate().getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+                LocalDateTime plannedCompletionTime = head.getBodyPlanFinishDate() == null ? null :
+                        Instant.ofEpochMilli(head.getBodyPlanFinishDate().getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+
+                for(TBusOrderProcess pinfo:head.getTBusOrderProcessSet()){
+                    List<TSysProcessClassRel> processClassRelList = processClassRelRepository.findByProcessId(pinfo.getProcessId().getProcessId());
+                    classIds=(processClassRelList.stream()
+                            .map(TSysProcessClassRel::getClassId)
+                            .collect(Collectors.toList()));
+                    classIds=classIds.stream().distinct().collect(Collectors.toList());
+                    if (lineId != null && !classIds.isEmpty()) {
+                        domainPushFacade.pushOrderCancelled(baseId, lineId, classIds, head.getOrderId(), orderNo, productName,
+                                estimatedOutput, unit, specification, plannedStartTime, plannedCompletionTime, "订单取消", pinfo.getOrderProcessId());
+                    }
+                }
+
+
+            } catch (Exception e) {
+                log.warn("订单取消推送失败 orderId={}, err={}", head.getOrderId(), e.getMessage());
+            }
+        }
+
         repository.deleteByCpmohids(cpmohids);
     }
 }

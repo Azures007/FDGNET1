@@ -1,0 +1,23 @@
+package com.youchen.push.repository;
+
+import com.youchen.push.entity.PushMessageEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface PushMessageRepository extends JpaRepository<PushMessageEntity, Long> {
+
+    @Query("SELECT COUNT(m) FROM PushMessageEntity m WHERE m.userId = :userId AND m.isRead = false")
+    int countUnreadByUserId(@Param("userId") String userId);
+
+    List<PushMessageEntity> findByUserIdOrderByCreatedTimeDesc(String userId);
+
+    @Modifying
+    @Query("UPDATE PushMessageEntity m SET m.isRead = true WHERE m.userId = :userId AND m.isRead = false")
+    int markAllReadByUserId(@Param("userId") String userId);
+}
