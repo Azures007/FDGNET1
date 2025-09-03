@@ -88,6 +88,15 @@ public class YcPdServiceImpl implements YcPdService {
         tSysPdRecord.setByFp("0");
         tSysPdRecord.setPdTimeStr(format);
         tSysPdRecordRepository.saveAndFlush(tSysPdRecord);
+        //更新库存
+        List<NcInventory> ncInventories = ncInventoryRepository.findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(tSysPdRecord.getPdWorkshopNumber(),
+                tSysPdRecord.getMaterialNumber(), "生效");
+        if(ncInventories!=null&&ncInventories.size()>0){
+            for (NcInventory ncInventory : ncInventories) {
+                ncInventory.setQty(tSysPdRecord.getPdQty().floatValue());
+                ncInventoryRepository.saveAndFlush(ncInventory);
+            }
+        }
         //拆分还原拆料
         savePdBySplit(tSysPdRecord, pdSplit);
     }
@@ -122,7 +131,8 @@ public class YcPdServiceImpl implements YcPdService {
 
     @Override
     public List<NcInventory> pdMaterials(PdMaterialsDto pdMaterialsDto) {
-        List<NcInventory> ncInventories = ncInventoryRepository.pdMaterials(pdMaterialsDto);
+        List<Map> ncInventorieMs = ncInventoryRepository.pdMaterials(pdMaterialsDto);
+        List<NcInventory> ncInventories=JSON.parseArray(JSON.toJSONString(ncInventorieMs),NcInventory.class);
         return ncInventories;
     }
 
@@ -136,6 +146,9 @@ public class YcPdServiceImpl implements YcPdService {
     @Override
     public List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber) {
         List<TSysPdRecord> tSysPdRecords = tSysPdRecordRepository.showWorkshopRecord(pdTimeStr, pdWorkshopNumber);
+        for (TSysPdRecord tSysPdRecord : tSysPdRecords) {
+            tSysPdRecord.setPdQty(tSysPdRecord.getPdQty().setScale(2));
+        }
         return tSysPdRecords;
     }
 }

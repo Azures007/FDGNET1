@@ -1,5 +1,6 @@
 package org.thingsboard.server.common.data.mes.sys;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -29,6 +30,7 @@ public class TSysPdRecord {
     private Integer rePdRecordId;
 
     @Column(name = "pd_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ApiModelProperty("盘点时间*")
     private Date pdTime;
 
@@ -79,6 +81,7 @@ public class TSysPdRecord {
     @ApiModelProperty("是否删除 0：否 1：是")
     private String byDeleted;
     @Column(name = "created_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ApiModelProperty("创建时间")
     private Date createdTime;
     @Column(name = "created_name")
@@ -96,7 +99,9 @@ public class TSysPdRecord {
     @Column(name = "pd_time_str")
     @ApiModelProperty("盘点日期（格式yyyy-MM-dd）")
     private String pdTimeStr;
-
+    @ApiModelProperty("班长")
+    @Column(name = "group_leader")
+    private String groupLeader;
 
 
 }

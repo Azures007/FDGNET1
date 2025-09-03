@@ -63,4 +63,8 @@ public class NcInventory {
     @Column(name = "status", nullable = false)
     @ApiModelProperty(name="状态", required = true)
     private String status;
+
+    @Transient
+    @ApiModelProperty("是否已盘点 0：否 1：是")
+    private Integer byPd;
 }

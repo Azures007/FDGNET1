@@ -19,5 +19,8 @@ public class PdMaterialsDto {
     @ApiModelProperty("物料分类：自制品")
     private String materialType = "";
 
+    @ApiModelProperty("复盘时传的物料编码")
+    private String materialNumber="";
+
 
 }

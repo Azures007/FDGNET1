@@ -1558,3 +1558,8 @@ COMMENT ON COLUMN t_sys_pd_record_split.pd_type IS '盘点类型 0：盘点 1：
 COMMENT ON COLUMN t_sys_pd_record_split.pd_br IS '备注';
 COMMENT ON COLUMN t_sys_pd_record_split.re_pd_record_id IS '原盘点记录id';
 COMMENT ON COLUMN t_sys_pd_record_split.pd_time_str IS '盘点日期（格式yyyy-MM-dd）';
+
+-- 2025-9-3
+
+ALTER TABLE public.t_sys_pd_record ADD group_leader varchar NULL;
+COMMENT ON COLUMN public.t_sys_pd_record.group_leader IS '班别组长';
