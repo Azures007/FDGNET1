@@ -30,6 +30,7 @@ import org.thingsboard.server.dao.user.UserService;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -228,7 +229,9 @@ public class DailyReportServiceImpl implements DailyReportService{
     public PageVo<DailyReportVo> getDailyList(String userId,Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
         //获取登录的产线
         String cwkid =userService.getUserCurrentCwkid(userId);
-        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndCreatedTimeBetweenOrderByIdDesc(cwkid,startTime,endTime);
+        LocalDateTime endDateTime = endTime.atTime(23, 59, 59);
+        LocalDateTime startDateTime = endTime.atTime(0, 0, 0);
+        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndCreatedTimeBetweenOrderByIdDesc(cwkid,startDateTime,endDateTime);
         List<DailyReportVo> saveVos = new ArrayList<>();
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();
