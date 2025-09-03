@@ -173,7 +173,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         orderProcessRecordRepository.saveAndFlush(tBusOrderProcessRecord);
         tBusOrderProcessHistory.setReportStatus(LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1);//删除状态
         //还原库存数量，删除出库记录
-        List<NcInventoryInOut> inout=ncInventoryInoutRepository.getAllByOrderProcessHistoryId(tBusOrderProcessHistory.getOrderProcessRecordId());
+        List<NcInventoryInOut> inout=ncInventoryInoutRepository.getAllByOrderProcessHistoryId(tBusOrderProcessHistory.getOrderProcessHistoryId());
         for(NcInventoryInOut ncInventoryInOut:inout){
             NcInventory inv=ncInventoryRepository.getOne(ncInventoryInOut.getBillId());
             if(inv!=null){
