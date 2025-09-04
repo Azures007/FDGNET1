@@ -35,17 +35,40 @@ export class TabService {
       return menu;
     }
     addTab(url: string) {
-        const currentTabs = this.tabsSubject.value;
-        if (!currentTabs.find(t => t.link === url)) {
-            if (!this.flatMenu.find((item: any) => item.path === url)?.name) {
-              return;
+        const currentTabs = this.tabsSubject.value.slice();
+
+        // 规则：订单模块只保留一个页签，在模块内导航（列表⇄详情）时更新同一个页签
+        if (url.startsWith('/order/')) {
+            const idx = currentTabs.findIndex(t => (t.link as string).startsWith('/order/'));
+            const label = this.getLabelFromUrl(url);
+            if (idx > -1) {
+                // 更新已有“订单”页签
+                currentTabs[idx] = { ...currentTabs[idx], link: url, label };
+                this.tabsSubject.next(currentTabs);
+                return;
             }
+            // 如果不存在，则按正常逻辑新增一个“订单”页签
+        }
+
+        if (!currentTabs.find(t => t.link === url)) {
+            // 检查是否是已知的菜单项或子路由
+            const menuItem = this.flatMenu.find((item: any) =>
+                item.path === url || url.startsWith(item.path + '/')
+            );
+
+            if (!menuItem ) {
+                console.log('Tab not added - unknown route:', url);
+                return;
+            }
+
             const newTab = {
                 link: url,
-                label: this.flatMenu.find((item: any) => item.path === url)?.name || this.getLabelFromUrl(url),
+                label: menuItem?.name || this.getLabelFromUrl(url),
                 icon: 'tab'
             };
-            this.tabsSubject.next([...currentTabs, newTab]);
+            this.tabsSubject.next(currentTabs.concat([newTab]));
+        } else {
+            console.log('Tab already exists:', url);
         }
     }
 
@@ -68,6 +91,9 @@ export class TabService {
     private getLabelFromUrl(url: string): string {
         if(url.includes('/order/details')) {
           return '订单详情'
+        }
+        if(url.includes('/order/list')) {
+          return '订单列表'
         }
         return '详情';
     }

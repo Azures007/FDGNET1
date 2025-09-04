@@ -8,9 +8,12 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
   public static waitDelete: string | null;
 
   shouldDetach(route: ActivatedRouteSnapshot): boolean {
-    // return route.data.reuse !== false;
-    return false;
-
+    // Enable caching for routes with a component by default.
+    // Opt-out by setting data.reuse === false on the route definition.
+    const hasComponent = !!route.routeConfig && !!route.routeConfig.component;
+    const reuseAllowed = route.data ? route.data.reuse !== false : true;
+    const result = hasComponent && reuseAllowed;
+    return result;
   }
 
   store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void {
@@ -27,9 +30,7 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
         const oldestUrl = CustomRouteReuseStrategy.storedRoutes.shift();
         if (oldestUrl) {
           const oldestHandle = CustomRouteReuseStrategy.handlers[oldestUrl];
-          // console.log("🚀 ~ oldestHandle:", oldestHandle)
           delete CustomRouteReuseStrategy.handlers[oldestUrl];
-          //
         }
       }
       CustomRouteReuseStrategy.handlers[url] = handle;
@@ -41,7 +42,9 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
 
   shouldAttach(route: ActivatedRouteSnapshot): boolean {
     const path = route.routeConfig?.path;
-    return !!path && !!CustomRouteReuseStrategy.handlers[this.getRouteUrl(route)];
+    const url = this.getRouteUrl(route);
+    const result = !!path && !!CustomRouteReuseStrategy.handlers[url];
+    return result;
   }
 
   retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle {
@@ -58,9 +61,14 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
   }
 
   private getRouteUrl(route: ActivatedRouteSnapshot) {
-    // console.log(CustomRouteReuseStrategy.storedRoutes)
-    console.log(route);
-    return route.pathFromRoot.map(v => v.url.map(segment => segment.toString()).join('/')).join('/').slice(1);
+    // 构建包含路径和参数的完整URL作为缓存键
+    // 这样每个不同的参数组合都有独立的缓存
+    const pathSegments = route.pathFromRoot
+      .map(r => r.url.map(segment => segment.toString()).join('/'))
+      .join('/');
+
+    // 移除开头的斜杠
+    return pathSegments.startsWith('/') ? pathSegments.slice(1) : pathSegments;
   }
 
   public static clearCache(dashboardKey: string) {
