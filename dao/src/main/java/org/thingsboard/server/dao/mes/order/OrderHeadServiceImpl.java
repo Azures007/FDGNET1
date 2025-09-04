@@ -182,6 +182,10 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             if (!StringUtils.isEmpty(orderDto.getBillNo())) {
                 predicates.add(criteriaBuilder.like(root.get("billNo"), "%" + orderDto.getBillNo() + "%"));
             }
+            //MES订单号
+            if (!StringUtils.isEmpty(orderDto.getOrderNo())) {
+                predicates.add(criteriaBuilder.like(root.get("orderNo"), "%" + orderDto.getOrderNo() + "%"));
+            }
             //产品编码
             if (!StringUtils.isEmpty(orderDto.getNcMaterialCode())) {
                 predicates.add(criteriaBuilder.like(root.get("bodyMaterialNumber"), "%" + orderDto.getNcMaterialCode() + "%"));
@@ -1548,6 +1552,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             OrderSimpleListVo vo = new OrderSimpleListVo();
             vo.setIndex(index++);
             vo.setOrderId(order.getOrderId());
+            vo.setOrderNo(order.getOrderNo());
             vo.setBillNo(order.getBillNo());
             vo.setBillDate(order.getBillDate() != null ? order.getBillDate().toString() : "");
             vo.setBillType(order.getBillType());
@@ -1574,6 +1579,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         TBusOrderHead order = orderHeadRepository.findById(orderId).orElse(null);
         if (order == null) return null;
         OrderDetailSimpleVo vo = new OrderDetailSimpleVo();
+        vo.setOrderNo(order.getOrderNo());
         vo.setBillNo(order.getBillNo());
         vo.setBillType(order.getBillType());
         vo.setOrderStatus(order.getOrderStatus());

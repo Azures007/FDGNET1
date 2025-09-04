@@ -1,7 +1,6 @@
 package com.youchen.push.service.impl;
 
 import com.youchen.push.PushMessage;
-import com.youchen.push.SessionRegistry;
 import com.youchen.push.dto.MessageItem;
 import com.youchen.push.dto.OrderNotificationDetail;
 import com.youchen.push.dto.ReviewNotificationDetail;
@@ -17,6 +16,10 @@ import com.youchen.push.service.PushService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,11 +86,29 @@ public class MessageCenterServiceImpl implements MessageCenterService {
     }
 
     @Override
-    public List<MessageItem> list(String userId) {
-        return pushMessageRepository.findByUserIdOrderByCreatedTimeDesc(userId)
-                .stream()
-                .map(this::toMessageItem)
-                .collect(Collectors.toList());
+    public PageVo<MessageItem> list(String userId, Integer current, Integer size, String readStatus) {
+        Pageable pageable = PageRequest.of(Math.max(0, current == null ? 0 : current), Math.max(1, size == null ? 10 : size));
+        Page<PushMessageEntity> page;
+        
+        // 根据readStatus参数决定查询条件
+        if ("unread".equalsIgnoreCase(readStatus)) {
+            // 查询未读消息
+            page = pushMessageRepository.findByUserIdAndIsReadOrderByCreatedTimeDesc(userId, false, pageable);
+        } else if ("read".equalsIgnoreCase(readStatus)) {
+            // 查询已读消息
+            page = pushMessageRepository.findByUserIdAndIsReadOrderByCreatedTimeDesc(userId, true, pageable);
+        } else {
+            // 查询全部消息（默认或"all"）
+            page = pushMessageRepository.findByUserIdOrderByCreatedTimeDesc(userId, pageable);
+        }
+        
+        List<MessageItem> items = page.getContent().stream().map(this::toMessageItem).collect(Collectors.toList());
+        PageVo<MessageItem> pageVo = new PageVo<>();
+        pageVo.setList(items);
+        pageVo.setCurrent(current);
+        pageVo.setSize(size);
+        pageVo.setTotal((int) page.getTotalElements());
+        return pageVo;
     }
 
     @Override
@@ -117,6 +138,7 @@ public class MessageCenterServiceImpl implements MessageCenterService {
                 detail.setSpecification(orderEntity.getSpecification());
                 detail.setPlannedStartTime(orderEntity.getPlannedStartTime() != null ? orderEntity.getPlannedStartTime().toString() : null);
                 detail.setPlannedCompletionTime(orderEntity.getPlannedCompletionTime() != null ? orderEntity.getPlannedCompletionTime().toString() : null);
+                detail.setUnit(orderEntity.getUnit());
                 item.setOrderDetail(detail);
             }
         }

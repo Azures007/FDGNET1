@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.thingsboard.server.dao.mes.dto.ProcessInfoDto;
 
+import javax.persistence.Column;
 import java.util.List;
 
 @ApiModel("订单简要列表VO")
@@ -15,6 +16,10 @@ public class OrderSimpleListVo {
 
     @ApiModelProperty("mes订单id")
     private Integer orderId;
+
+    @ApiModelProperty("订单号")
+    @Column(name = "order_no")
+    private String orderNo;
 
     @ApiModelProperty("生产订单号")
     private String billNo;

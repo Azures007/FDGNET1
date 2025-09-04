@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
+
 @Data
 @ApiModel("订单通知详情")
 public class OrderNotificationDetail {
@@ -18,7 +20,10 @@ public class OrderNotificationDetail {
     
     @ApiModelProperty("产品名称")
     private String productName;
-    
+
+    @ApiModelProperty("单位")
+    private String unit;
+
     @ApiModelProperty("预计产量")
     private String estimatedOutput;
     

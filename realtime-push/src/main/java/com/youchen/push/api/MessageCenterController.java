@@ -1,35 +1,69 @@
 package com.youchen.push.api;
 
+import com.youchen.push.dto.MessageItem;
 import com.youchen.push.service.MessageCenterService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.thingsboard.server.common.data.web.ResponseResult;
+import org.thingsboard.server.common.data.web.ResultUtil;
+import org.thingsboard.server.dao.mes.vo.PageVo;
+
+import java.lang.reflect.Method;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/message-center")
+@Api(value = "消息中心接口",tags = "消息中心接口")
 @RequiredArgsConstructor
 public class MessageCenterController {
 
     private final MessageCenterService service;
 
     @GetMapping("/unread-count")
-    public ResponseEntity<Integer> unreadCount(@RequestParam("userId") String userId) {
-        return ResponseEntity.ok(service.unreadCount(userId));
+    @ApiOperation("获取未读消息数量")
+    public ResponseResult<Integer> unreadCount() throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object obj=authentication.getPrincipal();
+        Method getIdMethod = obj.getClass().getMethod("getId");
+        Object idValue = getIdMethod.invoke(obj);
+        String userId=idValue.toString();
+        return ResultUtil.success(service.unreadCount(userId));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> list(@RequestParam("userId") String userId) {
-        return ResponseEntity.ok(service.list(userId));
+    @ApiOperation("获取消息列表")
+    public ResponseResult<PageVo<MessageItem>> list(
+            @ApiParam("页码，从0开始") @RequestParam(value = "current", defaultValue = "0") Integer current,
+            @ApiParam("每页大小") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @ApiParam("消息状态：all(全部), unread(未读), read(已读)") @RequestParam(value = "readStatus", defaultValue = "all") String readStatus) throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object obj=authentication.getPrincipal();
+        Method getIdMethod = obj.getClass().getMethod("getId");
+        Object idValue = getIdMethod.invoke(obj);
+        String userId=idValue.toString();
+        return ResultUtil.success(service.list(userId, current, size, readStatus));
     }
 
     @PostMapping("/mark-read")
-    public ResponseEntity<Void> markAllRead(@RequestParam("userId") String userId) {
+    @ApiOperation("标记所有消息为已读")
+    public ResponseResult<Void> markAllRead() throws Exception{
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object obj=authentication.getPrincipal();
+        Method getIdMethod = obj.getClass().getMethod("getId");
+        Object idValue = getIdMethod.invoke(obj);
+        String userId=idValue.toString();
         service.markAllRead(userId);
-        return ResponseEntity.ok().build();
+        return ResultUtil.success();
     }
 }
 

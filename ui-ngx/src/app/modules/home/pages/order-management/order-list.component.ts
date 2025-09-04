@@ -22,7 +22,7 @@ import { CraftDetailComponent } from '../../components/order/craft-detail.compon
 
 export interface PeriodicElement {
   no: Number,
-  billNo: string,
+  orderNo: string,
   billDate: string,
   bodyPrdDept: string,
   bodyPlanPrdQty: string,
@@ -79,7 +79,7 @@ export class OrderListComponent implements OnInit {
   //单位列表
   allUnits = [];
 
-  displayedColumns: string[] = ['index', 'billNo', 'billDate', 'billType', 'vwkname', 'code', 'name', 'materialspec',
+  displayedColumns: string[] = ['index', 'orderNo', 'billDate', 'billType', 'vwkname', 'code', 'name', 'materialspec',
     'nnum', 'tplanstarttime', 'craftName', 'orderStatus', 'customColumn1',];
 
 
@@ -91,7 +91,7 @@ export class OrderListComponent implements OnInit {
   searchFormGroup = this.fb.group({
     current: 0,
     size: 50,
-    billNo: '',
+    orderNo: '',
     ncMaterialCode: '',
     ncMaterialName: '',
     cwkid: '',
@@ -214,7 +214,7 @@ export class OrderListComponent implements OnInit {
     this.searchFormGroup = this.fb.group({
       current: 0,
       size: 50,
-      billNo: '',
+      orderNo: '',
       ncMaterialCode: '',
       ncMaterialName: '',
       cwkid: '',
@@ -278,7 +278,7 @@ export class OrderListComponent implements OnInit {
       body: {
         billDateStart: new Date(this.utils.dateFormat(new Date(this.orderBillRange.value.start), 'yyyy-MM-dd 00:00:00')),
         billDateEnd: new Date(this.utils.dateFormat(new Date(this.orderBillRange.value.end), 'yyyy-MM-dd 23:59:59')),
-        billNo: this.searchFormGroup.value.billNo,
+        orderNo: this.searchFormGroup.value.orderNo,
         ncMaterialCode: this.searchFormGroup.value.ncMaterialCode,
         ncMaterialName: this.searchFormGroup.value.ncMaterialName,
         ncReceiveTimeStart: this.orderPlanRange.value.start ? new Date(this.utils.dateFormat(new Date(this.orderPlanRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
@@ -356,7 +356,7 @@ export class OrderListComponent implements OnInit {
       body: {
         billDateStart: new Date(this.utils.dateFormat(new Date(this.orderBillRange.value.start), 'yyyy-MM-dd 00:00:00')),
         billDateEnd: new Date(this.utils.dateFormat(new Date(this.orderBillRange.value.end), 'yyyy-MM-dd 23:59:59')),
-        billNo: this.searchFormGroup.value.billNo,
+        orderNo: this.searchFormGroup.value.orderNo,
         ncMaterialCode: this.searchFormGroup.value.ncMaterialCode,
         ncMaterialName: this.searchFormGroup.value.ncMaterialName,
         ncReceiveTimeStart: this.orderPlanRange.value.start ? new Date(this.utils.dateFormat(new Date(this.orderPlanRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,

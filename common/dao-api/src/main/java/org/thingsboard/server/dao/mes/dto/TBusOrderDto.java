@@ -14,6 +14,9 @@ public class TBusOrderDto {
     @ApiModelProperty("单据编号（支持模糊查询）")
     private String billNo="";
 
+    @ApiModelProperty("单据编号（支持模糊查询）")
+    private String orderNo="";
+
     @ApiModelProperty("nc_产品编码（支持模糊查询）")
     private String ncMaterialCode="";
 

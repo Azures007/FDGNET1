@@ -762,7 +762,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                             int pot = tBusOrderHead.getBodyPotQty() == null ? 0 : tBusOrderHead.getBodyPotQty();
                             // 获取工序全部用料对应的累计投入数量
                             float sumImportRecordQty = orderProcessRecordRepository.getBGSumRecordQty(saveDto.getProcessId(), tBusOrderHead.getMidMoSaleOrderNo(), saveDto.getRecordTypeBg());
-                            sumImportRecordQty += saveDto.getRecordQty();//累加本次提交的数量
+                            sumImportRecordQty = Math.round(sumImportRecordQty + saveDto.getRecordQty() * 10000f) /10000f;//累加本次提交的数量
                             // 前道产出数量：获取拌料的前道订单全部用料累计投入数量
                             float sumPlanImportPrevOrder = this.getBGSumRecordQtyPrevOrder(saveDto.getOrderNo(), LichengConstants.ORDER_RECORD_TYPE_1, saveDto.getRecordTypeBg());
                             if (sumPlanImportPrevOrder == 0) {

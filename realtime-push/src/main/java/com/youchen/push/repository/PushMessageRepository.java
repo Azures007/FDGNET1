@@ -1,6 +1,8 @@
 package com.youchen.push.repository;
 
 import com.youchen.push.entity.PushMessageEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +18,10 @@ public interface PushMessageRepository extends JpaRepository<PushMessageEntity, 
     int countUnreadByUserId(@Param("userId") String userId);
 
     List<PushMessageEntity> findByUserIdOrderByCreatedTimeDesc(String userId);
+
+    Page<PushMessageEntity> findByUserIdOrderByCreatedTimeDesc(String userId, Pageable pageable);
+    
+    Page<PushMessageEntity> findByUserIdAndIsReadOrderByCreatedTimeDesc(String userId, Boolean isRead, Pageable pageable);
 
     @Modifying
     @Query("UPDATE PushMessageEntity m SET m.isRead = true WHERE m.userId = :userId AND m.isRead = false")
