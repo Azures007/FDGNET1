@@ -38,6 +38,7 @@ import org.thingsboard.server.dao.sql.mes.order.*;
 import org.thingsboard.server.dao.sql.mes.role.RoleRepository;
 import org.thingsboard.server.dao.sql.mes.role.RoleUserRepository;
 import org.thingsboard.server.dao.sql.mes.tSysClass.TSysClassRepository;
+import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
 import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
@@ -151,6 +152,9 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 
     @Autowired
     protected UserService userService;
+
+    @Autowired
+    TSysCodeDscRepository tSysCodeDscRepository;
 
     @Override
     public PageVo<TBusOrderHead> tBusOrderHeadList(Integer current, Integer size, TBusOrderHeadDto tBusOrderHeadDto) {
@@ -1615,15 +1619,41 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         // 组装工序执行情况表
         List<OrderDetailSimpleVo.ProcessExecuteVo> processExecutes = new ArrayList<>();
         int processIndex = 1;
+        // 收集所有记录类型
+        List<String> recordTypes = new ArrayList<>();
         if (order.getTBusOrderProcessSet() != null) {
             for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
                 List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
                 if (recordList != null) {
+                    recordList.removeIf(record -> Float.valueOf(0).equals(record.getRecordQty()));
+                    for (TBusOrderProcessRecord record : recordList) {
+                        if (record.getRecordType() != null && !record.getRecordType().isEmpty() && !recordTypes.contains(record.getRecordType())) {
+                            recordTypes.add(record.getRecordType());
+                        }
+                    }
+                }
+            }
+        }
+        // 批量查询所有需要的code_dsc记录
+        Map<String, String> recordTypeDscMap = new HashMap<>();
+        if (!recordTypes.isEmpty()) {
+            List<TSysCodeDsc> codeDscList = tSysCodeDscRepository.findByCodeClIdAndCodeValueIn("RECORDTYPE0000", recordTypes);
+            for (TSysCodeDsc codeDsc : codeDscList) {
+                recordTypeDscMap.put(codeDsc.getCodeValue(), codeDsc.getCodeDsc());
+            }
+        }
+
+        if (order.getTBusOrderProcessSet() != null) {
+            for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
+                List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
+                if (recordList != null) {
+                    recordList.removeIf(record -> Float.valueOf(0).equals(record.getRecordQty()));
                     for (TBusOrderProcessRecord record : recordList) {
                         OrderDetailSimpleVo.ProcessExecuteVo execVo = new OrderDetailSimpleVo.ProcessExecuteVo();
                         execVo.setIndex(processIndex++);
                         execVo.setProcessName(process.getProcessId() != null ? process.getProcessId().getProcessName() : "");
-                        execVo.setProcessType(record.getBusType());
+                        String recordTypeDesc = recordTypeDscMap.get(record.getRecordType());
+                        execVo.setProcessType(recordTypeDesc != null ? recordTypeDesc : record.getBusType());
                         execVo.setMaterialName(record.getMaterialName());
                         execVo.setMaterialSpec("");
                         execVo.setLot(record.getBodyLot());
@@ -1632,7 +1662,12 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                         execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
                         execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
                         execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
-                        execVo.setReportTime(record.getReportTime() != null ? record.getReportTime().toString() : "");
+                        if (record.getReportTime() != null) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            execVo.setReportTime(sdf.format(record.getReportTime()));
+                        } else {
+                            execVo.setReportTime("");
+                        }
                         processExecutes.add(execVo);
                     }
                 }
@@ -1651,18 +1686,38 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     public List<OrderProcessVo> getProcessHistoryInfo(Integer orderId) {
         TBusOrderHead order = orderHeadRepository.findById(orderId).orElse(null);
         if (order == null) return null;
-        List<OrderProcessVo> processHistory = new ArrayList<>();
 //        int processIndex = 1;
-        if (order.getTBusOrderProcessSet() != null) {
+            List<OrderProcessVo> processHistory = new ArrayList<>();
+            if(order.getTBusOrderProcessSet() != null){
+                List<String> recordTypes = new ArrayList<>();
+                for(TBusOrderProcess process : order.getTBusOrderProcessSet()){
+                    List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
+                    if (recordList != null) {
+                        recordList.removeIf(record -> Float.valueOf(0).equals(record.getRecordQty()));
+                        for (TBusOrderProcessRecord record : recordList) {
+                            if(record.getRecordType() != null && !record.getRecordType().isEmpty() && !recordTypes.contains(record.getRecordType())){
+                                recordTypes.add(record.getRecordType());
+                            }
+                        }
+                    }
+                }
+                //批量查询所有需要的code_dsc记录
+                Map<String, String> recordTypeDscMap = new HashMap<>();
+                if(!recordTypes.isEmpty()){
+                    List<TSysCodeDsc> codeDscList = tSysCodeDscRepository.findByCodeClIdAndCodeValueIn("RECORDTYPE0000",recordTypes);
+                    for (TSysCodeDsc codeDsc : codeDscList) {
+                        recordTypeDscMap.put(codeDsc.getCodeValue(), codeDsc.getCodeDsc());
+                    }
+                }
+
+            //处理数据
             for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
                 List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
                 if (recordList != null) {
-                    // 过滤掉 report_status == 1 的记录
                     recordList.removeIf(record -> Float.valueOf(0).equals(record.getRecordQty()));
 
                     for (TBusOrderProcessRecord record : recordList) {
                         OrderProcessVo execVo = new OrderProcessVo();
-//                        execVo.setIndex(processIndex++);
                         execVo.setProcessName(process.getProcessId() != null ? process.getProcessId().getProcessName() : "");
                         execVo.setProcessType(record.getBusType());
                         execVo.setMaterialName(record.getMaterialName());
@@ -1672,7 +1727,6 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                         execVo.setQty(record.getRecordQty());
                         execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
                         execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
-//                        execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
                         execVo.setPersonName(order.getCurrentPersonId() != null ? order.getCurrentPersonId().getName() : "");
                         if (record.getReportTime() != null) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
