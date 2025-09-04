@@ -43,7 +43,7 @@ public interface TSysQualityCtrlRepository extends JpaRepository<TSysQualityCtrl
 
     Page<TSysQualityCtrl> findByProductionLineIdAndStatusIn(String productionLineId, List<String> strings, Pageable pageable);
 
-    @Query("SELECT t.qualityCtrlNo FROM TSysQualityCtrl t WHERE t.qualityCtrlNo LIKE ?1 ORDER BY t.qualityCtrlNo DESC")
-    String findMaxQualityCtrlNoByDate(String prefix);
+    @Query(value = "SELECT quality_ctrl_no FROM t_sys_quality_ctrl WHERE quality_ctrl_no LIKE ?1 ORDER BY quality_ctrl_no DESC LIMIT 1", nativeQuery = true)
+    String findMaxQualityCtrlNoByDate(String qualityCtrlNoPattern);
 
 }
