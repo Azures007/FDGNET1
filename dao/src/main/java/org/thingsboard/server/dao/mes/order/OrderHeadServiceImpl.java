@@ -1719,8 +1719,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                     for (TBusOrderProcessRecord record : recordList) {
                         OrderProcessVo execVo = new OrderProcessVo();
                         execVo.setProcessName(process.getProcessId() != null ? process.getProcessId().getProcessName() : "");
-                        execVo.setProcessType(record.getBusType());
-                        execVo.setMaterialName(record.getMaterialName());
+                        execVo.setProcessType(recordTypeDscMap.getOrDefault(record.getRecordType(), record.getRecordType()));                        execVo.setMaterialName(record.getMaterialName());
                         execVo.setMaterialSpec("");
                         execVo.setLot(record.getBodyLot());
                         execVo.setUnit(record.getRecordUnit());
