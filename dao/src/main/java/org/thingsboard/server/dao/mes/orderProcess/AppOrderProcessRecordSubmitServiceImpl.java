@@ -484,16 +484,16 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 }
                 if(qty>0){
                     //插入负库存行
-                    NcInventory newinventory=new NcInventory();
+                    /*NcInventory newinventory=new NcInventory();
                     BeanUtils.copyProperties(inventories.get(0), newinventory);
                     newinventory.setBillId(UUID.randomUUID().toString());
                     newinventory.setQty(-1*qty);
-                    inventories.add(newinventory);
+                    inventories.add(newinventory);*/
 
                     NcInventoryInOut inventoriesInOut=new NcInventoryInOut();
-                    inventoriesInOut.setBillId(newinventory.getBillId());
+                    inventoriesInOut.setBillId(inventories.get(0).getBillId());
                     inventoriesInOut.setOrderProcessHistoryId(history.getOrderProcessHistoryId());
-                    inventoriesInOut.setQty(-1*qty);
+                    inventoriesInOut.setQty(0f);//(-1*qty);
                     inventoriesInOuts.add(inventoriesInOut);
                 }
                 if(!inventoriesInOuts.isEmpty()){

@@ -176,10 +176,9 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         List<NcInventoryInOut> inout=ncInventoryInoutRepository.getAllByOrderProcessHistoryId(tBusOrderProcessHistory.getOrderProcessHistoryId());
         for(NcInventoryInOut ncInventoryInOut:inout){
             NcInventory inv=ncInventoryRepository.getOne(ncInventoryInOut.getBillId());
-            if(inv!=null){
-                inv.setQty(inv.getQty()-ncInventoryInOut.getQty());
-                ncInventoryRepository.saveAndFlush(inv);
-            }
+            float qty1 = inv.getQty() - ncInventoryInOut.getQty();
+            inv.setQty(qty1<0?0:qty1);
+            ncInventoryRepository.saveAndFlush(inv);
         }
         ncInventoryInoutRepository.deleteAll(inout);
         orderProcessHistoryRepository.saveAndFlush(tBusOrderProcessHistory);
