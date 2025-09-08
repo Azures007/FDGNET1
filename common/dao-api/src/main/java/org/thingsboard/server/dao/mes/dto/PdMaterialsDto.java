@@ -22,5 +22,8 @@ public class PdMaterialsDto {
     @ApiModelProperty("复盘时传的物料编码")
     private String materialNumber="";
 
+    @ApiModelProperty("当天盘点日期")
+    private String pdTimeStr;
+
 
 }

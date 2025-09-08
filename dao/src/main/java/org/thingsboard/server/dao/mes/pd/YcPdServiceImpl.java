@@ -91,7 +91,7 @@ public class YcPdServiceImpl implements YcPdService {
         //更新库存
         List<NcInventory> ncInventories = ncInventoryRepository.findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(tSysPdRecord.getPdWorkshopNumber(),
                 tSysPdRecord.getMaterialNumber(), "生效");
-        if(ncInventories!=null&&ncInventories.size()>0){
+        if (ncInventories != null && ncInventories.size() > 0) {
             for (NcInventory ncInventory : ncInventories) {
                 ncInventory.setQty(tSysPdRecord.getPdQty().floatValue());
                 ncInventoryRepository.saveAndFlush(ncInventory);
@@ -114,11 +114,11 @@ public class YcPdServiceImpl implements YcPdService {
             tSysPdRecordSplitRepository.delete(deletePdRecordSplitt);
         }
         String materialNumber = tSysPdRecord.getMaterialNumber();
-        List<TSyncMaterialBom> tSyncMaterialBoms=syncMaterialBomRepository.findByMaterialNumber(materialNumber);
-        if(tSyncMaterialBoms!=null&&tSyncMaterialBoms.size()>0){
+        List<TSyncMaterialBom> tSyncMaterialBoms = syncMaterialBomRepository.findByMaterialNumber(materialNumber);
+        if (tSyncMaterialBoms != null && tSyncMaterialBoms.size() > 0) {
             for (TSyncMaterialBom tSyncMaterialBom : tSyncMaterialBoms) {
                 TSyncMaterial tSyncMaterial = syncMaterialRepository.findById(tSyncMaterialBom.getMaterialId()).orElse(null);
-                TSysPdRecordSplit tSysPdRecordSplit=JSON.parseObject(JSON.toJSONString(tSysPdRecord),TSysPdRecordSplit.class);
+                TSysPdRecordSplit tSysPdRecordSplit = JSON.parseObject(JSON.toJSONString(tSysPdRecord), TSysPdRecordSplit.class);
                 tSysPdRecordSplit.setRePdRecordId(tSysPdRecord.getPdRecordId());
                 tSysPdRecordSplit.setPdQty(tSysPdRecord.getPdQty().multiply(tSyncMaterialBom.getRatio()).doubleValue());
                 tSysPdRecordSplit.setMaterialName(tSyncMaterialBom.getMaterialName());
@@ -131,8 +131,10 @@ public class YcPdServiceImpl implements YcPdService {
 
     @Override
     public List<NcInventory> pdMaterials(PdMaterialsDto pdMaterialsDto) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        pdMaterialsDto.setPdTimeStr(simpleDateFormat.format(new Date()));
         List<Map> ncInventorieMs = ncInventoryRepository.pdMaterials(pdMaterialsDto);
-        List<NcInventory> ncInventories=JSON.parseArray(JSON.toJSONString(ncInventorieMs),NcInventory.class);
+        List<NcInventory> ncInventories = JSON.parseArray(JSON.toJSONString(ncInventorieMs), NcInventory.class);
         return ncInventories;
     }
 
@@ -147,8 +149,14 @@ public class YcPdServiceImpl implements YcPdService {
     public List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber) {
         List<TSysPdRecord> tSysPdRecords = tSysPdRecordRepository.showWorkshopRecord(pdTimeStr, pdWorkshopNumber);
         for (TSysPdRecord tSysPdRecord : tSysPdRecords) {
-            tSysPdRecord.setPdQty(tSysPdRecord.getPdQty().setScale(2));
+            tSysPdRecord.setPdQty(tSysPdRecord.getPdQty().setScale(3));
         }
         return tSysPdRecords;
+    }
+
+    @Override
+    public List<TSyncMaterial> listMaterial(String selectBy) {
+        List<TSyncMaterial> tSyncMaterials = syncMaterialRepository.listMaterialsBySelctct(selectBy);
+        return tSyncMaterials;
     }
 }

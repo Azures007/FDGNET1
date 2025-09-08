@@ -1,5 +1,6 @@
 package org.thingsboard.server.dao.mes.pd;
 
+import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
 import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
 import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
@@ -29,4 +30,11 @@ public interface YcPdService {
     List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate);
 
     List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber);
+
+    /**
+     * 自定义盘点物料列表
+     * @param selectBy
+     * @return
+     */
+    List<TSyncMaterial> listMaterial(String selectBy);
 }

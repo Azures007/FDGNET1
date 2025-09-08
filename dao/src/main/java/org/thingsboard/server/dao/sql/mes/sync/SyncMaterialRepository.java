@@ -122,4 +122,13 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
             " and (material_status =:#{#tSyncMaterialTo.materialStatus} or :#{#tSyncMaterialTo.materialStatus} is null or :#{#tSyncMaterialTo.materialStatus} ='') \n", nativeQuery = true)
     int finAllAndTotal(@Param("tSyncMaterialTo") TSyncMaterial tSyncMaterialTo);
 
+    /**
+     * 自定义盘点物料列表
+     * @param selectBy
+     * @return
+     */
+    @Query(value = "select * from t_sync_material " +
+            "where nc_material_category='自制品' and material_status='1' " +
+            "and (?1='' or material_code like %?1% or material_name like %?1%)",nativeQuery = true)
+    List<TSyncMaterial> listMaterialsBySelctct(String selectBy);
 }
