@@ -13,4 +13,7 @@ public interface MessageCenterService {
     int unreadCount(String userId);
     PageVo<MessageItem> list(String userId, Integer current, Integer size, String readStatus);
     void markAllRead(String userId);
+    void markReadByType(String userId,String msgType);
+
+    void markReadById(String userId, Long id);
 }

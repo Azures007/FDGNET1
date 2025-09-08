@@ -65,6 +65,30 @@ public class MessageCenterController {
         service.markAllRead(userId);
         return ResultUtil.success();
     }
+    @PostMapping("/mark-read-by-type")
+    @ApiOperation("标记指定类型消息为已读")
+    public ResponseResult<Void> markReadByType(@ApiParam("消息类型(order_today/order_tomorrow/order_cancelled/qc_daily/qc_review)")
+                                                   @RequestParam(value = "type") String msgType) throws Exception{
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object obj=authentication.getPrincipal();
+        Method getIdMethod = obj.getClass().getMethod("getId");
+        Object idValue = getIdMethod.invoke(obj);
+        String userId=idValue.toString();
+        service.markReadByType(userId,msgType);
+        return ResultUtil.success();
+    }
+    @PostMapping("/mark-read-by-id")
+    @ApiOperation("标记指定消息ID的消息为已读")
+    public ResponseResult<Void> markReadById(@ApiParam("消息id")
+                                               @RequestParam(value = "id") Long id) throws Exception{
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object obj=authentication.getPrincipal();
+        Method getIdMethod = obj.getClass().getMethod("getId");
+        Object idValue = getIdMethod.invoke(obj);
+        String userId=idValue.toString();
+        service.markReadById(userId,id);
+        return ResultUtil.success();
+    }
 }
 
 

@@ -26,4 +26,12 @@ public interface PushMessageRepository extends JpaRepository<PushMessageEntity, 
     @Modifying
     @Query("UPDATE PushMessageEntity m SET m.isRead = true WHERE m.userId = :userId AND m.isRead = false")
     int markAllReadByUserId(@Param("userId") String userId);
+
+    @Modifying
+    @Query("UPDATE PushMessageEntity m SET m.isRead = true WHERE m.userId = :userId AND m.type= :type AND m.isRead = false")
+    int markAllReadByUserIdAndType(@Param("userId") String userId, @Param("type") String type);
+
+    @Modifying
+    @Query("UPDATE PushMessageEntity m SET m.isRead = true WHERE m.userId = :userId AND m.id= :id AND m.isRead = false")
+    int markReadByUserIdAndId(@Param("userId") String userId, @Param("id") Long id);
 }
