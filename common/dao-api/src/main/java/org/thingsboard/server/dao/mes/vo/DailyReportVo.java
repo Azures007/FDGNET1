@@ -8,6 +8,7 @@ import org.thingsboard.server.dao.mes.dto.DailyReportDto;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -48,7 +49,7 @@ public class DailyReportVo {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty("创建时间")
-    private LocalDate createdTime;
+    private LocalDateTime createdTime;
 
     @ApiModelProperty("修改人")
     private String updatedName;

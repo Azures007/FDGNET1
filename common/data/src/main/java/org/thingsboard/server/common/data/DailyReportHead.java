@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 @Data
@@ -55,7 +56,7 @@ public class DailyReportHead {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty("创建时间")
     @Column(name = "created_time")
-    private  LocalDate createdTime;
+    private LocalDateTime createdTime;
 
     @ApiModelProperty("修改人")
     @Column(name = "updated_name")

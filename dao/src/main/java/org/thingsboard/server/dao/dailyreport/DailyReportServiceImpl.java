@@ -172,7 +172,7 @@ public class DailyReportServiceImpl implements DailyReportService{
         BeanUtils.copyProperties(dailyReportVo, dailyReportHead);
         if (dailyReportHead.getId() == null ||dailyReportHead.getId()==0) {
             dailyReportHead.setCreatedName(dailyReportHead.getCreatedName());
-            dailyReportHead.setCreatedTime(dailyReportHead.getUpdatedTime());
+            dailyReportHead.setCreatedTime(dailyReportHead.getUpdatedTime().atTime(0, 0, 0));
         } else {
             if (dailyReportRepository.findById(dailyReportHead.getId()).isEmpty()) {
                 DailyReportHead info = dailyReportRepository.findById(dailyReportHead.getId()).get();
@@ -217,7 +217,7 @@ public class DailyReportServiceImpl implements DailyReportService{
             String docNo = dailyReportHead.getBillNo();
             String productName = dailyReportHead.getMaterialName();
             String checker = dailyReportHead.getCreatedName();
-            java.time.LocalDateTime inspectionTime = dailyReportHead.getCreatedTime() != null ? dailyReportHead.getCreatedTime().atStartOfDay() : java.time.LocalDateTime.now();
+            java.time.LocalDateTime inspectionTime = dailyReportHead.getCreatedTime() != null ? dailyReportHead.getCreatedTime(): java.time.LocalDateTime.now();
             domainPushFacade.pushQcDaily(baseId, lineId, null, docNo, productName, checker, inspectionTime);
         } catch (Exception ignore) {}
 
@@ -247,7 +247,7 @@ public class DailyReportServiceImpl implements DailyReportService{
         //获取登录的产线
         String cwkid =userService.getUserCurrentCwkid(userId);
         LocalDateTime endDateTime = endTime.atTime(23, 59, 59);
-        LocalDateTime startDateTime = endTime.atTime(0, 0, 0);
+        LocalDateTime startDateTime = startTime.atTime(0, 0, 0);
         List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndCreatedTimeBetweenOrderByIdDesc(cwkid,startDateTime,endDateTime);
         List<DailyReportVo> saveVos = new ArrayList<>();
         for (DailyReportHead item : plan) {
