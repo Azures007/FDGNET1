@@ -1726,7 +1726,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                         execVo.setQty(record.getRecordQty());
                         execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
                         execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
-                        execVo.setPersonName(order.getCurrentPersonId() != null ? order.getCurrentPersonId().getName() : "");
+                        execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
                         if (record.getReportTime() != null) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             execVo.setReportTime(sdf.format(record.getReportTime()));
