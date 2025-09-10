@@ -120,4 +120,9 @@ public interface TSysPersonnelInfoRepository extends JpaRepository<TSysPersonnel
     List<Integer> findAllByPersonnel(@Param("personelId") Integer personnelId);
 
     TSysPersonnelInfo findAllByUserId(@Param("userId") String userId);
+
+
+    TSysPersonnelInfo findByPersonnelId(@Param("personnelId") Integer personnelId);
+
+
 }
