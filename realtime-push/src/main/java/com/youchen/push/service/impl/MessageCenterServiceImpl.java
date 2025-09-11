@@ -118,11 +118,13 @@ public class MessageCenterServiceImpl implements MessageCenterService {
     }
 
     @Override
+    @Transactional
     public void markReadByType(String userId, String msgType) {
         pushMessageRepository.markAllReadByUserIdAndType(userId, msgType);
     }
 
     @Override
+    @Transactional
     public void markReadById(String userId, Long id) {
         pushMessageRepository.markReadByUserIdAndId(userId,id);
     }
