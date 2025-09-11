@@ -52,6 +52,9 @@ public class TSysPdRecordVo {
     @ApiModelProperty("盘点人ID")
     private String pdCreatedId;
 
+    @ApiModelProperty("盘点车间ncid")
+    private String pdWorkshopNcId;
+
     @ApiModelProperty("盘点车间名称")
     private String pdWorkshopName;
 

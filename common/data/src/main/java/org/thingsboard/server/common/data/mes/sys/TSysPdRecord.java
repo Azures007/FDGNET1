@@ -59,12 +59,19 @@ public class TSysPdRecord {
     @Column(name = "pd_created_id")
     @ApiModelProperty("盘点人id*")
     private Integer pdCreatedId;
+
+    @Column(name = "pd_workshop_nc_id")
+    @ApiModelProperty("盘点车间ncid*")
+    private String pdWorkshopNcId;
+
     @Column(name = "pd_workshop_name")
     @ApiModelProperty("盘点车间名称*")
     private String pdWorkshopName;
+
     @Column(name = "pd_workshop_number")
     @ApiModelProperty("盘点车间编码*")
     private String pdWorkshopNumber;
+
     @Column(name = "pd_workshop_leader_name")
     @ApiModelProperty("盘点车间主任名称*")
     private String pdWorkshopLeaderName;

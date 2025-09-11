@@ -84,7 +84,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             }
             if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
                 List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
-                predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
+                predicates.add(root.get("pdWorkshopNcId").in(warehouseIds));
             }
             predicates.add(cb.equal(root.get("byDeleted"), "0"));
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -149,7 +149,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             }
             if (ncWarehouses != null && !ncWarehouses.isEmpty()) {
                 List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
-                predicates.add(root.get("pdWorkshopNumber").in(warehouseIds));
+                predicates.add(root.get("pdWorkshopNcId").in(warehouseIds));
             }
             predicates.add(cb.equal(root.get("byDeleted"), "0"));
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -248,6 +248,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                     }
                     vo.setPdCreatedName(splitRecord.getPdCreatedName());
                     vo.setPdCreatedId(splitRecord.getPdCreatedId());
+                    vo.setPdWorkshopNcId(splitRecord.getPdWorkshopNcId());
                     vo.setPdWorkshopName(splitRecord.getPdWorkshopName());
                     vo.setPdWorkshopNumber(splitRecord.getPdWorkshopNumber());
                     vo.setPdWorkshopLeaderName(splitRecord.getPdWorkshopLeaderName());

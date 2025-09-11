@@ -1,6 +1,7 @@
 package org.thingsboard.server.common.data.mes.sys;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.persistence.*;
@@ -47,6 +48,10 @@ public class TSysPdRecordSplit {
 
     @Column(name = "pd_created_id")
     private String pdCreatedId;
+
+    @Column(name = "pd_workshop_nc_id")
+    @ApiModelProperty("盘点车间ncid*")
+    private String pdWorkshopNcId;
 
     @Column(name = "pd_workshop_name")
     private String pdWorkshopName;
