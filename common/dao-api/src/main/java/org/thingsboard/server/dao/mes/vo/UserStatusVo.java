@@ -3,9 +3,11 @@ package org.thingsboard.server.dao.mes.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
 import org.thingsboard.server.common.data.mes.sys.TSysRole;
 
 import javax.persistence.Column;
+import java.util.List;
 
 /**
  * @author lik
@@ -36,13 +38,8 @@ public class UserStatusVo {
     @ApiModelProperty("当前用户班别信息")
     private UserClassVo userClassVo;
 
-    @Column(name = "nc_warehouse_id")
-    @ApiModelProperty("仓库ID")
-    private String ncWarehouseId;
-
-    @Column(name = "nc_warehouse_name")
-    @ApiModelProperty("仓库名称")
-    private String ncWarehouseName;
+    @ApiModelProperty("仓库")
+    List<NcWarehouse> ncWarehouses;
 
 
 }

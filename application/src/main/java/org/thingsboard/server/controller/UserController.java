@@ -522,12 +522,7 @@ public class UserController extends BaseController {
         String cwkid =userService.getUserCurrentCwkid(currentUser.getId().getId().toString());//登录的产线
         String pkOrg = userService.getUserCurrentPkOrg(currentUser.getId().getId().toString());//登录的基地
         List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(currentUser.getId().getId().toString(),pkOrg,cwkid);
-        if(ncWarehouses!=null&& !ncWarehouses.isEmpty()) {
-            String wid = ncWarehouses.get(0).getPkStordoc();
-            String wName = ncWarehouses.get(0).getName();
-            userVo.setNcWarehouseId(wid);
-            userVo.setNcWarehouseName(wName);
-        }
+        userVo.setNcWarehouses(ncWarehouses);
         return ResultUtil.success(userVo);
     }
 
