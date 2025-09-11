@@ -73,6 +73,8 @@ public class YcPdServiceImpl implements YcPdService {
                 pdSplit = tSysPdRecord1.getPdRecordId();
                 tSysPdRecord1.setByDeleted("1");
                 tSysPdRecordRepository.saveAndFlush(tSysPdRecord1);
+                tSysPdRecord.setByFp("0");
+
             }
 //            tSysPdRecordRepository.updatePd(format, tSysPdRecord.getPdWorkshopNumber(), tSysPdRecord.getPdClassNumber());
         } else {
@@ -82,10 +84,10 @@ public class YcPdServiceImpl implements YcPdService {
             TSysPdRecord tSysPdRecord1 = tSysPdRecordRepository.findById(pdRecordId).orElse(null);
             tSysPdRecord1.setByFp("1");
             tSysPdRecordRepository.saveAndFlush(tSysPdRecord1);
+            tSysPdRecord.setByFp("1");
         }
         tSysPdRecord.setCreatedTime(new Date());
         tSysPdRecord.setByDeleted("0");
-        tSysPdRecord.setByFp("0");
         tSysPdRecord.setPdTimeStr(format);
         tSysPdRecordRepository.saveAndFlush(tSysPdRecord);
         //更新库存
