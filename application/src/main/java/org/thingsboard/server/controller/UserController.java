@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.rule.engine.api.MailService;
 import org.thingsboard.server.common.data.EntityType;
+import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
 import org.thingsboard.server.common.data.mes.sys.TSysRoleUser;
 import org.thingsboard.server.common.data.mes.sys.TSysUserDetail;
 import org.thingsboard.server.common.data.User;
@@ -518,6 +519,15 @@ public class UserController extends BaseController {
         userVo.setUserClassVo(userClass);
         log.info(currentUser.getName() + "登陆成功！");
         userVo.setTSysRole(roleService.getByUserId(useId));
+        String cwkid =userService.getUserCurrentCwkid(currentUser.getId().getId().toString());//登录的产线
+        String pkOrg = userService.getUserCurrentPkOrg(currentUser.getId().getId().toString());//登录的基地
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(currentUser.getId().getId().toString(),pkOrg,cwkid);
+        if(ncWarehouses!=null&& !ncWarehouses.isEmpty()) {
+            String wid = ncWarehouses.get(0).getPkStordoc();
+            String wName = ncWarehouses.get(0).getName();
+            userVo.setNcWarehouseId(wid);
+            userVo.setNcWarehouseName(wName);
+        }
         return ResultUtil.success(userVo);
     }
 
