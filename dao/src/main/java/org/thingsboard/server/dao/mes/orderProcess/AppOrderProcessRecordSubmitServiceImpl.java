@@ -257,11 +257,10 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 throw new RuntimeException("原辅料报工提交时，需要选择二级类目");
             }
         }
-        TSysPersonnelInfo devicePerson = tSysPersonnelInfoRepository.findByPersonnelId(saveDto.getDevicePersonIds().get(0));
         TBusOrderProcess tBusOrderProcess = orderProcessRepository.findById(saveDto.getOrderProcessId()).orElse(null);
         TSysProcessInfo processInfo = tBusOrderProcess.getProcessId();
         TSysClass tSysClass = tBusOrderProcess.getClassId();
-        TSysPersonnelInfo personnelInfo = tSysPersonnelInfoRepository.findByUserId(devicePerson.getUserId());
+        TSysPersonnelInfo personnelInfo = tSysPersonnelInfoRepository.findByUserId(userId);
         List<TBusOrderHead> heads = orderHeadRepository.findByOrderNo(saveDto.getOrderNo());
         TBusOrderHead tBusOrderHead = heads.get(0);
         if (LichengConstants.ORDERSTATUS_4.equals(tBusOrderHead.getOrderStatus())) {

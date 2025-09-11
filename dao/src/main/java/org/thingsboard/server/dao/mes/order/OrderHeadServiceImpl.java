@@ -1731,26 +1731,18 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                         execVo.setQty(record.getRecordQty());
                         execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
                         execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
-                        // 修改部分：根据devicePersonGroupId获取人员姓名列表
                         if (record.getDevicePersonGroupId() != null && !record.getDevicePersonGroupId().isEmpty()) {
-                            // 通过devicePersonGroupId查询t_bus_order_process_person_rel表获取device_person_id列表
                             List<TBusOrderProcessPersonRel> personRels = orderProcessPersonRelRepository
                                     .findByDevicePersonGroupId(record.getDevicePersonGroupId());
-
                             if (!personRels.isEmpty()) {
-                                // 提取device_person_id列表（Integer类型）
                                 List<Integer> personIds = personRels.stream()
                                         .map(TBusOrderProcessPersonRel::getDevicePersonId)
                                         .filter(Objects::nonNull)
-                                        .sorted(Collections.reverseOrder()) // 逆序排列personIds
+                                        .sorted(Collections.reverseOrder())
                                         .collect(Collectors.toList());
-
                                 if (!personIds.isEmpty()) {
-                                    // 直接使用Integer类型的personnelId查询t_sys_personnel_info表
                                     List<TSysPersonnelInfo> personnelInfos = tSysPersonnelInfoRepository
                                             .findByPersonnelIdIn(personIds);
-
-                                    // 按照personIds的顺序排列personnelInfos（保持逆序）
                                     List<TSysPersonnelInfo> sortedPersonnelInfos = new ArrayList<>();
                                     for (Integer personId : personIds) {
                                         personnelInfos.stream()
@@ -1758,13 +1750,10 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                                                 .findFirst()
                                                 .ifPresent(sortedPersonnelInfos::add);
                                     }
-
-                                    // 提取姓名并用逗号连接
                                     String personNames = sortedPersonnelInfos.stream()
                                             .map(TSysPersonnelInfo::getName)
                                             .filter(Objects::nonNull)
                                             .collect(Collectors.joining(","));
-
                                     execVo.setPersonName(personNames);
                                 } else {
                                     execVo.setPersonName("");
@@ -1773,7 +1762,6 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                                 execVo.setPersonName("");
                             }
                         } else {
-                            // 如果没有devicePersonGroupId，则保持原来的逻辑
                             execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
                         }
                         if (record.getReportTime() != null) {
