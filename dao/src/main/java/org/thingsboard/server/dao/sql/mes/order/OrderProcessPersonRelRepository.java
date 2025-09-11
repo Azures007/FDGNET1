@@ -79,4 +79,7 @@ public interface OrderProcessPersonRelRepository extends JpaRepository<TBusOrder
 //    @Query(value = "select  concat(info.name,',') from t_bus_order_process_person_rel rel left join t_sys_personnel_info info on rel.device_person_id=info.personnel_id\n" +
 //            "where rel.device_person_group_id=:personGroupId",nativeQuery = true)
 //    String getPersonGroups(@Param("personGroupId")String personGroupId);
+
+    List<TBusOrderProcessPersonRel> findByDevicePersonGroupId(String devicePersonGroupId);
+
 }
