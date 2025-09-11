@@ -519,10 +519,7 @@ public class UserController extends BaseController {
         userVo.setUserClassVo(userClass);
         log.info(currentUser.getName() + "登陆成功！");
         userVo.setTSysRole(roleService.getByUserId(useId));
-        String cwkid =userService.getUserCurrentCwkid(currentUser.getId().getId().toString());//登录的产线
-        String pkOrg = userService.getUserCurrentPkOrg(currentUser.getId().getId().toString());//登录的基地
-        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(currentUser.getId().getId().toString(),pkOrg,cwkid);
-        userVo.setNcWarehouses(ncWarehouses);
+
         return ResultUtil.success(userVo);
     }
 

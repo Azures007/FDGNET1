@@ -502,10 +502,10 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         }
 
         //获取用户详情
-        List<TSysUserDetail> byUserId1 = userDetailRepository.findByUserId(userVo.getUseId());
-        TSysUserDetail tSysUserDetail = byUserId1.get(0);
-        userVo.setNcWarehouseId(tSysUserDetail.getNcWarehouseId());
-        userVo.setNcWarehouseName(tSysUserDetail.getNcWarehouseName());
+        String cwkid =getUserCurrentCwkid(userVo.getUseId());//登录的产线
+        String pkOrg = getUserCurrentPkOrg(userVo.getUseId());//登录的基地
+        List<NcWarehouse> ncWarehouses = findNcWarehouseByUserIdAndPkOrgAndWorkline(userVo.getUseId(),pkOrg,cwkid);
+        userVo.setNcWarehouses(ncWarehouses);
 
     }
 
