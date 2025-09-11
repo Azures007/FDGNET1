@@ -51,6 +51,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.thingsboard.server.common.data.mes.LichengConstants.*;
 
@@ -155,6 +156,9 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 
     @Autowired
     TSysCodeDscRepository tSysCodeDscRepository;
+
+    @Autowired
+    OrderProcessPersonRelRepository orderProcessPersonRelRepository;
 
     @Override
     public PageVo<TBusOrderHead> tBusOrderHeadList(Integer current, Integer size, TBusOrderHeadDto tBusOrderHeadDto) {
@@ -1545,7 +1549,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     @Override
     public PageVo<OrderSimpleListVo> getSimpleOrderList(String userId, Integer current, Integer size, TBusOrderDto orderDto) {
         //获取登录的产线
-        String cwkid =userService.getUserCurrentCwkid(userId);
+        String cwkid = userService.getUserCurrentCwkid(userId);
         orderDto.setCwkid(cwkid);
         PageVo<TBusOrderHead> pageVo = tBusOrderHeadList(current, size, orderDto);
         PageVo<OrderSimpleListVo> result = new PageVo<>();
@@ -1578,6 +1582,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         result.setList(list);
         return result;
     }
+
     @Override
     public OrderDetailSimpleVo getOrderDetailSimple(Integer orderId) {
         TBusOrderHead order = orderHeadRepository.findById(orderId).orElse(null);
@@ -1686,29 +1691,28 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     public List<OrderProcessVo> getProcessHistoryInfo(Integer orderId) {
         TBusOrderHead order = orderHeadRepository.findById(orderId).orElse(null);
         if (order == null) return null;
-//        int processIndex = 1;
-            List<OrderProcessVo> processHistory = new ArrayList<>();
-            if(order.getTBusOrderProcessSet() != null){
-                List<String> recordTypes = new ArrayList<>();
-                for(TBusOrderProcess process : order.getTBusOrderProcessSet()){
-                    List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
-                    if (recordList != null) {
-                        recordList.removeIf(record -> Float.valueOf(0).equals(record.getRecordQty()));
-                        for (TBusOrderProcessRecord record : recordList) {
-                            if(record.getRecordType() != null && !record.getRecordType().isEmpty() && !recordTypes.contains(record.getRecordType())){
-                                recordTypes.add(record.getRecordType());
-                            }
+        List<OrderProcessVo> processHistory = new ArrayList<>();
+        if (order.getTBusOrderProcessSet() != null) {
+            List<String> recordTypes = new ArrayList<>();
+            for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
+                List<TBusOrderProcessRecord> recordList = orderProcessRecordService.getOrderProcessRecord(process.getOrderProcessId(), "BG");
+                if (recordList != null) {
+                    recordList.removeIf(record -> Float.valueOf(0).equals(record.getRecordQty()));
+                    for (TBusOrderProcessRecord record : recordList) {
+                        if (record.getRecordType() != null && !record.getRecordType().isEmpty() && !recordTypes.contains(record.getRecordType())) {
+                            recordTypes.add(record.getRecordType());
                         }
                     }
                 }
-                //批量查询所有需要的code_dsc记录
-                Map<String, String> recordTypeDscMap = new HashMap<>();
-                if(!recordTypes.isEmpty()){
-                    List<TSysCodeDsc> codeDscList = tSysCodeDscRepository.findByCodeClIdAndCodeValueIn("RECORDTYPE0000",recordTypes);
-                    for (TSysCodeDsc codeDsc : codeDscList) {
-                        recordTypeDscMap.put(codeDsc.getCodeValue(), codeDsc.getCodeDsc());
-                    }
+            }
+            //批量查询所有需要的code_dsc记录
+            Map<String, String> recordTypeDscMap = new HashMap<>();
+            if (!recordTypes.isEmpty()) {
+                List<TSysCodeDsc> codeDscList = tSysCodeDscRepository.findByCodeClIdAndCodeValueIn("RECORDTYPE0000", recordTypes);
+                for (TSysCodeDsc codeDsc : codeDscList) {
+                    recordTypeDscMap.put(codeDsc.getCodeValue(), codeDsc.getCodeDsc());
                 }
+            }
 
             //处理数据
             for (TBusOrderProcess process : order.getTBusOrderProcessSet()) {
@@ -1719,14 +1723,59 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                     for (TBusOrderProcessRecord record : recordList) {
                         OrderProcessVo execVo = new OrderProcessVo();
                         execVo.setProcessName(process.getProcessId() != null ? process.getProcessId().getProcessName() : "");
-                        execVo.setProcessType(recordTypeDscMap.getOrDefault(record.getRecordType(), record.getRecordType()));                        execVo.setMaterialName(record.getMaterialName());
+                        execVo.setProcessType(recordTypeDscMap.getOrDefault(record.getRecordType(), record.getRecordType()));
+                        execVo.setMaterialName(record.getMaterialName());
                         execVo.setMaterialSpec("");
                         execVo.setLot(record.getBodyLot());
                         execVo.setUnit(record.getRecordUnit());
                         execVo.setQty(record.getRecordQty());
                         execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
                         execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
-                        execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
+                        // 修改部分：根据devicePersonGroupId获取人员姓名列表
+                        if (record.getDevicePersonGroupId() != null && !record.getDevicePersonGroupId().isEmpty()) {
+                            // 通过devicePersonGroupId查询t_bus_order_process_person_rel表获取device_person_id列表
+                            List<TBusOrderProcessPersonRel> personRels = orderProcessPersonRelRepository
+                                    .findByDevicePersonGroupId(record.getDevicePersonGroupId());
+
+                            if (!personRels.isEmpty()) {
+                                // 提取device_person_id列表（Integer类型）
+                                List<Integer> personIds = personRels.stream()
+                                        .map(TBusOrderProcessPersonRel::getDevicePersonId)
+                                        .filter(Objects::nonNull)
+                                        .sorted(Collections.reverseOrder()) // 逆序排列personIds
+                                        .collect(Collectors.toList());
+
+                                if (!personIds.isEmpty()) {
+                                    // 直接使用Integer类型的personnelId查询t_sys_personnel_info表
+                                    List<TSysPersonnelInfo> personnelInfos = tSysPersonnelInfoRepository
+                                            .findByPersonnelIdIn(personIds);
+
+                                    // 按照personIds的顺序排列personnelInfos（保持逆序）
+                                    List<TSysPersonnelInfo> sortedPersonnelInfos = new ArrayList<>();
+                                    for (Integer personId : personIds) {
+                                        personnelInfos.stream()
+                                                .filter(p -> p.getPersonnelId().equals(personId))
+                                                .findFirst()
+                                                .ifPresent(sortedPersonnelInfos::add);
+                                    }
+
+                                    // 提取姓名并用逗号连接
+                                    String personNames = sortedPersonnelInfos.stream()
+                                            .map(TSysPersonnelInfo::getName)
+                                            .filter(Objects::nonNull)
+                                            .collect(Collectors.joining(","));
+
+                                    execVo.setPersonName(personNames);
+                                } else {
+                                    execVo.setPersonName("");
+                                }
+                            } else {
+                                execVo.setPersonName("");
+                            }
+                        } else {
+                            // 如果没有devicePersonGroupId，则保持原来的逻辑
+                            execVo.setPersonName(record.getPersonId() != null ? record.getPersonId().getName() : "");
+                        }
                         if (record.getReportTime() != null) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             execVo.setReportTime(sdf.format(record.getReportTime()));
@@ -1738,5 +1787,6 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         }
         return processHistory;
     }
+
 }
 
