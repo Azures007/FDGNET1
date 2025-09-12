@@ -196,9 +196,9 @@ public class OrderBackendServiceImpl implements OrderBackendService {
 
                 // 成功保存后，根据单据日期触发推送
                 try {
-                    Date billDate = tBusOrderHeadRt.getBillDate();
-                    if (billDate != null) {
-                        LocalDate billLocalDate = Instant.ofEpochMilli(billDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+                    Date planStartDate = tBusOrderHeadRt.getBodyPlanStartDate();
+                    if (planStartDate != null) {
+                        LocalDate billLocalDate = Instant.ofEpochMilli(planStartDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
                         LocalDate today = LocalDate.now();
                         LocalDate tomorrow = today.plusDays(1);
 
