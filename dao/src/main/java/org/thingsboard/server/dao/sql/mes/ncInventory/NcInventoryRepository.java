@@ -23,7 +23,7 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
             "where pd_time_str=:#{#pdMaterialsDto.pdTimeStr} and by_deleted='0' group by material_number) b " +
             "on a.material_code=b.material_number " +
             "where a.status ='生效' \n" +
-            "and a.warehouse_id=:#{#pdMaterialsDto.warehouseCode} " +
+            "and （a.warehouse_id=:#{#pdMaterialsDto.warehouseCode} or a.warehouse_code=:#{#pdMaterialsDto.warehouseCode})" +
             "and (a.material_type=:#{#pdMaterialsDto.materialType} or :#{#pdMaterialsDto.materialType}='') " +
             "and (a.material_code=:#{#pdMaterialsDto.materialNumber} or :#{#pdMaterialsDto.materialNumber}='') " +
             "and (:#{#pdMaterialsDto.material} ='' or a.material_name like %:#{#pdMaterialsDto.material}% or a.material_code like %:#{#pdMaterialsDto.material}%)",nativeQuery = true)
