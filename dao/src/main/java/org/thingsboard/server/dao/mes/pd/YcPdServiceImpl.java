@@ -73,9 +73,8 @@ public class YcPdServiceImpl implements YcPdService {
                 pdSplit = tSysPdRecord1.getPdRecordId();
                 tSysPdRecord1.setByDeleted("1");
                 tSysPdRecordRepository.saveAndFlush(tSysPdRecord1);
-                tSysPdRecord.setByFp("0");
-
             }
+            tSysPdRecord.setByFp("0");
 //            tSysPdRecordRepository.updatePd(format, tSysPdRecord.getPdWorkshopNumber(), tSysPdRecord.getPdClassNumber());
         } else {
             //复盘
