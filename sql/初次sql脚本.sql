@@ -1569,6 +1569,7 @@ CREATE TABLE t_bus_push_message (
                                     line_id VARCHAR(50),
                                     class_id INTEGER,
                                     is_read BOOLEAN NOT NULL DEFAULT FALSE,
+                                    is_push BOOLEAN NOT NULL DEFAULT FALSE,
                                     created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                     order_notification_id BIGINT,
                                     review_notification_id BIGINT
@@ -1581,7 +1582,6 @@ CREATE TABLE t_bus_order_notification (
                                           order_no VARCHAR(100) NOT NULL,
                                           order_process_id INTEGER,
                                           product_name VARCHAR(200) NOT NULL,
-                                          unit VARCHAR(20),
                                           estimated_output VARCHAR(50),
                                           specification VARCHAR(100),
                                           planned_start_time TIMESTAMP,
@@ -1602,6 +1602,7 @@ CREATE TABLE t_bus_review_notification (
 -- 创建索引
 CREATE INDEX idx_push_message_user_id ON t_bus_push_message(user_id);
 CREATE INDEX idx_push_message_user_read ON t_bus_push_message(user_id, is_read);
+CREATE INDEX idx_push_message_user_push ON t_bus_push_message(user_id, is_push);
 CREATE INDEX idx_push_message_created_time ON t_bus_push_message(created_time);
 CREATE INDEX idx_order_notification_order_no ON t_bus_order_notification(order_no);
 CREATE INDEX idx_review_notification_doc_no ON t_bus_review_notification(doc_no);
@@ -1616,6 +1617,7 @@ COMMENT ON COLUMN t_bus_push_message.base_id IS '基地ID';
 COMMENT ON COLUMN t_bus_push_message.line_id IS '生产线ID';
 COMMENT ON COLUMN t_bus_push_message.class_id IS '班组ID';
 COMMENT ON COLUMN t_bus_push_message.is_read IS '是否已读';
+COMMENT ON COLUMN t_bus_push_message.is_push IS '是否已推送';
 COMMENT ON COLUMN t_bus_push_message.created_time IS '创建时间';
 COMMENT ON COLUMN t_bus_push_message.order_notification_id IS '关联订单通知详情ID';
 COMMENT ON COLUMN t_bus_push_message.review_notification_id IS '关联复核通知详情ID';

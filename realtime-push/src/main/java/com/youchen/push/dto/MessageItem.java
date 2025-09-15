@@ -26,6 +26,9 @@ public class MessageItem {
     
     @ApiModelProperty("是否已读")
     private boolean read;
+
+    @ApiModelProperty("是否已推送")
+    private boolean push;
     
     @ApiModelProperty("订单通知详情")
     private OrderNotificationDetail orderDetail;

@@ -14,24 +14,36 @@ import java.util.List;
 @Repository
 public interface PushMessageRepository extends JpaRepository<PushMessageEntity, Long> {
 
-    @Query("SELECT COUNT(m) FROM PushMessageEntity m WHERE m.userId = :userId AND m.isRead = false")
-    int countUnreadByUserId(@Param("userId") String userId);
+    @Query("SELECT COUNT(m) FROM PushMessageEntity m WHERE m.userId = :userId AND m.isRead = false AND m.lineId=:lineId")
+    int countUnreadByUserIdAndLineId(@Param("userId") String userId,@Param("lineId") String lineId);
 
     List<PushMessageEntity> findByUserIdOrderByCreatedTimeDesc(String userId);
 
-    Page<PushMessageEntity> findByUserIdOrderByCreatedTimeDesc(String userId, Pageable pageable);
+    Page<PushMessageEntity> findByUserIdAndLineIdOrderByCreatedTimeDesc(String userId,String lineId, Pageable pageable);
     
-    Page<PushMessageEntity> findByUserIdAndIsReadOrderByCreatedTimeDesc(String userId, Boolean isRead, Pageable pageable);
+    Page<PushMessageEntity> findByUserIdAndIsReadAndLineIdOrderByCreatedTimeDesc(String userId, Boolean isRead,String lineId, Pageable pageable);
+
+    Page<PushMessageEntity> findByUserIdAndIsPushAndLineIdOrderByCreatedTimeDesc(String userId, Boolean isPush,String lineId, Pageable pageable);
+    
+    Page<PushMessageEntity> findByUserIdAndIsReadAndIsPushAndLineIdOrderByCreatedTimeDesc(String userId, Boolean isRead, Boolean isPush, String lineId, Pageable pageable);
+    
+    @Modifying
+    @Query("UPDATE PushMessageEntity m SET m.isPush = true WHERE m.userId = :userId AND m.isPush = false AND m.lineId = :lineId")
+    int markAllPushedByUserIdAndLineId(@Param("userId") String userId, @Param("lineId") String lineId);
+    
+    @Modifying
+    @Query("UPDATE PushMessageEntity m SET m.isPush = true WHERE m.userId = :userId AND m.isRead = false AND m.lineId=:lineId")
+    int markAllReadByUserIdAndLineId(@Param("userId") String userId,@Param("lineId") String lineId);
 
     @Modifying
-    @Query("UPDATE PushMessageEntity m SET m.isRead = true WHERE m.userId = :userId AND m.isRead = false")
-    int markAllReadByUserId(@Param("userId") String userId);
-
-    @Modifying
-    @Query("UPDATE PushMessageEntity m SET m.isRead = true WHERE m.userId = :userId AND m.type= :type AND m.isRead = false")
-    int markAllReadByUserIdAndType(@Param("userId") String userId, @Param("type") String type);
+    @Query("UPDATE PushMessageEntity m SET m.isRead = true WHERE m.userId = :userId AND m.type= :type AND m.isRead = false AND m.lineId=:lineId")
+    int markAllReadByUserIdAndTypeAndLineId(@Param("userId") String userId, @Param("type") String type,@Param("lineId") String lineId);
 
     @Modifying
     @Query("UPDATE PushMessageEntity m SET m.isRead = true WHERE m.userId = :userId AND m.id= :id AND m.isRead = false")
     int markReadByUserIdAndId(@Param("userId") String userId, @Param("id") Long id);
+    
+    @Modifying
+    @Query("UPDATE PushMessageEntity m SET m.isPush = true WHERE m.userId = :userId AND m.id = :id AND m.isPush = false")
+    int markPushByUserIdAndId(@Param("userId") String userId, @Param("id") Long id);
 }

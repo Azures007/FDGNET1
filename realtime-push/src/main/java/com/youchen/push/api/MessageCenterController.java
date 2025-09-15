@@ -45,13 +45,14 @@ public class MessageCenterController {
     public ResponseResult<PageVo<MessageItem>> list(
             @ApiParam("页码，从0开始") @RequestParam(value = "current", defaultValue = "0") Integer current,
             @ApiParam("每页大小") @RequestParam(value = "size", defaultValue = "10") Integer size,
-            @ApiParam("消息状态：all(全部), unread(未读), read(已读)") @RequestParam(value = "readStatus", defaultValue = "all") String readStatus) throws Exception {
+            @ApiParam("消息状态：all(全部), unread(未读), read(已读)") @RequestParam(value = "readStatus", defaultValue = "all") String readStatus,
+            @ApiParam("推送状态：all(全部), unpush(未推送), push(已推送)") @RequestParam(value = "pushStatus", defaultValue = "unpush") String pushStatus) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object obj=authentication.getPrincipal();
         Method getIdMethod = obj.getClass().getMethod("getId");
         Object idValue = getIdMethod.invoke(obj);
         String userId=idValue.toString();
-        return ResultUtil.success(service.list(userId, current, size, readStatus));
+        return ResultUtil.success(service.list(userId, current, size, readStatus, pushStatus));
     }
 
     @PostMapping("/mark-read")

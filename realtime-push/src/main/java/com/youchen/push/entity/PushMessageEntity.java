@@ -46,6 +46,10 @@ public class PushMessageEntity {
     @ApiModelProperty("是否已读")
     private Boolean isRead = false;
 
+    @Column(name = "is_push", nullable = false)
+    @ApiModelProperty("是否已推送")
+    private Boolean isPush = false;
+
     @Column(name = "created_time", nullable = false)
     @ApiModelProperty("创建时间")
     private LocalDateTime createdTime;

@@ -20,6 +20,7 @@ import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.thingsboard.server.dao.user.UserService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class MessageCenterServiceImpl implements MessageCenterService {
     private final ReviewNotificationRepository reviewNotificationRepository;
     private final PushService pushService;
     private final UserClassRepository userClassRepository;
-
+    private final UserService userService;
     @Override
     public void appendForGroup(PushMessage message, String base, String line, Integer classId) {
         // 优先根据班别ID查询用户并逐个追加消息
@@ -68,7 +69,7 @@ public class MessageCenterServiceImpl implements MessageCenterService {
         entity.setLineId(msg.getLineId());
         entity.setClassId(msg.getClassId());
         entity.setIsRead(false);
-        
+        entity.setIsPush(false);
         // 根据消息类型设置关联ID
         if (msg.getOrderNotificationId() != null) {
             entity.setOrderNotificationId(msg.getOrderNotificationId());
@@ -82,27 +83,53 @@ public class MessageCenterServiceImpl implements MessageCenterService {
 
     @Override
     public int unreadCount(String userId) {
-        return pushMessageRepository.countUnreadByUserId(userId);
+        String cwkid =userService.getUserCurrentCwkid(userId);//登录的产线
+        return pushMessageRepository.countUnreadByUserIdAndLineId(userId,cwkid);
     }
 
     @Override
-    public PageVo<MessageItem> list(String userId, Integer current, Integer size, String readStatus) {
+    @Transactional
+    public PageVo<MessageItem> list(String userId, Integer current, Integer size, String readStatus, String pushStatus) {
         Pageable pageable = PageRequest.of(Math.max(0, current == null ? 0 : current), Math.max(1, size == null ? 10 : size));
         Page<PushMessageEntity> page;
+        String cwkid = userService.getUserCurrentCwkid(userId);//登录的产线
+
+        // 根据readStatus和pushStatus参数决定查询条件
+        Boolean isRead = null;
+        Boolean isPush = null;
         
-        // 根据readStatus参数决定查询条件
         if ("unread".equalsIgnoreCase(readStatus)) {
-            // 查询未读消息
-            page = pushMessageRepository.findByUserIdAndIsReadOrderByCreatedTimeDesc(userId, false, pageable);
+            isRead = false;
         } else if ("read".equalsIgnoreCase(readStatus)) {
-            // 查询已读消息
-            page = pushMessageRepository.findByUserIdAndIsReadOrderByCreatedTimeDesc(userId, true, pageable);
+            isRead = true;
+        }
+        
+        if ("unpush".equalsIgnoreCase(pushStatus)) {
+            isPush = false;
+        } else if ("push".equalsIgnoreCase(pushStatus)) {
+            isPush = true;
+        }
+        
+        // 根据组合条件查询
+        if (isRead != null && isPush != null) {
+            page = pushMessageRepository.findByUserIdAndIsReadAndIsPushAndLineIdOrderByCreatedTimeDesc(userId, isRead, isPush, cwkid, pageable);
+        } else if (isRead != null) {
+            page = pushMessageRepository.findByUserIdAndIsReadAndLineIdOrderByCreatedTimeDesc(userId, isRead, cwkid, pageable);
+        } else if (isPush != null) {
+            page = pushMessageRepository.findByUserIdAndIsPushAndLineIdOrderByCreatedTimeDesc(userId, isPush, cwkid, pageable);
         } else {
             // 查询全部消息（默认或"all"）
-            page = pushMessageRepository.findByUserIdOrderByCreatedTimeDesc(userId, pageable);
+            page = pushMessageRepository.findByUserIdAndLineIdOrderByCreatedTimeDesc(userId, cwkid, pageable);
         }
         
         List<MessageItem> items = page.getContent().stream().map(this::toMessageItem).collect(Collectors.toList());
+        
+        // 标记返回的消息为已推送
+        if (!items.isEmpty()) {
+            List<Long> messageIds = items.stream().map(MessageItem::getId).collect(Collectors.toList());
+            markMessagesAsPushed(userId, messageIds, cwkid);
+        }
+        
         PageVo<MessageItem> pageVo = new PageVo<>();
         pageVo.setList(items);
         pageVo.setCurrent(current);
@@ -114,19 +141,33 @@ public class MessageCenterServiceImpl implements MessageCenterService {
     @Override
     @Transactional
     public void markAllRead(String userId) {
-        pushMessageRepository.markAllReadByUserId(userId);
+        String cwkid =userService.getUserCurrentCwkid(userId);//登录的产线
+        pushMessageRepository.markAllReadByUserIdAndLineId(userId,cwkid);
     }
 
     @Override
     @Transactional
     public void markReadByType(String userId, String msgType) {
-        pushMessageRepository.markAllReadByUserIdAndType(userId, msgType);
+        String cwkid =userService.getUserCurrentCwkid(userId);//登录的产线
+        pushMessageRepository.markAllReadByUserIdAndTypeAndLineId(userId, msgType,cwkid);
     }
 
     @Override
     @Transactional
     public void markReadById(String userId, Long id) {
         pushMessageRepository.markReadByUserIdAndId(userId,id);
+    }
+    
+    /**
+     * 标记指定消息为已推送
+     */
+    @Transactional
+    public void markMessagesAsPushed(String userId, List<Long> messageIds, String lineId) {
+        if (messageIds != null && !messageIds.isEmpty()) {
+            for (Long messageId : messageIds) {
+                pushMessageRepository.markPushByUserIdAndId(userId, messageId);
+            }
+        }
     }
 
     private MessageItem toMessageItem(PushMessageEntity entity) {
@@ -136,7 +177,7 @@ public class MessageCenterServiceImpl implements MessageCenterService {
         item.setTitle(entity.getTitle());
         item.setTs(entity.getCreatedTime().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
         item.setRead(entity.getIsRead());
-        
+        item.setPush(entity.getIsPush());
         // 加载订单通知详情
         if (entity.getOrderNotificationId() != null) {
             OrderNotificationEntity orderEntity = orderNotificationRepository.findById(entity.getOrderNotificationId()).orElse(null);
