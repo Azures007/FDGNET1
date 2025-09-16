@@ -8,7 +8,7 @@ const routes: Routes = [
     path: 'invetory-mgt',
     component: InventoryMgtComponent,
     data: {
-      auth: [Authority.TENANT_ADMIN],
+      auth: [Authority.TENANT_ADMIN, Authority.CUSTOMER_USER],
       title: '线边仓库存管理',
       breadcrumb: {
         label: '线边仓库存管理',
