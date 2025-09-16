@@ -16,12 +16,12 @@ public class NcWarehouse {
 
     @Id
     @Column(name = "nc_pk_stordoc", nullable = false)
-    @JsonProperty("pk_stordoc")
+    //@JsonProperty("pk_stordoc")
     @ApiModelProperty(name="仓库pk", required = true)
     private String pkStordoc;
 
     @Column(name = "nc_pk_org")
-    @JsonProperty("pk_org")
+    //@JsonProperty("pk_org")
     @ApiModelProperty("基地pk")
     private String pkOrg;
 
