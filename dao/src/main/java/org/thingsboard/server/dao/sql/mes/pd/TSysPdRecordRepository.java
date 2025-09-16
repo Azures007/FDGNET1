@@ -18,9 +18,9 @@ public interface TSysPdRecordRepository extends JpaRepository<TSysPdRecord, Inte
      * @return
      */
     @Query(value = "select * from t_sys_pd_record " +
-            "where pd_time_str=?1 and by_deleted='0' and material_number=?2 and pd_class_number=?3 and pd_type='0'" +
+            "where pd_time_str=?1 and by_deleted='0' and material_number=?2 and pd_class_number=?3 and pd_type=?4 " +
             "order by pd_time desc limit 1",nativeQuery = true)
-    TSysPdRecord findByGroup(String pdTimeStr, String pdWorkshopNumber, String pdClassNumber);
+    TSysPdRecord findByGroup(String pdTimeStr, String pdWorkshopNumber, String pdClassNumber,String pdType);
 
     /**
      * 逻辑删除同班组、车间、日期的盘点记录

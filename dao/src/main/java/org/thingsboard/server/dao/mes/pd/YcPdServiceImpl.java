@@ -54,36 +54,37 @@ public class YcPdServiceImpl implements YcPdService {
         String format = simpleDateFormat.format(pdTime);
         Integer pdSplit = null;
         tSysPdRecord.setCreatedName(tSysPdRecord.getPdCreatedName());
+        TSysPdRecord tSysPdRecord1 = tSysPdRecordRepository.findByGroup(format,
+                tSysPdRecord.getMaterialNumber(), tSysPdRecord.getPdClassNumber(),tSysPdRecord.getPdType());
+        if (tSysPdRecord1 != null) {
+            //统计盘点人
+            String pdCreatedName = tSysPdRecord1.getPdCreatedName();
+            Set<String> nameCollect = Stream.of(pdCreatedName.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toSet());
+            nameCollect.add(tSysPdRecord.getCreatedName());
+            String nameJoin = StringUtils.join(nameCollect, ", ");
+            tSysPdRecord.setPdCreatedName(nameJoin);
+            //统计累加盘点数量
+            BigDecimal pdQty = tSysPdRecord1.getPdQty();
+            tSysPdRecord.setPdQty(pdQty.add(tSysPdRecord.getPdQty()));
+            pdSplit = tSysPdRecord1.getPdRecordId();
+            tSysPdRecord1.setByDeleted("1");
+            tSysPdRecordRepository.saveAndFlush(tSysPdRecord1);
+        }
+
         if (tSysPdRecord.getPdType().equals("0")) {
             //盘点
-            TSysPdRecord tSysPdRecord1 = tSysPdRecordRepository.findByGroup(format,
-                    tSysPdRecord.getMaterialNumber(), tSysPdRecord.getPdClassNumber());
-            if (tSysPdRecord1 != null) {
-                //统计盘点人
-                String pdCreatedName = tSysPdRecord1.getPdCreatedName();
-                Set<String> nameCollect = Stream.of(pdCreatedName.split(","))
-                        .map(String::trim)
-                        .filter(s -> !s.isEmpty())
-                        .collect(Collectors.toSet());
-                nameCollect.add(tSysPdRecord.getCreatedName());
-                String nameJoin = StringUtils.join(nameCollect, ", ");
-                tSysPdRecord.setPdCreatedName(nameJoin);
-                //统计累加盘点数量
-                BigDecimal pdQty = tSysPdRecord1.getPdQty();
-                tSysPdRecord.setPdQty(pdQty.add(tSysPdRecord.getPdQty()));
-                pdSplit = tSysPdRecord1.getPdRecordId();
-                tSysPdRecord1.setByDeleted("1");
-                tSysPdRecordRepository.saveAndFlush(tSysPdRecord1);
-            }
             tSysPdRecord.setByFp("0");
 //            tSysPdRecordRepository.updatePd(format, tSysPdRecord.getPdWorkshopNumber(), tSysPdRecord.getPdClassNumber());
         } else {
             //复盘
             Integer pdRecordId = tSysPdRecord.getPdRecordId();
             pdSplit = tSysPdRecord.getPdRecordId();
-            TSysPdRecord tSysPdRecord1 = tSysPdRecordRepository.findById(pdRecordId).orElse(null);
-            tSysPdRecord1.setByFp("1");
-            tSysPdRecordRepository.saveAndFlush(tSysPdRecord1);
+            TSysPdRecord tSysPdRecordByPd = tSysPdRecordRepository.findById(pdRecordId).orElse(null);
+            tSysPdRecordByPd.setByFp("1");
+            tSysPdRecordRepository.saveAndFlush(tSysPdRecordByPd);
             tSysPdRecord.setByFp("1");
         }
         tSysPdRecord.setCreatedTime(new Date());
