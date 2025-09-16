@@ -18,6 +18,7 @@ import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialBomRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -150,7 +151,7 @@ public class YcPdServiceImpl implements YcPdService {
     public List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber) {
         List<TSysPdRecord> tSysPdRecords = tSysPdRecordRepository.showWorkshopRecord(pdTimeStr, pdWorkshopNumber);
         for (TSysPdRecord tSysPdRecord : tSysPdRecords) {
-            tSysPdRecord.setPdQty(tSysPdRecord.getPdQty().setScale(3));
+            tSysPdRecord.setPdQty(tSysPdRecord.getPdQty().setScale(3,RoundingMode.HALF_UP));
         }
         return tSysPdRecords;
     }
