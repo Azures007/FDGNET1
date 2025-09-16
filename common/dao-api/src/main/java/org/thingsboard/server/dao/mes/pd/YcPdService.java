@@ -12,7 +12,7 @@ public interface YcPdService {
      * 保存盘点记录
      * @param tSysPdRecord
      */
-    void savePd(TSysPdRecord tSysPdRecord);
+    TSysPdRecord savePd(TSysPdRecord tSysPdRecord);
 
     /**
      * 盘点物料列表

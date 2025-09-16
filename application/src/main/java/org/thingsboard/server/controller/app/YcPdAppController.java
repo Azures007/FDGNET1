@@ -37,8 +37,8 @@ public class YcPdAppController extends BaseController {
     @ApiOperation("保存盘点记录")
     @PostMapping("/savePd")
     public ResponseResult savePd(@RequestBody TSysPdRecord tSysPdRecord){
-        ycPdService.savePd(tSysPdRecord);
-        return ResultUtil.success();
+        TSysPdRecord tSysPdRecord1=ycPdService.savePd(tSysPdRecord);
+        return ResultUtil.success(tSysPdRecord1);
     }
 
     @ApiOperation("复盘记录选择")

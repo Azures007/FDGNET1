@@ -47,7 +47,7 @@ public class YcPdServiceImpl implements YcPdService {
 
     @Transactional
     @Override
-    public void savePd(TSysPdRecord tSysPdRecord) {
+    public TSysPdRecord savePd(TSysPdRecord tSysPdRecord) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         tSysPdRecord.setPdTime(new Date());
         Date pdTime = tSysPdRecord.getPdTime();
@@ -102,6 +102,8 @@ public class YcPdServiceImpl implements YcPdService {
         }
         //拆分还原拆料
         savePdBySplit(tSysPdRecord, pdSplit);
+
+        return tSysPdRecord;
     }
 
     /**
