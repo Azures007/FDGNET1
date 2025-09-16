@@ -8,7 +8,7 @@ const routes: Routes = [
     path: 'pd-mgt',
     component: PdMgtComponent,
     data: {
-      auth: [Authority.TENANT_ADMIN],
+      auth: [Authority.TENANT_ADMIN, Authority.CUSTOMER_USER],
       title: '盘点记录',
       breadcrumb: {
         label: '盘点记录',
