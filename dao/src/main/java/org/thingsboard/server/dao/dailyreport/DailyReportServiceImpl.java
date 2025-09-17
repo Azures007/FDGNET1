@@ -36,6 +36,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+
 @Service
 @Slf4j
 public class DailyReportServiceImpl implements DailyReportService{
@@ -172,7 +174,7 @@ public class DailyReportServiceImpl implements DailyReportService{
         BeanUtils.copyProperties(dailyReportVo, dailyReportHead);
         if (dailyReportHead.getId() == null ||dailyReportHead.getId()==0) {
             dailyReportHead.setCreatedName(dailyReportHead.getCreatedName());
-            dailyReportHead.setCreatedTime(dailyReportHead.getUpdatedTime().atTime(0, 0, 0));
+            dailyReportHead.setCreatedTime(dailyReportHead.getUpdatedTime());
         } else {
             if (dailyReportRepository.findById(dailyReportHead.getId()).isEmpty()) {
                 DailyReportHead info = dailyReportRepository.findById(dailyReportHead.getId()).get();
@@ -181,15 +183,16 @@ public class DailyReportServiceImpl implements DailyReportService{
             }
         }
         dailyReportHead.setEnabled(1);
-        if(dailyReportVo.getSaveStaus()) {
-            dailyReportHead.setSaveStaus(true);
+        if(dailyReportVo.getSaveStaus().equals("1")) {
+            dailyReportHead.setSaveStaus("1");
         }
         else {
-            dailyReportHead.setSaveStaus(false);
+            dailyReportHead.setSaveStaus("0");
         }
-        if(dailyReportVo.getSubmit()) {
-            dailyReportHead.setSubmit(true);
+        if(dailyReportVo.getSubmit().equals("1")) {
+            dailyReportHead.setSubmit("1");
         }
+
         dailyReportHead = dailyReportRepository.saveAndFlush(dailyReportHead);
         //插入明细
         List<DailyReportDto> items = dailyReportVo.getItemList();
@@ -217,7 +220,7 @@ public class DailyReportServiceImpl implements DailyReportService{
             String docNo = dailyReportHead.getBillNo();
             String productName = dailyReportHead.getMaterialName();
             String checker = dailyReportHead.getCreatedName();
-            java.time.LocalDateTime inspectionTime = dailyReportHead.getCreatedTime() != null ? dailyReportHead.getCreatedTime(): java.time.LocalDateTime.now();
+            java.time.LocalDateTime inspectionTime = dailyReportHead.getCreatedTime() != null ? dailyReportHead.getCreatedTime().atStartOfDay(): java.time.LocalDateTime.now();
             domainPushFacade.pushQcDaily(baseId, lineId, null, docNo, productName, checker, inspectionTime);
         } catch (Exception ignore) {}
 
@@ -246,9 +249,7 @@ public class DailyReportServiceImpl implements DailyReportService{
     public PageVo<DailyReportVo> getDailyList(String userId,Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
         //获取登录的产线
         String cwkid =userService.getUserCurrentCwkid(userId);
-        LocalDateTime endDateTime = endTime.atTime(23, 59, 59);
-        LocalDateTime startDateTime = startTime.atTime(0, 0, 0);
-        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndCreatedTimeBetweenOrderByIdDesc(cwkid,startDateTime,endDateTime);
+        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndCreatedTimeBetweenOrderByIdDesc(cwkid,startTime,endTime);
         List<DailyReportVo> saveVos = new ArrayList<>();
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();
@@ -268,9 +269,9 @@ public class DailyReportServiceImpl implements DailyReportService{
         //获取登录的产线
         String cwkid =userService.getUserCurrentCwkid(userId);
         //已经提交复核的数据
-        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndSubmitOrderByIdDesc(cwkid,true);
+        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndSubmitOrderByIdDesc(cwkid,"1");
         //已经提交的数据
-        List<DailyReportHead> plan1 = dailyReportRepository.findAllByProdLineIdAndSaveStausOrderByIdDesc(cwkid,false);
+        List<DailyReportHead> plan1 = dailyReportRepository.findAllByProdLineIdAndSaveStausOrderByIdDesc(cwkid,"1");
         List<DailyReportVo> saveVos = new ArrayList<>();
 
         for (DailyReportHead item : plan) {
@@ -285,8 +286,10 @@ public class DailyReportServiceImpl implements DailyReportService{
             if (!saveVos.contains(saveVo))
                 saveVos.add(saveVo);
         }
+
         List<DailyReportVo> sortedListDesc = saveVos.stream()
-                .sorted(Comparator.comparing(DailyReportVo::getCreatedTime).reversed())
+                .sorted(comparing(DailyReportVo::getCreatedTime).reversed()
+                        .thenComparing(comparing(DailyReportVo::getId).reversed()))
                 .collect(Collectors.toList());
         PageVo<DailyReportVo> pageVo = new PageVo<>();
         pageVo.setList(sortedListDesc);
