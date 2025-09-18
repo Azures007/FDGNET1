@@ -183,11 +183,11 @@ public class DailyReportServiceImpl implements DailyReportService{
             }
         }
         dailyReportHead.setEnabled(1);
-        if(dailyReportVo.getSaveStaus().equals("1")) {
-            dailyReportHead.setSaveStaus("1");
+        if(dailyReportVo.getSaveStatus().equals("1")) {
+            dailyReportHead.setSaveStatus("1");
         }
         else {
-            dailyReportHead.setSaveStaus("0");
+            dailyReportHead.setSaveStatus("0");
         }
         if(dailyReportVo.getSubmit().equals("1")) {
             dailyReportHead.setSubmit("1");
@@ -271,7 +271,7 @@ public class DailyReportServiceImpl implements DailyReportService{
         //已经提交复核的数据
         List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndSubmitOrderByIdDesc(cwkid,"1");
         //已经提交的数据
-        List<DailyReportHead> plan1 = dailyReportRepository.findAllByProdLineIdAndSaveStausOrderByIdDesc(cwkid,"1");
+        List<DailyReportHead> plan1 = dailyReportRepository.findAllByProdLineIdAndSaveStatusOrderByIdDesc(cwkid,"1");
         List<DailyReportVo> saveVos = new ArrayList<>();
 
         for (DailyReportHead item : plan) {

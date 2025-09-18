@@ -21,5 +21,5 @@ public interface DailyReportRepository extends JpaRepository<DailyReportHead,Int
 
     List<DailyReportHead> findAllByProdLineIdAndSubmitOrderByIdDesc(String prodLineId,String submit);
 
-    List<DailyReportHead> findAllByProdLineIdAndSaveStausOrderByIdDesc(String prodLineId,String saveStaus);
+    List<DailyReportHead> findAllByProdLineIdAndSaveStatusOrderByIdDesc(String prodLineId,String saveStatus);
 }
