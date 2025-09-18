@@ -463,7 +463,19 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
     @Override
     public List<TSysUserDetail> listUserDetail(String userId) {
-        return userDetailRepository.findByUserId(userId);
+        List<TSysUserDetail> sysUserDetailList = userDetailRepository.findByUserId(userId);
+        for (TSysUserDetail detail: sysUserDetailList) {
+            if (StringUtils.isEmpty(detail.getNcPkOrg())){
+                detail.setNcOrgName(null);
+            }
+            if (StringUtils.isEmpty(detail.getNcCwkid())){
+                detail.setNcVwkname(null);
+            }
+            if (StringUtils.isEmpty(detail.getNcWarehouseId())){
+                detail.setNcWarehouseName(null);
+            }
+        }
+        return sysUserDetailList;
     }
 
     @Override

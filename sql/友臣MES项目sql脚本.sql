@@ -148,8 +148,8 @@ CREATE TABLE t_sys_user_detail (
                                    nc_org_name varchar(255) NULL, -- 基地名称
                                    nc_cwkid varchar(255) NULL, -- 产线ID
                                    nc_vwkname varchar(255) NULL, -- 产线名称
-                                   nc_cdeptid varchar(255) NULL, -- 部门ID
-                                   nc_cdeptname varchar(255) NULL, -- 部门名称
+--                                    nc_cdeptid varchar(255) NULL, -- 部门ID
+--                                    nc_cdeptname varchar(255) NULL, -- 部门名称
                                    CONSTRAINT t_sys_user_detail_pkey PRIMARY KEY (user_detail_id)
 );
 COMMENT ON TABLE public.t_sys_user_detail IS '用户详细信息表';
@@ -160,8 +160,8 @@ COMMENT ON COLUMN public.t_sys_user_detail.nc_pk_org IS '基地ID';
 COMMENT ON COLUMN public.t_sys_user_detail.nc_org_name IS '基地名称';
 COMMENT ON COLUMN public.t_sys_user_detail.nc_cwkid IS '产线ID';
 COMMENT ON COLUMN public.t_sys_user_detail.nc_vwkname IS '产线名称';
-COMMENT ON COLUMN public.t_sys_user_detail.nc_cdeptid IS '部门ID';
-COMMENT ON COLUMN public.t_sys_user_detail.nc_cdeptname IS '部门名称';
+-- COMMENT ON COLUMN public.t_sys_user_detail.nc_cdeptid IS '部门ID';
+-- COMMENT ON COLUMN public.t_sys_user_detail.nc_cdeptname IS '部门名称';
 
 ALTER TABLE t_bus_order_head
     ADD COLUMN nc_note VARCHAR(255);
