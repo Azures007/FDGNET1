@@ -2,6 +2,7 @@ package org.thingsboard.server.dao.sql.mes.sync;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -131,4 +132,30 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
             "where nc_material_category='自制品' and material_status='1' " +
             "and (?1='' or material_code like %?1% or material_name like %?1%)",nativeQuery = true)
     List<TSyncMaterial> listMaterialsBySelctct(String selectBy);
+
+    /**
+     * 查询可用物料列表（分页）
+     * @param searchTerm 搜索条件（物料编码或名称）
+     * @param pageable 分页参数
+     * @return 物料分页列表
+     */
+    @Query(value = "select * from t_sync_material " +
+            "where material_status = '1' " +
+            "and (?1 = '' or material_code like %?1% or material_name like %?1%) " +
+            "order by created_time desc, id desc", nativeQuery = true)
+    Page<TSyncMaterial> findAvailableMaterials(String searchTerm, Pageable pageable);
+
+    /**
+     * 查询可用物料列表（排除指定配方已绑定的产品）
+     * @param recipeId 配方ID
+     * @param searchTerm 搜索条件（物料编码或名称）
+     * @param pageable 分页参数
+     * @return 物料分页列表
+     */
+    @Query(value = "select m.* from t_sync_material m " +
+            "where m.material_status = '1' " +
+            "and (?2 = '' or m.material_code like %?2% or m.material_name like %?2%) " +
+            "and m.material_code not in (select pb.product_code from t_sys_recipe_product_binding pb where pb.recipe_id = ?1) " +
+            "order by m.created_time desc, m.id desc", nativeQuery = true)
+    Page<TSyncMaterial> findAvailableMaterialsExcludingRecipe(Integer recipeId, String searchTerm, Pageable pageable);
 }

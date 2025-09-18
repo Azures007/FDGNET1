@@ -47,7 +47,7 @@ export class ChooseBaseComponent implements OnInit {
         } else {
           return {
             name: item.name,
-            id: item.pk_stordoc,
+            id: item.pkStordoc,
           }
         }
       });

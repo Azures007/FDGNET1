@@ -1646,3 +1646,91 @@ COMMENT ON COLUMN t_bus_review_notification.created_time IS '创建时间';
 
 ALTER TABLE public.t_sys_pd_record ADD group_leader varchar NULL;
 COMMENT ON COLUMN public.t_sys_pd_record.group_leader IS '班别组长';
+
+-- 1. 配方主表
+CREATE TABLE t_sys_recipe (
+                              recipe_id SERIAL PRIMARY KEY,
+                              recipe_name VARCHAR(100) NOT NULL,
+                              recipe_code VARCHAR(50) NOT NULL UNIQUE,
+                              base_location VARCHAR(100),
+                              status VARCHAR(10) DEFAULT '1',
+                              creator VARCHAR(50),
+                              create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                              recipe_description TEXT,
+                              update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                              update_user VARCHAR(50),
+                              pk_org VARCHAR(50)
+);
+
+-- 2. 配方投入设置表
+CREATE TABLE t_sys_recipe_input (
+                                    input_id SERIAL PRIMARY KEY,
+                                    recipe_id INTEGER NOT NULL,
+                                    material_name VARCHAR(100) NOT NULL,
+                                    material_code VARCHAR(50) NOT NULL,
+                                    standard_input DECIMAL(10,2) NOT NULL,
+                                    unit VARCHAR(20) NOT NULL,
+                                    lower_limit_ratio DECIMAL(5,2) DEFAULT 100.00,
+                                    upper_limit_ratio DECIMAL(5,2) DEFAULT 110.00,
+                                    process_name VARCHAR(50),
+                                    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                    FOREIGN KEY (recipe_id) REFERENCES t_sys_recipe(recipe_id) ON DELETE CASCADE
+);
+
+-- 3. 配方产品绑定表
+CREATE TABLE t_sys_recipe_product_binding (
+                                              binding_id SERIAL PRIMARY KEY,
+                                              recipe_id INTEGER NOT NULL,
+                                              product_name VARCHAR(100) NOT NULL,
+                                              product_code VARCHAR(50) NOT NULL,
+                                              create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                              FOREIGN KEY (recipe_id) REFERENCES t_sys_recipe(recipe_id) ON DELETE CASCADE
+);
+
+-- 添加表注释
+COMMENT ON TABLE t_sys_recipe IS '配方主表';
+COMMENT ON TABLE t_sys_recipe_input IS '配方投入设置表';
+COMMENT ON TABLE t_sys_recipe_product_binding IS '配方产品绑定表';
+
+-- 添加字段注释 - 配方主表
+COMMENT ON COLUMN t_sys_recipe.recipe_id IS '配方ID';
+COMMENT ON COLUMN t_sys_recipe.recipe_name IS '配方名称';
+COMMENT ON COLUMN t_sys_recipe.recipe_code IS '配方编号';
+COMMENT ON COLUMN t_sys_recipe.base_location IS '基地';
+COMMENT ON COLUMN t_sys_recipe.status IS '状态：0-禁用，1-启用';
+COMMENT ON COLUMN t_sys_recipe.creator IS '创建人';
+COMMENT ON COLUMN t_sys_recipe.create_time IS '创建时间';
+COMMENT ON COLUMN t_sys_recipe.recipe_description IS '配方说明';
+COMMENT ON COLUMN t_sys_recipe.update_time IS '更新时间';
+COMMENT ON COLUMN t_sys_recipe.update_user IS '更新人';
+COMMENT ON COLUMN t_sys_recipe.pk_org IS '基地ID';
+
+-- 添加字段注释 - 配方投入设置表
+COMMENT ON COLUMN t_sys_recipe_input.input_id IS '投入设置ID';
+COMMENT ON COLUMN t_sys_recipe_input.recipe_id IS '配方ID';
+COMMENT ON COLUMN t_sys_recipe_input.material_name IS '物料名称';
+COMMENT ON COLUMN t_sys_recipe_input.material_code IS '物料编码';
+COMMENT ON COLUMN t_sys_recipe_input.standard_input IS '每锅投入标准';
+COMMENT ON COLUMN t_sys_recipe_input.unit IS '单位';
+COMMENT ON COLUMN t_sys_recipe_input.lower_limit_ratio IS '投入下限比例%';
+COMMENT ON COLUMN t_sys_recipe_input.upper_limit_ratio IS '投入上限比例%';
+COMMENT ON COLUMN t_sys_recipe_input.process_name IS '工序';
+COMMENT ON COLUMN t_sys_recipe_input.create_time IS '创建时间';
+COMMENT ON COLUMN t_sys_recipe_input.update_time IS '更新时间';
+
+-- 添加字段注释 - 配方产品绑定表
+COMMENT ON COLUMN t_sys_recipe_product_binding.binding_id IS '绑定ID';
+COMMENT ON COLUMN t_sys_recipe_product_binding.recipe_id IS '配方ID';
+COMMENT ON COLUMN t_sys_recipe_product_binding.product_name IS '产品名称';
+COMMENT ON COLUMN t_sys_recipe_product_binding.product_code IS '产品编码';
+COMMENT ON COLUMN t_sys_recipe_product_binding.create_time IS '创建时间';
+
+-- 创建索引
+CREATE INDEX idx_recipe_code ON t_sys_recipe(recipe_code);
+CREATE INDEX idx_recipe_name ON t_sys_recipe(recipe_name);
+CREATE INDEX idx_recipe_status ON t_sys_recipe(status);
+CREATE INDEX idx_recipe_input_recipe_id ON t_sys_recipe_input(recipe_id);
+CREATE INDEX idx_recipe_input_material_code ON t_sys_recipe_input(material_code);
+CREATE INDEX idx_recipe_binding_recipe_id ON t_sys_recipe_product_binding(recipe_id);
+CREATE INDEX idx_recipe_binding_product_code ON t_sys_recipe_product_binding(product_code);

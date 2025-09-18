@@ -56,7 +56,7 @@ public class DailyReportHead {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty("创建时间")
     @Column(name = "created_time")
-    private LocalDateTime createdTime;
+    private LocalDate createdTime;
 
     @ApiModelProperty("修改人")
     @Column(name = "updated_name")
@@ -79,12 +79,12 @@ public class DailyReportHead {
     @Column(name = "prod_line_name")
     private String prodLineName;
 
-    @ApiModelProperty("保存还是提交状态/保存是ture,提交是false")
-    @Column(name = "save_staus")
-    private boolean saveStaus;
+    @ApiModelProperty("保存还是提交状态/保存是0,提交是1")
+    @Column(name = "save_status")
+    private String saveStatus;
 
-    @ApiModelProperty("是否提交复核,是ture,否是false")
+    @ApiModelProperty("是否提交复核,是1,否是0")
     @Column(name = "submit")
-    private Boolean submit;
+    private String submit;
 
 }
