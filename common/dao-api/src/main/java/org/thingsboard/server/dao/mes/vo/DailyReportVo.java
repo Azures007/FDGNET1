@@ -65,7 +65,7 @@ public class DailyReportVo {
     private String prodLineName;
 
     @ApiModelProperty("保存还是提交状态/保存是0,提交是1")
-    private String saveStaus;
+    private String saveStatus;
 
     @ApiModelProperty("是否提交复核,是1,否是0")
     private String submit;

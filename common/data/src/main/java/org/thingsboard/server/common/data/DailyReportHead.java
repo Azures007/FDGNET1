@@ -80,8 +80,8 @@ public class DailyReportHead {
     private String prodLineName;
 
     @ApiModelProperty("保存还是提交状态/保存是0,提交是1")
-    @Column(name = "save_staus")
-    private String saveStaus;
+    @Column(name = "save_status")
+    private String saveStatus;
 
     @ApiModelProperty("是否提交复核,是1,否是0")
     @Column(name = "submit")
