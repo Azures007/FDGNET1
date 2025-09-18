@@ -38,13 +38,7 @@ public interface UserDetailRepository extends JpaRepository<TSysUserDetail, Inte
     @Query("SELECT t FROM TSysUserDetail t WHERE t.ncCwkid = :ncCwkid")
     List<TSysUserDetail> findByNcCwkid(@Param("ncCwkid") String ncCwkid);
 
-    /**
-     * 根据部门ID查询用户详细信息列表
-     * @param ncCdeptid 部门ID
-     * @return 用户详细信息列表
-     */
-    @Query("SELECT t FROM TSysUserDetail t WHERE t.ncCdeptid = :ncCdeptid")
-    List<TSysUserDetail> findByNcCdeptid(@Param("ncCdeptid") String ncCdeptid);
+    // 已废弃：实体无 ncCdeptid 字段
 
     /**
      * 删除指定用户的详细信息
