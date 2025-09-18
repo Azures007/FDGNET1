@@ -108,21 +108,21 @@ public class TSysRecipeController extends BaseController {
     }
 
     //@ApiOperation("获取配方投入设置列表")
-    @GetMapping("/inputs")
+    /*@GetMapping("/inputs")
     public ResponseResult<List<TSysRecipeInput>> getRecipeInputs(@RequestParam("recipeId") Integer recipeId) {
         List<TSysRecipeInput> inputs = recipeService.getRecipeInputsByRecipeId(recipeId);
         return ResultUtil.success(inputs);
-    }
+    }*/
 
     //@ApiOperation("保存配方投入设置")
-    @PostMapping("/saveInputs")
+    /*@PostMapping("/saveInputs")
     public ResponseResult saveRecipeInputs(
             @RequestParam("recipeId") Integer recipeId,
             @RequestBody List<TSysRecipeInput> recipeInputs) {
         
         recipeService.saveRecipeInputs(recipeId, recipeInputs);
         return ResultUtil.success();
-    }
+    }*/
 
     @ApiOperation("获取配方产品绑定列表")
     @GetMapping("/productBindings")
@@ -141,7 +141,7 @@ public class TSysRecipeController extends BaseController {
         return ResultUtil.success();
     }
 
-    @ApiOperation("获取可用产品列表（分页查询，过滤已绑定的产品）")
+    @ApiOperation("获取可用产品列表（分页查询，已过滤掉已绑定的产品）")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "recipeId", value = "配方ID（用于过滤已绑定的产品）"),
             @ApiImplicitParam(name = "productName", value = "产品名称（模糊查询）"),
@@ -164,20 +164,20 @@ public class TSysRecipeController extends BaseController {
         return ResultUtil.success(products);
     }
 
-    @ApiOperation("移除产品绑定")
+    /*@ApiOperation("移除产品绑定")
     @GetMapping("/removeProductBinding")
     public ResponseResult removeProductBinding(@RequestParam("bindingId") Integer bindingId) {
         recipeService.removeProductBinding(bindingId);
         return ResultUtil.success();
-    }
+    }*/
 
     //@ApiOperation("获取配方统计信息")
-    @GetMapping("/statistics")
+    /*@GetMapping("/statistics")
     public ResponseResult<Object> getRecipeStatistics(@RequestParam(value = "pkOrg", required = false) String pkOrg) {
         long totalCount = pkOrg != null ? 
                 recipeService.getRecipeCountByPkOrg(pkOrg) : 
                 recipeService.getRecipeCountByStatus("1");
         
         return ResultUtil.success(totalCount);
-    }
+    }*/
 }
