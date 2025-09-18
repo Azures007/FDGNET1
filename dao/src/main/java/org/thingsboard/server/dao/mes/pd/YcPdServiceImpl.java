@@ -92,6 +92,7 @@ public class YcPdServiceImpl implements YcPdService {
         tSysPdRecord.setCreatedTime(new Date());
         tSysPdRecord.setByDeleted("0");
         tSysPdRecord.setPdTimeStr(format);
+        tSysPdRecord.setPdRecordId(null);
         tSysPdRecordRepository.saveAndFlush(tSysPdRecord);
         //更新库存
         List<NcInventory> ncInventories = ncInventoryRepository.findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(tSysPdRecord.getPdWorkshopNumber(),
@@ -118,7 +119,7 @@ public class YcPdServiceImpl implements YcPdService {
         if (pdSplit != null) {
             TSysPdRecordSplit deletePdRecordSplitt = new TSysPdRecordSplit();
             deletePdRecordSplitt.setRePdRecordId(pdSplit);
-            tSysPdRecordSplitRepository.delete(deletePdRecordSplitt);
+            tSysPdRecordSplitRepository.deleteByRePdRecordId(deletePdRecordSplitt.getRePdRecordId());
         }
         String materialNumber = tSysPdRecord.getMaterialNumber();
         List<TSyncMaterialBom> tSyncMaterialBoms = syncMaterialBomRepository.findByMaterialNumber(materialNumber);
