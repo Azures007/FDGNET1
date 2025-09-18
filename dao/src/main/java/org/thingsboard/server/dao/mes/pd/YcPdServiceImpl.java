@@ -55,7 +55,7 @@ public class YcPdServiceImpl implements YcPdService {
         Integer pdSplit = null;
         tSysPdRecord.setCreatedName(tSysPdRecord.getPdCreatedName());
         TSysPdRecord tSysPdRecord1 = tSysPdRecordRepository.findByGroup(format,
-                tSysPdRecord.getMaterialNumber(), tSysPdRecord.getPdClassNumber(),tSysPdRecord.getPdType());
+                tSysPdRecord.getMaterialNumber(), tSysPdRecord.getPdClassNumber(), tSysPdRecord.getPdType());
         if (tSysPdRecord1 != null) {
             //统计盘点人
             String pdCreatedName = tSysPdRecord1.getPdCreatedName();
@@ -81,7 +81,9 @@ public class YcPdServiceImpl implements YcPdService {
         } else {
             //复盘
             Integer pdRecordId = tSysPdRecord.getPdRecordId();
-            pdSplit = tSysPdRecord.getPdRecordId();
+            if (pdSplit == null) {
+                pdSplit = tSysPdRecord.getPdRecordId();
+            }
             TSysPdRecord tSysPdRecordByPd = tSysPdRecordRepository.findById(pdRecordId).orElse(null);
             tSysPdRecordByPd.setByFp("1");
             tSysPdRecordRepository.saveAndFlush(tSysPdRecordByPd);
@@ -154,7 +156,7 @@ public class YcPdServiceImpl implements YcPdService {
     public List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber) {
         List<TSysPdRecord> tSysPdRecords = tSysPdRecordRepository.showWorkshopRecord(pdTimeStr, pdWorkshopNumber);
         for (TSysPdRecord tSysPdRecord : tSysPdRecords) {
-            tSysPdRecord.setPdQty(tSysPdRecord.getPdQty().setScale(3,RoundingMode.HALF_UP));
+            tSysPdRecord.setPdQty(tSysPdRecord.getPdQty().setScale(3, RoundingMode.HALF_UP));
         }
         return tSysPdRecords;
     }
