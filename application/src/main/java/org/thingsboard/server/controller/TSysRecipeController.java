@@ -145,7 +145,6 @@ public class TSysRecipeController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "recipeId", value = "配方ID（用于过滤已绑定的产品）"),
             @ApiImplicitParam(name = "productName", value = "产品名称（模糊查询）"),
-            @ApiImplicitParam(name = "productCode", value = "产品编码（模糊查询）"),
             @ApiImplicitParam(name = "current", value = "当前页（从0开始）"),
             @ApiImplicitParam(name = "size", value = "每页大小")
     })
@@ -153,13 +152,12 @@ public class TSysRecipeController extends BaseController {
     public ResponseResult<PageVo<TSyncMaterial>> getAvailableProducts(
             @RequestParam(value = "recipeId", required = false) Integer recipeId,
             @RequestParam(value = "productName", required = false) String productName,
-            @RequestParam(value = "productCode", required = false) String productCode,
             @RequestParam(value = "current", defaultValue = "0") Integer current,
             @RequestParam(value = "size", defaultValue = "15") Integer size) throws ThingsboardException {
         
         SecurityUser currentUser = getCurrentUser();
         PageVo<TSyncMaterial> products = recipeService.getAvailableProducts(
-                currentUser.getId().getId().toString(), recipeId, productName, productCode, current, size);
+                currentUser.getId().getId().toString(), recipeId, productName, "", current, size);
         
         return ResultUtil.success(products);
     }
