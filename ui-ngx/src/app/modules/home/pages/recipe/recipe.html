@@ -1,0 +1,103 @@
+<div class="page-container flex-column">
+  <div class="page-header">
+
+    <div class="row-block cols4">
+      <label class="label">配方名称</label>
+      <input class="input" [(ngModel)]="searchData.recipeName" />
+    </div>
+    <div class="row-block cols4">
+      <label class="label">配方编号</label>
+      <input class="input" [(ngModel)]="searchData.recipeCode" />
+    </div>
+    <div class="row-block cols4">
+      <label class="label">状态</label>
+      <select class="input" [(ngModel)]="searchData.status">
+        <option value="">全部</option>
+        <option value="1">启用</option>
+        <option value="0">禁用</option>
+      </select>
+    </div>
+    <div class="row-block cols4">
+      <label class="label"></label>
+      <div class="btn-group">
+        <button class="search_btn" (click)="searchList()">
+          <mat-icon class="material-icons svgIcon">search</mat-icon>查询
+        </button>
+        <button class="search_btn" (click)="resetQuery()">
+          <mat-icon class="material-icons svgIcon">clear</mat-icon>重置
+        </button>
+      </div>
+    </div>
+
+    <div class="row-block cols4">
+      <label class="label"></label>
+      <div class="btn-group">
+        <button class="search_btn" *ngIf="set.has('/recipe/add')" (click)="showAddVisibilly({})">
+          <mat-icon class="material-icons svgIcon">add</mat-icon>新增
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="page-content">
+    <table mat-table [dataSource]="dataSource" class="table-warp">
+      <ng-container matColumnDef="no" sticky="true">
+        <th mat-header-cell *matHeaderCellDef> 序号 </th>
+        <td mat-cell *matCellDef="let element"> {{element.no}} </td>
+      </ng-container>
+      <ng-container matColumnDef="recipeName">
+        <th mat-header-cell *matHeaderCellDef> 配方名称 </th>
+        <td mat-cell *matCellDef="let element"> {{element.recipeName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="recipeCode">
+        <th mat-header-cell *matHeaderCellDef> 配方编号 </th>
+        <td mat-cell *matCellDef="let element"> {{element.recipeCode}} </td>
+      </ng-container>
+      <ng-container matColumnDef="creator">
+        <th mat-header-cell *matHeaderCellDef> 创建人 </th>
+        <td mat-cell *matCellDef="let element"> {{element.creator}} </td>
+      </ng-container>
+      <ng-container matColumnDef="createTime">
+        <th mat-header-cell *matHeaderCellDef> 创建时间 </th>
+        <td mat-cell *matCellDef="let element"> {{element.createTime | date:'yyyy-MM-dd HH:mm:ss'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="recipeDescription">
+        <th mat-header-cell *matHeaderCellDef> 配方说明 </th>
+        <td mat-cell *matCellDef="let element"> {{element.recipeDescription}} </td>
+      </ng-container>
+      <ng-container matColumnDef="orgName">
+        <th mat-header-cell *matHeaderCellDef> 基地 </th>
+        <td mat-cell *matCellDef="let element"> {{element.orgName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> 状态 </th>
+        <td mat-cell *matCellDef="let element" [ngClass]="{'enabled':element.status == 1,'disabled':element.status == 0}"> {{getStatus(element.status)}} </td>
+      </ng-container>
+      <ng-container matColumnDef="customColumn1">
+        <th mat-header-cell *matHeaderCellDef> 操作 </th>
+        <td mat-cell *matCellDef="let element">
+          <button class="mini_btn edit_btn"
+            (click)="handleEvent(element,'bind')" *ngIf="set.has('/recipe/productBinding')">产品绑定</button>
+          <button class="mini_btn edit_btn"
+            (click)="handleEvent(element,'edit')" *ngIf="set.has('/recipe/edit')">编辑</button>
+          <button class="mini_btn look_btn" (click)="handleEvent(element,'details')">详情</button>
+          <button *ngIf="element.status == 0 && set.has('/recipe/del')" class="mini_btn del_btn"
+            (click)="handleEvent(element,'del')">删除</button>
+          <button *ngIf="element.status == 0 && set.has('/recipe/enable')"
+            class="mini_btn enter_btn" (click)="handleEvent(element,'enable')">启用</button>
+          <button *ngIf="element.status == 1 && set.has('/recipe/disable')"
+            class="mini_btn disable_btn" (click)="handleEvent(element,'disable')">禁用</button>
+        </td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <mat-paginator [length]="total" [pageSize]="searchData.size" [pageSizeOptions]="pageSizeOptions"
+      aria-label="选择要跳转的页面" (page)="getNotices($event)">
+    </mat-paginator>
+  </div>
+</div>

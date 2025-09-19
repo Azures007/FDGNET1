@@ -180,6 +180,7 @@ import { AddCheckCateComponent } from './quality/add-check-cate.component';
 import { AddCheckPlanComponent } from './quality/add-check-plan.component';
 import { ChooseCheckCateComponent } from './quality/choose-check-cate.component';
 import { ChooseCateComponent } from './quality/choose-cate.component';
+import { AddRecipeComponent } from './recipe/add-recipe.component';
 
 @NgModule({
   declarations:
@@ -336,7 +337,8 @@ import { ChooseCateComponent } from './quality/choose-cate.component';
       AddCheckCateComponent,
       AddCheckPlanComponent,
       ChooseCheckCateComponent,
-      ChooseCateComponent
+      ChooseCateComponent,
+      AddRecipeComponent
     ],
   imports: [
     CommonModule,

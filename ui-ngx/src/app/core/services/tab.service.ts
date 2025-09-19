@@ -23,9 +23,15 @@ export class TabService {
           path: item.path,
           name: item.name,
         });
+        if (item.pages?.length && !item.pages.find(page => page.type == 'link')) {
+          menu.push({
+            path: item.path,
+            name: item.name,
+          })
+        }
         if(item.pages) {
           item.pages.forEach(page => {
-            menu.push({
+            page.type == 'link' && menu.push({
               path: page.path,
               name: page.name,
             })

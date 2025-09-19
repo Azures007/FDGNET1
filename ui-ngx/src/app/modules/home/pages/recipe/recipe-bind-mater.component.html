@@ -1,0 +1,72 @@
+<div class="team_admin_container">
+    <div class="content">
+        <div class="person_content left">
+            <div class="content_title">请选择</div>
+            <div class="list_content">
+
+                <div class="search_content">
+                    <input type="text" placeholder="输入物料名称或编码" [(ngModel)]="searchFormGroup.productName">
+                    <button class="search_btn" (click)="searchList()">搜索</button>
+                </div>
+                <!-- 改造成table -->
+                  <table class="person_list">
+                    <tr class="list_header">
+                        <td>物料名称</td>
+                        <td>物料编码</td>
+                    </tr>
+                    <tr *ngFor="let personItem of dataSource;index as i"
+                        [ngClass]="{'check_item':(checkData.id!=undefined  && personItem.id == checkData.id)}"
+                        (click)="chooseCurrent(personItem,i)">
+                        <td>{{personItem.materialName}}</td>
+                        <td>{{personItem.materialCode}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="list-footer">
+                <mat-paginator [length]="total" [pageSize]="searchFormGroup.size" [pageSizeOptions]="pageSizeOptions"
+                    aria-label="选择要跳转的页面" (page)="getNotices($event)">
+                </mat-paginator>
+            </div>
+
+        </div>
+
+        <div class="center">
+            <mat-icon (click)="goRight()" svgIcon="go-right" aria-hidden="false" aria-label="Example thumbs up SVG icon"
+                class="go_icon"></mat-icon>
+        </div>
+
+        <div class="person_content right">
+            <div class="content_title">已选中</div>
+            <div class="list_content">
+
+                <div class="search_content">
+                    <input type="text" placeholder="输入物料名称" [(ngModel)]="materialNameCheck">
+                    <button class="search_btn" (click)="searchCheckList()">搜索</button>
+
+                    <button class="search_btn" (click)="searchCheckListReset()">重置</button>
+                </div>
+
+                <!-- 改造成table -->
+                  <table class="person_list">
+                    <tr class="list_header">
+                        <td>物料名称</td>
+                        <td>物料编码</td>
+                        <td>操作</td>
+                    </tr>
+                    <tr *ngFor="let personItem of dataCheck;index as i">
+                        <td>{{personItem.materialName}}</td>
+                        <td>{{personItem.materialCode}}</td>
+                        <td>
+                            <button class="remove_btn" (click)="remove(personItem)">移除</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <button (click)="back()">返回</button>
+        <button (click)="saveList()">保存</button>
+    </div>
+</div>
