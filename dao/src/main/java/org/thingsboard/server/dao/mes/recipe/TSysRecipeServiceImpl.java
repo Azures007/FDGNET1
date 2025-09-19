@@ -7,10 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.mes.sys.TSysRecipe;
-import org.thingsboard.server.common.data.mes.sys.TSysRecipeInput;
-import org.thingsboard.server.common.data.mes.sys.TSysRecipeProductBinding;
-import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
+import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.dao.mes.dto.RecipeQueryDto;
 import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeInputRepository;
 import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeProductBindingRepository;
@@ -18,6 +15,7 @@ import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
 import org.thingsboard.server.dao.mes.dto.RecipeSaveDto;
 import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -46,15 +44,18 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
     @Autowired
     private SyncMaterialRepository syncMaterialRepository;
 
+    @Autowired
+    TSysPersonnelInfoRepository tSysPersonnelInfoRepository;
+
     @Override
     public Page<TSysRecipe> getRecipeList(String currentUser, Integer current, Integer size, RecipeQueryDto queryDto) {
         Pageable pageable = PageRequest.of(current, size);
-        
+
         String recipeName = queryDto.getRecipeName();
         String recipeCode = queryDto.getRecipeCode();
         String status = queryDto.getStatus();
         String pkOrg = queryDto.getPkOrg();
-        
+
         return recipeRepository.findRecipesWithConditions(recipeName, recipeCode, status, pkOrg, pageable);
     }
 
@@ -86,28 +87,35 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
 
     @Override
     public RecipeSaveDto saveRecipe(RecipeSaveDto saveDto, String currentUser) {
+        TSysPersonnelInfo person = tSysPersonnelInfoRepository.findAllByUserId(currentUser);
+        if(person==null) {
+            throw new RuntimeException("用户信息异常");
+        }
         TSysRecipe recipe=saveDto.getRecipe();
         List<TSysRecipeInput> recipeInputs = saveDto.getRecipeInputs();
         boolean isNew = recipe.getRecipeId() == null;
-        
+
         if (isNew) {
             // 新增配方
-            recipe.setCreator(currentUser);
+            recipe.setCreator(person.getName());
             recipe.setCreateTime(new Date());
         } else {
+            TSysRecipe oldrecipe=recipeRepository.getOne(recipe.getRecipeId());
+            recipe.setCreator(oldrecipe.getCreator());
+            recipe.setCreateTime(oldrecipe.getCreateTime());
             // 更新配方
-            recipe.setUpdateUser(currentUser);
+            recipe.setUpdateUser(person.getName());
             recipe.setUpdateTime(new Date());
         }
-        
+
         // 保存配方主表
         TSysRecipe savedRecipe = recipeRepository.save(recipe);
-        
+
         // 保存投入设置
         if (recipeInputs != null && !recipeInputs.isEmpty()) {
             // 先删除原有的投入设置
             recipeInputRepository.deleteByRecipeId(savedRecipe.getRecipeId());
-            
+
             // 保存新的投入设置
             for (TSysRecipeInput input : recipeInputs) {
                 input.setRecipeId(savedRecipe.getRecipeId());
@@ -125,21 +133,25 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
     public void deleteRecipe(Integer recipeId) {
         // 删除投入设置
         recipeInputRepository.deleteByRecipeId(recipeId);
-        
+
         // 删除产品绑定
         productBindingRepository.deleteByRecipeId(recipeId);
-        
+
         // 删除配方主表
         recipeRepository.deleteById(recipeId);
     }
 
     @Override
     public void updateRecipeStatus(Integer recipeId, String status, String currentUser) {
+        TSysPersonnelInfo person = tSysPersonnelInfoRepository.findAllByUserId(currentUser);
+        if(person==null) {
+            throw new RuntimeException("用户信息异常");
+        }
         Optional<TSysRecipe> recipeOpt = recipeRepository.findById(recipeId);
         if (recipeOpt.isPresent()) {
             TSysRecipe recipe = recipeOpt.get();
             recipe.setStatus(status);
-            recipe.setUpdateUser(currentUser);
+            recipe.setUpdateUser(person.getName());
             recipe.setUpdateTime(new Date());
             recipeRepository.save(recipe);
         }
