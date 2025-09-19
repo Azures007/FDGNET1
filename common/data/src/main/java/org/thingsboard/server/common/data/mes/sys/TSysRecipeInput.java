@@ -58,9 +58,13 @@ public class TSysRecipeInput {
     @Column(name = "upper_limit_ratio", precision = 5, scale = 2)
     private BigDecimal upperLimitRatio = new BigDecimal("110.00");
 
-    @ApiModelProperty("工序")
+    @ApiModelProperty("工序名称")
     @Column(name = "process_name", length = 50)
     private String processName;
+
+    @ApiModelProperty("工序编码")
+    @Column(name = "process_number", length = 50)
+    private String processNumber;
 
     @ApiModelProperty("创建时间")
     @Column(name = "create_time")
