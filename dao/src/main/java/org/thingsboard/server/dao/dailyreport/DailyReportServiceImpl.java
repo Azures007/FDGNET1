@@ -213,16 +213,19 @@ public class DailyReportServiceImpl implements DailyReportService{
         }
         DailyReportVo planDetail= dailyReportService.DailyDetail(dailyReportHead.getId());
 
-        // 推送：品管日报表复核通知（面向指定基地/产线/角色）
-        try {
-            String lineId = dailyReportHead.getProdLineId();
-            String baseId = ncWorklineService.getBaseIdByLineId(lineId);
-            String docNo = dailyReportHead.getBillNo();
-            String productName = dailyReportHead.getMaterialName();
-            String checker = dailyReportHead.getCreatedName();
-            java.time.LocalDateTime inspectionTime = dailyReportHead.getCreatedTime() != null ? dailyReportHead.getCreatedTime().atStartOfDay(): java.time.LocalDateTime.now();
-            domainPushFacade.pushQcDaily(baseId, lineId, null, docNo, productName, checker, inspectionTime);
-        } catch (Exception ignore) {}
+        if(dailyReportVo.getSaveStatus().equals("1")&&dailyReportVo.getSubmit().equals("0")) {
+            // 提交每日报表，推送：品管日报表复核通知（面向指定基地/产线/角色）
+            try {
+                String lineId = dailyReportHead.getProdLineId();
+                String baseId = ncWorklineService.getBaseIdByLineId(lineId);
+                String docNo = dailyReportHead.getBillNo();
+                String productName = dailyReportHead.getMaterialName();
+                String checker = dailyReportHead.getCreatedName();
+                java.time.LocalDateTime inspectionTime = dailyReportHead.getCreatedTime() != null ? dailyReportHead.getCreatedTime().atStartOfDay(): java.time.LocalDateTime.now();
+                domainPushFacade.pushQcDaily(baseId, lineId, null, docNo, productName, checker, inspectionTime);
+            } catch (Exception ignore) {}
+        }
+
 
         return planDetail;
     }
