@@ -16,6 +16,7 @@ import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
 import org.thingsboard.server.dao.mes.dto.RecipeSaveDto;
 import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
+import org.thingsboard.server.dao.user.UserService;
 
 import java.util.Date;
 import java.util.List;
@@ -47,6 +48,9 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
     @Autowired
     TSysPersonnelInfoRepository tSysPersonnelInfoRepository;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     public Page<TSysRecipe> getRecipeList(String currentUser, Integer current, Integer size, RecipeQueryDto queryDto) {
         Pageable pageable = PageRequest.of(current, size);
@@ -54,7 +58,8 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
         String recipeName = queryDto.getRecipeName();
         String recipeCode = queryDto.getRecipeCode();
         String status = queryDto.getStatus();
-        String pkOrg = queryDto.getPkOrg();
+        // 只保留当前用户登录的基地
+        String pkOrg = userService.getUserCurrentPkOrg(currentUser);
 
         return recipeRepository.findRecipesWithConditions(recipeName, recipeCode, status, pkOrg, pageable);
     }
