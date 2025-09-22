@@ -123,8 +123,8 @@ export class RecipeBindMaterComponent implements OnInit {
 
   //移除
   remove(data) {
-    this.dataCheck = this.dataCheck.filter(item => item != data)
-    this.dataCheckCopy = this.dataCheckCopy.filter(item => item != data)
+    this.dataCheck = this.dataCheck.filter(item => item.materialCode != data)
+    this.dataCheckCopy = this.dataCheckCopy.filter(item => item.materialCode != data)
 	console.log(this.dataCheck);
     console.log(this.dataCheckCopy);
     this.dataSource.push(data);
