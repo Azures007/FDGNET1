@@ -1,5 +1,6 @@
 package org.thingsboard.server.dao.sql.mes.order;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -230,7 +231,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "    OR a.bill_no LIKE CONCAT('%', ?4, '%') \n" +
             "    OR ?4 = ''\n" +
             ")",nativeQuery = true)
-    List<Map> getWaitTaskUserId2(String userId, String processNumber, String bodyLot,String selectOrField, PageRequest of);
+    Page<Map> getWaitTaskUserId2(String userId, String processNumber, String bodyLot,String selectOrField, PageRequest of);
 
     /* 获取生产中任务 */
     @Query(value = "select count(1)\n" +
@@ -319,7 +320,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "and (a.body_lot=?5 or ?5='' or ?5 is null) \n" +
             "and (a.order_no like CONCAT('%',?6,'%') or a.body_lot like CONCAT('%',?6,'%') or a.body_material_name like CONCAT('%',?6,'%') or a.bill_no like CONCAT('%',?6,'%') or ?6='')" +
             "",nativeQuery = true)
-    List<Map> getTaskListByPersonIdAndProcessStatusAndOrderProcessType(String userId, List<String> processStatus, String orderProcessType, String processNumber, String bodyLot,String selectOrField, PageRequest sort);
+    Page<Map> getTaskListByPersonIdAndProcessStatusAndOrderProcessType(String userId, List<String> processStatus, String orderProcessType, String processNumber, String bodyLot,String selectOrField, PageRequest sort);
 
     /* 获取生产中任务 行数 */
     @Query(value = "select count(1)\n" +
@@ -497,7 +498,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_personnel_info b on a2.person_id =b.personnel_id  \n" +
             "left join t_sys_process_info d on a2.process_id =d.process_id \n" +
             "left join t_sys_process_info g on g.process_id = a.current_process \n" +
-            "JOIN t_sys_process_class_rel t2 ON t2.process_id = g.process_id \n" +
+            "JOIN t_sys_process_class_rel t2 ON t2.process_id = a2.process_id \n" +
             "where 1=1 " +
             "and t2.class_id in (\n" +
             "select class_id  from \n" +
@@ -599,7 +600,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "and (a.body_lot=?4 or ?4='' or ?4 is null) " +
             "and ( a.order_no like CONCAT('%',?5,'%') or a.body_lot like CONCAT('%',?5,'%') or a.body_material_name like CONCAT('%',?5,'%') or a.bill_no like CONCAT('%',?5,'%') or ?5='') \n" +
             "",nativeQuery = true)
-    List<Map> getTaskListByPersonIdAndProcessStatus(String userId, List<String> processStatus,String processNumber,String bodyLot,String sele, PageRequest sort);
+    Page<Map> getTaskListByPersonIdAndProcessStatus(String userId, List<String> processStatus,String processNumber,String bodyLot,String sele, PageRequest sort);
 
     /* 获取明日任务 行数 */
     @Query(value = "select count(1) \n" +
