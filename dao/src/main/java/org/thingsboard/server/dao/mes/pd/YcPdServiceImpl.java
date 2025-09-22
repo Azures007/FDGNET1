@@ -84,6 +84,11 @@ public class YcPdServiceImpl implements YcPdService {
             if (pdSplit == null) {
                 pdSplit = tSysPdRecord.getPdRecordId();
             }
+            //复盘原纪录需要标记为删除
+            TSysPdRecord deleteRecord = tSysPdRecordRepository.findById(tSysPdRecord.getPdRecordId()).orElse(null);
+            deleteRecord.setByDeleted("1");
+            tSysPdRecordRepository.saveAndFlush(deleteRecord);
+
             TSysPdRecord tSysPdRecordByPd = tSysPdRecordRepository.findById(pdRecordId).orElse(null);
             tSysPdRecordByPd.setByFp("1");
             tSysPdRecordRepository.saveAndFlush(tSysPdRecordByPd);
