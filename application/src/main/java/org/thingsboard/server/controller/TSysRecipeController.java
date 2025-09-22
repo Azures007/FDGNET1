@@ -70,7 +70,7 @@ public class TSysRecipeController extends BaseController {
 
         RecipeSaveDto savedRecipe = recipeService.saveRecipe(
                 saveDto,
-                currentUser.getName());
+                currentUser.getId().getId().toString());
         
         return ResultUtil.success(savedRecipe);
     }
@@ -103,7 +103,7 @@ public class TSysRecipeController extends BaseController {
             @RequestParam("status") String status) throws ThingsboardException {
         
         SecurityUser currentUser = getCurrentUser();
-        recipeService.updateRecipeStatus(recipeId, status, currentUser.getName());
+        recipeService.updateRecipeStatus(recipeId, status, currentUser.getId().getId().toString());
         return ResultUtil.success();
     }
 
