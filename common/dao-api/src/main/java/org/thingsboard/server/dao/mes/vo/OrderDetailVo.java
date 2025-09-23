@@ -1,8 +1,11 @@
 package org.thingsboard.server.dao.mes.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.checkerframework.checker.formatter.qual.Format;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -18,6 +21,8 @@ public class OrderDetailVo {
     private String orderNo;
 
     @ApiModelProperty("下单时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date billDate;
 
     @ApiModelProperty("计划员")
@@ -77,9 +82,13 @@ public class OrderDetailVo {
     private String craftName;
 
     @ApiModelProperty("计划开工时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date bodyPlanStartDate;
 
     @ApiModelProperty("计划完成时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date bodyPlanFinishDate;
 
     @ApiModelProperty("计划产量（件）")
