@@ -99,7 +99,7 @@ public class NcTBusOrderHead {
     @ApiModelProperty("规格")
     private String materialspec;
 
-    @Column(name = "body_plan_prd_qty")
+    @Column(name = "body_plan_prd_qty", precision = 18, scale = 9)
     @ApiModelProperty("计划产量（件）")
     private BigDecimal nnum;
 
