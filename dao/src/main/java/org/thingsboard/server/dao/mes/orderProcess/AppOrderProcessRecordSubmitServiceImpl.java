@@ -1,6 +1,7 @@
 package org.thingsboard.server.dao.mes.orderProcess;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +26,7 @@ import org.thingsboard.server.dao.mes.order.OrderHeadService;
 import org.thingsboard.server.dao.mes.order.OrderProcessDeviceRelService;
 import org.thingsboard.server.dao.mes.order.OrderProcessHistoryService;
 import org.thingsboard.server.dao.mes.order.OrderProcessPersonRelService;
+import org.thingsboard.server.dao.mes.vo.UserClassVo;
 import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftInfoRepository;
 import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftMaterialRelRepository;
 import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftProcessRelRepository;
@@ -259,7 +261,12 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         }
         TBusOrderProcess tBusOrderProcess = orderProcessRepository.findById(saveDto.getOrderProcessId()).orElse(null);
         TSysProcessInfo processInfo = tBusOrderProcess.getProcessId();
-        TSysClass tSysClass = tBusOrderProcess.getClassId();
+        //班组改成操作员班组id
+        List<TSysClassPersonnelRel> classPersonnelRel= classPersonnelRepository.findByPersonnelId(saveDto.getDevicePersonIds().get(0));
+        TSysClass tSysClass=null;
+        if (classPersonnelRel.size()>0){
+            tSysClass = tSysClassRepository.getOne(classPersonnelRel.get(0).getClassId());
+        }
         TSysPersonnelInfo personnelInfo = tSysPersonnelInfoRepository.findByUserId(userId);
         List<TBusOrderHead> heads = orderHeadRepository.findByOrderNo(saveDto.getOrderNo());
         TBusOrderHead tBusOrderHead = heads.get(0);
