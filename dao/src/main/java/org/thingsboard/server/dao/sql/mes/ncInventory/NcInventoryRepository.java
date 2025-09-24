@@ -29,6 +29,6 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
             "and (:#{#pdMaterialsDto.material} ='' or a.material_name like %:#{#pdMaterialsDto.material}% or a.material_code like %:#{#pdMaterialsDto.material}%)",nativeQuery = true)
     List<Map> pdMaterials(@Param("pdMaterialsDto") PdMaterialsDto pdMaterialsDto);
 
-    @Query(value = "select * from t_bus_inventory where warehouse_code=?1 and material_code=?2 and status=?3",nativeQuery = true)
+    @Query(value = "select * from t_bus_inventory where warehouse_id=?1 and material_code=?2 and status=?3",nativeQuery = true)
     List<NcInventory> findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(String warehouseId, String materialCode, String status);
 }
