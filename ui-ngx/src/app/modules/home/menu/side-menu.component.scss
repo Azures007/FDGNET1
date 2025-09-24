@@ -35,9 +35,9 @@
     overflow: hidden;
     line-height: 50px;
     border-radius: 0;
-    font-size: 14px;
-    font-weight: 400;
-    color: #333;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
     &:hover {
       border-bottom: none;
       background-color: rgba(255,255,255,0.08);
@@ -47,8 +47,7 @@
     }
     &.tb-active {
       font-weight: 500;
-      // background-color: rgba(255, 255, 255, .15);
-      color: #FF9D44;
+      background-color: #3399ff;
     }
 
     .mat-button-wrapper {

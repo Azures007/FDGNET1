@@ -16,7 +16,6 @@
 
 -->
 <a mat-button routerLinkActive="tb-active" [routerLinkActiveOptions]="{exact: !section.notExact}" routerLink="{{section.path}}">
-  <mat-icon *ngIf="!section.isMdiIcon && section.icon != null" class="material-icons">{{section.icon}}</mat-icon>
-  <mat-icon *ngIf="section.isMdiIcon && section.icon != null" [svgIcon]="section.icon"></mat-icon>
+  <img style="width: 19px;height: 19px;margin-right: 8px;" *ngIf="!section.isMdiIcon && section.icon" [src]="'assets/menu-icon/' + section.icon + '.png'">
   <span>{{section.name | translate}}</span>
 </a>

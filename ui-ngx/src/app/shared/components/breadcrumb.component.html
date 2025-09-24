@@ -16,55 +16,10 @@
 
 -->
 <div class="tb-breadcrumb">
-  <!-- <h1 fxFlex fxHide.gt-sm *ngIf="lastBreadcrumb$ | async; let breadcrumb">
-    {{ breadcrumb.ignoreTranslate ? (breadcrumb.labelFunction ? breadcrumb.labelFunction() : breadcrumb.label) : (breadcrumb.label | translate) }}
-  </h1> -->
-  <!-- <span fxHide.lt-md fxLayout="row" *ngFor="let breadcrumb of breadcrumbs$ | async; trackBy: trackByBreadcrumbs; last as isLast;" [ngSwitch]="isLast">
-	    <a *ngSwitchCase="false" [routerLink]="breadcrumb.link" [queryParams]="breadcrumb.queryParams"
-      style="background-color: #f4f6f7;
-      border-radius: 2px;
-      padding: 12px 9px;
-      font-size: 13px;
-      color: #999;
-      display: flex;
-      align-items: center">
-
-        <mat-icon *ngIf="breadcrumb.isMdiIcon" [svgIcon]="breadcrumb.icon">
-	    	</mat-icon>
-        <mat-icon *ngIf="!breadcrumb.isMdiIcon" class="material-icons">
-          {{ breadcrumb.icon }}
-        </mat-icon>
-        {{ breadcrumb.ignoreTranslate ? (breadcrumb.labelFunction ? breadcrumb.labelFunction() : breadcrumb.label) : (breadcrumb.label | translate) }}
-      </a>
-	    <span *ngSwitchCase="true" style="background-color: #f4f6f7;
-      border-radius: 2px;
-      padding: 12px 9px;
-      font-size: 13px;
-      color: #999;
-      display: flex;
-      align-items: center">
-        <mat-icon *ngIf="breadcrumb.isMdiIcon" [svgIcon]="breadcrumb.icon">
-	    	</mat-icon>
-	    	<mat-icon *ngIf="!breadcrumb.isMdiIcon" class="material-icons">
-	    	  {{ breadcrumb.icon }}
-	    	</mat-icon>
-        {{ breadcrumb.ignoreTranslate ? (breadcrumb.labelFunction ? breadcrumb.labelFunction() : breadcrumb.label) : (breadcrumb.label | translate) }}
-      </span>
-	    <span class="divider" [fxHide]="isLast"> > </span>
-	</span> -->
-
   <!-- 新增页签部分 -->
   <span class="tab-item" *ngFor="let tab of tabs$ | async; trackBy: trackByTabs">
     <a [routerLink]="tab.link" class="link"
-      routerLinkActive="active"
-       style="background-color: #f4f6f7;
-              border-radius: 5px;
-              padding: 9px;
-              margin-right: 10px;
-              font-size: 13px;
-              display: flex;
-              align-items: center;
-              position: relative;">
+      routerLinkActive="active">
       {{tab.label}}
       <mat-icon class="material-icons close-icon"
           *ngIf="tab.link !== '/home' && (tabs$ | async)?.length > 1"

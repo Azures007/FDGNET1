@@ -24,15 +24,21 @@
                [opened]="sidenavOpened && !forceFullscreen">
     <header class="tb-nav-header">
       <mat-toolbar color="primary" class="tb-nav-header-toolbar">
-        <div fxFlex="auto" fxLayout="row">
-          <img [src]="logo"
-               aria-label="logo" class="tb-logo-title"/>
+        <div class="tb-logo-title-container">
+          <img [src]="logo"/>
+          <div class="logo-desc">
+            <span class="logo-name">友臣制造执行系统</span>
+            <span class="logo-desc">Manufacturing Execution</span>
+          </div>
         </div>
       </mat-toolbar>
     </header>
     <mat-toolbar color="primary" fxFlex="0%" class="tb-side-menu-toolbar" fxLayout="column" role="navigation">
       <tb-side-menu></tb-side-menu>
     </mat-toolbar>
+    <div class="copy-right">
+      <span>Copyright © 2025 万物智联</span>
+    </div>
   </mat-sidenav>
   <mat-sidenav-content>
     <div fxLayout="column" role="main" style="height: 100%;">
@@ -52,9 +58,6 @@
                 (click)="closeSearch()">
           <mat-icon class="material-icons">arrow_back</mat-icon>
         </button>
-        <tb-breadcrumb [fxShow]="!displaySearchMode()"
-             fxFlex [activeComponent]="activeComponent" class="mat-toolbar-tools">
-        </tb-breadcrumb>
         <div [fxShow]="displaySearchMode()" fxFlex fxLayout="row" class="tb-dark">
           <mat-form-field fxFlex floatLabel="always">
             <mat-label></mat-label>
@@ -78,6 +81,10 @@
       <mat-progress-bar color="warn" style="z-index: 10; margin-bottom: -4px; width: 100%;" mode="indeterminate"
                         *ngIf="isLoading$ | async">
       </mat-progress-bar>
+      <div>
+        <tb-breadcrumb [fxShow]="!displaySearchMode()" [activeComponent]="activeComponent">
+        </tb-breadcrumb>
+      </div>
       <div fxFlex fxLayout="column" tb-toast class="tb-main-content">
         <router-outlet (activate)="activeComponentChanged($event)"></router-outlet>
       </div>
