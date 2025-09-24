@@ -7,6 +7,7 @@ import lombok.Data;
 import org.checkerframework.checker.formatter.qual.Format;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class OrderDetailVo {
     private String bodyPrdDept;
 
     @ApiModelProperty("预期产量（废弃）")
-    private Float billPlanQty;
+    private BigDecimal billPlanQty;
 
     @ApiModelProperty("当前工序-工序执行表")
     private Integer currentProcess;
@@ -92,7 +93,7 @@ public class OrderDetailVo {
     private Date bodyPlanFinishDate;
 
     @ApiModelProperty("计划产量（件）")
-    private Float bodyPlanPrdQty;
+    private BigDecimal bodyPlanPrdQty;
 
     @ApiModelProperty("明细-单位-编码")
     private String bodyUnit;

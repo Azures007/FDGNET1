@@ -155,7 +155,7 @@ public class OrderHeadExcelServiceImpl implements OrderHeadExcelService {
             vo.setBillNo(tBusOrderHead.getBill_no());
             vo.setBillDate(sdf1.parse(tBusOrderHead.getBill_date()));
             vo.setBodyPrdDept(tBusOrderHead.getBody_prd_dept());
-            vo.setBillPlanQty(tBusOrderHead.getBill_plan_qty());
+            vo.setBillPlanQty(tBusOrderHead.getBillPlanQty());
             vo.setBodyPlanFinishDate(sdf1.parse(tBusOrderHead.getBody_plan_finish_date()));
             vo.setBodyMaterialSpecification(tBusOrderHead.getBody_material_specification());
             vo.setBillType(tBusOrderHead.getBill_type());

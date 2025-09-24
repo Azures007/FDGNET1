@@ -603,7 +603,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     private OrderProcessRecordDtlVo getOrderProcessRecordDtlVo(OrderProcessVo orderProcessVo, TBusOrderHead tBusOrderHead, TBusOrderProcess orderProcess) {
         //工序实际产量
         var bodyUnit = tBusOrderHead.getBodyUnit();
-        float bodyPlanPrdQty = tBusOrderHead.getBodyPlanPrdQty();
+        BigDecimal bodyPlanPrdQty = tBusOrderHead.getBodyPlanPrdQty();
         BigDecimal realPrdQty1BD = new BigDecimal(0);//原辅料数量(累计)
 //        float realPrdQty1 = 0f;//原辅料数量(累计)
         String recordUnit1 = "";//原辅料报工单位
@@ -686,7 +686,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 realPrdQty3 = BigDecimalUtil.add(realPrdQty3, orderProcessRecord.getRecordQty()).floatValue();
                 recordUnit3 = orderProcessRecord.getRecordUnit();
                 recordUnitStr3 = recordUnitName;
-                orderProcessVo.setUnFinishQty(BigDecimalUtil.sub(bodyPlanPrdQty, realPrdQty3).floatValue());//未完成数量：计划生产数量-工序实际产量
+                orderProcessVo.setUnFinishQty(bodyPlanPrdQty.subtract(new BigDecimal(realPrdQty3)).floatValue());//未完成数量：计划生产数量-工序实际产量
                 orderProcessVo.setUnFinishUnit(bodyUnit);//未完成单位
                 orderProcessVo.setUnFinishUnitStr(GlobalConstant.getCodeDscName("UNIT0000", bodyUnit));//未完成单位
                 if (orderProcessRecord.getCapacityQty() != null) {
@@ -757,14 +757,14 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 Float kdMaterialStretchWeightKg = bykdMaterialId.getKdMaterialStretchWeight() / 1000;//单支克重(千克)
                 var productRealQtyKg = productManualQty * kdMaterialStretchWeightKg - orderProcessVo.getUngradedAbQty();//(产后数量手输*单支克重)-AB料累计数
                 var productRealQtyZhi = productRealQtyKg / kdMaterialStretchWeightKg / kdMaterialEachPieceNum.floatValue();//(((产后数量手输*单支克重)-AB料累计数）/单支克重/每件支数)
-                var qualifiedRate = BigDecimalUtil.div(productRealQtyZhi * 100, tBusOrderHead.getBodyPlanPrdQty()).floatValue();
+                var qualifiedRate = BigDecimalUtil.div(productRealQtyZhi * 100, tBusOrderHead.getBodyPlanPrdQty().floatValue()).floatValue();
                 orderProcessVo.setQualifiedRate(qualifiedRate);
             } else {
                 logger.warn("合格完成率计算失败，物料：" + tBusOrderHead.getBodyMaterialNumber() + "每件支数、单支克重为空或者为0");
             }
         } else {
             //合格完成率=合格品产后报工数量/计划生产数量
-            orderProcessVo.setQualifiedRate(BigDecimalUtil.div(orderProcessVo.getTotalProductQty() * 100, tBusOrderHead.getBodyPlanPrdQty()).floatValue());
+            orderProcessVo.setQualifiedRate(BigDecimalUtil.div(orderProcessVo.getTotalProductQty() * 100, tBusOrderHead.getBodyPlanPrdQty().floatValue()).floatValue());
         }*/
         //产能数量、产能单位，对应工序：剥皮||蟹柳||拉伸膜||包装
         //产能数量 = 单只克重（单只克重字段如果是克为单位需除以1000）*产后数量手输 2023-04-18 18681
@@ -895,8 +895,8 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                         realPrdQty3 = orderProcessRecordBG.getRecordQty();
                     }
                 }
-                orderTransferVo.setActualQty(realPrdQty3);//实际产量=每道工序的产后报工数据
-                orderTransferVo.setUnPrdQty(BigDecimalUtil.sub(orderTransferVo.getPrdQty(), orderTransferVo.getActualQty()).floatValue());//未生产=预期产量-实际产量
+                orderTransferVo.setActualQty(new BigDecimal(realPrdQty3));//实际产量=每道工序的产后报工数据
+                orderTransferVo.setUnPrdQty(orderTransferVo.getPrdQty().subtract(orderTransferVo.getActualQty()));//未生产=预期产量-实际产量
                 orderTransferVo.setOrderTransferRecordVoList(orderTransferRecordVoList);
                 orderTransferVoList.add(orderTransferVo);
             }
@@ -980,8 +980,8 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             orderTransferRecordVoList.sort((o1, o2) -> o2.getReportTime().compareTo(o1.getReportTime()));
             orderTransferVo.setRecordTypePd(orderProcessRecordList.get(0).getRecordTypePd());
             orderTransferVo.setRecordTypePdName(GlobalConstant.getCodeDscName("STOCKTAKING0000", orderProcessRecordList.get(0).getRecordTypePd()));
-            orderTransferVo.setActualQty(realPrdQty3);//实际产量=每道工序的产后报工数据
-            orderTransferVo.setUnPrdQty(BigDecimalUtil.sub(orderTransferVo.getPrdQty(), orderTransferVo.getActualQty()).floatValue());//未生产=预期产量-实际产量
+            orderTransferVo.setActualQty(new BigDecimal(realPrdQty3));//实际产量=每道工序的产后报工数据
+            orderTransferVo.setUnPrdQty(orderTransferVo.getPrdQty().subtract(orderTransferVo.getActualQty()));//未生产=预期产量-实际产量
             orderTransferVo.setOrderTransferRecordVoList(orderTransferRecordVoList);
             orderTransferVoList.add(orderTransferVo);
         }

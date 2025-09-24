@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessRecord;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -34,7 +35,7 @@ public class ShiftRecordDetailVo {
     private String bodyMaterialName;
 
     @ApiModelProperty("明细-计划生产数量")
-    private Float bodyPlanPrdQty;
+    private BigDecimal bodyPlanPrdQty;
 
     @ApiModelProperty("单位")
     private String bodyUnit;

@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @Auther: l
  * @Date: 2022/7/21 14:00
@@ -35,7 +37,7 @@ public class HandOverRecordVo {
     private String bodyMaterialName;
 
     @ApiModelProperty("预期产量")
-    private Float billPlanQty;
+    private BigDecimal billPlanQty;
 
     @ApiModelProperty("明细-单位-编码")
     private String bodyUnit;

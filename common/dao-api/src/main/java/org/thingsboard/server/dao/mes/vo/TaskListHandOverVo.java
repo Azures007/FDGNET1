@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * @Auther: l
  * @Date: 2022/7/18 09:59
@@ -39,7 +41,7 @@ public class TaskListHandOverVo {
     private String bodyMaterialName;
 
     @ApiModelProperty("预期产量")
-    private Float billPlanQty;
+    private BigDecimal billPlanQty;
 
     @ApiModelProperty("明细-单位-编码")
     private String bodyUnit;

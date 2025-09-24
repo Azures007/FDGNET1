@@ -7,6 +7,7 @@ import lombok.Data;
 import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -56,7 +57,7 @@ public class OrderProcessVo {
     private Float totalCompletionRate;
 
     @ApiModelProperty("明细-计划生产数量")
-    private Float bodyPlanPrdQty;
+    private BigDecimal bodyPlanPrdQty;
     @ApiModelProperty("明细-单位")
     private String bodyUnit;
     @ApiModelProperty("明细-单位")

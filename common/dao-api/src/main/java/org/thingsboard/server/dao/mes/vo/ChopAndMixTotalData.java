@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @Auther: l
  * @Date: 2022/7/15 16:50
@@ -13,7 +15,7 @@ import lombok.Data;
 @ApiModel
 public class ChopAndMixTotalData {
     @ApiModelProperty("计划数量")
-    private Float bodyPlanPrdQty;
+    private BigDecimal bodyPlanPrdQty;
 
     @ApiModelProperty("明细-锅数")
     private Integer bodyPotQty;

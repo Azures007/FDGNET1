@@ -43,7 +43,7 @@ public class TaskListVo {
     private String bodyMaterialName;
 
     @ApiModelProperty("预期产量")
-    private Float billPlanQty;
+    private BigDecimal billPlanQty;
 
     @ApiModelProperty("明细-单位-编码")
     private String bodyUnit;

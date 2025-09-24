@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @ApiModel("后台订单列表-废弃")
 @Data
 @NoArgsConstructor
@@ -31,7 +33,7 @@ public class OrderListVo {
     private String body_prd_dept;
 
     @ApiModelProperty("预期产量（计划产量）")
-    private Float bill_plan_qty;
+    private BigDecimal bill_plan_qty;
 
     @ApiModelProperty("明细-计划完工时间")
     private String body_plan_finish_date;

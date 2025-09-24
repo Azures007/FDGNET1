@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +48,6 @@ public class TBusOrderUpdate {
 
     @Transient
     @ApiModelProperty("明细-计划生产数量(变更前)")
-    private Float bodyPlanPrdOldQty;
+    private BigDecimal bodyPlanPrdOldQty;
 
 }

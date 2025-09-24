@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.thingsboard.server.dao.mes.dto.ProcessInfoDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @ApiModel("订单详情简要VO")
@@ -56,7 +57,7 @@ public class OrderDetailSimpleVo {
         @ApiModelProperty("产品名称")
         private String name;
         @ApiModelProperty("计划产量(件)")
-        private Float planQty;
+        private BigDecimal planQty;
         @ApiModelProperty("计划开工日期")
         private String planStartDate;
         @ApiModelProperty("计划完工日期")

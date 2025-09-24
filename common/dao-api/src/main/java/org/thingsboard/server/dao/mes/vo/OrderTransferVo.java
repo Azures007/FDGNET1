@@ -7,6 +7,7 @@ import org.thingsboard.server.common.data.mes.sys.TSysClass;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -37,11 +38,11 @@ public class OrderTransferVo {
     private String bodyMaterialName;
 
     @ApiModelProperty("预期产量:各批号累计计划生产数量")
-    private float prdQty;
+    private BigDecimal prdQty;
     @ApiModelProperty("实际产量:报工/盘点结果表的产后报工数量")
-    private float actualQty;
+    private BigDecimal actualQty;
     @ApiModelProperty("未生产:预期产量-实际产量")
-    private float unPrdQty;
+    private BigDecimal unPrdQty;
 
     @ApiModelProperty("单位-编码")
     private String unit;

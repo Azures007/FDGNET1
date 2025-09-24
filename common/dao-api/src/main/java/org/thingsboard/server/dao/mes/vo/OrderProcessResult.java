@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class OrderProcessResult {
     private String bodyMaterialSpecification;
 
     @ApiModelProperty("明细-计划生产数量")
-    private Float bodyPlanPrdQty;
+    private BigDecimal bodyPlanPrdQty;
 
     @ApiModelProperty("原辅料明细")
     private List<OrderPPbomResult> pPbomResultList;
