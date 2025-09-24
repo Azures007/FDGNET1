@@ -110,4 +110,12 @@ public class TaskListVo {
     @ApiModelProperty("转移记录列表用的目标工序执行表id")
     private Integer toOrderProcessId = -1;
 
+    public BigDecimal getBillPlanQty() {
+        if (billPlanQty == null) {
+            return null;
+        }
+        BigDecimal normalized = billPlanQty.stripTrailingZeros();
+        return new BigDecimal(normalized.toPlainString());
+    }
+
 }
