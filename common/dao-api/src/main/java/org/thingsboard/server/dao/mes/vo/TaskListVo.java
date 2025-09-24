@@ -43,7 +43,7 @@ public class TaskListVo {
     private String bodyMaterialName;
 
     @ApiModelProperty("预期产量")
-    private Float billPlanQty;
+    private BigDecimal billPlanQty;
 
     @ApiModelProperty("明细-单位-编码")
     private String bodyUnit;
@@ -109,5 +109,13 @@ public class TaskListVo {
 
     @ApiModelProperty("转移记录列表用的目标工序执行表id")
     private Integer toOrderProcessId = -1;
+
+    public BigDecimal getBillPlanQty() {
+        if (billPlanQty == null) {
+            return null;
+        }
+        BigDecimal normalized = billPlanQty.stripTrailingZeros();
+        return new BigDecimal(normalized.toPlainString());
+    }
 
 }

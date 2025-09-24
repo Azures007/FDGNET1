@@ -497,7 +497,7 @@ public class OrderInventoryServiceImpl implements OrderInventoryService {
             handoverVo.setImportPot(importPot + "锅");
             //合格完成率=合格品产后报工数量/计划生产数量，单位%，保留两位小数。
             if (orderHead.getBodyPlanPrdQty() != null) {
-                String qualifiedRate = BigDecimalUtil.div(totalQty * 100, orderHead.getBodyPlanPrdQty()) + "%";
+                String qualifiedRate = BigDecimalUtil.div(totalQty * 100, orderHead.getBodyPlanPrdQty().floatValue()) + "%";
                 handoverVo.setQualifiedRate(qualifiedRate);
             } else {
                 handoverVo.setQualifiedRate(0 + "%");
@@ -538,7 +538,7 @@ public class OrderInventoryServiceImpl implements OrderInventoryService {
             if (weight != null) {
                 handoverVo.setActualQty(weight);
                 //未生产:预期产量-实际产量
-                handoverVo.setUnProduceQty(orderHead.getBodyPlanPrdQty() - weight);
+                handoverVo.setUnProduceQty(orderHead.getBodyPlanPrdQty().floatValue() - weight);
             }
             handoverVo.setUnit(orderHead.getBodyUnit());
             handoverVo.setUnitStr(GlobalConstant.getCodeDscName("UNIT0000", handoverVo.getUnit()));

@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @Auther: l
  * @Date: 2022/4/27 10:57
@@ -25,7 +27,7 @@ public class BatchVo {
     private String bodyMaterialName;
 
     @ApiModelProperty("明细-计划生产数量")
-    private Float bodyPlanPrdQty;
+    private BigDecimal bodyPlanPrdQty;
 
     @ApiModelProperty("明细-规格型号")
     private String bodyMaterialSpecification;

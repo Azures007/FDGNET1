@@ -10,6 +10,7 @@ import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
@@ -67,7 +68,7 @@ public class TBusOrderHead  {
 
     @ApiModelProperty("预期产量-废弃")
     @Column(name = "bill_plan_qty")
-    private Float billPlanQty;
+    private BigDecimal billPlanQty;
 
     @ApiModelProperty("生产组织")
     @Column(name = "prd_org")
@@ -174,7 +175,7 @@ public class TBusOrderHead  {
 
     @ApiModelProperty("明细-计划生产数量")
     @Column(name = "body_plan_prd_qty")
-    private Float bodyPlanPrdQty;
+    private BigDecimal bodyPlanPrdQty;
 
     @ApiModelProperty("明细-单位")
     @Column(name = "body_unit")

@@ -6,6 +6,7 @@ import lombok.Data;
 import org.thingsboard.server.dao.mes.dto.ProcessInfoDto;
 
 import javax.persistence.Column;
+import java.math.BigDecimal;
 import java.util.List;
 
 @ApiModel("订单简要列表VO")
@@ -43,7 +44,7 @@ public class OrderSimpleListVo {
     private String materialspec;
 
     @ApiModelProperty("计划产量(件)")
-    private Float nnum;
+    private BigDecimal nnum;
 
     @ApiModelProperty("计划开工日期")
     private String tplanstarttime;

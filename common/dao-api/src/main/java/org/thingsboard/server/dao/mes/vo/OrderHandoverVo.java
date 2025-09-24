@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class OrderHandoverVo {
     private String className;
 
     @ApiModelProperty("预期产量")
-    private Float bodyPlanPrdQty;
+    private BigDecimal bodyPlanPrdQty;
 
     @ApiModelProperty("实际产量")
     private Float  actualQty;

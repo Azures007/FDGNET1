@@ -100,7 +100,7 @@ public class YcPdServiceImpl implements YcPdService {
         tSysPdRecord.setPdRecordId(null);
         tSysPdRecordRepository.saveAndFlush(tSysPdRecord);
         //更新库存
-        List<NcInventory> ncInventories = ncInventoryRepository.findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(tSysPdRecord.getPdWorkshopNumber(),
+        List<NcInventory> ncInventories = ncInventoryRepository.findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(tSysPdRecord.getPdWorkshopNcId(),
                 tSysPdRecord.getMaterialNumber(), "生效");
         if (ncInventories != null && ncInventories.size() > 0) {
             for (NcInventory ncInventory : ncInventories) {

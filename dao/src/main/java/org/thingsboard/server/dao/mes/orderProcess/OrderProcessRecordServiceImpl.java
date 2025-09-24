@@ -22,6 +22,9 @@ import org.thingsboard.server.common.data.mes.mid.MidMaterial;
 import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.thingsboard.server.dao.mes.TSysCraftinfo.TSysCraftInfoService;
 import org.thingsboard.server.dao.chargingbasket.ChargingBasketService;
 import org.thingsboard.server.dao.constant.GlobalConstant;
@@ -1733,7 +1736,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
          */
         ChopAndMixTotalData allData = new ChopAndMixTotalData();
         //计划数量=计划生产数量（订单表获取）
-        Float bodyPlanPrdQty = 0F;
+        BigDecimal bodyPlanPrdQty = BigDecimal.ZERO;
         /*if (tBusOrderHead.getBodyUnit().equals("kg")) {
             bodyPlanPrdQty = tBusOrderHead.getBodyPlanPrdQty();
         } else {
@@ -1754,9 +1757,9 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         allData.setQualifiedBodyPotQty(exportPotByImportAll);
         //总合格完成数量比例=总合格累计数量/计划数量，单位%，保留两位小数
         float exportRatio = 0;
-        if (sumExportPotByImportAll > 0 && bodyPlanPrdQty > 0) {
+        if (sumExportPotByImportAll > 0 && bodyPlanPrdQty.compareTo(BigDecimal.ZERO) > 0) {
             BigDecimal bigDecimal = new BigDecimal(sumExportPotByImportAll.toString());
-            BigDecimal bigDecimal1 = new BigDecimal(bodyPlanPrdQty.toString());
+            BigDecimal bigDecimal1 = bodyPlanPrdQty;
             exportRatio = bigDecimal.divide(bigDecimal1, 2, RoundingMode.DOWN).floatValue();
         }
         allData.setQualifiedQtyPercent(String.valueOf(exportRatio * 100 > 100 ? 100 : exportRatio * 100) + "%");
