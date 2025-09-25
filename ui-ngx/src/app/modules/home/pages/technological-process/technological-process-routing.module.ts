@@ -55,6 +55,7 @@ const routes: Routes = [
     data: {
       auth: [Authority.TENANT_ADMIN, Authority.CUSTOMER_USER],
       keep:true,
+      reuse: false,
       title: '物料绑定',
       devicesType: 'tenant',
       breadcrumb: {

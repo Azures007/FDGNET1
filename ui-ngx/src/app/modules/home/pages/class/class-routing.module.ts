@@ -25,6 +25,7 @@ const routes: Routes = [
     data: {
       auth: [Authority.TENANT_ADMIN, Authority.CUSTOMER_USER],
       keep:true,
+      reuse: false,
       title: '组员管理',
       devicesType: 'tenant',
       breadcrumb: {

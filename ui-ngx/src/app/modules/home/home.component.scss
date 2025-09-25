@@ -66,6 +66,11 @@
       overflow-y: auto;
       height: inherit;
       padding: 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
   }
 
