@@ -20,7 +20,7 @@ const routes: Routes = [
       {
         path: '',
         data: {
-          auth: [Authority.TENANT_ADMIN],
+          auth: [Authority.TENANT_ADMIN, Authority.CUSTOMER_USER],
           redirectTo: '/order/list'
         }
       },
@@ -40,6 +40,7 @@ const routes: Routes = [
         component: OrderDetailsComponent,
         data: {
           title: 'order.details',
+          reuse: false,
           breadcrumb: {
             label: 'order.details',
             icon: 'bookmarks'
