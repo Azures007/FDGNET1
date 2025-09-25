@@ -27,7 +27,7 @@ public interface YcPdService {
      * @param endDate
      * @return
      */
-    List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate);
+    List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate,String userId);
 
     List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber);
 

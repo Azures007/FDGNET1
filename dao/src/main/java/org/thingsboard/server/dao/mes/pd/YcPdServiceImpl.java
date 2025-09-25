@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterialBom;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
@@ -16,6 +17,7 @@ import org.thingsboard.server.dao.sql.mes.pd.TSysPdRecordRepository;
 import org.thingsboard.server.dao.sql.mes.pd.TSysPdRecordSplitRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialBomRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
+import org.thingsboard.server.dao.user.UserService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,6 +37,9 @@ public class YcPdServiceImpl implements YcPdService {
 
     @Autowired
     NcInventoryRepository ncInventoryRepository;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     TSysPdRecordSplitRepository tSysPdRecordSplitRepository;
@@ -152,8 +157,15 @@ public class YcPdServiceImpl implements YcPdService {
     }
 
     @Override
-    public List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate) {
-        List<Map> tSysPdRecords = tSysPdRecordRepository.fpWorkshopRecord(startDate, endDate);
+    public List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate,String userId) {
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
+        String wid="";
+        if(ncWarehouses!=null&& !ncWarehouses.isEmpty()) {
+            wid = ncWarehouses.get(0).getCode();
+        }
+        List<Map> tSysPdRecords = tSysPdRecordRepository.fpWorkshopRecord(startDate, endDate,wid);
         List<TSysPdRecord> tSysPdRecords1 = JSON.parseArray(JSON.toJSONString(tSysPdRecords), TSysPdRecord.class);
         return tSysPdRecords1;
     }

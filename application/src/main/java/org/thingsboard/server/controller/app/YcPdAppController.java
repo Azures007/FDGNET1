@@ -3,6 +3,7 @@ package org.thingsboard.server.controller.app;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
 import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
@@ -11,6 +12,7 @@ import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
 import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.List;
 
@@ -44,8 +46,9 @@ public class YcPdAppController extends BaseController {
     @ApiOperation("复盘记录选择")
     @GetMapping("/fpWorkshopRecord")
     public ResponseResult<List<TSysPdRecord>> fpWorkshopRecord(@RequestParam("startDate") String startDate,
-                                           @RequestParam("endDate") String endDate){
-        List<TSysPdRecord> tSysPdRecords=ycPdService.fpWorkshopRecord(startDate,endDate);
+                                           @RequestParam("endDate") String endDate) throws ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        List<TSysPdRecord> tSysPdRecords=ycPdService.fpWorkshopRecord(startDate,endDate,currentUser.getId().getId().toString());
         return ResultUtil.success(tSysPdRecords);
     }
 
