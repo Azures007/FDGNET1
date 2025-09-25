@@ -1036,7 +1036,21 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         TBusOrderProcess tBusOrderProcess = orderProcessRepository.findById(searchDto.getOrderProcessId()).orElse(null);
         //TSysPersonnelInfo personnelInfo = tBusOrderProcess.getPersonId();
 //        TSysProcessInfo processInfo = tBusOrderProcess.getProcessId();
-        TSysClass tSysClass = tBusOrderProcess.getClassId();
+        //班组改成操作员班组id
+        TSysClass tSysClass=null;
+        TSysPersonnelInfo tSysPersonnelInfo = tSysPersonnelInfoRepository.getByUserId(userId);
+        if (tSysPersonnelInfo != null) {
+            List<TSysClassGroupLeaderRel> classGroupLeaderRel=classGroupLeaderRepository.findByPersonnelId(tSysPersonnelInfo.getPersonnelId());
+            if(!classGroupLeaderRel.isEmpty()){
+                tSysClass = tSysClassRepository.getOne(classGroupLeaderRel.get(0).getClassId());
+            }else{
+                List<TSysClassPersonnelRel> classPersonnelRel= classPersonnelRepository.findByPersonnelId(tSysPersonnelInfo.getPersonnelId());
+                if (!classPersonnelRel.isEmpty()){
+                    tSysClass = tSysClassRepository.getOne(classPersonnelRel.get(0).getClassId());
+                }
+            }
+        }
+
         TBusOrderHead head = orderHeadRepository.findById(searchDto.getOrderId()).get();
 //        TSysPersonnelInfo personnelInfo = tSysPersonnelInfoRepository.findByUserId(userId);
         //判断customWorkerCategoryFlag(0-普通报工，1-自定义报工)自定义报工记录标识
