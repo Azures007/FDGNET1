@@ -107,7 +107,12 @@ public class TSysPersonnelInfoServiceImpl implements TSysPersonnelInfoService {
             if (userId.length() > 1) {
                 TSysPersonnelInfo tSysPersonnelInfo1 = tSysPersonnelInfoRepository.findByUserId(userId);
                 if (tSysPersonnelInfo1 != null) {
-                    if (tSysPersonnelInfo1.getPersonnelId().intValue() != personnelId.intValue()) {
+                    if (personnelId!=null && tSysPersonnelInfo1.getPersonnelId().intValue() != personnelId.intValue()) {
+                        //修改员工的情况，判断是否是同一个员工，不是同一个员工，抛出异常
+                        flag = true;
+                    }
+                    if (personnelId == null) {
+                        //如果新增员工，且账号已关联了用户，抛出异常
                         flag = true;
                     }
                 }
