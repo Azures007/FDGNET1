@@ -17,6 +17,7 @@
 -->
 <a mat-button class="tb-button-toggle" routerLink="{{section.path}}">
   <img style="width: 19px;height: 19px;margin-right: 8px;" *ngIf="!section.isMdiIcon && section.icon" [src]="'assets/menu-icon/' + section.icon + '.png'">
+  <img style="width: 19px;height: 19px;margin-right: 8px;" *ngIf="!section.icon" src="assets/menu-icon/other.png">
   <span>{{section.name | translate}}</span>
   <span class=" pull-right fa fa-chevron-down tb-toggle-icon"
         [ngClass]="{'tb-toggled' : sectionActive(section)}"></span>

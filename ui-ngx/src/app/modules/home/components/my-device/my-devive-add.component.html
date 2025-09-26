@@ -1,11 +1,11 @@
 <div class="title" *ngIf="data.params.deviceId == null">
     新增设备
-    <span class="close_icon" (click)="DialogClose()">X</span>
+    <span class="close_icon" (click)="DialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
 
 <div class="title" *ngIf="data.params.deviceId != null">
     {{data.edit == true?'编辑设备':'查看设备'}}
-    <span class="close_icon" (click)="DialogClose()">X</span>
+    <span class="close_icon" (click)="DialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
 <div class="content">
     <div class="item">

@@ -133,3 +133,8 @@
   text-align: center;
   background-color: #333;
 }
+.tb-breadcrumb-container {
+  // x轴自动滚动
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
