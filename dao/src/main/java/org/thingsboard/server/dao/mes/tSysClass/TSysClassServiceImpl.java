@@ -320,6 +320,7 @@ public class TSysClassServiceImpl implements TSysClassService {
     @Transactional
     @Override
     public void saveTSysClassPersonnelRel(Integer classId, List<TSysClassPersonnelRel> personnelList) {
+        TSysClass tSysClass = this.getClassById(classId);
         //获取旧的关联关系
         List<TSysClassPersonnelRel> classPersonnelRelList = classPersonnelRepository.findByClassId(classId);
         //如果传入的关联关系为空则删除关系表中对应的关系
@@ -328,15 +329,14 @@ public class TSysClassServiceImpl implements TSysClassService {
             //更新删除关系的人员表中的班组信息
             List<Integer> deleteRelIds = classPersonnelRelList.stream().map(TSysClassPersonnelRel::getPersonnelId).collect(Collectors.toList());
             tSysPersonnelInfoRepository.updateClassNameByClassId(deleteRelIds, 0);
+            //更新班组中组员数量
+            tSysClass.setTeamNum("0");
             return;
         }
         personnelList.forEach(t -> {
             t.setClassId(classId);
         });
 
-
-        //获取需要插入的关系
-//        List<TSysClassPersonnelRel> insertRelList = personnelList.stream().filter(item -> item.getClassPersonnelId() == null).collect(Collectors.toList());
         //获取需要更新的关系ID
         List<TSysClassPersonnelRel> updateRelList = personnelList.stream().filter(item -> item.getClassPersonnelId() != null).collect(Collectors.toList());
         List<Integer> updateRelIds = updateRelList.stream().map(TSysClassPersonnelRel::getClassPersonnelId).collect(Collectors.toList());
@@ -352,7 +352,6 @@ public class TSysClassServiceImpl implements TSysClassService {
         List<Integer> updateNewRelIds = newRelList.stream().map(TSysClassPersonnelRel::getPersonnelId).collect(Collectors.toList());
         tSysPersonnelInfoRepository.updateClassNameByClassId(updateNewRelIds, classId);
         //更新班组中组员数量
-        TSysClass tSysClass = this.getClassById(classId);
         tSysClass.setTeamNum(String.valueOf(personnelList.size()));
         this.saveTSysClass(tSysClass);
     }

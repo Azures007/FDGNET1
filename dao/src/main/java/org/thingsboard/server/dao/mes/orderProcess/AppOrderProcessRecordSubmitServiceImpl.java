@@ -38,6 +38,9 @@ import org.thingsboard.server.dao.sql.mes.licheng.MidMaterialRepository;
 import org.thingsboard.server.dao.sql.mes.ncInventory.NcInventoryInoutRepository;
 import org.thingsboard.server.dao.sql.mes.ncInventory.NcInventoryRepository;
 import org.thingsboard.server.dao.sql.mes.order.*;
+import org.thingsboard.server.dao.sql.mes.order.OrderPotCountRepository;
+import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeInputRepository;
+import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeProductBindingRepository;
 import org.thingsboard.server.dao.sql.mes.tSysClass.ClassGroupLeaderRepository;
 import org.thingsboard.server.dao.sql.mes.tSysClass.TSysClassRepository;
 import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
@@ -140,6 +143,18 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
 
     @Autowired
     OrderPPBomRepository orderPPBomRepository;
+
+    @Autowired
+    TSysRecipeProductBindingRepository recipeProductBindingRepository;
+
+    @Autowired
+    TSysRecipeInputRepository recipeInputRepository;
+
+    @Autowired
+    OrderPotCountRepository orderPotCountRepository;
+
+    @Autowired
+    org.thingsboard.server.dao.sql.mes.order.TBusOrderAccumulationRepository accumulationRepository;
 
     @Autowired
     TSysCraftInfoService craftInfoService;
@@ -306,6 +321,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             dateStartTime = sdf.parse(saveDto.getIotCollectionStartTime());
         }
         List<OrderProcessRecordVo> recordVos = JSON.parseArray(mapStr, OrderProcessRecordVo.class);
+
         TBusOrderProcessRecord record = new TBusOrderProcessRecord();
         BeanUtils.copyProperties(saveDto, record);
         record.setReportTime(new Date());
@@ -462,6 +478,84 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         history.setExportPot(record.getExportPot());
         history.setExportPotMin(record.getExportPotMin());
         history=orderProcessHistoryRepository.saveAndFlush(history);
+
+        // 报工类型为尾料：不参与投入次数与锅数统计
+        boolean isTail = LichengConstants.REPORTYPE0002.equals(saveDto.getRecordTypeBg());
+
+        // 正常类型：进行上下限累计（使用数据库暂存），每次都记录提交的数量；是否加1由累计规则决定
+        Float accBefore = null;
+        Float accAfter = null;
+        boolean shouldIncPot = false;
+        boolean shouldClearAcc = false;
+        Limits limits = null;
+        if (!isTail) {
+            limits = computeInputLimits(tBusOrderHead.getBodyMaterialNumber(), processInfo.getProcessNumber(), saveDto.getMaterialNumber());
+            if (limits != null && limits.lower != null && limits.upper != null && saveDto.getRecordQty() != null) {
+                float qty = saveDto.getRecordQty();
+                accBefore = getAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialNumber());
+                accAfter = accBefore + qty;
+
+                if (accAfter > limits.upper) {
+                    // 确认超上限：计为完成一次，清空累计
+                    shouldIncPot = true;
+                    shouldClearAcc = true;
+                } else if (accAfter < limits.lower) {
+                    if (java.lang.Boolean.TRUE.equals(saveDto.getNoSupplementCommit())) {
+                        //直接提交，不补料
+                        shouldIncPot = true;
+                        shouldClearAcc = true;
+                    }else{
+                        // 少于下限：累计但不加1，不清空
+                        shouldIncPot = false;
+                        shouldClearAcc = false;
+                    }
+
+                } else {
+                    // 达到区间内：计为完成一次，并清空累计
+                    shouldIncPot = true;
+                    shouldClearAcc = true;
+                }
+            }
+        }
+        // 更新累计与锅数
+        if (!isTail && limits != null) {
+            if (shouldClearAcc) {
+                clearAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialNumber());
+            } else if (accAfter != null) {
+                updateAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialId(), saveDto.getMaterialNumber(), accAfter);
+            }
+        }
+        // 写入锅数记录表：仅正常类型，且需要增加锅数时
+        if (!isTail) {
+            Integer delta=0;
+            if(shouldIncPot){
+                delta=1;
+            }else{
+                delta=0;
+            }
+            Integer updatedInputCount = upsertPotCount(history.getOrderProcessId(), history.getOrderPPBomId(), devicePersonGroupId, saveDto.getMaterialId(), saveDto.getMaterialNumber(), saveDto.getMaterialName(), saveDto.getProcessNumber(), saveDto.getProcessName(), delta);
+            try {
+                if (accAfter < limits.lower && !java.lang.Boolean.TRUE.equals(saveDto.getNoSupplementCommit())) {
+                    //补料的情况，投入次数没有加1，但锅数需要在投入次数加1
+                    history.setPotNumber(updatedInputCount + 1);
+
+                    orderPotCountRepository.updatePotNumberByOrderProcessAndMaterialNumber(history.getOrderProcessId(), saveDto.getMaterialNumber(), updatedInputCount + 1);
+                } else {
+                    //锅数=投入次数
+                    history.setPotNumber(updatedInputCount);
+                    orderPotCountRepository.updatePotNumberByOrderProcessAndMaterialNumber(history.getOrderProcessId(), saveDto.getMaterialNumber(), updatedInputCount);
+                }
+                TBusOrderProcessHistory delHis=orderProcessRecordService.checkIsSupplement(history.getOrderProcessId());
+                if(delHis!=null){
+                    //删除补料的情况
+                    history.setPotNumber(delHis.getPotNumber());
+                    delHis.setIsSupplement("0");
+                    orderProcessHistoryRepository.saveAndFlush(delHis);
+                }
+
+                orderProcessHistoryRepository.saveAndFlush(history);
+            } catch (Exception ignore) {}
+        }
         //扣减线边仓库存
         String cwkid =userService.getUserCurrentCwkid(userId);
         String pkOrg = userService.getUserCurrentPkOrg(userId);
@@ -516,6 +610,132 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             }
         }
         return history.getOrderProcessHistoryId();
+    }
+
+    private static class Limits {
+        Float lower;
+        Float upper;
+    }
+
+    // 计算投入上下限：按产品编码+工序编码+物料编码匹配配方明细
+    private Limits computeInputLimits(String productCode, String processNumber, String materialCode) {
+        if (StringUtils.isEmpty(productCode) || StringUtils.isEmpty(processNumber) || StringUtils.isEmpty(materialCode)) {
+            return null;
+        }
+        List<TSysRecipeProductBinding> productBindings = recipeProductBindingRepository.findByProductCodeAndRecipeStatusEnabled(productCode);
+        if (productBindings == null || productBindings.isEmpty()) {
+            return null;
+        }
+        for (TSysRecipeProductBinding binding : productBindings) {
+            List<TSysRecipeInput> inputs = recipeInputRepository.findByRecipeId(binding.getRecipeId());
+            for (TSysRecipeInput input : inputs) {
+                if (input == null) continue;
+                if (!StringUtils.isEmpty(input.getProcessNumber()) && processNumber.equals(input.getProcessNumber())
+                        && materialCode.equals(input.getMaterialCode())) {
+                    if (input.getStandardInput() != null) {
+                        java.math.BigDecimal std = input.getStandardInput();
+                        java.math.BigDecimal lowRatio = input.getLowerLimitRatio() != null ? input.getLowerLimitRatio() : new java.math.BigDecimal("100.00");
+                        java.math.BigDecimal upRatio = input.getUpperLimitRatio() != null ? input.getUpperLimitRatio() : new java.math.BigDecimal("110.00");
+                        Limits limits = new Limits();
+                        limits.lower = std.multiply(lowRatio).divide(new java.math.BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP).floatValue();
+                        limits.upper = std.multiply(upRatio).divide(new java.math.BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP).floatValue();
+                        return limits;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取累计数量
+     */
+    private Float getAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, String materialNumber) {
+        if (orderNo == null || orderProcessId == null || orderPPBomId == null || materialNumber == null) {
+            return 0f;
+        }
+        var opt = accumulationRepository.findByOrderNoAndOrderProcessIdAndOrderPpbomIdAndDevicePersonGroupIdAndMaterialNumber(
+                orderNo, orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        return opt.map(acc -> acc.getAccumulatedQty() != null ? acc.getAccumulatedQty().floatValue() : 0f).orElse(0f);
+    }
+
+    /**
+     * 更新累计数量
+     */
+    private void updateAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, Integer materialId, String materialNumber, Float qty) {
+        if (orderNo == null || orderProcessId == null || orderPPBomId == null || materialNumber == null || qty == null) {
+            return;
+        }
+        var opt = accumulationRepository.findByOrderNoAndOrderProcessIdAndOrderPpbomIdAndDevicePersonGroupIdAndMaterialNumber(
+                orderNo, orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        if (opt.isPresent()) {
+            var acc = opt.get();
+            acc.setAccumulatedQty(new java.math.BigDecimal(qty.toString()));
+            acc.setLastUpdateTime(new Date());
+            accumulationRepository.save(acc);
+        } else {
+            var acc = new org.thingsboard.server.common.data.mes.bus.TBusOrderAccumulation();
+            acc.setOrderNo(orderNo);
+            acc.setOrderProcessId(orderProcessId);
+            acc.setOrderPpbomId(orderPPBomId);
+            acc.setDevicePersonGroupId(devicePersonGroupId == null ? "" : devicePersonGroupId);
+            acc.setMaterialId(materialId);
+            acc.setMaterialNumber(materialNumber);
+            acc.setAccumulatedQty(new java.math.BigDecimal(qty.toString()));
+            acc.setCreatedTime(new Date());
+            acc.setLastUpdateTime(new Date());
+            accumulationRepository.save(acc);
+        }
+    }
+
+    /**
+     * 清空累计数量
+     */
+    private void clearAccumulatedQty(String orderNo, Integer processId, String devicePersonGroupId, Integer orderPPBomId, String materialNumber) {
+        if (orderNo == null || processId == null || orderPPBomId == null || materialNumber == null) {
+            return;
+        }
+        var opt = accumulationRepository.findByOrderNoAndOrderProcessIdAndOrderPpbomIdAndDevicePersonGroupIdAndMaterialNumber(
+                orderNo, processId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        if (opt.isPresent()) {
+            accumulationRepository.clearAccumulatedQty(opt.get().getId());
+        }
+    }
+
+    private Integer upsertPotCount(Integer orderProcessId, Integer orderPPBomId, String devicePersonGroupId, Integer materialId, String materialNumber, String materialName, String processNumber, String processName, int delta) {
+        if (orderProcessId == null || orderPPBomId == null || materialNumber == null) return 0;
+
+        var opt = orderPotCountRepository.findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumber(orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        if (opt.isPresent()) {
+            Integer current = opt.get().getInputCount() == null ? 0 : opt.get().getInputCount();
+            int updated = Math.max(0, current + delta);
+            orderPotCountRepository.incrementInputCount(opt.get().getId(), delta);
+            // 更新锅数：取当前订单所有物料投入次数的最小值（包括未投入的物料）
+            if (delta > 0) {
+                //int minInputCount = orderProcessRecordService.getMinInputCountByOrderProcessIncludingUnused(orderProcessId);
+                //orderPotCountRepository.updatePotNumberByOrderProcess(orderProcessId, minInputCount);
+            }
+            return updated;
+        } else {
+            int initial = Math.max(0, delta);
+            var rec = new org.thingsboard.server.common.data.mes.bus.TBusOrderPotCount();
+            rec.setOrderProcessId(orderProcessId);
+            rec.setOrderPPBomId(orderPPBomId);
+            rec.setDevicePersonGroupId(devicePersonGroupId == null ? "" : devicePersonGroupId);
+            rec.setMaterialId(materialId);
+            rec.setMaterialNumber(materialNumber);
+            rec.setMaterialName(materialName);
+            rec.setProcessNumber(processNumber);
+            rec.setProcessName(processName);
+            rec.setInputCount(initial);
+            orderPotCountRepository.save(rec);
+            // 更新锅数：取当前订单所有物料投入次数的最小值（包括未投入的物料）
+            if (delta > 0) {
+                //int minInputCount = orderProcessRecordService.getMinInputCountByOrderProcessIncludingUnused(orderProcessId);
+                //orderPotCountRepository.updatePotNumberByOrderProcess(orderProcessId, minInputCount);
+            }
+            return initial;
+        }
     }
 
     // 报工提交：AB料产出报工
@@ -791,7 +1011,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         orderProcessHistoryRepository.saveAndFlush(history);
 
         //12954 【app端】报工模块-拉伸膜工序，产出合格品按比例，自动投入下道优化
-        //本道产后报工后，自动生成下道工序的报工一级类目为“投入前道数量”的记录
+        //本道产后报工后，自动生成下道工序的报工一级类目为"投入前道数量"的记录
 //        if (LichengConstants.ORDER_RECORD_TYPE_3.equals(saveDto.getRecordType()) && LichengConstants.PROCESS_NUMBER_LASHENMO.equals(saveDto.getProcessNumber())) {
 //            if (null != record.getCapacityQty() && record.getCapacityQty() > 0) {
 //                //拉伸膜工序，当产能数量大于0时，下道包装用产能数量自动报工
@@ -1161,7 +1381,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
 
     /**
      * 12954 【app端】报工模块-拉伸膜工序，产出合格品按比例，自动投入下道优化
-     * 本道产后报工后，自动生成下道工序的报工一级类目为“投入前道数量”的记录
+     * 本道产后报工后，自动生成下道工序的报工一级类目为"投入前道数量"的记录
      *
      * @param saveDto
      * @param userId

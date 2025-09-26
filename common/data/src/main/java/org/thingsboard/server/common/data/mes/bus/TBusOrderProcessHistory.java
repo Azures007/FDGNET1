@@ -200,4 +200,13 @@ public class TBusOrderProcessHistory {
     @ApiModelProperty("计算公式")
     @Column(name = "iot_math")
     private String iotMath;
+
+    @ApiModelProperty("锅数序号")
+    @Column(name = "pot_number")
+    private Integer potNumber;
+
+    @ApiModelProperty("是否补报工(0否,1是)")
+    @Column(name = "is_supplement")
+    private String isSupplement;
+
 }

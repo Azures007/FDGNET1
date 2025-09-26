@@ -19,11 +19,9 @@ import org.thingsboard.server.dao.mes.orderProcess.AppOrderProcessRecordDeleteSe
 import org.thingsboard.server.dao.mes.orderProcess.OrderProcessRecordService;
 import org.thingsboard.server.dao.sql.mes.ncInventory.NcInventoryInoutRepository;
 import org.thingsboard.server.dao.sql.mes.ncInventory.NcInventoryRepository;
-import org.thingsboard.server.dao.sql.mes.order.OrderHeadRepository;
-import org.thingsboard.server.dao.sql.mes.order.OrderPPBomRepository;
-import org.thingsboard.server.dao.sql.mes.order.OrderProcessHistoryRepository;
-import org.thingsboard.server.dao.sql.mes.order.OrderProcessRecordRepository;
+import org.thingsboard.server.dao.sql.mes.order.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +58,11 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
     @Autowired
     NcInventoryRepository ncInventoryRepository;
 
+    @Autowired
+    TBusOrderAccumulationRepository accumulationRepository;
+    @Autowired
+    org.thingsboard.server.dao.sql.mes.order.OrderPotCountRepository orderPotCountRepository;
+
     @Value("${submit.enabled:0}")
     String submitEnabled;
 
@@ -70,8 +73,8 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
      */
     @Transactional
     @Override
-    public void deleteRecord(Integer orderProcessHistoryId, Boolean checkRecordTypeBg) {
-        this.deleteRecord(orderProcessHistoryId, checkRecordTypeBg, false);
+    public void deleteRecord(Integer orderProcessHistoryId, Boolean checkRecordTypeBg, String isConfirm) {
+        this.deleteRecord(orderProcessHistoryId, checkRecordTypeBg, false,isConfirm);
     }
 
     /**
@@ -82,7 +85,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
      */
     @Transactional
     @Override
-    public void deleteRecord(Integer orderProcessHistoryId, Boolean checkRecordTypeBg, Boolean deleteAutoRecord) {
+    public void deleteRecord(Integer orderProcessHistoryId, Boolean checkRecordTypeBg, Boolean deleteAutoRecord, String isConfirm) {
         // 校验输入参数
         TBusOrderProcessHistory tBusOrderProcessHistory = validateAndGetHistory(orderProcessHistoryId);
         TBusOrderProcessRecord tBusOrderProcessRecord = validateAndGetRecord(tBusOrderProcessHistory.getOrderProcessRecordId());
@@ -93,7 +96,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         switch (tBusOrderProcessHistory.getRecordType()) {
             case "1":
                 // RecordType 1: 原辅料投入报工删除
-                handleRawMaterialInputDeletion(tBusOrderProcessHistory, tBusOrderProcessRecord, checkRecordTypeBg);
+                handleRawMaterialInputDeletion(tBusOrderProcessHistory, tBusOrderProcessRecord, checkRecordTypeBg,isConfirm);
                 break;
             case "2":
                 // RecordType 2: AB料产出报工删除
@@ -119,8 +122,37 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                 throw new RuntimeException("Unsupported RecordType: " + tBusOrderProcessHistory.getRecordType());
         }
     }
+    /**
+     * 更新累计数量
+     */
+    private void updateAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, Integer materialId, String materialNumber, Float qty) {
+        if (orderNo == null || orderProcessId == null || orderPPBomId == null || materialNumber == null || qty == null) {
+            return;
+        }
+        var opt = accumulationRepository.findByOrderNoAndOrderProcessIdAndOrderPpbomIdAndDevicePersonGroupIdAndMaterialNumber(
+                orderNo, orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        if (opt.isPresent()) {
+            var acc = opt.get();
+            acc.setAccumulatedQty(new java.math.BigDecimal(qty.toString()));
+            acc.setLastUpdateTime(new Date());
+            accumulationRepository.save(acc);
+        } else {
+            var acc = new org.thingsboard.server.common.data.mes.bus.TBusOrderAccumulation();
+            acc.setOrderNo(orderNo);
+            acc.setOrderProcessId(orderProcessId);
+            acc.setOrderPpbomId(orderPPBomId);
+            acc.setDevicePersonGroupId(devicePersonGroupId == null ? "" : devicePersonGroupId);
+            acc.setMaterialId(materialId);
+            acc.setMaterialNumber(materialNumber);
+            acc.setAccumulatedQty(new java.math.BigDecimal(qty.toString()));
+            acc.setCreatedTime(new Date());
+            acc.setLastUpdateTime(new Date());
+            accumulationRepository.save(acc);
+        }
+    }
 
-    private void handleRawMaterialInputDeletion(TBusOrderProcessHistory tBusOrderProcessHistory, TBusOrderProcessRecord tBusOrderProcessRecord, Boolean checkRecordTypeBg) {
+
+    private void handleRawMaterialInputDeletion(TBusOrderProcessHistory tBusOrderProcessHistory, TBusOrderProcessRecord tBusOrderProcessRecord, Boolean checkRecordTypeBg, String isConfirm) {
         List<TBusOrderHead> heads = orderHeadRepository.findByOrderNo(tBusOrderProcessHistory.getOrderNo());
         TBusOrderHead tBusOrderHead = heads.get(0);
         if (tBusOrderProcessHistory.getReportStatus().equals("1")) {
@@ -134,7 +166,56 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         if (!orderProcessRecordRepository.findAllByOrderProcessIdAndBusType(tBusOrderProcessHistory.getOrderProcessId(), "3").isEmpty()) {
             throw new RuntimeException("不允许删除，已生成产出合格品报工记录");
         }
+        // 回退锅数记录表（正常类型才回退）
+        if (!LichengConstants.REPORTYPE0002.equals(tBusOrderProcessHistory.getRecordTypeBg())) {
+            var opt = orderPotCountRepository.findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumber(
+                    tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getOrderPPBomId(),
+                    tBusOrderProcessHistory.getDevicePersonGroupId() == null ? "" : tBusOrderProcessHistory.getDevicePersonGroupId(), tBusOrderProcessHistory.getMaterialNumber());
+            opt.ifPresent(p -> {
+                if(p.getPotNumber()<=p.getInputCount()){
+                    //已满足1次的记录
+                    if(isConfirm==null||isConfirm.isEmpty()){
+                        //抛出异常，提示当前物料已满足一次投入重量或数量，删除后是否重新提交报工？
+                        throw new RuntimeException("当前物料已满足一次投入重量或数量，删除后是否重新提交报工？");
+                    }
 
+                    List<TBusOrderProcessHistory> hasOther= orderProcessHistoryRepository.findAllByOrderProcessIdAndPotNumberAndReportStatusAndOrderProcessHistoryIdIsNot(
+                            tBusOrderProcessHistory.getOrderProcessId(),
+                            tBusOrderProcessHistory.getPotNumber(),
+                            LichengConstants.ORDER_PROCESS_HISTORY_STATUS_0,
+                            tBusOrderProcessHistory.getOrderProcessHistoryId());
+                    if(hasOther.isEmpty()){
+                        //没有其他报工记录，在删除时扣投入次数
+                        orderPotCountRepository.incrementInputCount(p.getId(), -1);
+                        //没有其他订单报工记录，则更新锅数-1
+                        orderPotCountRepository.updatePotNumberByOrderProcessAndMaterialNumber(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), p.getPotNumber()-1);
+
+                    }else{
+                        //有其他订单报工记录
+                        if(isConfirm.equals("1")){
+                            //已满足1次的记录且有其他报工记录，且确认重新报工，次数先-1，因为删除后不满足1次
+                            orderPotCountRepository.incrementInputCount(p.getId(), -1);
+                            float sum = (float) hasOther.stream()
+                                    .mapToDouble(TBusOrderProcessHistory::getRecordQty) // 先用double精度计算
+                                    .sum();
+                            updateAccumulatedQty(tBusOrderProcessHistory.getOrderNo(),
+                                    tBusOrderProcessHistory.getOrderProcessId(),
+                                    tBusOrderProcessHistory.getDevicePersonGroupId(),
+                                    tBusOrderProcessHistory.getOrderPPBomId(),
+                                    tBusOrderProcessHistory.getMaterialId(),
+                                    tBusOrderProcessHistory.getMaterialNumber(),
+                                    sum);
+                            //设置必须补料
+                            tBusOrderProcessHistory.setIsSupplement("1");
+                        }else{
+                            //已满足1次的记录且没有其他报工记录，且确认不重新报工，次数不变
+                        }
+                    }
+                }else{
+                    //未满足1次的记录，则不更新
+                }
+            });
+        }
         // 报工数量
         Float qty = (tBusOrderProcessRecord.getRecordQty() == null ? 0F : tBusOrderProcessRecord.getRecordQty().floatValue()) - (tBusOrderProcessHistory.getRecordQty() == null ? 0F : tBusOrderProcessHistory.getRecordQty().floatValue());
         tBusOrderProcessRecord.setRecordQty(qty);
@@ -171,6 +252,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
             }
         }
         orderProcessRecordRepository.saveAndFlush(tBusOrderProcessRecord);
+
         tBusOrderProcessHistory.setReportStatus(LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1);//删除状态
         //还原库存数量，删除出库记录
         List<NcInventoryInOut> inout=ncInventoryInoutRepository.getAllByOrderProcessHistoryId(tBusOrderProcessHistory.getOrderProcessHistoryId());
@@ -366,7 +448,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
             // 遍历遍历删除关联生成的投入产出记录
             autoHistorys.forEach(autoHistory -> {
                 // 烤线和扒皮工序
-                this.deleteRecord(autoHistory.getOrderProcessHistoryId(), checkRecordTypeBg, true);
+                this.deleteRecord(autoHistory.getOrderProcessHistoryId(), checkRecordTypeBg, true,null);
                 logger.info(String.format("遍历自动删除关联生成的投入产出记录，工序编码: %s, OrderProcessHistoryId: %d", autoHistory.getProcessNumber(), autoHistory.getOrderProcessHistoryId()));
             });
         }

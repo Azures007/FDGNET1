@@ -1734,3 +1734,76 @@ CREATE INDEX idx_recipe_input_recipe_id ON t_sys_recipe_input(recipe_id);
 CREATE INDEX idx_recipe_input_material_code ON t_sys_recipe_input(material_code);
 CREATE INDEX idx_recipe_binding_recipe_id ON t_sys_recipe_product_binding(recipe_id);
 CREATE INDEX idx_recipe_binding_product_code ON t_sys_recipe_product_binding(product_code);
+
+ALTER TABLE t_sys_recipe_input ADD COLUMN process_number VARCHAR(50);
+COMMENT ON COLUMN t_sys_recipe_input.process_number IS '工序编码';
+--2025-09-23
+ALTER TABLE t_bus_order_process_history ADD COLUMN pot_number INT4;
+COMMENT ON COLUMN t_bus_order_process_history.pot_number IS '锅数序号';
+ALTER TABLE t_bus_order_process_history ADD COLUMN is_supplement VARCHAR(1);
+COMMENT ON COLUMN t_bus_order_process_history.is_supplement IS '是否补报工(0否,1是)';
+
+-- 创建新的锅数记录表
+CREATE TABLE IF NOT EXISTS t_bus_order_pot_count (
+                                                     id SERIAL PRIMARY KEY,
+                                                     order_process_id INTEGER NOT NULL,
+                                                     order_ppbom_id INTEGER,
+                                                     device_person_group_id VARCHAR(255),
+    material_id INTEGER,
+    material_number VARCHAR(255),
+    material_name VARCHAR(255),
+    input_count INTEGER DEFAULT 0,
+    pot_number INTEGER DEFAULT 0,
+    process_number VARCHAR(255),
+    process_name VARCHAR(255),
+    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+-- 创建索引
+CREATE INDEX IF NOT EXISTS idx_t_bus_order_pot_count_order_process ON t_bus_order_pot_count(order_process_id);
+CREATE INDEX IF NOT EXISTS idx_t_bus_order_pot_count_material ON t_bus_order_pot_count(material_number);
+CREATE INDEX IF NOT EXISTS idx_t_bus_order_pot_count_composite ON t_bus_order_pot_count(order_process_id, order_ppbom_id, device_person_group_id, material_number);
+
+-- 添加注释
+COMMENT ON TABLE t_bus_order_pot_count IS '锅数记录表（按物料累计投入次数与锅数）';
+COMMENT ON COLUMN t_bus_order_pot_count.order_process_id IS '订单工序ID';
+COMMENT ON COLUMN t_bus_order_pot_count.order_ppbom_id IS '订单BOM ID';
+COMMENT ON COLUMN t_bus_order_pot_count.device_person_group_id IS '设备人员组ID';
+COMMENT ON COLUMN t_bus_order_pot_count.material_id IS '物料ID';
+COMMENT ON COLUMN t_bus_order_pot_count.material_number IS '物料编码';
+COMMENT ON COLUMN t_bus_order_pot_count.material_name IS '物料名称';
+COMMENT ON COLUMN t_bus_order_pot_count.input_count IS '投入次数';
+COMMENT ON COLUMN t_bus_order_pot_count.pot_number IS '锅数（当前订单所有物料投入次数的最小值）';
+COMMENT ON COLUMN t_bus_order_pot_count.process_number IS '工序编码';
+COMMENT ON COLUMN t_bus_order_pot_count.process_name IS '工序名称';
+
+-- 创建订单物料累计状态表（包含约束）
+CREATE TABLE t_bus_order_accumulation (
+                                          id SERIAL PRIMARY KEY,
+                                          order_no VARCHAR(50) NOT NULL,
+                                          order_process_id INTEGER NOT NULL,
+                                          order_ppbom_id INTEGER NOT NULL,
+                                          device_person_group_id VARCHAR(100) DEFAULT '',
+                                          material_id INTEGER,
+                                          material_number VARCHAR(50) NOT NULL,
+                                          accumulated_qty DECIMAL(10,3) DEFAULT 0,
+                                          last_update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                          created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                          CONSTRAINT uk_order_accumulation UNIQUE (order_no, order_process_id, order_ppbom_id, device_person_group_id, material_number)
+);
+
+-- 添加表注释
+COMMENT ON TABLE t_bus_order_accumulation IS '订单物料累计状态表';
+
+-- 添加字段注释
+COMMENT ON COLUMN t_bus_order_accumulation.id IS '主键ID';
+COMMENT ON COLUMN t_bus_order_accumulation.order_no IS '订单号';
+COMMENT ON COLUMN t_bus_order_accumulation.order_process_id IS '工序执行表ID';
+COMMENT ON COLUMN t_bus_order_accumulation.order_ppbom_id IS '用料清单ID';
+COMMENT ON COLUMN t_bus_order_accumulation.device_person_group_id IS '操作员分组标识';
+COMMENT ON COLUMN t_bus_order_accumulation.material_id IS '物料ID';
+COMMENT ON COLUMN t_bus_order_accumulation.material_number IS '物料编码';
+COMMENT ON COLUMN t_bus_order_accumulation.accumulated_qty IS '累计数量';
+COMMENT ON COLUMN t_bus_order_accumulation.last_update_time IS '最后更新时间';
+COMMENT ON COLUMN t_bus_order_accumulation.created_time IS '创建时间';

@@ -20,6 +20,7 @@ import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.kv.*;
 import org.thingsboard.server.common.data.mes.*;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
 import org.thingsboard.server.common.data.mes.sys.TSysAbrasiveSpecification;
 import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
@@ -126,9 +127,9 @@ public class OrderProcessRecordController extends BaseController {
 
     @ApiOperation("删除报工记录")
     @GetMapping("/deleteRecord")
-    public ResponseResult deleteRecord(@RequestParam("orderProcessHistoryId") Integer orderProcessHistoryId) {
+    public ResponseResult deleteRecord(@RequestParam("orderProcessHistoryId") Integer orderProcessHistoryId, @RequestParam( name = "isConfirm", required = false) String isConfirm) {
         synchronized (lock) {
-            appOrderProcessRecordDeleteService.deleteRecord(orderProcessHistoryId, true);
+            appOrderProcessRecordDeleteService.deleteRecord(orderProcessHistoryId, true,isConfirm);
         }
         return ResultUtil.success();
     }
@@ -237,6 +238,12 @@ public class OrderProcessRecordController extends BaseController {
     @PostMapping("/getOrderPpbom2")
     public ResponseResult<List<PpbomGroupVo>> getOrderPpbom(@RequestBody OrderPPbomSearchDto searchDto) throws Exception {
         List<PpbomGroupVo> results = orderProcessRecordService.getOrderPpbom(searchDto);
+        return ResultUtil.success(results);
+    }
+    @ApiOperation("检查是否需要补充报工,返回需要补报工的删除记录")
+    @GetMapping("/checkIsSupplement")
+    public ResponseResult<TBusOrderProcessHistory> checkIsSupplement(@RequestParam Integer orderProgessId) {
+        TBusOrderProcessHistory results = orderProcessRecordService.checkIsSupplement(orderProgessId);
         return ResultUtil.success(results);
     }
 
