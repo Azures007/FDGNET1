@@ -1,6 +1,6 @@
 <div class="title">
     选择账号
-    <span class="close_icon" (click)="DialogClose()">X</span>
+    <span class="close_icon" (click)="DialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
 
 <div class="main_content">
@@ -10,19 +10,19 @@
     </div>
     <div class="table_container">
         <table mat-table [dataSource]="data.accountList" class="mat-elevation-z8">
-          
+
             <ng-container matColumnDef="first_name">
                 <th mat-header-cell *matHeaderCellDef> 用户名 </th>
                 <td mat-cell *matCellDef="let element"> {{element.first_name}} </td>
             </ng-container>
 
-        
+
             <ng-container matColumnDef="username">
                 <th mat-header-cell *matHeaderCellDef> 账号 </th>
                 <td mat-cell *matCellDef="let element"> {{element.username}} </td>
             </ng-container>
 
-            
+
             <ng-container matColumnDef="role_name">
                 <th mat-header-cell *matHeaderCellDef> 角色名 </th>
                 <td mat-cell *matCellDef="let element"> {{element.role_name}} </td>

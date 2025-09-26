@@ -1,11 +1,11 @@
 <div class="title" *ngIf="data.params.personnelId == ''">
     新增人员
-    <span class="close_icon" (click)="DialogClose()">X</span>
+    <span class="close_icon" (click)="DialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
 
 <div class="title" *ngIf="data.params.personnelId != ''">
     {{data.edit == true?'编辑人员':'查看人员'}}
-    <span class="close_icon" (click)="DialogClose()">X</span>
+    <span class="close_icon" (click)="DialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
 <div class="content">
     <div class="item">

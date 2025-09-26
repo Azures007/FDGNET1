@@ -1,11 +1,11 @@
 <div class="title" *ngIf="data.params.codeId == ''">
     新增字典
-    <span class="close_icon" (click)="addDialogClose()">X</span>
+    <span class="close_icon" (click)="addDialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
 
 <div class="title" *ngIf="data.params.codeId != ''">
     {{data.edit == true?'编辑字典':'查看字典'}}
-    <span class="close_icon" (click)="addDialogClose()">X</span>
+    <span class="close_icon" (click)="addDialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
 
 <div class="content">

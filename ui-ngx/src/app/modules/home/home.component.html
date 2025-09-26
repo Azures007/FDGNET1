@@ -81,7 +81,7 @@
       <mat-progress-bar color="warn" style="z-index: 10; margin-bottom: -4px; width: 100%;" mode="indeterminate"
                         *ngIf="isLoading$ | async">
       </mat-progress-bar>
-      <div>
+      <div class="tb-breadcrumb-container">
         <tb-breadcrumb [fxShow]="!displaySearchMode()" [activeComponent]="activeComponent">
         </tb-breadcrumb>
       </div>

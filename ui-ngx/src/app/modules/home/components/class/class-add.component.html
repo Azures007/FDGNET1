@@ -1,11 +1,11 @@
 <div class="title" *ngIf="data.params.tSysClass.classId == '' || data.params.tSysClass.classId == null">
     新增班别
-    <span class="close_icon" (click)="DialogClose()">X</span>
+    <span class="close_icon" (click)="DialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
 
 <div class="title" *ngIf="(data.params.tSysClass.classId != '' && data.params.tSysClass.classId != null)">
     {{data.edit == true?'编辑班别':'查看班别'}}
-    <span class="close_icon" (click)="DialogClose()">X</span>
+    <span class="close_icon" (click)="DialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
 
 <div class="content">

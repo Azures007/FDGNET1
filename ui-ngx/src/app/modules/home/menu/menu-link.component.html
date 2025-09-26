@@ -17,5 +17,6 @@
 -->
 <a mat-button routerLinkActive="tb-active" [routerLinkActiveOptions]="{exact: !section.notExact}" routerLink="{{section.path}}">
   <img style="width: 19px;height: 19px;margin-right: 8px;" *ngIf="!section.isMdiIcon && section.icon" [src]="'assets/menu-icon/' + section.icon + '.png'">
+  <img style="width: 19px;height: 19px;margin-right: 8px;" *ngIf="!section.icon" src="assets/menu-icon/other.png">
   <span>{{section.name | translate}}</span>
 </a>
