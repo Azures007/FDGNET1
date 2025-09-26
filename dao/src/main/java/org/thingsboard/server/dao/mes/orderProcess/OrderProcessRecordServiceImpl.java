@@ -47,6 +47,10 @@ import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.ClassPersonnelRepository;
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.mes.tSysClass.TSysClassService;
+import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeProductBindingRepository;
+import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeInputRepository;
+import org.thingsboard.server.common.data.mes.sys.TSysRecipeProductBinding;
+import org.thingsboard.server.common.data.mes.sys.TSysRecipeInput;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -161,6 +165,18 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
     @Autowired
     OrderProcessDeviceRelRepository orderProcessDeviceRelRepository;
 
+    @Autowired
+    TSysRecipeProductBindingRepository recipeProductBindingRepository;
+
+    @Autowired
+    TSysRecipeInputRepository recipeInputRepository;
+
+    @Autowired
+    org.thingsboard.server.dao.sql.mes.order.OrderPotCountRepository orderPotCountRepository;
+
+    @Autowired
+    org.thingsboard.server.dao.sql.mes.order.TBusOrderAccumulationRepository accumulationRepository;
+
     @Value("${submit.enabled:0}")
     String submitEnabled;
 
@@ -169,6 +185,72 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
 
     @Autowired
     AppOrderProcessRecordDeleteService appOrderProcessRecordDeleteService;
+
+    /**
+     * 获取所有需要投入物料的最小投入次数（包括未投入的物料）
+     * 这个方法会考虑配方管理中定义的所有需要投入的物料
+     * 
+     * @param orderProcessId 工序执行ID
+     * @return 最小投入次数
+     */
+    public int getMinInputCountByOrderProcessIncludingUnused(Integer orderProcessId,List<String> allRequiredMaterialCodes) {
+
+        
+        if (allRequiredMaterialCodes.isEmpty()) {
+            // 如果没有配方管理，使用原有的逻辑
+            return orderPotCountRepository.getMinInputCountByOrderProcess(orderProcessId);
+        }
+        
+        // 获取已投入的物料的最小投入次数
+        int minInputCountFromExisting = orderPotCountRepository.getMinInputCountByOrderProcess(orderProcessId);
+        
+        // 检查是否有未投入的物料
+        boolean hasUnusedMaterials = false;
+        for (String materialCode : allRequiredMaterialCodes) {
+            int inputCount = orderPotCountRepository.sumInputCountByOrderProcessAndMaterialNumber(orderProcessId, materialCode);
+            if (inputCount == 0) {
+                hasUnusedMaterials = true;
+                break;
+            }
+        }
+        
+        // 如果有未投入的物料，返回0（因为未投入的物料投入次数为0）
+        if (hasUnusedMaterials) {
+            return 0;
+        }
+        
+        // 如果所有物料都已投入，返回已投入物料的最小投入次数
+        return minInputCountFromExisting;
+    }
+    
+    /**
+     * 获取所有需要投入的物料编码列表
+     * 包括配方管理中定义的物料
+     * 
+     * @param orderProductCode 产品编码
+     * @param currentProcessNumber 工序编码
+     * @return 物料编码列表
+     */
+    private List<String> getAllRequiredMaterialCodes(String orderProductCode, String currentProcessNumber) {
+        List<String> materialCodes = new ArrayList<>();
+        // 获取配方管理绑定的产品
+        List<TSysRecipeProductBinding> productBindings = recipeProductBindingRepository.findByProductCodeAndRecipeStatusEnabled(orderProductCode);
+        
+        if (!productBindings.isEmpty()) {
+            // 找到绑定的配方，获取配方投入明细，并匹配当前工序编码
+            for (TSysRecipeProductBinding binding : productBindings) {
+                List<TSysRecipeInput> recipeInputs = recipeInputRepository.findByRecipeId(binding.getRecipeId());
+                for (TSysRecipeInput input : recipeInputs) {
+                    // 检查工序编码是否匹配
+                    if (StringUtils.isNotEmpty(input.getProcessNumber()) && currentProcessNumber.equals(input.getProcessNumber())) {
+                        materialCodes.add(input.getMaterialCode());
+                    }
+                }
+            }
+        }
+        
+        return materialCodes;
+    }
 
 //    @Override
 //    public List<OrderPPbomResult> getOrderPpbom(Integer orderId, Integer processId, String recordType) {
@@ -316,46 +398,94 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         var tSysProcessInfo = tSysProcessInfoRepository.findById(processId).orElse(null);
         if ("1".equals(recordType)) {//原辅料投入
             List<OrderPPbomResult> orderPPbomResults = new ArrayList<>();
-            if (ppbomMaterialId > 0) {
-                ppbomGroupVo = new PpbomGroupVo();
-                OrderPPbomResult orderPPbomResult = new OrderPPbomResult();
-                orderPPbomResult.setMaterialId(ppbomMaterialId);
-                orderPPbomResults.add(orderPPbomResult);
-                getOrderPPbomResults(processId, orderProcessId, devicePersonIds, orderHead, orderPPbomResults, ppbomMaterialId);
-                ppbomGroupVo.setOrderPPbomResultList(orderPPbomResults);
-                ppbomGroupVos.add(ppbomGroupVo);
-                return ppbomGroupVos;
-            }
-            switch (tSysProcessInfo.getProcessNumber()) {
-
-                default: {
-                    /*String midPpbomEntryInputProcess = tSysProcessInfo.getErpProcessNumber();
+            /*String midPpbomEntryInputProcess = tSysProcessInfo.getErpProcessNumber();
                     if (StringUtils.isEmpty(midPpbomEntryInputProcess)) {
                         throw new RuntimeException("工序没有绑定ERP工序，请检查下后台的工序管理配置");
                     }*/
-                    List<Map> maps = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId);
-                    String mapsStr = JSON.toJSONString(maps);
-                    ppbomGroupVo = new PpbomGroupVo();
-                    orderPPbomResults = JSON.parseArray(mapsStr, OrderPPbomResult.class);
-                    for (OrderPPbomResult orderPPbomResult : orderPPbomResults) {
-                        orderPPbomResult.setMidPpbomEntryWeighDeveptQty(orderPPbomResult.getMustQty().floatValue());
-                        orderPPbomResult.setMidPpbomEntryWeighMesQty(orderPPbomResult.getMustQty().floatValue());
-                        orderPPbomResult.setMidPpbomEntryWeighMesUnit(orderPPbomResult.getUnit());
-                        orderPPbomResult.setMidPpbomEntryWeighDeveptUnit(orderPPbomResult.getUnit());
-                        orderPPbomResult.setUnitStr(orderPPbomResult.getUnit());
-                        orderPPbomResult.setRecordUnit(orderPPbomResult.getUnit());
-                        orderPPbomResult.setRecordUnitStr(orderPPbomResult.getUnit());
+            List<String> recipeMaterialCodes = new ArrayList<>();
+            List<Map> maps = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId);
+            String mapsStr = JSON.toJSONString(maps);
+            ppbomGroupVo = new PpbomGroupVo();
+            orderPPbomResults = JSON.parseArray(mapsStr, OrderPPbomResult.class);
 
+            // 配方管理过滤逻辑：如果配方管理绑定的产品编码=当前订单的产品编码，且当前工序编码=配方管理明细行的工序编码，只保留配方设置的投入明细物料
+            if (orderHead != null && StringUtils.isNotEmpty(orderHead.getBodyMaterialNumber()) && tSysProcessInfo != null && StringUtils.isNotEmpty(tSysProcessInfo.getProcessNumber())) {
+                String orderProductCode = orderHead.getBodyMaterialNumber();
+                String currentProcessNumber = tSysProcessInfo.getProcessNumber();
+                List<TSysRecipeProductBinding> productBindings = recipeProductBindingRepository.findByProductCodeAndRecipeStatusEnabled(orderProductCode);
+
+                if (!productBindings.isEmpty()) {
+                    // 找到绑定的配方，获取配方投入明细，并匹配当前工序编码
+                    Map<String, TSysRecipeInput> recipeMaterialMap = new HashMap<>();
+                    for (TSysRecipeProductBinding binding : productBindings) {
+                        List<TSysRecipeInput> recipeInputs = recipeInputRepository.findByRecipeId(binding.getRecipeId());
+                        for (TSysRecipeInput input : recipeInputs) {
+                            // 检查工序编码是否匹配
+                            if (StringUtils.isNotEmpty(input.getProcessNumber()) && currentProcessNumber.equals(input.getProcessNumber())) {
+                                recipeMaterialCodes.add(input.getMaterialCode());
+                                recipeMaterialMap.put(input.getMaterialCode(), input);
+                            }
+                        }
                     }
-                    ppbomGroupVo.setOrderPPbomResultList(orderPPbomResults);
-                    ppbomGroupVos.add(ppbomGroupVo);
+
+                    // 只保留配方设置的投入明细物料
+                    if (!recipeMaterialCodes.isEmpty()) {
+                        orderPPbomResults = orderPPbomResults.stream()
+                                .filter(result -> recipeMaterialCodes.contains(result.getMaterialNumber()))
+                                .collect(Collectors.toList());
+
+                        // 更新单位信息为配方管理的单位，并计算投入下限和投入上限
+                        for (OrderPPbomResult result : orderPPbomResults) {
+                            TSysRecipeInput recipeInput = recipeMaterialMap.get(result.getMaterialNumber());
+                            if (recipeInput != null) {
+                                result.setUnit(recipeInput.getUnit());
+                                result.setUnitStr(GlobalConstant.getCodeDscName("UNIT0000", recipeInput.getUnit()));
+                                result.setRecordUnit(recipeInput.getUnit());
+                                result.setRecordUnitStr(GlobalConstant.getCodeDscName("UNIT0000", recipeInput.getUnit()));
+                                result.setMidPpbomEntryWeighMesUnit(recipeInput.getUnit());
+                                result.setMidPpbomEntryWeighDeveptUnit(recipeInput.getUnit());
+
+                                // 计算投入下限和投入上限
+                                if (recipeInput.getStandardInput() != null) {
+                                    BigDecimal standardInput = recipeInput.getStandardInput();
+                                    BigDecimal lowerLimitRatio = recipeInput.getLowerLimitRatio() != null ? recipeInput.getLowerLimitRatio() : new BigDecimal("100.00");
+                                    BigDecimal upperLimitRatio = recipeInput.getUpperLimitRatio() != null ? recipeInput.getUpperLimitRatio() : new BigDecimal("110.00");
+
+                                    // 投入下限 = 每锅投入标准 * 投入下限比例 / 100
+                                    BigDecimal inputLowerLimit = standardInput.multiply(lowerLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                                    result.setInputLowerLimit(inputLowerLimit.floatValue());
+
+                                    // 投入上限 = 每锅投入标准 * 投入上限比例 / 100
+                                    BigDecimal inputUpperLimit = standardInput.multiply(upperLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                                    result.setInputUpperLimit(inputUpperLimit.floatValue());
+                                }
+                            }
+                        }
+                    }
                 }
             }
+
+            for (OrderPPbomResult orderPPbomResult : orderPPbomResults) {
+                orderPPbomResult.setMidPpbomEntryWeighDeveptQty(orderPPbomResult.getMustQty().floatValue());
+                orderPPbomResult.setMidPpbomEntryWeighMesQty(orderPPbomResult.getMustQty().floatValue());
+
+                // 如果没有通过配方管理设置单位，则使用默认设置
+                if (StringUtils.isEmpty(orderPPbomResult.getUnitStr())) {
+                    orderPPbomResult.setMidPpbomEntryWeighMesUnit(orderPPbomResult.getUnit());
+                    orderPPbomResult.setMidPpbomEntryWeighDeveptUnit(orderPPbomResult.getUnit());
+                    orderPPbomResult.setUnitStr(orderPPbomResult.getUnit());
+                    orderPPbomResult.setRecordUnit(orderPPbomResult.getUnit());
+                    orderPPbomResult.setRecordUnitStr(orderPPbomResult.getUnit());
+                }
+            }
+            ppbomGroupVo.setOrderPPbomResultList(orderPPbomResults);
+            ppbomGroupVos.add(ppbomGroupVo);
             if (ppbomMaterialId == -1) {
                 for (PpbomGroupVo groupVo : ppbomGroupVos) {
-                    getOrderPPbomResults(processId, orderProcessId, devicePersonIds, orderHead, groupVo.getOrderPPbomResultList(), ppbomMaterialId);
+                    getOrderPPbomResults(processId, orderProcessId, devicePersonIds, orderHead, groupVo.getOrderPPbomResultList(), ppbomMaterialId,recipeMaterialCodes);
                 }
             }
+
             return ppbomGroupVos;
         } else if ("2".equals(recordType)) {//AB料产出
             List<OrderPPbomResult> orderPPbomResults = new ArrayList<>();
@@ -488,8 +618,20 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         return orderPPbomResults;
 
     }
-
-    private void getOrderPPbomResults(Integer processId, Integer orderProcessId, List<Integer> devicePersonIds, TBusOrderHead orderHead, List<OrderPPbomResult> orderPPbomResults, Integer ppbomMaterialId) {
+    /**
+     * 检查是否需要补充报工
+     * @param orderProcessId
+     */
+    @Override
+    public TBusOrderProcessHistory checkIsSupplement(Integer orderProcessId) {
+        //查找报工记录表已删除的并且需要补报工isSupplement=1的记录
+        List<TBusOrderProcessHistory> historys = orderProcessHistoryRepository.findByOrderProcessIdAndIsSupplement(orderProcessId, "1");
+        if(historys.size() > 0){
+            return historys.get(0);
+        }
+        return null;
+    }
+    private void getOrderPPbomResults(Integer processId, Integer orderProcessId, List<Integer> devicePersonIds, TBusOrderHead orderHead, List<OrderPPbomResult> orderPPbomResults, Integer ppbomMaterialId,List<String> recipeMaterialCodes) {
         List<Map> ppbomRecordTotals = orderProcessRecordRepository.getPpbomRecordQtyTotal(orderHead.getOrderNo(), processId, ppbomMaterialId);
         List<Map> ppbomRecordPersons = new ArrayList<>();
         ppbomRecordPersons = orderProcessRecordRepository.getPpbomRecordQtyPersonal(orderHead.getOrderNo(), processId, ppbomMaterialId);
@@ -521,7 +663,34 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                     orderPPbomResult.setPersonalCount(String.valueOf(personMap.get("personanl_count")));
                 }
             }//"personanl_count" -> "9.0"
-            orderPPbomResult.setPersonalCount(StringUtils.isNotBlank(orderPPbomResult.getPersonalCountBak()) ? orderPPbomResult.getPersonalCountBak() : orderPPbomResult.getPersonalCount());
+            //累计锅数取每个物料投入次数的最小值
+            int allPotCount=getMinInputCountByOrderProcessIncludingUnused(orderProcessId,recipeMaterialCodes);
+            orderPPbomResult.setPersonalCount(String.valueOf(allPotCount));
+            // inputCount 改为：按订单(通过orderProcessId)、工序(当前方法上下文)与物料维度，读取锅数记录表聚合
+            try {
+                int cnt = 0;
+                if (org.apache.commons.lang3.StringUtils.isNotBlank(orderPPbomResult.getMaterialNumber())) {
+                    cnt = orderPotCountRepository.sumInputCountByOrderProcessAndMaterialNumber(orderProcessId, orderPPbomResult.getMaterialNumber());
+                }
+                orderPPbomResult.setInputCount(cnt);
+            } catch (Exception ignore) {
+                orderPPbomResult.setInputCount(0);
+            }
+
+            // 读取未提交累计数量（数据库），用于前端判断范围
+            try {
+                String orderNo = orderHead == null ? null : orderHead.getOrderNo();
+                Integer orderPPBomId = orderPPbomResult.getOrderPPBomId();
+                String materialNumber = orderPPbomResult.getMaterialNumber();
+                if (!org.apache.commons.lang3.StringUtils.isAnyEmpty(orderNo, materialNumber) && orderProcessId != null && orderPPBomId != null) {
+                    java.math.BigDecimal pending = accumulationRepository.sumAccumulatedQtyByOrderProcessAndMaterialNumber(orderProcessId, materialNumber);
+                    orderPPbomResult.setPendingQty(pending != null ? pending.floatValue() : 0f);
+                } else {
+                    orderPPbomResult.setPendingQty(0f);
+                }
+            } catch (Exception ignore) {
+                orderPPbomResult.setPendingQty(0f);
+            }
             orderPPbomResult.setUnCompleteQty(Math.round((orderPPbomResult.getMustQty().floatValue()-orderPPbomResult.getRecordQtyTotal())*10000f)/10000f);
             orderPPbomResult.setUnCompleteRate(String.valueOf(Math.round(orderPPbomResult.getUnCompleteQty()/orderPPbomResult.getMustQty().floatValue()*100))+"%");
             orderPPbomResult.setCompleteRate(String.valueOf(Math.round((1-orderPPbomResult.getUnCompleteQty()/orderPPbomResult.getMustQty().floatValue())*100))+"%");
@@ -2017,7 +2186,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         }
         // 删除报工记录
         try {
-            appOrderProcessRecordDeleteService.deleteRecord(orderProcessHistoryId, true);
+            appOrderProcessRecordDeleteService.deleteRecord(orderProcessHistoryId, true,null);
         } catch (RuntimeException e2) {
             throw new RuntimeException("修改报工数量执行失败，处理删除原报工记录异常：" + e2.getMessage());
         }

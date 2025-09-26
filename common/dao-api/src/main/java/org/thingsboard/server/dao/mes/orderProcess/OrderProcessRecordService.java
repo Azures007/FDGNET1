@@ -1,5 +1,6 @@
 package org.thingsboard.server.dao.mes.orderProcess;
 
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
 import org.thingsboard.server.common.data.mes.mid.MidMaterial;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessRecord;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
@@ -249,4 +250,9 @@ public interface OrderProcessRecordService {
      * @return
      */
     GetIotByDevicesVo getIotByDevices(GetIotByDevicesDto getIotByDevicesDto) throws Exception;
+    /**
+     * 检查是否需要补充报工
+     * @param orderProcessId
+     */
+    TBusOrderProcessHistory checkIsSupplement(Integer orderProcessId);
 }

@@ -106,4 +106,7 @@ public class OrderRecordSaveDto {
 
     @ApiModelProperty("计算公式")
     private String iotMath;
+
+    @ApiModelProperty("少于下限选择不补料也提交（true=直接提交）")
+    private Boolean noSupplementCommit;
 }

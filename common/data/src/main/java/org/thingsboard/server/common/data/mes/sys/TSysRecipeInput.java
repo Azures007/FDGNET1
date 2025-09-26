@@ -46,7 +46,7 @@ public class TSysRecipeInput {
     @Column(name = "standard_input", nullable = false, precision = 10, scale = 2)
     private BigDecimal standardInput;
 
-    @ApiModelProperty("单位")
+    @ApiModelProperty("单位编码")
     @Column(name = "unit", nullable = false, length = 20)
     private String unit;
 

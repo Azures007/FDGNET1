@@ -33,7 +33,7 @@ public class OrderPPbomResult {
     @ApiModelProperty("单位编码")
     private String unit;
 
-    @ApiModelProperty("单位")
+    @ApiModelProperty("单位名称")
     private String unitStr;
 
     @ApiModelProperty("正误差")
@@ -81,6 +81,9 @@ public class OrderPPbomResult {
     @ApiModelProperty("投入次数（累计锅数）")
     private String personalCount;
 
+    @ApiModelProperty("投入次数")
+    private Integer inputCount = 0;
+
     @ApiModelProperty("投入单位编码")
     private String recordUnit;
 
@@ -100,4 +103,13 @@ public class OrderPPbomResult {
 
     @ApiModelProperty("未完成率")
     private String unCompleteRate;
+
+    @ApiModelProperty("投入下限")
+    private Float inputLowerLimit;
+
+    @ApiModelProperty("投入上限")
+    private Float inputUpperLimit;
+
+    @ApiModelProperty("未提交累计数量")
+    private Float pendingQty;
 }
