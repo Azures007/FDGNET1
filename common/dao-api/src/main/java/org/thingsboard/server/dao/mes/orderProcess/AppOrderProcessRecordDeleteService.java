@@ -8,7 +8,7 @@ public interface AppOrderProcessRecordDeleteService {
      * @param orderProcessHistoryId
      * @param checkRecordTypeBg
      */
-    void deleteRecord(Integer orderProcessHistoryId, Boolean checkRecordTypeBg);
+    void deleteRecord(Integer orderProcessHistoryId, Boolean checkRecordTypeBg,String isConfirm);
 
     /**
      * 删除报工记录
@@ -16,6 +16,8 @@ public interface AppOrderProcessRecordDeleteService {
      * @param checkRecordTypeBg
      * @param deleteAutoRecord 是否可删除自动投入产出的记录
      */
-    void deleteRecord(Integer orderProcessHistoryId, Boolean checkRecordTypeBg, Boolean deleteAutoRecord);
+    void deleteRecord(Integer orderProcessHistoryId, Boolean checkRecordTypeBg, Boolean deleteAutoRecord,String isConfirm);
+
+
 
 }

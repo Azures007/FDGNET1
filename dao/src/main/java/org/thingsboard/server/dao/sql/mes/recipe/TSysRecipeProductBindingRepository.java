@@ -77,4 +77,12 @@ public interface TSysRecipeProductBindingRepository extends JpaRepository<TSysRe
      * @return 数量
      */
     long countByProductCode(String productCode);
+
+    /**
+     * 根据产品编码查询启用的配方产品绑定列表
+     * @param productCode 产品编码
+     * @return 启用的产品绑定列表
+     */
+    @Query("SELECT r FROM TSysRecipeProductBinding r JOIN TSysRecipe recipe ON r.recipeId = recipe.recipeId WHERE r.productCode = :productCode AND recipe.status = '1'")
+    List<TSysRecipeProductBinding> findByProductCodeAndRecipeStatusEnabled(@Param("productCode") String productCode);
 }

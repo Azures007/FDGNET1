@@ -85,4 +85,7 @@ public class OrderRecordVo {
 
     @ApiModelProperty("iot数量")
     private Integer iotQty;
+
+    @ApiModelProperty("锅数")
+    private Integer potNumber;
 }

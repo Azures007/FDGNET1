@@ -22,10 +22,7 @@ import org.thingsboard.server.dao.user.UserService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -161,11 +158,13 @@ public class YcPdServiceImpl implements YcPdService {
         String cwkid =userService.getUserCurrentCwkid(userId);
         String pkOrg = userService.getUserCurrentPkOrg(userId);
         List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
-        String wid="";
+        List<String> wids=new ArrayList<>();
         if(ncWarehouses!=null&& !ncWarehouses.isEmpty()) {
-            wid = ncWarehouses.get(0).getCode();
+            for (NcWarehouse ncWarehouse : ncWarehouses) {
+                wids.add(ncWarehouse.getCode());
+            }
         }
-        List<Map> tSysPdRecords = tSysPdRecordRepository.fpWorkshopRecord(startDate, endDate,wid);
+        List<Map> tSysPdRecords = tSysPdRecordRepository.fpWorkshopRecord(startDate, endDate,wids);
         List<TSysPdRecord> tSysPdRecords1 = JSON.parseArray(JSON.toJSONString(tSysPdRecords), TSysPdRecord.class);
         return tSysPdRecords1;
     }

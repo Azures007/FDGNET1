@@ -16,6 +16,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessRecord;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -214,6 +215,9 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
             "limit 1 offset 0",nativeQuery = true)
     Integer breakHistory(Integer orderProcessId, Integer orderPPBomId);
 
+    List<TBusOrderProcessHistory> findAllByOrderProcessIdAndPotNumberAndReportStatusAndOrderProcessHistoryIdIsNot(Integer orderProcessId, Integer potNumber, String reportStatus, Integer orderProcessHistoryId);
+
+    List<TBusOrderProcessHistory> findByOrderProcessIdAndIsSupplement(Integer orderProcessId, String isSupplement);
 //    @Transactional
 //    @Query(value = "select * from t_bus_order_process_history where bus_type='BG' and order_process_id = ?1 and import_pot_group = ?2 and record_type_bg = ?3 and device_person_group_id = ?4 and report_status = ?5 and import_pot = ?6 " +
 //            " GROUP BY order_process_history_id ", nativeQuery = true)
