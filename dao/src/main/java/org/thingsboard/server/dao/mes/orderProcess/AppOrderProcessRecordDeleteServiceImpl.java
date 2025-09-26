@@ -176,7 +176,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                     //已满足1次的记录
                     if(isConfirm==null||isConfirm.isEmpty()){
                         //抛出异常，提示当前物料已满足一次投入重量或数量，删除后是否重新提交报工？
-                        throw new RuntimeException("当前物料已满足一次投入重量或数量，删除后是否重新提交报工？");
+                        throw new IllegalArgumentException("当前物料已满足一次投入重量或数量，删除后是否重新提交报工？");
                     }
 
                     List<TBusOrderProcessHistory> hasOther= orderProcessHistoryRepository.findAllByOrderProcessIdAndPotNumberAndReportStatusAndOrderProcessHistoryIdIsNot(

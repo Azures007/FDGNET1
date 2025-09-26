@@ -8,6 +8,7 @@ public enum ErrorCodeEnum {
     TOKEN_ERR(455),
     TOKEN_ERR_SX(465),
     NO_CLASS(475),
+    NO_CONFIRM(485),
     error(0);
     private int code;
 

@@ -25,6 +25,7 @@ import org.thingsboard.server.common.data.mes.sys.TSysAbrasiveSpecification;
 import org.thingsboard.server.common.data.mes.sys.TSysPersonnelInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysDevice;
+import org.thingsboard.server.common.data.web.ErrorCodeEnum;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.TSysDevice.TSysDeviceService;
@@ -128,8 +129,16 @@ public class OrderProcessRecordController extends BaseController {
     @ApiOperation("删除报工记录")
     @GetMapping("/deleteRecord")
     public ResponseResult deleteRecord(@RequestParam("orderProcessHistoryId") Integer orderProcessHistoryId, @RequestParam( name = "isConfirm", required = false) String isConfirm) {
-        synchronized (lock) {
-            appOrderProcessRecordDeleteService.deleteRecord(orderProcessHistoryId, true,isConfirm);
+        try {
+            synchronized (lock) {
+                appOrderProcessRecordDeleteService.deleteRecord(orderProcessHistoryId, true,isConfirm);
+            }
+        } catch (IllegalArgumentException e) {
+            ResponseResult responseResult = new ResponseResult();
+            responseResult.setErrcode(ErrorCodeEnum.NO_CONFIRM.getCode());
+            responseResult.setData(null);
+            responseResult.setErrmsg("当前物料已满足一次投入重量或数量，删除后是否重新提交报工？");
+            return responseResult;
         }
         return ResultUtil.success();
     }
