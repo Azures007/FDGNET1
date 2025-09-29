@@ -171,9 +171,22 @@
   padding: 12px;
   border-radius: 4px;
   .set-title{
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     padding: 0 0 12px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .add_btn{
+      color: #fff;
+      background-color: #3399ff;
+      width: 68px;
+      height: 30px;
+      border: 1px solid #3399ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
   }
   .setting-panl{
     .table{
@@ -187,7 +200,8 @@
 
       th{
         background-color: rgb(228,228,228);
-        font-size: 14px;
+        font-size: 15px;
+        height: 40px;
       }
 
       .order{
