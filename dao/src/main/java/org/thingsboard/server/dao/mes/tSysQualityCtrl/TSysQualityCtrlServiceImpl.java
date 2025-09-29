@@ -266,7 +266,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
         }
         String json = JsonUtil.tableToJsonConverter2(tableData);
 
-        List<TSysQualityPlanConfig> tSysQualityPlanConfigList =tSysQualityPlanConfigRepository.findByPlanId(planId);
+        List<TSysQualityPlanConfig> tSysQualityPlanConfigList =tSysQualityPlanConfigRepository.findByPlanIdOrderByIdAsc(planId);
 
 
         for (TSysQualityPlanConfig planConfig:
