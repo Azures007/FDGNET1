@@ -1,14 +1,12 @@
 <div class="dic_container">
     <div class="left">
-        <div class="top">
-            <button class="add_btn btn_color_primary" (click)="handSaveAddType()">
-                <mat-icon>add</mat-icon> 新增类型
-            </button>
-        </div>
         <div class="list">
             <ul>
-                <li (click)="handleTypeChange(null)" [ngClass]="{'active_type':currentType == null }">
+                <li class="type-header" (click)="handleTypeChange(null)" [ngClass]="{'active_type':currentType == null }">
                     <div class="code_name">全部 </div>
+                    <button class="add_btn btn_color_primary" (click)="handSaveAddType()">
+                        新增类型
+                    </button>
                 </li>
                 <li *ngFor="let type of typeList" (click)="handleTypeChange(type)"
                     [ngClass]="{'active_type':(currentType != null && currentType.codeDsc ==  type.codeDsc)}">

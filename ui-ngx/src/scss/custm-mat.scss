@@ -97,6 +97,9 @@
 .search_item input{
   font-size: 14px !important;
 }
+.search_item select {
+  font-size: 14px !important;
+}
 .search_item {
   align-items: center !important;
   select,input{
@@ -108,11 +111,11 @@
 .search_form {
   margin: 10px auto !important;
 }
-.info_title{
-  margin-bottom: 10px !important;
-}
 tr.mat-header-row,tr.mat-row {
   height: 40px !important;
+}
+tr.mat-header-row th {
+  border-top: 1px solid #ccc;
 }
 .role_container {
   padding: 0 10px 10px 10px !important;
@@ -146,8 +149,16 @@ tr.mat-header-row,tr.mat-row {
 }
 .info_title {
   padding-left: 10px !important;
+  margin-bottom: 1px !important;
 }
 .page-header .row-block .label {
   width: 100px !important;
   font-size: 14px !important;
+}
+
+.mat-dialog-container input,.mat-dialog-container select,.mat-dialog-container textarea {
+  padding-left: 10px;
+}
+.page-header-btn {
+  margin-bottom: 1px !important;
 }

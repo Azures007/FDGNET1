@@ -36,6 +36,23 @@
             }
         }
         .list{
+          .type-header {
+            height: 48px !important;
+            background-color: #e0e0e0 !important;
+            .code_name {
+              font-size: 16px !important;
+              font-weight: 500;
+            }
+          }
+          .btn_color_primary{
+                color: #fff;
+                background-color: #3399ff;
+                height: 30px;
+                border: 1px solid #3399ff;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+            }
             background-color: #fff;
             width: 100%;
             padding: 10px;
@@ -43,6 +60,7 @@
                 list-style: none;
             }
             ul{
+                margin-top: 0;
                 padding: 0;
                 li{
                     width: 100%;
@@ -175,7 +193,7 @@
                             font-size: 16px;
                         }
                     }
-        
+
                     .info_tip {
                         font-size: 16px;
                         color: #999;
@@ -262,7 +280,7 @@
                             }
                             .enabled{
                                 color: rgba(102, 204, 0, 1);
-                            }   
+                            }
                         }
                     }
                 }
