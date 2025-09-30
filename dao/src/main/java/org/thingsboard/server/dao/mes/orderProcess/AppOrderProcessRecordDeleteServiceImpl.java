@@ -212,7 +212,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                             //没有其他订单报工记录，则更新锅数-1
                             orderPotCountRepository.updatePotNumberByOrderProcessAndMaterialNumber(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), p.getPotNumber()-1);
                             //其他大于当前删除记录锅数的记录锅数-1
-                            orderPotCountRepository.updatePotNumberDecrement(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), p.getPotNumber()-1);
+                            orderProcessHistoryRepository.updatePotNumberDecrement(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), tBusOrderProcessHistory.getPotNumber());
                         }
                     }else{
                         //有其他订单报工记录

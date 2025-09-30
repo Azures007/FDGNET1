@@ -39,9 +39,6 @@ public interface OrderPotCountRepository extends JpaRepository<TBusOrderPotCount
     @Query("update TBusOrderPotCount t set t.potNumber = :potNumber where t.orderProcessId = :orderProcessId and t.materialNumber = :materialNumber")
     void updatePotNumberByOrderProcessAndMaterialNumber(@Param("orderProcessId") Integer orderProcessId, @Param("materialNumber") String materialNumber, @Param("potNumber") Integer potNumber);
 
-    @Modifying
-    @Query("update TBusOrderPotCount t set t.potNumber = t.potNumber-1 where t.orderProcessId = :orderProcessId and t.materialNumber = :materialNumber and t.potNumber> :potNumber")
-    void updatePotNumberDecrement(@Param("orderProcessId") Integer orderProcessId, @Param("materialNumber") String materialNumber, @Param("potNumber") Integer potNumber);
 }
 
 
