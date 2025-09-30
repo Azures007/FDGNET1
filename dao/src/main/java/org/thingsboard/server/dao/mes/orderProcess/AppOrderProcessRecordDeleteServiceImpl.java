@@ -190,11 +190,30 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                             LichengConstants.ORDER_PROCESS_HISTORY_STATUS_0,
                             tBusOrderProcessHistory.getOrderProcessHistoryId());
                     if(hasOther.isEmpty()){
-                        //没有其他报工记录，在删除时扣投入次数
-                        orderPotCountRepository.incrementInputCount(p.getId(), -1);
-                        //没有其他订单报工记录，则更新锅数-1
-                        orderPotCountRepository.updatePotNumberByOrderProcessAndMaterialNumber(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), p.getPotNumber()-1);
-
+                        if(isConfirm.equals("1")){
+                            //已满足1次的记录且，且确认重新报工，次数先-1，因为删除后不满足1次
+                            orderPotCountRepository.incrementInputCount(p.getId(), -1);
+                            float sum = (float) hasOther.stream()
+                                    .mapToDouble(TBusOrderProcessHistory::getRecordQty) // 先用double精度计算
+                                    .sum();
+                            updateAccumulatedQty(tBusOrderProcessHistory.getOrderNo(),
+                                    tBusOrderProcessHistory.getOrderProcessId(),
+                                    tBusOrderProcessHistory.getDevicePersonGroupId(),
+                                    tBusOrderProcessHistory.getOrderPPBomId(),
+                                    tBusOrderProcessHistory.getMaterialId(),
+                                    tBusOrderProcessHistory.getMaterialNumber(),
+                                    sum);
+                            //设置必须补料
+                            tBusOrderProcessHistory.setIsSupplement("1");
+                        }else{
+                            //已满足1次的记录且没有其他报工记录，且确认不重新报工
+                            //没有其他报工记录，在删除时扣投入次数
+                            orderPotCountRepository.incrementInputCount(p.getId(), -1);
+                            //没有其他订单报工记录，则更新锅数-1
+                            orderPotCountRepository.updatePotNumberByOrderProcessAndMaterialNumber(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), p.getPotNumber()-1);
+                            //其他大于当前删除记录锅数的记录锅数-1
+                            orderPotCountRepository.updatePotNumberDecrement(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), p.getPotNumber()-1);
+                        }
                     }else{
                         //有其他订单报工记录
                         if(isConfirm.equals("1")){
@@ -213,7 +232,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                             //设置必须补料
                             tBusOrderProcessHistory.setIsSupplement("1");
                         }else{
-                            //已满足1次的记录且没有其他报工记录，且确认不重新报工，次数不变
+                            //已满足1次的记录且有其他报工记录，且确认不重新报工，次数不变
                         }
                     }
                 }else{
