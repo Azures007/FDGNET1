@@ -474,9 +474,9 @@ public interface OrderPPBomRepository extends JpaRepository<TBusOrderPPBom, Inte
     List<Map> listPpbomRecordDetailsNotKeys(Integer orderId, String processNumberZhanban, int currentPot, List<Integer> keys);
 
     /**
-     * 乳化剂/斩拌积累投入数量
+     * 积累投入数量
      * @param orderId
-     * @param processNumberZhanban
+     * @param processNumber
      * @return
      */
     @Query(value = "select coalesce(sum(cast(record_qty * (case when record_unit='kg' then 1 else 0.001 end) as DECIMAL(19, 3))),0) \n" +
@@ -486,7 +486,7 @@ public interface OrderPPBomRepository extends JpaRepository<TBusOrderPPBom, Inte
             "join t_bus_order_process d on b.order_process_id =d.order_process_id \n" +
             "join t_sys_process_info e on d.process_id =e.process_id \n" +
             "where c.order_id =?1 and e.process_number =?2 and bus_type='BG' and record_type = '1'", nativeQuery = true)
-    float sumImportPotQty(Integer orderId, String processNumberZhanban);
+    float sumImportPotQty(Integer orderId, String processNumber);
 
     /**
      * 乳化剂积累投入锅数

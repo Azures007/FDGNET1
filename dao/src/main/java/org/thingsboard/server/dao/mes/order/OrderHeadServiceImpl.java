@@ -1162,14 +1162,18 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     @Transactional
     @Override
     public synchronized ResponseResult stopProcess(Integer orderId, Integer orderProcessId) throws Exception {
-        //工序结束判断是否有数据没有产后报工
-        verExportQty(orderId, orderProcessId);
+
         // 通过订单Id获取订单当前工序
         TBusOrderProcess tBusOrderProcess = orderProcessService.findById(orderProcessId);
         if (tBusOrderProcess.getProcessStatus().equals(PROCESSSTATUS_3)) {
             throw new RuntimeException("当前记录已被工序结束");
         }
         TSysProcessInfo processId = tBusOrderProcess.getProcessId();
+        //工序结束判断是否有数据没有产后报工
+        if(processId.getReportType().contains("3")){
+            verExportQty(orderId,processId);
+        }
+
         String bySetExport = processId.getBySetExport();
         if (bySetExport.equals(GlobalConstant.enableTrue)) {
             List<TBusOrderProcessRecord> tBusOrderProcessRecords = orderProcessRecordRepository.findByExport(tBusOrderProcess.getOrderProcessId());
@@ -1245,18 +1249,15 @@ public class OrderHeadServiceImpl implements OrderHeadService {
      * 工序结束---判断是否有产后数据没报工
      *
      * @param orderId
-     * @param orderProcessId
+     * @param processId
      */
-    private void verExportQty(Integer orderId, Integer orderProcessId) {
-        String processNumber = processInfoRepository.findProcessNumberByOrderProcessId(orderProcessId);
-        if (!processNumber.equals(LichengConstants.PROCESS_NUMBER_ZHANBAN)) {
-            //获取积累投入数据
-            Float importVal = orderPPBomRepository.sumImportPotQty(orderId, processNumber);
-            //积累产出数据
-            Float exportVal = orderPPBomRepository.sumExportPotQtyAllByBL(orderId, processNumber);
-            if (importVal > exportVal) {
-                throw new RuntimeException("不允许工序结束，需提交完合格品数量才允许工序结束");
-            }
+    private void verExportQty(Integer orderId, TSysProcessInfo processId) {
+        //获取积累投入数据
+        Float importVal = orderPPBomRepository.sumImportPotQty(orderId, processId.getProcessNumber());
+        //积累产出数据
+        Float exportVal = orderPPBomRepository.sumExportPotQtyAllByBL(orderId, processId.getProcessNumber());
+        if (importVal > exportVal) {
+            throw new RuntimeException("不允许工序结束，需提交完产成品数量才允许工序结束");
         }
     }
 
