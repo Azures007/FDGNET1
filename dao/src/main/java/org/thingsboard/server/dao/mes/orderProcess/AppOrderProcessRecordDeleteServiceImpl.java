@@ -166,6 +166,11 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         if (!orderProcessRecordRepository.findAllByOrderProcessIdAndBusType(tBusOrderProcessHistory.getOrderProcessId(), "3").isEmpty()) {
             throw new RuntimeException("不允许删除，已生成产出合格品报工记录");
         }
+        TBusOrderProcessHistory results = orderProcessRecordService.checkIsSupplement(tBusOrderProcessRecord.getOrderProcessId());
+        if(results!=null){
+            //需要补充报工
+            throw new RuntimeException("需要补充报工，请返回报工！");
+        }
         // 回退锅数记录表（正常类型才回退）
         if (!LichengConstants.REPORTYPE0002.equals(tBusOrderProcessHistory.getRecordTypeBg())) {
             var opt = orderPotCountRepository.findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumber(
