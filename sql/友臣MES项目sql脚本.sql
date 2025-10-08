@@ -904,3 +904,14 @@ ALTER TABLE public.t_sys_pd_record ADD pd_workshop_nc_id varchar(255) NULL;
 COMMENT ON COLUMN public.t_sys_pd_record.pd_workshop_nc_id IS '盘点车间ncid';
 ALTER TABLE public.t_sys_pd_record_split ADD pd_workshop_nc_id varchar(255) NULL;
 COMMENT ON COLUMN public.t_sys_pd_record_split.pd_workshop_nc_id IS '盘点车间ncid';
+
+
+-- 订单报工记录表 修改数量类型 2025-10-08
+ALTER TABLE "public"."t_bus_order_process_record"
+  ALTER COLUMN "record_qty" TYPE numeric(24,6) USING "record_qty"::numeric(24,6),
+  ALTER COLUMN "record_manual_qty" TYPE numeric(24,6) USING "record_manual_qty"::numeric(24,6);
+
+ALTER TABLE "public"."t_bus_order_process_history"
+  ALTER COLUMN "record_qty" TYPE numeric(24,6) USING "record_qty"::numeric(24,6),
+  ALTER COLUMN "record_manual_qty" TYPE numeric(24,6) USING "record_manual_qty"::numeric(24,6);
+
