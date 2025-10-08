@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @ApiModel("订单详情用料清单信息")
 public class OrderDetailPPBomVo {
@@ -27,7 +29,7 @@ public class OrderDetailPPBomVo {
     private String unitStr;
 
     @ApiModelProperty("应发数量")
-    private Double mustQty;
+    private BigDecimal mustQty;
 
     @ApiModelProperty("子项类型")
     private Integer midPpbomEntryItemType;

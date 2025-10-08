@@ -9,6 +9,7 @@ import org.thingsboard.server.common.data.mes.sys.TSysProcessInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysDevice;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -84,11 +85,11 @@ public class TBusOrderProcessRecord {
 
     @ApiModelProperty("报工数量")
     @Column(name = "record_qty")
-    private Float recordQty;
+    private BigDecimal recordQty;
 
     @ApiModelProperty("报工数量(手工输入)")
     @Column(name = "record_manual_qty")
-    private Float recordManualQty;
+    private BigDecimal recordManualQty;
 
     @ApiModelProperty("物料ID")
     @Column(name = "material_id")

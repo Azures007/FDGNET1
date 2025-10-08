@@ -480,7 +480,7 @@ public class ChargingBasketServiceImpl implements ChargingBasketService {
         BeanUtils.copyProperties(tBusOrderBindCodeReport, orderBindCodeVo);
         var orderProcessHistory = orderProcessHistoryRepository.findById(tBusOrderBindCodeReport.getOrderProcessHistoryId()).orElse(null);
         if (orderProcessHistory != null) {
-            orderBindCodeVo.setReportQty(orderProcessHistory.getRecordQty());
+            orderBindCodeVo.setReportQty(orderProcessHistory.getRecordQty().floatValue());
             orderBindCodeVo.setReportUnit(orderProcessHistory.getRecordUnit());
             orderBindCodeVo.setReportUnitStr(GlobalConstant.getCodeDscName("UNIT0000", orderProcessHistory.getRecordUnit()));
         } else {

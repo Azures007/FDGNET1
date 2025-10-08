@@ -21,8 +21,10 @@ import org.thingsboard.server.dao.sql.mes.ncInventory.NcInventoryInoutRepository
 import org.thingsboard.server.dao.sql.mes.ncInventory.NcInventoryRepository;
 import org.thingsboard.server.dao.sql.mes.order.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -125,7 +127,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
     /**
      * 更新累计数量
      */
-    private void updateAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, Integer materialId, String materialNumber, Float qty) {
+    private void updateAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, Integer materialId, String materialNumber, BigDecimal qty) {
         if (orderNo == null || orderProcessId == null || orderPPBomId == null || materialNumber == null || qty == null) {
             return;
         }
@@ -144,7 +146,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
             acc.setDevicePersonGroupId(devicePersonGroupId == null ? "" : devicePersonGroupId);
             acc.setMaterialId(materialId);
             acc.setMaterialNumber(materialNumber);
-            acc.setAccumulatedQty(new java.math.BigDecimal(qty.toString()));
+            acc.setAccumulatedQty(qty);
             acc.setCreatedTime(new Date());
             acc.setLastUpdateTime(new Date());
             accumulationRepository.save(acc);
@@ -164,7 +166,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         // 判断当前执行工序是否存在合格品报工记录（判断报工历史记录表），
         // 如果存在则不能删除记录，弹层提示：“不允许删除，已生成产出合格品报工记录”，点击关闭按钮，关闭弹层。
         if (!orderProcessRecordRepository.findAllByOrderProcessIdAndBusType(tBusOrderProcessHistory.getOrderProcessId(), "3").isEmpty()) {
-            throw new RuntimeException("不允许删除，已生成产出合格品报工记录");
+            throw new RuntimeException("不允许删除，已生成产出产成品报工记录");
         }
         TBusOrderProcessHistory results = orderProcessRecordService.checkIsSupplement(tBusOrderProcessRecord.getOrderProcessId());
         if(results!=null){
@@ -193,9 +195,13 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                         if(isConfirm.equals("1")){
                             //已满足1次的记录且，且确认重新报工，次数先-1，因为删除后不满足1次
                             orderPotCountRepository.incrementInputCount(p.getId(), -1);
-                            float sum = (float) hasOther.stream()
-                                    .mapToDouble(TBusOrderProcessHistory::getRecordQty) // 先用double精度计算
-                                    .sum();
+//                            float sum = (float) hasOther.stream()
+//                                    .mapToDouble(TBusOrderProcessHistory::getRecordQty) // 先用double精度计算
+//                                    .sum();
+                            BigDecimal sum = hasOther.stream()
+                                    .map(TBusOrderProcessHistory::getRecordQty)
+                                    .filter(Objects::nonNull)  // 过滤null值
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add);
                             updateAccumulatedQty(tBusOrderProcessHistory.getOrderNo(),
                                     tBusOrderProcessHistory.getOrderProcessId(),
                                     tBusOrderProcessHistory.getDevicePersonGroupId(),
@@ -219,9 +225,13 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                         if(isConfirm.equals("1")){
                             //已满足1次的记录且有其他报工记录，且确认重新报工，次数先-1，因为删除后不满足1次
                             orderPotCountRepository.incrementInputCount(p.getId(), -1);
-                            float sum = (float) hasOther.stream()
-                                    .mapToDouble(TBusOrderProcessHistory::getRecordQty) // 先用double精度计算
-                                    .sum();
+//                            float sum = (float) hasOther.stream()
+//                                    .mapToDouble(TBusOrderProcessHistory::getRecordQty) // 先用double精度计算
+//                                    .sum();
+                            BigDecimal sum = hasOther.stream()
+                                    .map(TBusOrderProcessHistory::getRecordQty)
+                                    .filter(Objects::nonNull)  // 过滤null值
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add);
                             updateAccumulatedQty(tBusOrderProcessHistory.getOrderNo(),
                                     tBusOrderProcessHistory.getOrderProcessId(),
                                     tBusOrderProcessHistory.getDevicePersonGroupId(),
@@ -241,11 +251,14 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
             });
         }
         // 报工数量
-        Float qty = (tBusOrderProcessRecord.getRecordQty() == null ? 0F : tBusOrderProcessRecord.getRecordQty().floatValue()) - (tBusOrderProcessHistory.getRecordQty() == null ? 0F : tBusOrderProcessHistory.getRecordQty().floatValue());
+        BigDecimal qty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordQty(), tBusOrderProcessHistory.getRecordQty());
         tBusOrderProcessRecord.setRecordQty(qty);
+//        logger.info("------------------- 报工记录删除成功，报工数量qty："+ qty);
+//        logger.info("------------------- 报工记录删除成功，报工数量record："+ tBusOrderProcessRecord.getRecordQty());
+//        logger.info("------------------- 报工记录删除成功，报工数量history："+ tBusOrderProcessHistory.getRecordQty());
         // 报工数量（手工输入）
-        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty() > 0) {
-            Float manualQty = (tBusOrderProcessRecord.getRecordManualQty() == null ? 0F : tBusOrderProcessRecord.getRecordManualQty().floatValue()) - (tBusOrderProcessHistory.getRecordManualQty() == null ? 0F : tBusOrderProcessHistory.getRecordManualQty().floatValue());
+        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty().floatValue() > 0) {
+            BigDecimal manualQty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordManualQty(), tBusOrderProcessHistory.getRecordManualQty());
             tBusOrderProcessRecord.setRecordManualQty(manualQty);
         }
 
@@ -296,11 +309,11 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         TBusOrderHead tBusOrderHead = heads.get(0);
 
         // 报工数量
-        Float qty = (tBusOrderProcessRecord.getRecordQty() == null ? 0F : tBusOrderProcessRecord.getRecordQty().floatValue()) - (tBusOrderProcessHistory.getRecordQty() == null ? 0F : tBusOrderProcessHistory.getRecordQty().floatValue());
+        BigDecimal qty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordQty(), tBusOrderProcessHistory.getRecordQty());
         tBusOrderProcessRecord.setRecordQty(qty);
         // 报工数量（手工输入）
-        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty() > 0) {
-            Float manualQty = (tBusOrderProcessRecord.getRecordManualQty() == null ? 0F : tBusOrderProcessRecord.getRecordManualQty().floatValue()) - (tBusOrderProcessHistory.getRecordManualQty() == null ? 0F : tBusOrderProcessHistory.getRecordManualQty().floatValue());
+        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty().floatValue() > 0) {
+            BigDecimal manualQty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordManualQty(), tBusOrderProcessHistory.getRecordManualQty());
             tBusOrderProcessRecord.setRecordManualQty(manualQty);
         }
         orderProcessRecordRepository.saveAndFlush(tBusOrderProcessRecord);
@@ -316,11 +329,11 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         TBusOrderHead tBusOrderHead = heads.get(0);
 
         // 报工数量
-        Float qty = (tBusOrderProcessRecord.getRecordQty() == null ? 0F : tBusOrderProcessRecord.getRecordQty().floatValue()) - (tBusOrderProcessHistory.getRecordQty() == null ? 0F : tBusOrderProcessHistory.getRecordQty().floatValue());
+        BigDecimal qty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordQty(), tBusOrderProcessHistory.getRecordQty());
         tBusOrderProcessRecord.setRecordQty(qty);
         // 报工数量（手工输入）
-        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty() > 0) {
-            Float manualQty = (tBusOrderProcessRecord.getRecordManualQty() == null ? 0F : tBusOrderProcessRecord.getRecordManualQty().floatValue()) - (tBusOrderProcessHistory.getRecordManualQty() == null ? 0F : tBusOrderProcessHistory.getRecordManualQty().floatValue());
+        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty().floatValue() > 0) {
+            BigDecimal manualQty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordManualQty(), tBusOrderProcessHistory.getRecordManualQty());
             tBusOrderProcessRecord.setRecordManualQty(manualQty);
         }
 
@@ -343,11 +356,11 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         TBusOrderHead tBusOrderHead = heads.get(0);
 
         // 报工数量
-        Float qty = (tBusOrderProcessRecord.getRecordQty() == null ? 0F : tBusOrderProcessRecord.getRecordQty().floatValue()) - (tBusOrderProcessHistory.getRecordQty() == null ? 0F : tBusOrderProcessHistory.getRecordQty().floatValue());
+        BigDecimal qty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordQty(), tBusOrderProcessHistory.getRecordQty());
         tBusOrderProcessRecord.setRecordQty(qty);
         // 报工数量（手工输入）
-        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty() > 0) {
-            Float manualQty = (tBusOrderProcessRecord.getRecordManualQty() == null ? 0F : tBusOrderProcessRecord.getRecordManualQty().floatValue()) - (tBusOrderProcessHistory.getRecordManualQty() == null ? 0F : tBusOrderProcessHistory.getRecordManualQty().floatValue());
+        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty().floatValue() > 0) {
+            BigDecimal manualQty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordManualQty(), tBusOrderProcessHistory.getRecordManualQty());
             tBusOrderProcessRecord.setRecordManualQty(manualQty);
         }
 
@@ -366,15 +379,15 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         // 判断当前执行工序是否存在合格品报工记录（判断报工历史记录表），
         // 如果存在则不能删除记录，弹层提示：“不允许删除，已生成产出合格品报工记录”，点击关闭按钮，关闭弹层。
         if (!orderProcessRecordRepository.findAllByOrderProcessIdAndBusType(tBusOrderProcessHistory.getOrderProcessId(), "3").isEmpty()) {
-            throw new RuntimeException("不允许删除，已生成产出合格品报工记录");
+            throw new RuntimeException("不允许删除，已生成产出产成品报工记录");
         }
 
         // 报工数量
-        Float qty = (tBusOrderProcessRecord.getRecordQty() == null ? 0F : tBusOrderProcessRecord.getRecordQty().floatValue()) - (tBusOrderProcessHistory.getRecordQty() == null ? 0F : tBusOrderProcessHistory.getRecordQty().floatValue());
+        BigDecimal qty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordQty(), tBusOrderProcessHistory.getRecordQty());
         tBusOrderProcessRecord.setRecordQty(qty);
         // 报工数量（手工输入）
-        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty() > 0) {
-            Float manualQty = (tBusOrderProcessRecord.getRecordManualQty() == null ? 0F : tBusOrderProcessRecord.getRecordManualQty().floatValue()) - (tBusOrderProcessHistory.getRecordManualQty() == null ? 0F : tBusOrderProcessHistory.getRecordManualQty().floatValue());
+        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty().floatValue() > 0) {
+            BigDecimal manualQty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordManualQty(), tBusOrderProcessHistory.getRecordManualQty());
             tBusOrderProcessRecord.setRecordManualQty(manualQty);
         }
 
@@ -389,11 +402,11 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         TBusOrderHead tBusOrderHead = heads.get(0);
 
         // 报工数量
-        Float qty = (tBusOrderProcessRecord.getRecordQty() == null ? 0F : tBusOrderProcessRecord.getRecordQty().floatValue()) - (tBusOrderProcessHistory.getRecordQty() == null ? 0F : tBusOrderProcessHistory.getRecordQty().floatValue());
+        BigDecimal qty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordQty(), tBusOrderProcessHistory.getRecordQty());
         tBusOrderProcessRecord.setRecordQty(qty);
         // 报工数量（手工输入）
-        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty() > 0) {
-            Float manualQty = (tBusOrderProcessRecord.getRecordManualQty() == null ? 0F : tBusOrderProcessRecord.getRecordManualQty().floatValue()) - (tBusOrderProcessHistory.getRecordManualQty() == null ? 0F : tBusOrderProcessHistory.getRecordManualQty().floatValue());
+        if (tBusOrderProcessHistory.getRecordManualQty() != null && tBusOrderProcessHistory.getRecordManualQty().floatValue() > 0) {
+            BigDecimal manualQty = BigDecimalUtil.safeSubtract(tBusOrderProcessRecord.getRecordManualQty(), tBusOrderProcessHistory.getRecordManualQty());
             tBusOrderProcessRecord.setRecordManualQty(manualQty);
         }
 
@@ -477,5 +490,4 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
             });
         }
     }
-
 }

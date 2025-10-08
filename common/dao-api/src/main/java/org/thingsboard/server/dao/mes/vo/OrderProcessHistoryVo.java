@@ -3,6 +3,8 @@ package org.thingsboard.server.dao.mes.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @Auther: l
  * @Date: 2022/4/28 11:28
@@ -51,7 +53,7 @@ public class OrderProcessHistoryVo {
     private String recordUnitStr;
 
     @ApiModelProperty("盘点数量")
-    private Float recordQty;
+    private BigDecimal recordQty;
 
     @ApiModelProperty("盘点类型:STOCKTAKING0001=交接班盘点，STOCKTAKING0002=订单完工盘点")
     private String recordTypePd;

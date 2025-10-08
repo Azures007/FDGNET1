@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.Column;
+import java.math.BigDecimal;
 
 /**
  * @Auther: l
@@ -49,7 +50,7 @@ public class OrderPPbomResult {
     private Float midPpbomEntryMaterialStandard;
 
     @ApiModelProperty("应发数量，即为计划投入量")
-    private Double mustQty;
+    private BigDecimal mustQty;
 
     @ApiModelProperty("mes单位")
     private String midPpbomEntryWeighMesUnit;

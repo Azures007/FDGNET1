@@ -97,7 +97,7 @@ public class OrderProcessVo {
     private String unit;
 
     @ApiModelProperty("报工数量")
-    private Float qty;
+    private BigDecimal qty;
 
     @ApiModelProperty("报工班组")
     private String className;

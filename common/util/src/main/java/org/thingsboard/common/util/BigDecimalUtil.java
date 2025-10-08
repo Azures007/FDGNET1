@@ -84,5 +84,32 @@ public class BigDecimalUtil {
         return b1.divide(b2, scale, BigDecimal.ROUND_HALF_UP);// 应对除不尽的情况
     }
 
+    /**
+     * 安全的BigDecimal减法运算
+     */
+    public static BigDecimal safeSubtract(BigDecimal minuend, BigDecimal subtrahend) {
+        BigDecimal safeMinuend = minuend != null ? minuend : BigDecimal.ZERO;
+        BigDecimal safeSubtrahend = subtrahend != null ? subtrahend : BigDecimal.ZERO;
+        return safeMinuend.subtract(safeSubtrahend);
+    }
+
+    /**
+     * 安全的BigDecimal加法运算
+     */
+    public static BigDecimal safeAdd(BigDecimal addend1, BigDecimal addend2) {
+        BigDecimal safeAddend1 = addend1 != null ? addend1 : BigDecimal.ZERO;
+        BigDecimal safeAddend2 = addend2 != null ? addend2 : BigDecimal.ZERO;
+        return safeAddend1.add(safeAddend2);
+    }
+
+    /**
+     * 安全的BigDecimal乘法运算
+     */
+    public static BigDecimal safeMultiply(BigDecimal multiplicand, BigDecimal multiplier) {
+        if (multiplicand == null || multiplier == null) {
+            return BigDecimal.ZERO;
+        }
+        return multiplicand.multiply(multiplier);
+    }
 
 }

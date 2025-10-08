@@ -189,21 +189,21 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
     /**
      * 获取所有需要投入物料的最小投入次数（包括未投入的物料）
      * 这个方法会考虑配方管理中定义的所有需要投入的物料
-     * 
+     *
      * @param orderProcessId 工序执行ID
      * @return 最小投入次数
      */
     public int getMinInputCountByOrderProcessIncludingUnused(Integer orderProcessId,List<String> allRequiredMaterialCodes) {
 
-        
+
         if (allRequiredMaterialCodes.isEmpty()) {
             // 如果没有配方管理，使用原有的逻辑
             return orderPotCountRepository.getMinInputCountByOrderProcess(orderProcessId);
         }
-        
+
         // 获取已投入的物料的最小投入次数
         int minInputCountFromExisting = orderPotCountRepository.getMinInputCountByOrderProcess(orderProcessId);
-        
+
         // 检查是否有未投入的物料
         boolean hasUnusedMaterials = false;
         for (String materialCode : allRequiredMaterialCodes) {
@@ -213,20 +213,20 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                 break;
             }
         }
-        
+
         // 如果有未投入的物料，返回0（因为未投入的物料投入次数为0）
         if (hasUnusedMaterials) {
             return 0;
         }
-        
+
         // 如果所有物料都已投入，返回已投入物料的最小投入次数
         return minInputCountFromExisting;
     }
-    
+
     /**
      * 获取所有需要投入的物料编码列表
      * 包括配方管理中定义的物料
-     * 
+     *
      * @param orderProductCode 产品编码
      * @param currentProcessNumber 工序编码
      * @return 物料编码列表
@@ -235,7 +235,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         List<String> materialCodes = new ArrayList<>();
         // 获取配方管理绑定的产品
         List<TSysRecipeProductBinding> productBindings = recipeProductBindingRepository.findByProductCodeAndRecipeStatusEnabled(orderProductCode);
-        
+
         if (!productBindings.isEmpty()) {
             // 找到绑定的配方，获取配方投入明细，并匹配当前工序编码
             for (TSysRecipeProductBinding binding : productBindings) {
@@ -248,7 +248,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                 }
             }
         }
-        
+
         return materialCodes;
     }
 
@@ -534,34 +534,34 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                     result.setMaterialName(tSysCodeDsc.getCodeDsc());
                     if (tSysCodeDsc.getCodeValue().contains("B_RECORDL2")) {
                         if (tSysCodeDsc.getCodeDsc().contains("A")) {
-                            result.setMustQty(orderHead.getMidMoEntryFirstMaterialMaxValue() == null ? 0.0 : orderHead.getMidMoEntryFirstMaterialMaxValue());
+                            result.setMustQty(BigDecimal.valueOf(orderHead.getMidMoEntryFirstMaterialMaxValue()));
                             result.setUnit(LichengConstants.UNIT_KG);
                             result.setUnitStr(LichengConstants.UNIT_KG_NAME);
                         } else if (tSysCodeDsc.getCodeDsc().contains("B")) {
-                            result.setMustQty(orderHead.getMidMoEntrySecondMaterialMaxValue() == null ? 0.0 : orderHead.getMidMoEntrySecondMaterialMaxValue());
+                            result.setMustQty(BigDecimal.valueOf(orderHead.getMidMoEntrySecondMaterialMaxValue()));
                             result.setUnit(LichengConstants.UNIT_KG);
                             result.setUnitStr(LichengConstants.UNIT_KG_NAME);
                         }
                         if (tSysCodeDsc.getCodeValue().equals("B_RECORDL20006")) {
-                            result.setMustQty(orderHead.getMidMoEntryIceWater() == null ? 0.0 : orderHead.getMidMoEntryIceWater());
+                            result.setMustQty(BigDecimal.valueOf(orderHead.getMidMoEntryIceWater()));
                             result.setUnit(LichengConstants.UNIT_KG);
                             result.setUnitStr(LichengConstants.UNIT_KG_NAME);
                         }
                         orderPPbomResults2.add(result);
                     } else if (tSysCodeDsc.getCodeValue().contains("C_RECORDL2")) {
                         if (tSysCodeDsc.getCodeValue().equals("C_RECORDL20005")) {
-                            result.setMustQty(orderHead.getMidMoEntryEmulsion() == null ? 0.0 : orderHead.getMidMoEntryEmulsion());
+                            result.setMustQty(BigDecimal.valueOf(orderHead.getMidMoEntryEmulsion()));
                             result.setUnit(LichengConstants.UNIT_KG);
                             result.setUnitStr(LichengConstants.UNIT_KG_NAME);
                         }
                         orderPPbomResults3.add(result);
                     } else {
                         if (tSysCodeDsc.getCodeDsc().contains("A")) {
-                            result.setMustQty(orderHead.getMidMoEntryFirstMaterialMaxValue() == null ? 0.0 : orderHead.getMidMoEntryFirstMaterialMaxValue());
+                            result.setMustQty(BigDecimal.valueOf(orderHead.getMidMoEntryFirstMaterialMaxValue()));
                             result.setUnit(LichengConstants.UNIT_KG);
                             result.setUnitStr(LichengConstants.UNIT_KG_NAME);
                         } else if (tSysCodeDsc.getCodeDsc().contains("B")) {
-                            result.setMustQty(orderHead.getMidMoEntrySecondMaterialMaxValue() == null ? 0.0 : orderHead.getMidMoEntrySecondMaterialMaxValue());
+                            result.setMustQty(BigDecimal.valueOf(orderHead.getMidMoEntrySecondMaterialMaxValue()));
                             result.setUnit(LichengConstants.UNIT_KG);
                             result.setUnitStr(LichengConstants.UNIT_KG_NAME);
                         }
@@ -1613,23 +1613,23 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         List<TBusOrderProcessRecord> records = orderProcessRecordRepository.findAllByOrderProcessIdAndBusTypeAndRecordType(searchDto.getOrderProcessId(), "BG", "2");
         for (var record : records) {
             if (LichengConstants.RECORDTYPEL20001.equals(record.getMaterialName())) {
-                vo.setValueA(BigDecimalUtil.add(vo.getValueA(), record.getRecordQty()).floatValue());
+                vo.setValueA(BigDecimalUtil.add(vo.getValueA(), record.getRecordQty().floatValue()).floatValue());
                 vo.setUnitA(record.getRecordUnit());
                 vo.setUnitStrA(GlobalConstant.getCodeDscName("UNIT0000", vo.getUnitA()));
             } else if (LichengConstants.RECORDTYPEL20002.equals(record.getMaterialName())) {
-                vo.setValueB(BigDecimalUtil.add(vo.getValueB(), record.getRecordQty()).floatValue());
+                vo.setValueB(BigDecimalUtil.add(vo.getValueB(), record.getRecordQty().floatValue()).floatValue());
                 vo.setUnitB(record.getRecordUnit());
                 vo.setUnitStrB(GlobalConstant.getCodeDscName("UNIT0000", vo.getUnitB()));
             } else if (LichengConstants.RECORDTYPEL20003.equals(record.getMaterialName())) {
-                vo.setValueFl(BigDecimalUtil.add(vo.getValueFl(), record.getRecordQty()).floatValue());
+                vo.setValueFl(BigDecimalUtil.add(vo.getValueFl(), record.getRecordQty().floatValue()).floatValue());
                 vo.setUnitFl(record.getRecordUnit());
                 vo.setUnitStrFl(GlobalConstant.getCodeDscName("UNIT0000", vo.getUnitFl()));
             } else if (LichengConstants.RECORDTYPEL20000_1.equals(record.getMaterialName())) {
-                vo.setValueFm(BigDecimalUtil.add(vo.getValueFm(), record.getRecordQty()).floatValue());
+                vo.setValueFm(BigDecimalUtil.add(vo.getValueFm(), record.getRecordQty().floatValue()).floatValue());
                 vo.setUnitFm(record.getRecordUnit());
                 vo.setUnitStrFm(GlobalConstant.getCodeDscName("UNIT0000", vo.getUnitFm()));
             } else if (LichengConstants.RECORDTYPEL20000_5.equals(record.getMaterialName())) {
-                vo.setValueSym(BigDecimalUtil.add(vo.getValueSym(), record.getRecordQty()).floatValue());
+                vo.setValueSym(BigDecimalUtil.add(vo.getValueSym(), record.getRecordQty().floatValue()).floatValue());
                 vo.setUnitSym(record.getRecordUnit());
                 vo.setUnitStrSym(GlobalConstant.getCodeDscName("UNIT0000", vo.getUnitSym()));
             }
@@ -1655,15 +1655,15 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                         || LichengConstants.PROCESS_NUMBER_BAOZHUANG.equals(record.getProcessNumber())) {//拉伸膜、包装
                     if (LichengConstants.UNIT_JIAN.equals(record.getRecordUnit())) {
                         //报工数量（手工输入）
-                        singleValue += record.getRecordManualQty();
+                        singleValue += record.getRecordManualQty().floatValue();
                     } else {
                         //报工数量
-                        singleValue += record.getRecordQty();
+                        singleValue += record.getRecordQty().floatValue();
                     }
                     vo.setSingleUnit(record.getRecordUnit());
                     vo.setSingleUnitStr(GlobalConstant.getCodeDscName("UNIT0000", record.getRecordUnit()));
                 } else {
-                    singleValue += record.getRecordQty();
+                    singleValue += record.getRecordQty().floatValue();
                     vo.setSingleUnit(record.getRecordUnit());
                     vo.setSingleUnitStr(GlobalConstant.getCodeDscName("UNIT0000", record.getRecordUnit()));
                 }
@@ -1675,15 +1675,15 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                         || LichengConstants.PROCESS_NUMBER_BAOZHUANG.equals(record.getProcessNumber())) {//拉伸膜、包装
                     if (LichengConstants.UNIT_JIAN.equals(record.getRecordUnit())) {
                         //报工数量（手工输入）
-                        totalValue += record.getRecordManualQty();
+                        totalValue += record.getRecordManualQty().floatValue();
                     } else {
                         //报工数量
-                        totalValue += record.getRecordQty();
+                        totalValue += record.getRecordQty().floatValue();
                     }
                     vo.setTotalUnit(record.getRecordUnit());
                     vo.setTotalUnitStr(GlobalConstant.getCodeDscName("UNIT0000", record.getRecordUnit()));
                 } else {
-                    totalValue += record.getRecordQty();
+                    totalValue += record.getRecordQty().floatValue();
                     vo.setTotalUnit(record.getRecordUnit());
                     vo.setTotalUnitStr(GlobalConstant.getCodeDscName("UNIT0000", record.getRecordUnit()));
                 }
@@ -2200,7 +2200,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         saveDto.setProcessNumber(history.getProcessId().getProcessNumber());
         saveDto.setRecordType(history.getRecordType());
         saveDto.setRecordTypeBg(history.getRecordTypeBg());
-        saveDto.setRecordQty(modifyQty);
+        saveDto.setRecordQty(BigDecimal.valueOf(modifyQty));
         saveDto.setRecordManualQty(history.getRecordManualQty());
         saveDto.setRecordUnit(history.getRecordUnit());
         saveDto.setCapacityQty(history.getCapacityQty());
@@ -2271,7 +2271,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         if (tBusOrderProcessRecord.getRecordUnit().equals("kg")) {
             bigDecimal = new BigDecimal(tBusOrderProcessRecord.getRecordQty().toString());
         } else {
-            bigDecimal = new BigDecimal(tBusOrderProcessRecord.getRecordQty()).multiply(new BigDecimal(Double.valueOf(0.001)));
+            bigDecimal = new BigDecimal(tBusOrderProcessRecord.getRecordQty().floatValue()).multiply(new BigDecimal(Double.valueOf(0.001)));
         }
         BigDecimal subtract = new BigDecimal(sumVal.toString()).subtract(bigDecimal);
         return subtract.doubleValue();

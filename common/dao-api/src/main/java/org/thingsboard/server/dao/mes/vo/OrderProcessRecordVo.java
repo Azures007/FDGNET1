@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @Auther: l
  * @Date: 2022/4/28 11:28
@@ -49,10 +51,10 @@ public class OrderProcessRecordVo {
     private String recordUnitStr;
 
     @ApiModelProperty("盘点数量")
-    private Float recordQty;
+    private BigDecimal recordQty;
 
     @ApiModelProperty("报工数量(手工输入)")
-    private Float recordManualQty = 0f;
+    private BigDecimal recordManualQty = BigDecimal.ZERO;
 
     @ApiModelProperty("报工时间")
     private String reportTime;

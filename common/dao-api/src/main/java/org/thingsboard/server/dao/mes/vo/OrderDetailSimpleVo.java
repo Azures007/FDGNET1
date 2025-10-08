@@ -100,7 +100,7 @@ public class OrderDetailSimpleVo {
         @ApiModelProperty("单位")
         private String unit;
         @ApiModelProperty("报工数")
-        private Float qty;
+        private BigDecimal qty;
         @ApiModelProperty("报工组")
         private String className;
         @ApiModelProperty("锅数/批次数")

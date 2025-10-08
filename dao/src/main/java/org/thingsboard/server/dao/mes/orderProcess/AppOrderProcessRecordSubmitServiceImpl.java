@@ -51,6 +51,8 @@ import org.thingsboard.server.dao.mes.tSysClass.TSysClassService;
 import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.mes.vo.OrderProcessRecordVo;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -348,8 +350,8 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 record.setImportPot(recordVo.getImportPot());
                 record.setExportPot(recordVo.getExportPot());
                 record.setExportPotMin(recordVo.getExportPotMin());
-                record.setRecordQty(BigDecimalUtil.add(recordVo.getRecordQty() == null ? 0 : recordVo.getRecordQty(), saveDto.getRecordQty()).floatValue());
-                record.setRecordManualQty(BigDecimalUtil.add(recordVo.getRecordManualQty() == null ? 0 : recordVo.getRecordManualQty(), saveDto.getRecordManualQty()).floatValue());
+                record.setRecordQty(recordVo.getRecordQty().add(saveDto.getRecordQty()));
+                record.setRecordManualQty(recordVo.getRecordManualQty().add(saveDto.getRecordManualQty()));
                 record.setOrderProcessRecordId(recordVo.getOrderProcessRecordId());
                 break;
             } else {
@@ -491,7 +493,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         if (!isTail) {
             limits = computeInputLimits(tBusOrderHead.getBodyMaterialNumber(), processInfo.getProcessNumber(), saveDto.getMaterialNumber());
             if (limits != null && limits.lower != null && limits.upper != null && saveDto.getRecordQty() != null) {
-                float qty = saveDto.getRecordQty();
+                float qty = saveDto.getRecordQty().floatValue();
                 accBefore = getAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialNumber());
                 accAfter = accBefore + qty;
 
@@ -566,7 +568,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             //出库记录
             List<NcInventoryInOut> inventoriesInOuts = new ArrayList<>();
             if(inventories!=null&& !inventories.isEmpty()){
-                Float qty=saveDto.getRecordQty();
+                Float qty = saveDto.getRecordQty().floatValue();
                 for(NcInventory inventory:inventories){
                     if(inventory.getQty()>=qty){
                         Float f=(float)(Math.round((inventory.getQty()-qty)*10000)/10000.0);
@@ -807,8 +809,8 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 record.setImportPot(recordVo.getImportPot());
                 record.setExportPot(recordVo.getExportPot());
                 record.setExportPotMin(recordVo.getExportPotMin());
-                record.setRecordQty(BigDecimalUtil.add(recordVo.getRecordQty() == null ? 0 : recordVo.getRecordQty(), saveDto.getRecordQty()).floatValue());
-                record.setRecordManualQty(BigDecimalUtil.add(recordVo.getRecordManualQty() == null ? 0 : recordVo.getRecordManualQty(), saveDto.getRecordManualQty()).floatValue());
+                record.setRecordQty(recordVo.getRecordQty().add(saveDto.getRecordQty()));
+                record.setRecordManualQty(recordVo.getRecordManualQty().add(saveDto.getRecordManualQty()));
                 record.setOrderProcessRecordId(recordVo.getOrderProcessRecordId());
                 break;
             } else {
@@ -848,7 +850,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         // recordType(报工类型)为二级品产出，并且recordTypeL2(二级类目类型)：5=使用膜
         if (LichengConstants.PROCESS_NUMBER_LASHENMO.equals(saveDto.getProcessNumber())
                 && (saveDto.getRecordType().equals("2") && "5".equals(saveDto.getRecordTypeL2()))
-                && saveDto.getRecordQty() > 0) {
+                && saveDto.getRecordQty().compareTo(BigDecimal.ZERO) > 0) {
             //拉伸膜工序并且产后报工,合格品产出及AB料产出
             List<Integer> deviceIds = saveDto.getDeviceIds();
             TSysDeviceIot tSysDeviceIot;
@@ -933,8 +935,8 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 record.setImportPot(recordVo.getImportPot());
                 record.setExportPot(recordVo.getExportPot());
                 record.setExportPotMin(recordVo.getExportPotMin());
-                record.setRecordQty(BigDecimalUtil.add(recordVo.getRecordQty() == null ? 0 : recordVo.getRecordQty(), saveDto.getRecordQty()).floatValue());
-                record.setRecordManualQty(BigDecimalUtil.add(recordVo.getRecordManualQty() == null ? 0 : recordVo.getRecordManualQty(), saveDto.getRecordManualQty()).floatValue());
+                record.setRecordQty(recordVo.getRecordQty().add(saveDto.getRecordQty()));
+                record.setRecordManualQty(recordVo.getRecordManualQty().add(saveDto.getRecordManualQty()));
                 record.setOrderProcessRecordId(recordVo.getOrderProcessRecordId());
                 break;
             } else {
@@ -994,7 +996,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         // 获取设备采集时间：拉伸膜工序并且产后报工,合格品产出及AB料产出
         if (LichengConstants.PROCESS_NUMBER_LASHENMO.equals(saveDto.getProcessNumber())
                 && (saveDto.getRecordType().equals("3"))
-                && saveDto.getRecordQty() > 0) {
+                && saveDto.getRecordQty().compareTo(BigDecimal.ZERO) > 0) {
             List<Integer> deviceIds = saveDto.getDeviceIds();
             TSysDeviceIot tSysDeviceIot;
             for (Integer deviceId : deviceIds) {
@@ -1089,8 +1091,8 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 record.setImportPot(recordVo.getImportPot());
                 record.setExportPot(recordVo.getExportPot());
                 record.setExportPotMin(recordVo.getExportPotMin());
-                record.setRecordQty(BigDecimalUtil.add(recordVo.getRecordQty() == null ? 0 : recordVo.getRecordQty(), saveDto.getRecordQty()).floatValue());
-                record.setRecordManualQty(BigDecimalUtil.add(recordVo.getRecordManualQty() == null ? 0 : recordVo.getRecordManualQty(), saveDto.getRecordManualQty()).floatValue());
+                record.setRecordQty(recordVo.getRecordQty().add(saveDto.getRecordQty()));
+                record.setRecordManualQty(recordVo.getRecordManualQty().add(saveDto.getRecordManualQty()));
                 record.setOrderProcessRecordId(recordVo.getOrderProcessRecordId());
                 break;
             } else {
@@ -1194,8 +1196,8 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 record.setImportPot(recordVo.getImportPot());
                 record.setExportPot(recordVo.getExportPot());
                 record.setExportPotMin(recordVo.getExportPotMin());
-                record.setRecordQty(BigDecimalUtil.add(recordVo.getRecordQty() == null ? 0 : recordVo.getRecordQty(), saveDto.getRecordQty()).floatValue());
-                record.setRecordManualQty(BigDecimalUtil.add(recordVo.getRecordManualQty() == null ? 0 : recordVo.getRecordManualQty(), saveDto.getRecordManualQty()).floatValue());
+                record.setRecordQty(recordVo.getRecordQty().add(saveDto.getRecordQty()));
+                record.setRecordManualQty(recordVo.getRecordManualQty().add(saveDto.getRecordManualQty()));
                 record.setOrderProcessRecordId(recordVo.getOrderProcessRecordId());
                 break;
             } else {
@@ -1305,8 +1307,8 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 record.setImportPot(recordVo.getImportPot());
                 record.setExportPot(recordVo.getExportPot());
                 record.setExportPotMin(recordVo.getExportPotMin());
-                record.setRecordQty(BigDecimalUtil.add(recordVo.getRecordQty() == null ? 0 : recordVo.getRecordQty(), saveDto.getRecordQty()).floatValue());
-                record.setRecordManualQty(BigDecimalUtil.add(recordVo.getRecordManualQty() == null ? 0 : recordVo.getRecordManualQty(), saveDto.getRecordManualQty()).floatValue());
+                record.setRecordQty(recordVo.getRecordQty().add(saveDto.getRecordQty()));
+                record.setRecordManualQty(recordVo.getRecordManualQty().add(saveDto.getRecordManualQty()));
                 record.setOrderProcessRecordId(recordVo.getOrderProcessRecordId());
                 break;
             } else {
@@ -1408,7 +1410,9 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             } catch (NumberFormatException e) {
                 throw new RuntimeException("获取转换A参数发生异常");
             }
-            float recordQtyBz = BigDecimalUtil.format(saveDto.getRecordQty() * aParam, 0);//取整 2022-07-23
+            // BigDecimal recordQtyBz = BigDecimalUtil.format(saveDto.getRecordQty().floatValue() * aParam, 0);//取整 2022-07-23
+            BigDecimal recordQtyBz = saveDto.getRecordQty().multiply(BigDecimal.valueOf(aParam))
+                            .setScale(0, RoundingMode.HALF_UP);
             //判断下道工序为包装
             TSysProcessInfo processInfoBz2 = craftInfoService.getCraftNextProcessInfo(tBusOrderHead.getCraftId().getCraftId(), saveDto.getProcessId());
             if (processInfoBz2 == null || processInfoBz2.getProcessNumber().equals(LichengConstants.PROCESS_NUMBER_BAOZHUANG)) {

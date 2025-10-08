@@ -460,7 +460,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         saveDto.setRecordType(LichengConstants.ORDER_RECORD_TYPE_5);
         saveDto.setRecordTypeBg("REPORTYPE0001");
         Map map = orderProcessRecordRepository.sumQtyAndUnit(orderProcessId);
-        saveDto.setRecordQty(Float.parseFloat(String.valueOf(map.get("record_qty"))));
+        saveDto.setRecordQty(BigDecimal.valueOf(Float.parseFloat(String.valueOf(map.get("record_qty")))));
         saveDto.setRecordUnit(String.valueOf(map.get("record_unit")));
         appOrderProcessRecordSubmitService.submit(saveDto, userId);
     }
@@ -608,16 +608,16 @@ public class OrderHeadServiceImpl implements OrderHeadService {
 //        float realPrdQty1 = 0f;//原辅料数量(累计)
         String recordUnit1 = "";//原辅料报工单位
         String recordUnitStr1 = "";//原辅料报工单位
-        float realPrdQty2 = 0f;//二级品数量
+        BigDecimal realPrdQty2 = BigDecimal.ZERO;//二级品数量
         String recordUnit2 = "";//二级品单位
         String recordUnitStr2 = "";//二级品单位
-        float realPrdQty3 = 0f;//产后数量
+        BigDecimal realPrdQty3 = BigDecimal.ZERO;//产后数量
         String recordUnit3 = "";//产后单位
         String recordUnitStr3 = "";//产后单位
         float capacityQty = 0f;//产能数量
         String capacityUnit = "";//产能单位
         String capacityUnitStr = "";//产能单位
-        float productManualQty = 0f;//产后数量（手动输入）
+        BigDecimal productManualQty = BigDecimal.ZERO;//产后数量（手动输入）
         String productManualUnit = "";//产后单位（手动输入）
         String productManualUnitStr = "";//产后单位（手动输入）
         //原辅材料除了包装工序是非重量单位，其他工序都是，所以包装是不同展示原辅料这个的数量
@@ -630,7 +630,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         float reportSymQty = 0f;//剩余膜重量
         String reportSymUnit = "";//剩余膜重量单位
         String reportSymUnitStr = "";//剩余膜重量单位
-        float ungradedWasteQty = 0f;//废品累计数
+        BigDecimal ungradedWasteQty = BigDecimal.ZERO;//废品累计数
         String ungradedWasteUnit = "";//废品累计数单位
         String ungradedWasteUnitStr = "";//废品累计数单位
 
@@ -645,7 +645,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             if (orderProcessRecord.getRecordType() == null) {
             } else if (orderProcessRecord.getRecordType().equals("1")) {//原辅料报工
 //                realPrdQty1 += orderProcessRecord.getRecordQty();//累计不同原辅料
-                realPrdQty1BD = realPrdQty1BD.add(new BigDecimal(orderProcessRecord.getRecordQty()));
+                realPrdQty1BD = realPrdQty1BD.add(orderProcessRecord.getRecordQty());
                 recordUnit1 = orderProcessRecord.getRecordUnit();
                 recordUnitStr1 = recordUnitName;
                 //拉伸膜重量，按工序为拉伸膜，原辅料数量合计（同rowQty）
@@ -660,11 +660,11 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                     //二级类目类型（二级类目编码）:1=废膜，2=剩余膜、3=袋装，4=桶装
                     if (orderProcessRecord.getRecordTypeL2() == null) {
                     } else if (orderProcessRecord.getRecordTypeL2().equals("1")) {
-                        reportFmQty = orderProcessRecord.getRecordQty();
+                        reportFmQty = orderProcessRecord.getRecordQty().floatValue();
                         reportFmUnit = recordUnit1;
                         reportFmUnitStr = recordUnitStr1;
                     } else if (orderProcessRecord.getRecordTypeL2().equals("2")) {
-                        reportSymQty = orderProcessRecord.getRecordQty();
+                        reportSymQty = orderProcessRecord.getRecordQty().floatValue();
                         reportSymUnit = recordUnit1;
                         reportSymUnitStr = recordUnitStr1;
                     }
@@ -672,21 +672,21 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             } else if (orderProcessRecord.getRecordType().equals("2")) {//二级品报工
                 if (StringUtils.isNotEmpty(orderProcessRecord.getMaterialName())) {
                     if (RECORDTYPEL20001.equals(orderProcessRecord.getMaterialName()) || RECORDTYPEL20002.equals(orderProcessRecord.getMaterialName())) {
-                        realPrdQty2 += orderProcessRecord.getRecordQty();
+                        realPrdQty2 = realPrdQty2.add(orderProcessRecord.getRecordQty());
                         recordUnit2 = orderProcessRecord.getRecordUnit();
                         recordUnitStr2 = recordUnitName;
                     } else if (RECORDTYPEL20003.equals(orderProcessRecord.getMaterialName())) {
-                        ungradedWasteQty += orderProcessRecord.getRecordQty();
+                        ungradedWasteQty = ungradedWasteQty.add(orderProcessRecord.getRecordQty());
                         ungradedWasteUnit = orderProcessRecord.getRecordUnit();
                         ungradedWasteUnitStr = recordUnitName;
                     }
                 }
             } else if (orderProcessRecord.getRecordType().equals("3")) {//产后报工
                 //工序实际产量:从"报工/盘点结果表"获取工序产后重量。
-                realPrdQty3 = BigDecimalUtil.add(realPrdQty3, orderProcessRecord.getRecordQty()).floatValue();
+                realPrdQty3 = realPrdQty3.add(orderProcessRecord.getRecordQty());
                 recordUnit3 = orderProcessRecord.getRecordUnit();
                 recordUnitStr3 = recordUnitName;
-                orderProcessVo.setUnFinishQty(bodyPlanPrdQty.subtract(new BigDecimal(realPrdQty3)).floatValue());//未完成数量：计划生产数量-工序实际产量
+                orderProcessVo.setUnFinishQty(bodyPlanPrdQty.subtract(realPrdQty3).floatValue());//未完成数量：计划生产数量-工序实际产量
                 orderProcessVo.setUnFinishUnit(bodyUnit);//未完成单位
                 orderProcessVo.setUnFinishUnitStr(GlobalConstant.getCodeDscName("UNIT0000", bodyUnit));//未完成单位
                 if (orderProcessRecord.getCapacityQty() != null) {
@@ -695,7 +695,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                     capacityUnitStr = GlobalConstant.getCodeDscName("UNIT0000", orderProcessRecord.getCapacityUnit());
                 }
                 if (orderProcessRecord.getRecordManualQty() != null) {
-                    productManualQty = BigDecimalUtil.add(productManualQty, orderProcessRecord.getRecordManualQty()).floatValue();
+                    productManualQty = productManualQty.add(orderProcessRecord.getRecordManualQty());
                     productManualUnit = orderProcessRecord.getRecordUnit();
                     productManualUnitStr = GlobalConstant.getCodeDscName("UNIT0000", orderProcessRecord.getRecordUnit());
                 }
@@ -720,16 +720,16 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             orderProcessRecordDtlVo.setRowQty(-1f);
         }
         //二级品数量
-        orderProcessRecordDtlVo.setUngradedQty(realPrdQty2);
+        orderProcessRecordDtlVo.setUngradedQty(realPrdQty2.floatValue());
         orderProcessRecordDtlVo.setUngradedUnit(recordUnit2);
         orderProcessRecordDtlVo.setUngradedUnitStr(recordUnitStr2);
         //产后数量
-        orderProcessRecordDtlVo.setProductQty(realPrdQty3);
+        orderProcessRecordDtlVo.setProductQty(realPrdQty3.floatValue());
         orderProcessRecordDtlVo.setProductUnit(recordUnit3);
         orderProcessRecordDtlVo.setProductUnitStr(recordUnitStr3);
         //产后数量（手动输入）
         if (PROCESS_NUMBER_LASHENMO.equals(processNumber) || PROCESS_NUMBER_BAOZHUANG.equals(processNumber)) {//拉伸膜、包装
-            orderProcessRecordDtlVo.setProductManualQty(productManualQty);
+            orderProcessRecordDtlVo.setProductManualQty(productManualQty.floatValue());
             orderProcessRecordDtlVo.setProductManualUnit(productManualUnit);
             orderProcessRecordDtlVo.setProductManualUnitStr(productManualUnitStr);
         } else {
@@ -737,13 +737,13 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         }
         /* 按工序来汇总的字段，不按移交的班别 */
         //AB料累计数、废品累计数（二级品数量）,按工序来汇总
-        orderProcessVo.setUngradedAbQty(BigDecimalUtil.add(realPrdQty2, orderProcessVo.getUngradedAbQty()).floatValue());
+        orderProcessVo.setUngradedAbQty(BigDecimalUtil.add(realPrdQty2.doubleValue(), orderProcessVo.getUngradedAbQty()).floatValue());
         orderProcessVo.setUngradedAbUnit(recordUnit2);
         orderProcessVo.setUngradedAbUnitStr(recordUnitStr2);
-        orderProcessVo.setUngradedWasteQty(BigDecimalUtil.add(ungradedWasteQty, orderProcessVo.getUngradedWasteQty()).floatValue());
+        orderProcessVo.setUngradedWasteQty(BigDecimalUtil.add(ungradedWasteQty.doubleValue(), orderProcessVo.getUngradedWasteQty()).floatValue());
         orderProcessVo.setUngradedWasteUnit(ungradedWasteUnit);
         orderProcessVo.setUngradedWasteUnitStr(ungradedWasteUnitStr);
-        orderProcessVo.setTotalProductQty(BigDecimalUtil.add(realPrdQty3, orderProcessVo.getTotalProductQty()).floatValue());
+        orderProcessVo.setTotalProductQty(BigDecimalUtil.add(realPrdQty3.doubleValue(), orderProcessVo.getTotalProductQty()).floatValue());
         //合格完成率、总的完成率: 合格完成率=合格品产后报工数量/（合格品产后报工数量+二级品产后报工数量）、 总的完成率=合格品产后报工数量/计划生产数量--废弃
         //合格完成率=合格品产后报工数量/计划生产数量，保留两位小数，单位% 任务12816 2022-07-13
         //合格品完成率要先除以一个每件支数：合格完成率=合格品产后报工数量/每件支数/计划生产数量*100% 2023-04-17 锦江 --废弃
@@ -861,7 +861,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 //报工结果表
                 float realPrdQty1 = 0l;//原辅料数量(累计)
                 float realPrdQty2 = 0l;//二级品数量
-                float realPrdQty3 = 0l;//产后数量
+                BigDecimal realPrdQty3 = BigDecimal.ZERO;//产后数量
                 //原辅材料除了包装工序是非重量单位，其他工序都是，所以包装是不同展示原辅料这个的数量
                 String recordUnit1 = "";//原辅料报工单位
                 orderTransferRecordVoList = new ArrayList<>();
@@ -875,7 +875,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                     orderTransferRecordVo.setMaterialId(orderProcessRecord.getMaterialId());
                     orderTransferRecordVo.setMaterialNumber(orderProcessRecord.getMaterialNumber());
                     orderTransferRecordVo.setMaterialName(orderProcessRecord.getMaterialName());
-                    orderTransferRecordVo.setQty(orderProcessRecord.getRecordQty());
+                    orderTransferRecordVo.setQty(orderProcessRecord.getRecordQty().floatValue());
                     orderTransferRecordVo.setUnit(orderProcessRecord.getRecordUnit());
                     orderTransferRecordVo.setUnitStr(GlobalConstant.getCodeDscName("UNIT0000", orderProcessRecord.getRecordUnit()));
                     orderTransferRecordVo.setReportTime(Utils.formatDateTimeToString(orderProcessRecord.getReportTime()));//盘点时间||报工时间
@@ -895,7 +895,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                         realPrdQty3 = orderProcessRecordBG.getRecordQty();
                     }
                 }
-                orderTransferVo.setActualQty(new BigDecimal(realPrdQty3));//实际产量=每道工序的产后报工数据
+                orderTransferVo.setActualQty(realPrdQty3);//实际产量=每道工序的产后报工数据
                 orderTransferVo.setUnPrdQty(orderTransferVo.getPrdQty().subtract(orderTransferVo.getActualQty()));//未生产=预期产量-实际产量
                 orderTransferVo.setOrderTransferRecordVoList(orderTransferRecordVoList);
                 orderTransferVoList.add(orderTransferVo);
@@ -962,14 +962,14 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                 for (var orderProcessRecordBG : orderProcessRecordListBG) {
                     if (orderProcessRecordBG.getRecordType().equals("3")) {//产后报工
                         //工序实际产量:从"报工/盘点结果表"获取工序产后重量。
-                        realPrdQty3 = orderProcessRecordBG.getRecordQty();
+                        realPrdQty3 = orderProcessRecordBG.getRecordQty().floatValue();
                     }
                 }
                 orderTransferRecordVo = new OrderTransferRecordVo();
                 orderTransferRecordVo.setMaterialId(orderProcessRecord.getMaterialId());
                 orderTransferRecordVo.setMaterialNumber(orderProcessRecord.getMaterialNumber());
                 orderTransferRecordVo.setMaterialName(orderProcessRecord.getMaterialName());
-                orderTransferRecordVo.setQty(orderProcessRecord.getRecordQty());
+                orderTransferRecordVo.setQty(orderProcessRecord.getRecordQty().floatValue());
                 orderTransferRecordVo.setUnit(orderProcessRecord.getRecordUnit());
                 orderTransferRecordVo.setUnitStr(GlobalConstant.getCodeDscName("UNIT0000", orderProcessRecord.getRecordUnit()));
                 orderTransferRecordVo.setReportTime(Utils.formatDateTimeToString(orderProcessRecord.getReportTime()));//盘点时间||报工时间
@@ -1178,7 +1178,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         if (bySetExport.equals(GlobalConstant.enableTrue)) {
             List<TBusOrderProcessRecord> tBusOrderProcessRecords = orderProcessRecordRepository.findByExport(tBusOrderProcess.getOrderProcessId());
             if (tBusOrderProcessRecords.isEmpty()) {
-                throw new RuntimeException("请先进行合格品产出报工！");
+                throw new RuntimeException("请先进行产成品产出报工！");
             }
         }
         if (null == tBusOrderProcess) {

@@ -34,6 +34,8 @@ import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.ClassPersonnelReposi
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -207,7 +209,7 @@ public class OrderInventoryServiceImpl implements OrderInventoryService {
             List<TBusOrderProcessHistory> pdHistories = orderProcessHistoryRepository.findAllByOrderProcessIdAndBusTypeOrderByOrderProcessHistoryIdDesc(saveDto.getOrderProcessId(), "PD");
             if (isRepeat != null && isRepeat == 0) {
 
-                if (pdHistories.get(0).getMaterialName().equals(saveDto.getMaterialName()) && Math.abs(pdHistories.get(0).getRecordQty() - saveDto.getRecordQty()) <= 0) {
+                if (pdHistories.get(0).getMaterialName().equals(saveDto.getMaterialName()) && Math.abs(pdHistories.get(0).getRecordQty().subtract(saveDto.getRecordQty()).floatValue()) <= 0) {
                     return ResultUtil.error(10002, "与上次盘点数量一致，确定重复盘点？");
                 }
             }
@@ -224,7 +226,7 @@ public class OrderInventoryServiceImpl implements OrderInventoryService {
                                 deleteList.add(tBusOrderProcessHistory);
                                 record.setRecordQty(saveDto.getRecordQty());
                             } else {
-                                record.setRecordQty(saveDto.getRecordQty() + record.getRecordQty());
+                                record.setRecordQty(saveDto.getRecordQty().add(record.getRecordQty()));
                                 history.setStockCount(size);
                             }
                         }
@@ -242,14 +244,14 @@ public class OrderInventoryServiceImpl implements OrderInventoryService {
                 //退出盘点界面后再次盘点
                 history.setStockCount(isFirst);
                 TBusOrderProcessRecord record = processRecord;
-                record.setRecordQty(saveDto.getRecordQty() + record.getRecordQty());
+                record.setRecordQty(saveDto.getRecordQty().add(record.getRecordQty()));
                 record.setBusType("PD");
                 record.setReportTime(new Date());
                 orderProcessRecordRepository.save(record);
                 history.setOrderProcessRecordId(record.getOrderProcessRecordId());//记录报工结果表id
             } else {
                 TBusOrderProcessRecord record = processRecord;
-                record.setRecordQty(saveDto.getRecordQty() + record.getRecordQty());
+                record.setRecordQty(saveDto.getRecordQty().add(record.getRecordQty()));
                 record.setBusType("PD");
                 record.setReportTime(new Date());
                 orderProcessRecordRepository.save(record);
@@ -367,8 +369,8 @@ public class OrderInventoryServiceImpl implements OrderInventoryService {
         for (OrderProcessHistoryVo history : histories) {
             if (map.containsKey(history.getMaterialName())) {
                 OrderProcessRecordVo recordVo = map.get(history.getMaterialName());
-                recordVo.setRecordQty(recordVo.getRecordQty() + history.getRecordQty());
-                recordVo.setRecordQty(BigDecimalUtil.format(recordVo.getRecordQty(), 2));
+                recordVo.setRecordQty(recordVo.getRecordQty().add(history.getRecordQty()));
+                recordVo.setRecordQty(recordVo.getRecordQty().setScale(2, RoundingMode.HALF_UP));
             } else {
                 OrderProcessRecordVo recordVo = new OrderProcessRecordVo();
                 BeanUtils.copyProperties(history, recordVo);
@@ -483,13 +485,13 @@ public class OrderInventoryServiceImpl implements OrderInventoryService {
                 }
                 //合格品产后报工数量
                 if ("3".equals(record.getRecordType())) {
-                    totalQty = totalQty + record.getRecordQty();
+                    totalQty = totalQty + record.getRecordQty().floatValue();
                 }
                 if (StringUtils.isNotEmpty(record.getMaterialName())) {
                     if (RECORDTYPEL20001.equals(record.getMaterialName()) || RECORDTYPEL20002.equals(record.getMaterialName())) {
-                        realPrdQty2 += record.getRecordQty();
+                        realPrdQty2 += record.getRecordQty().floatValue();
                     } else if (RECORDTYPEL20003.equals(record.getMaterialName())) {
-                        ungradedWasteQty += record.getRecordQty();
+                        ungradedWasteQty += record.getRecordQty().floatValue();
                     }
                 }
             }
@@ -617,7 +619,7 @@ public class OrderInventoryServiceImpl implements OrderInventoryService {
         orderProcessHistoryRepository.saveAndFlush(tBusOrderProcessHistory);
         Integer orderProcessRecordId = tBusOrderProcessHistory.getOrderProcessRecordId();
         TBusOrderProcessRecord tBusOrderProcessRecord = orderProcessRecordRepository.findById(orderProcessRecordId).orElse(null);
-        tBusOrderProcessRecord.setRecordQty(tBusOrderProcessRecord.getRecordQty() - tBusOrderProcessHistory.getRecordQty());
+        tBusOrderProcessRecord.setRecordQty(tBusOrderProcessRecord.getRecordQty().subtract(tBusOrderProcessHistory.getRecordQty()));
         orderProcessRecordRepository.saveAndFlush(tBusOrderProcessRecord);
     }
 }

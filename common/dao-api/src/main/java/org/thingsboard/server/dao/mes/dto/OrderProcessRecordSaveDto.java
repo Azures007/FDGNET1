@@ -3,6 +3,7 @@ package org.thingsboard.server.dao.mes.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -41,7 +42,7 @@ public class OrderProcessRecordSaveDto {
     private String recordUnit;
 
     @ApiModelProperty("盘点数量")
-    private Float recordQty;
+    private BigDecimal recordQty;
 
 //    @ApiModelProperty("盘点数量(手工输入)")
 //    private Float recordManualQty = 0f;

@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 /**
  * @author hhh
@@ -59,7 +60,7 @@ public class TBusOrderPPBom {
 
     @ApiModelProperty("应发数量，即为计划投入量")
     @Column(name = "must_qty")
-    private Double mustQty;
+    private BigDecimal mustQty;
 
     @ApiModelProperty("ERP生产用料清单id")
     @Column(name = "erp_ppbom_id")

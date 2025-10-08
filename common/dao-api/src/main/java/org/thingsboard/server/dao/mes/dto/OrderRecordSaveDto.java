@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.Column;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -45,10 +46,10 @@ public class OrderRecordSaveDto {
     private String recordUnit;
 
     @ApiModelProperty("报工数量")
-    private Float recordQty;
+    private BigDecimal recordQty;
 
     @ApiModelProperty("报工数量(手工输入)")
-    private Float recordManualQty = 0f;
+    private BigDecimal recordManualQty = BigDecimal.ZERO;
 
     @ApiModelProperty("物料ID")
     private Integer materialId;

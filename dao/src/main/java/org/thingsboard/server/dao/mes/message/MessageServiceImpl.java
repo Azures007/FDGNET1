@@ -176,11 +176,11 @@ public class MessageServiceImpl implements MessageService {
             for (TBusOrderProcessRecord record : orderProcessRecordList) {
                 if (record.getRecordTypeL2() == null) {
                 } else if (record.getRecordTypeL2().equals("1")) {
-                    wasteFilm += record.getRecordQty();
+                    wasteFilm += record.getRecordQty().floatValue();
                     reportFmUnit=record.getRecordUnit();
                 }
                 if(LichengConstants.RECORDTYPEL20000_5.equals(record.getMaterialName())){
-                    useFilm+=record.getRecordQty();
+                    useFilm+=record.getRecordQty().floatValue();
                     reportUseUnit=record.getRecordUnit();
                 }
             };
@@ -243,11 +243,11 @@ public class MessageServiceImpl implements MessageService {
                 for (TBusOrderProcessRecord record : orderProcessRecordList) {
                     if (record.getRecordTypeL2() == null) {
                     } else if (record.getRecordTypeL2().equals("1")) {
-                        wasteFilm += record.getRecordQty();
+                        wasteFilm += record.getRecordQty().floatValue();
                         reportFmUnit=record.getRecordUnit();
                     }
                     if(LichengConstants.RECORDTYPEL20000_5.equals(record.getMaterialName())){
-                        useFilm+=record.getRecordQty();
+                        useFilm+=record.getRecordQty().floatValue();
                         reportUseUnit=record.getRecordUnit();
                     }
                 };
