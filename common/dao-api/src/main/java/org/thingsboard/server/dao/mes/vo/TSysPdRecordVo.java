@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 
 /**
@@ -99,5 +100,9 @@ public class TSysPdRecordVo {
 
     @ApiModelProperty("是否还原")
     private String isReturn;
+
+    @ApiModelProperty("产线")
+    @Column(name = "nc_vwkname")
+    private String ncVwkname;
 
 }

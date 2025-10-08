@@ -119,4 +119,8 @@ public class TSysPdRecordSplit {
     @Column(name = "pd_time_str")
     @ApiModelProperty("盘点日期（格式yyyy-MM-dd）")
     private String pdTimeStr;
+
+    @ApiModelProperty("产线")
+    @Column(name = "nc_vwkname")
+    private String ncVwkname;
 }

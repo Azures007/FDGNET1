@@ -12,14 +12,15 @@ public interface YcPdService {
      * 保存盘点记录
      * @param tSysPdRecord
      */
-    TSysPdRecord savePd(TSysPdRecord tSysPdRecord);
+    TSysPdRecord savePd(TSysPdRecord tSysPdRecord, String userId);
 
     /**
      * 盘点物料列表
      * @param pdMaterialsDto
+     * @param userId
      * @return
      */
-    List<NcInventory> pdMaterials(PdMaterialsDto pdMaterialsDto);
+    List<NcInventory> pdMaterials(PdMaterialsDto pdMaterialsDto, String userId);
 
     /**
      * 复盘记录列表

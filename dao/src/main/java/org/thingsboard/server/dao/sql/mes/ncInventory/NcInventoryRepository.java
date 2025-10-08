@@ -20,7 +20,7 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
             ",CASE WHEN cou>0  THEN 1 ELSE 0 END AS by_pd " +
             "from t_bus_inventory a \n" +
             "left join (select material_number ,count(material_number) cou from t_sys_pd_record " +
-            "where pd_time_str=:#{#pdMaterialsDto.pdTimeStr} and by_deleted='0' group by material_number) b " +
+            "where pd_time_str=:#{#pdMaterialsDto.pdTimeStr} and by_deleted='0' and nc_vwkname=:#{#pdMaterialsDto.vwkname} group by material_number) b " +
             "on a.material_code=b.material_number " +
             "where a.status ='生效' \n" +
             "and (a.warehouse_id=:#{#pdMaterialsDto.warehouseCode} or a.warehouse_code=:#{#pdMaterialsDto.warehouseCode})" +

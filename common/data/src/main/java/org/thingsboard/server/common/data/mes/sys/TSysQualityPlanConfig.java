@@ -82,4 +82,8 @@ public class TSysQualityPlanConfig {
     @Column(name = "update_user")
     private String updateUser;
 
+    @ApiModelProperty("备注")
+    @Column(name = "remarks",nullable = true)
+    private String remarks;
+
 }

@@ -23,8 +23,9 @@ public class YcPdAppController extends BaseController {
 
     @PostMapping("/pdMaterials")
     @ApiOperation("盘点物料列表")
-    public ResponseResult<List<NcInventory>> pdMaterials(@RequestBody PdMaterialsDto pdMaterialsDto){
-        List<NcInventory> ncInventories=ycPdService.pdMaterials(pdMaterialsDto);
+    public ResponseResult<List<NcInventory>> pdMaterials(@RequestBody PdMaterialsDto pdMaterialsDto) throws ThingsboardException {
+        SecurityUser currentUser = getCurrentUser();
+        List<NcInventory> ncInventories=ycPdService.pdMaterials(pdMaterialsDto, currentUser.getId().getId().toString());
         return ResultUtil.success(ncInventories);
     }
 
@@ -38,8 +39,9 @@ public class YcPdAppController extends BaseController {
 
     @ApiOperation("保存盘点记录")
     @PostMapping("/savePd")
-    public ResponseResult savePd(@RequestBody TSysPdRecord tSysPdRecord){
-        TSysPdRecord tSysPdRecord1=ycPdService.savePd(tSysPdRecord);
+    public ResponseResult savePd(@RequestBody TSysPdRecord tSysPdRecord)throws ThingsboardException{
+        SecurityUser currentUser = getCurrentUser();
+        TSysPdRecord tSysPdRecord1=ycPdService.savePd(tSysPdRecord,currentUser.getId().getId().toString());
         return ResultUtil.success(tSysPdRecord1);
     }
 

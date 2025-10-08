@@ -25,5 +25,8 @@ public class PdMaterialsDto {
     @ApiModelProperty("当天盘点日期")
     private String pdTimeStr;
 
+    @ApiModelProperty("产线名称")
+    private String vwkname;
+
 
 }

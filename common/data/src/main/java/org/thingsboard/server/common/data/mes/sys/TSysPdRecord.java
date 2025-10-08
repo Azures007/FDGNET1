@@ -109,6 +109,7 @@ public class TSysPdRecord {
     @ApiModelProperty("班长")
     @Column(name = "group_leader")
     private String groupLeader;
-
-
+    @ApiModelProperty("产线")
+    @Column(name = "nc_vwkname")
+    private String ncVwkname;
 }
