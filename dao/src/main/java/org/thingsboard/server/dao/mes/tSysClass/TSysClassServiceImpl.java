@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -39,6 +41,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class TSysClassServiceImpl implements TSysClassService {
+
+    protected final Log logger = LogFactory.getLog(this.getClass());
+
     @Autowired
     TSysClassRepository tSysClassRepository;
 
@@ -412,7 +417,8 @@ public class TSysClassServiceImpl implements TSysClassService {
         if (map == null || map.size() == 0) {
             map = tSysClassRepository.getUserClass2(userId);
             if (map == null || map.size() == 0) {
-                throw new RuntimeException("用户班别信息不存在");
+//                throw new RuntimeException("用户班别信息不存在");
+                logger.warn("用户班别信息不存在，友臣不需要校验提示！");
             }
         }
         userClassVo = new UserClassVo();
