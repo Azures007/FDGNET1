@@ -40,6 +40,6 @@ public class UserStatusVo {
 
     @ApiModelProperty("仓库")
     List<NcWarehouse> ncWarehouses;
-
-
+    @ApiModelProperty("产线")
+    private String ncVwkname;
 }

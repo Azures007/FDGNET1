@@ -511,6 +511,10 @@ public class UserController extends BaseController {
         SecurityUser currentUser = getCurrentUser();
         UserStatusVo userVo = new UserStatusVo();
         String useId = currentUser.getId().getId().toString();
+        String cwkid =userService.getUserCurrentCwkid(useId);
+        String pkOrg = userService.getUserCurrentPkOrg(useId);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(useId,pkOrg,cwkid);
+        userVo.setNcWarehouses(ncWarehouses);
         userVo.setUseId(useId);
         userVo.setUsername(currentUser.getName());
         userVo.setName(currentUser.getFirstName());
