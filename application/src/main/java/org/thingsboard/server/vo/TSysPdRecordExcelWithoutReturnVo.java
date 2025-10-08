@@ -38,4 +38,7 @@ public class TSysPdRecordExcelWithoutReturnVo extends BaseRowModel {
 
     @ExcelProperty("车间主任")
     private String pdWorkshopLeaderName;
+
+    @ExcelProperty("产线")
+    private String ncVwkname;
 }

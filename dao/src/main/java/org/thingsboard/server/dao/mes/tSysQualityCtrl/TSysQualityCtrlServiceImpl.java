@@ -301,11 +301,11 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
 
     @Override
     public Page<TSysQualityCtrl> tSysQualityCtrlCheckList(String userId,Integer current, Integer size, String sortField, String sortOrder) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        // 默认按状态升序、创建时间降序排列（未复核的在前）
+        Sort sort = Sort.by(Sort.Direction.ASC, "status").and(Sort.by(Sort.Direction.DESC, "createTime"));
         String cwkid =userService.getUserCurrentCwkid(userId);
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))) {
-            String converterSortField = StringConverterUtil.camelToSnake(sortField);
-            sort = Sort.by(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, converterSortField);
+            sort = Sort.by(Sort.Direction.ASC, "status").and(Sort.by(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortField));
         }
 
         Pageable pageable = PageRequest.of(current, size, sort);
