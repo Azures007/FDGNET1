@@ -32,6 +32,7 @@
         <th>检查项目</th>
         <th>关键工序</th>
         <th>监控方法</th>
+        <th>备注</th>
         <th>品名</th>
         <th *ngFor="let item of fieldNames">{{item.codeDsc}}</th>
       </tr>
@@ -59,6 +60,11 @@
         <td>
           <div>
             {{ item.monitoringMethodName }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ item.remarks || '-' }}
           </div>
         </td>
         <td *ngFor="let arrItem of getArray(); let n = index" class="padding-none">
