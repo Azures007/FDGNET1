@@ -21,7 +21,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +45,7 @@ import org.thingsboard.server.common.data.security.model.JwtToken;
 import org.thingsboard.server.common.data.security.model.SecuritySettings;
 import org.thingsboard.server.common.data.security.model.UserPasswordPolicy;
 import org.thingsboard.server.dao.audit.AuditLogService;
+import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.queue.util.TbCoreComponent;
 import org.thingsboard.server.service.security.auth.jwt.RefreshTokenRepository;
 import org.thingsboard.server.service.security.auth.rest.RestAuthenticationDetails;
@@ -68,6 +72,9 @@ public class AuthController extends BaseController {
     private final SystemSecurityService systemSecurityService;
     private final AuditLogService auditLogService;
     private final ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @ApiOperation(value = "Get current User (getUser)",
             notes = "Get the information about the User which credentials are used to perform this REST API call.")
@@ -355,6 +362,11 @@ public class AuthController extends BaseController {
             auditLogService.logEntityAction(
                     user.getTenantId(), user.getCustomerId(), user.getId(),
                     user.getName(), user.getId(), null, ActionType.LOGOUT, null, clientAddress, browser, os, device);
+            ValueOperations valueOperations = redisTemplate.opsForValue();
+            String token = request.getHeader(GlobalConstant.TOKEN_KEY);
+            token = token.substring(GlobalConstant.TOKEN_HEARHER.length());
+            redisTemplate.delete(GlobalConstant.LOGIO_REDIS_KEY + user.getId().getId().toString() + ":");
+            redisTemplate.delete(GlobalConstant.LOGIO_REDIS_KEY + user.getId().getId().toString() + ":" + token);
 
         } catch (Exception e) {
             throw handleException(e);
