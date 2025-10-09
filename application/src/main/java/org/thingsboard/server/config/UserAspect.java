@@ -114,7 +114,7 @@ public class UserAspect {
         String tokenKey = request.getHeader(GlobalConstant.TOKEN_KEY);
         tokenKey = tokenKey.substring(GlobalConstant.TOKEN_HEARHER.length());
         //判断token有效性
-        isTokenValid(userId, tokenKey, appKey.equals("0"), response);
+//        isTokenValid(userId, tokenKey, appKey.equals("0"), response);
         //判断是否禁用
         isDisable(userId, appKey.equals("0"), response);
         if (appKey.equals("0")) {

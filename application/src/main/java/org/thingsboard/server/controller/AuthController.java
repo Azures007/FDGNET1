@@ -362,11 +362,11 @@ public class AuthController extends BaseController {
             auditLogService.logEntityAction(
                     user.getTenantId(), user.getCustomerId(), user.getId(),
                     user.getName(), user.getId(), null, ActionType.LOGOUT, null, clientAddress, browser, os, device);
-            ValueOperations valueOperations = redisTemplate.opsForValue();
-            String token = request.getHeader(GlobalConstant.TOKEN_KEY);
-            token = token.substring(GlobalConstant.TOKEN_HEARHER.length());
-            redisTemplate.delete(GlobalConstant.LOGIO_REDIS_KEY + user.getId().getId().toString() + ":");
-            redisTemplate.delete(GlobalConstant.LOGIO_REDIS_KEY + user.getId().getId().toString() + ":" + token);
+//            ValueOperations valueOperations = redisTemplate.opsForValue();
+//            String token = request.getHeader(GlobalConstant.TOKEN_KEY);
+//            token = token.substring(GlobalConstant.TOKEN_HEARHER.length());
+//            redisTemplate.delete(GlobalConstant.LOGIO_REDIS_KEY + user.getId().getId().toString() + ":");
+//            redisTemplate.delete(GlobalConstant.LOGIO_REDIS_KEY + user.getId().getId().toString() + ":" + token);
 
         } catch (Exception e) {
             throw handleException(e);
