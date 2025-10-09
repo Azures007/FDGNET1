@@ -72,9 +72,14 @@ public class YcPdServiceImpl implements YcPdService {
         Integer pdSplit = null;
         tSysPdRecord.setCreatedName(tSysPdRecord.getPdCreatedName());
         // 修改查询逻辑，按产线区分记录
-        TSysPdRecord tSysPdRecord1 = tSysPdRecordRepository.findByGroupAndWorkshop(format,
-                tSysPdRecord.getMaterialNumber(), tSysPdRecord.getPdClassNumber(), tSysPdRecord.getPdType(),
-                cwkName);
+        TSysPdRecord tSysPdRecord1 = null;
+        // 只有当所有必要参数都不为null时才执行查询
+        if (cwkName != null && tSysPdRecord.getMaterialNumber() != null && 
+            tSysPdRecord.getPdClassNumber() != null && tSysPdRecord.getPdType() != null) {
+            tSysPdRecord1 = tSysPdRecordRepository.findByGroupAndWorkshop(format,
+                    tSysPdRecord.getMaterialNumber(), tSysPdRecord.getPdClassNumber(), tSysPdRecord.getPdType(),
+                    cwkName);
+        }
         if (tSysPdRecord1 != null) {
             //统计盘点人
             String pdCreatedName = tSysPdRecord1.getPdCreatedName();
@@ -134,8 +139,10 @@ public class YcPdServiceImpl implements YcPdService {
                 ncInventoryRepository.saveAndFlush(ncInventory);
             }
         }
-        //拆分还原拆料
-        savePdBySplit(tSysPdRecord, pdSplit, cwkName);
+        // 拆分还原拆料
+        if (pdSplit != null) {
+            savePdBySplit(tSysPdRecord, pdSplit, cwkName);
+        }
 
         return tSysPdRecord;
     }

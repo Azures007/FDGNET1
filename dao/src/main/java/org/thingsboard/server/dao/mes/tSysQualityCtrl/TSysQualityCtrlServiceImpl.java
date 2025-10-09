@@ -300,7 +300,7 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
     }
 
     @Override
-    public Page<TSysQualityCtrl> tSysQualityCtrlCheckList(String userId,Integer current, Integer size, String sortField, String sortOrder) {
+    public Page<TSysQualityCtrl> tSysQualityCtrlCheckList(String userId,Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto) {
         // 默认按状态升序、创建时间降序排列（未复核的在前）
         Sort sort = Sort.by(Sort.Direction.ASC, "status").and(Sort.by(Sort.Direction.DESC, "createTime"));
         String cwkid =userService.getUserCurrentCwkid(userId);
@@ -311,8 +311,29 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
         Pageable pageable = PageRequest.of(current, size, sort);
 
         // 假设状态"1"表示"已提交"，需要复核的记录
-        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findByProductionLineIdAndStatusIn(cwkid,List.of("1", "2"), pageable);
-
+        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findAll((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            // 添加状态条件
+            predicates.add(root.get("productionLineId").in(cwkid));
+            predicates.add(root.get("status").in(List.of("1", "2")));
+            if (tSysQualityCtrlDto != null) {
+                if (tSysQualityCtrlDto.getInspectionStartTime() != null) {
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(
+                            root.get("inspectionDate"), tSysQualityCtrlDto.getInspectionStartTime()));
+                }
+                if (tSysQualityCtrlDto.getInspectionEndTime() != null) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(tSysQualityCtrlDto.getInspectionEndTime());
+                    calendar.set(Calendar.HOUR_OF_DAY, 23);
+                    calendar.set(Calendar.MINUTE, 59);
+                    calendar.set(Calendar.SECOND, 59);
+                    calendar.set(Calendar.MILLISECOND, 999);
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(
+                            root.get("inspectionDate"), calendar.getTime()));
+                }
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        }, pageable);
         return tSysQualityCtrlPage;
     }
 }

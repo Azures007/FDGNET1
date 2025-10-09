@@ -66,5 +66,5 @@ public interface TSysQualityCtrlService {
      * 获取质检管控审核列表
      * @return
      */
-    Page<TSysQualityCtrl> tSysQualityCtrlCheckList(String userId,Integer current, Integer size, String sortField, String sortOrder);
+    Page<TSysQualityCtrl> tSysQualityCtrlCheckList(String userId,Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto);
 }
