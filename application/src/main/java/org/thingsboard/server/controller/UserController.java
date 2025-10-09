@@ -515,6 +515,14 @@ public class UserController extends BaseController {
         String pkOrg = userService.getUserCurrentPkOrg(useId);
         List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(useId,pkOrg,cwkid);
         userVo.setNcWarehouses(ncWarehouses);
+        String cwkName = null;
+        if (cwkid != null) {
+            NcWorkline workline = ncWorklineService.findAllByCwkids(Arrays.asList(cwkid)).stream().findFirst().orElse(null);
+            if (workline != null) {
+                cwkName = workline.getVwkname();
+            }
+        }
+        userVo.setNcVwkname(cwkName);
         userVo.setUseId(useId);
         userVo.setUsername(currentUser.getName());
         userVo.setName(currentUser.getFirstName());

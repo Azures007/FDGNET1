@@ -69,6 +69,7 @@ import org.thingsboard.server.dao.entityview.EntityViewService;
 import org.thingsboard.server.dao.exception.DataValidationException;
 import org.thingsboard.server.dao.exception.IncorrectParameterException;
 import org.thingsboard.server.dao.mes.menu.MenuService;
+import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
 import org.thingsboard.server.dao.mes.order.*;
 import org.thingsboard.server.dao.mes.message.MessageService;
 import org.thingsboard.server.dao.model.ModelConstants;
@@ -306,6 +307,9 @@ public abstract class BaseController {
 
     @Autowired
     TSysCodeDscService sysCodeDscService;
+
+    @Autowired
+    NcWorklineService ncWorklineService;
 
     @Value("${server.log_controller_error_stack_trace}")
     @Getter

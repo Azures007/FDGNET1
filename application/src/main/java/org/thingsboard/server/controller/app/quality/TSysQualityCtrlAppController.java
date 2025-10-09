@@ -145,7 +145,7 @@ public class TSysQualityCtrlAppController extends BaseController {
                                                                         @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                         @RequestParam(value = "sortField", defaultValue = "") String sortField,
                                                                         @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
-                                                                        @RequestBody TSysQualityCtrlDto tSysQualityCtrlDto) throws ThingsboardException {
+                                                                        @RequestBody(required = false) TSysQualityCtrlDto tSysQualityCtrlDto) throws ThingsboardException {
         SecurityUser securityUser=getCurrentUser();
         Page<TSysQualityCtrl> qualityCtrlCheckList = tSysQualityCtrlService
                 .tSysQualityCtrlCheckList(securityUser.getId().getId().toString(),current, size, sortField, sortOrder,tSysQualityCtrlDto);
