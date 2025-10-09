@@ -88,4 +88,7 @@ public class OrderRecordVo {
 
     @ApiModelProperty("锅数")
     private Integer potNumber;
+
+    @ApiModelProperty("报工类型：REPORTYPE0001=正常，REPORTYPE0002=尾料")
+    private String recordTypeBg;
 }

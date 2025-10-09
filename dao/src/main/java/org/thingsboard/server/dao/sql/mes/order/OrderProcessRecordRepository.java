@@ -200,7 +200,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
     @Query(value = "select " +
             "a.kd_material_name as lsm_material_name,record.order_process_history_id,info.name personname ,tsc.name class_name ,record.report_time||'' as report_time,tspi.process_name ,record.record_unit,record.record_qty,record.material_id," +
             "record.material_number,record.material_name,record.record_type,COALESCE(record.record_manual_qty,0) record_manual_qty ," +
-            "record.iot_qty,record.iot_math,record.device_person_group_id,record.device_group_id,record.pot_number " +
+            "record.iot_qty,record.iot_math,record.device_person_group_id,record.device_group_id,record.pot_number,record.record_type_bg " +
             "from t_bus_order_process_history record left join t_sys_class tsc on tsc.class_id = record.class_id " +
             "left join t_sys_personnel_info info on record.person_id = info.personnel_id " +
             "left join t_sys_process_info tspi on record.process_id = tspi.process_id " +
