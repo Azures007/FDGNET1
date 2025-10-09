@@ -85,7 +85,8 @@ export class GlobalHttpInterceptor implements HttpInterceptor {
               let url = event.url;
               if (url != 'http://localhost:4200/api/noauth/oauth2Clients?platform=WEB') {
                 let times = parseInt(localStorage.getItem('405_times'));
-                let portI = url.indexOf(myprot) == -1 ? url.indexOf("8080") + myprot.length : url.indexOf(myprot) + myprot.length;
+                const port  = window.location.port;
+                let portI = url.indexOf(port) + port.length;
                 // let portI = url.indexOf(myprot)+ myprot.length;
                 let urlFlag = url.substring(portI, portI + 4);
                 if (urlFlag == '/api') {
