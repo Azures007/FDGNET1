@@ -186,8 +186,9 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                         throw new IllegalArgumentException("当前物料已满足一次投入重量或数量，删除后是否重新提交报工？");
                     }
 
-                    List<TBusOrderProcessHistory> hasOther= orderProcessHistoryRepository.findAllByOrderProcessIdAndPotNumberAndReportStatusAndOrderProcessHistoryIdIsNot(
+                    List<TBusOrderProcessHistory> hasOther= orderProcessHistoryRepository.findAllByOrderProcessIdAndMaterialNumberAndPotNumberAndReportStatusAndOrderProcessHistoryIdIsNot(
                             tBusOrderProcessHistory.getOrderProcessId(),
+                            tBusOrderProcessHistory.getMaterialNumber(),
                             tBusOrderProcessHistory.getPotNumber(),
                             LichengConstants.ORDER_PROCESS_HISTORY_STATUS_0,
                             tBusOrderProcessHistory.getOrderProcessHistoryId());

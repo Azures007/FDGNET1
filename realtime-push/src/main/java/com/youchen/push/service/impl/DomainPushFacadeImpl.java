@@ -134,8 +134,8 @@ public class DomainPushFacadeImpl implements DomainPushFacade {
                 .baseId(base).lineId(line).classId(clazz)
                 .reviewNotificationId(reviewEntity.getId())
                 .build();
-        // 发送到指定基地、产线、角色(JSBM-1051)的用户
-        for (String userId : userClassRepository.findUserIdsByBaseLineAndRole(base, line, "JSBM-1051")) {
+        // 发送到指定基地、产线、角色(JSBM-1004)的用户
+        for (String userId : userClassRepository.findUserIdsByBaseLineAndRole(base, line, "JSBM-1004")) {
             messageCenterService.appendForUser(userId, msg);
             // 同时若在线则推送
             SessionRegistry.getUserChannels(userId).writeAndFlush(new io.netty.handler.codec.http.websocketx.TextWebSocketFrame(com.fasterxml.jackson.databind.json.JsonMapper.builder().build().writeValueAsString(msg)));
@@ -159,7 +159,7 @@ public class DomainPushFacadeImpl implements DomainPushFacade {
                 .baseId(base).lineId(line).classId(clazz)
                 .reviewNotificationId(reviewEntity.getId())
                 .build();
-        for (String userId : userClassRepository.findUserIdsByBaseLineAndRole(base, line, "JSBM-1051")) {
+        for (String userId : userClassRepository.findUserIdsByBaseLineAndRole(base, line, "JSBM-1004")) {
             messageCenterService.appendForUser(userId, msg);
             SessionRegistry.getUserChannels(userId).writeAndFlush(new io.netty.handler.codec.http.websocketx.TextWebSocketFrame(com.fasterxml.jackson.databind.json.JsonMapper.builder().build().writeValueAsString(msg)));
         }

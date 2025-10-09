@@ -215,7 +215,7 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
             "limit 1 offset 0",nativeQuery = true)
     Integer breakHistory(Integer orderProcessId, Integer orderPPBomId);
 
-    List<TBusOrderProcessHistory> findAllByOrderProcessIdAndPotNumberAndReportStatusAndOrderProcessHistoryIdIsNot(Integer orderProcessId, Integer potNumber, String reportStatus, Integer orderProcessHistoryId);
+    List<TBusOrderProcessHistory> findAllByOrderProcessIdAndMaterialNumberAndPotNumberAndReportStatusAndOrderProcessHistoryIdIsNot(Integer orderProcessId,String materialNumber, Integer potNumber, String reportStatus, Integer orderProcessHistoryId);
 
     List<TBusOrderProcessHistory> findByOrderProcessIdAndIsSupplement(Integer orderProcessId, String isSupplement);
 //    @Transactional
