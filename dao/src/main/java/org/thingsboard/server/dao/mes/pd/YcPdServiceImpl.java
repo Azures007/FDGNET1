@@ -73,13 +73,14 @@ public class YcPdServiceImpl implements YcPdService {
         tSysPdRecord.setCreatedName(tSysPdRecord.getPdCreatedName());
         // 修改查询逻辑，按产线区分记录
         TSysPdRecord tSysPdRecord1 = null;
-        // 只有当所有必要参数都不为null时才执行查询
+        // 执行查询，查找相同产线、日期、物料等条件的记录
         if (cwkName != null && tSysPdRecord.getMaterialNumber() != null && 
             tSysPdRecord.getPdClassNumber() != null && tSysPdRecord.getPdType() != null) {
             tSysPdRecord1 = tSysPdRecordRepository.findByGroupAndWorkshop(format,
                     tSysPdRecord.getMaterialNumber(), tSysPdRecord.getPdClassNumber(), tSysPdRecord.getPdType(),
                     cwkName);
         }
+        // 无论是否查询到重复记录，都需要初始化pdSplit变量
         if (tSysPdRecord1 != null) {
             //统计盘点人
             String pdCreatedName = tSysPdRecord1.getPdCreatedName();
@@ -96,6 +97,9 @@ public class YcPdServiceImpl implements YcPdService {
             pdSplit = tSysPdRecord1.getPdRecordId();
             tSysPdRecord1.setByDeleted("1");
             tSysPdRecordRepository.saveAndFlush(tSysPdRecord1);
+        } else {
+            // 如果是首次盘点该物料，直接使用当前记录的ID作为pdSplit
+            pdSplit = tSysPdRecord.getPdRecordId();
         }
 
         if (tSysPdRecord.getPdType().equals("0")) {
@@ -139,10 +143,8 @@ public class YcPdServiceImpl implements YcPdService {
                 ncInventoryRepository.saveAndFlush(ncInventory);
             }
         }
-        // 拆分还原拆料
-        if (pdSplit != null) {
-            savePdBySplit(tSysPdRecord, pdSplit, cwkName);
-        }
+        // 拆分还原拆料 - 修改逻辑，无论是否是重复盘点都需要检查生成还原物料
+        savePdBySplit(tSysPdRecord, pdSplit, cwkName);
 
         return tSysPdRecord;
     }
