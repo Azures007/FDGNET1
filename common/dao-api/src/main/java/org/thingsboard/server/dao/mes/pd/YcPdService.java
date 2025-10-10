@@ -30,7 +30,7 @@ public interface YcPdService {
      */
     List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate,String userId);
 
-    List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber);
+    List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber, String ncVwkname);
 
     /**
      * 自定义盘点物料列表

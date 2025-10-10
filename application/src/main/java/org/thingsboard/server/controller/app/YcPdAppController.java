@@ -57,8 +57,9 @@ public class YcPdAppController extends BaseController {
     @ApiOperation("复盘记录详情列表")
     @GetMapping("/showWorkshopRecord")
     public ResponseResult<List<TSysPdRecord>> showWorkshopRecord(@RequestParam("pdTimeStr") String pdTimeStr,
-                                                                 @RequestParam("pdWorkshopNumber") String pdWorkshopNumber){
-        List<TSysPdRecord> tSysPdRecords=ycPdService.showWorkshopRecord(pdTimeStr,pdWorkshopNumber);
+                                                                 @RequestParam("pdWorkshopNumber") String pdWorkshopNumber,
+                                                                 @RequestParam("ncVwkname") String ncVwkname){
+        List<TSysPdRecord> tSysPdRecords=ycPdService.showWorkshopRecord(pdTimeStr,pdWorkshopNumber,ncVwkname);
         return ResultUtil.success(tSysPdRecords);
     }
 }

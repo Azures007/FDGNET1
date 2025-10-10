@@ -163,15 +163,25 @@ public class YcPdServiceImpl implements YcPdService {
         List<TSyncMaterialBom> tSyncMaterialBoms = syncMaterialBomRepository.findByMaterialNumber(materialNumber);
         if (tSyncMaterialBoms != null && tSyncMaterialBoms.size() > 0) {
             for (TSyncMaterialBom tSyncMaterialBom : tSyncMaterialBoms) {
+                // 确保只有当物料BOM存在且物料存在时才生成还原记录
                 TSyncMaterial tSyncMaterial = syncMaterialRepository.findById(tSyncMaterialBom.getMaterialId()).orElse(null);
-                TSysPdRecordSplit tSysPdRecordSplit = JSON.parseObject(JSON.toJSONString(tSysPdRecord), TSysPdRecordSplit.class);
-                tSysPdRecordSplit.setRePdRecordId(tSysPdRecord.getPdRecordId());
-                tSysPdRecordSplit.setPdQty(tSysPdRecord.getPdQty().multiply(tSyncMaterialBom.getRatio()).doubleValue());
-                tSysPdRecordSplit.setMaterialName(tSyncMaterialBom.getMaterialName());
-                tSysPdRecordSplit.setMaterialNumber(tSyncMaterial.getMaterialCode());
-                tSysPdRecordSplit.setMaterialSpecifications(tSyncMaterial.getMaterialModel());
-                tSysPdRecordSplit.setNcVwkname(cwkName);
-                tSysPdRecordSplitRepository.save(tSysPdRecordSplit);
+                if (tSyncMaterial != null) {
+                    TSysPdRecordSplit tSysPdRecordSplit = JSON.parseObject(JSON.toJSONString(tSysPdRecord), TSysPdRecordSplit.class);
+                    tSysPdRecordSplit.setRePdRecordId(tSysPdRecord.getPdRecordId());
+                    // 确保计算结果不为null
+                    BigDecimal qty = tSysPdRecord.getPdQty();
+                    if (qty != null && tSyncMaterialBom.getRatio() != null) {
+                        tSysPdRecordSplit.setPdQty(qty.multiply(tSyncMaterialBom.getRatio()).doubleValue());
+                    } else {
+                        tSysPdRecordSplit.setPdQty(0.0);
+                    }
+                    tSysPdRecordSplit.setMaterialName(tSyncMaterialBom.getMaterialName());
+                    tSysPdRecordSplit.setMaterialNumber(tSyncMaterial.getMaterialCode());
+                    tSysPdRecordSplit.setMaterialSpecifications(tSyncMaterial.getMaterialModel());
+                    // 确保产线名称正确设置，与被还原物料的产线一致
+                    tSysPdRecordSplit.setNcVwkname(cwkName);
+                    tSysPdRecordSplitRepository.save(tSysPdRecordSplit);
+                }
             }
         }
     }
@@ -214,8 +224,8 @@ public class YcPdServiceImpl implements YcPdService {
     }
 
     @Override
-    public List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber) {
-        List<TSysPdRecord> tSysPdRecords = tSysPdRecordRepository.showWorkshopRecord(pdTimeStr, pdWorkshopNumber);
+    public List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber, String ncVwkname) {
+        List<TSysPdRecord> tSysPdRecords = tSysPdRecordRepository.showWorkshopRecord(pdTimeStr, pdWorkshopNumber, ncVwkname);
         for (TSysPdRecord tSysPdRecord : tSysPdRecords) {
             tSysPdRecord.setPdQty(tSysPdRecord.getPdQty().setScale(3, RoundingMode.HALF_UP));
         }

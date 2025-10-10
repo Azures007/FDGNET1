@@ -264,6 +264,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                     vo.setRePdRecordId(splitRecord.getRePdRecordId());
                     vo.setPdTimeStr(splitRecord.getPdTimeStr());
                     vo.setIsReturn("是");
+                    vo.setNcVwkname(splitRecord.getNcVwkname());
                     voList.add(vo);
                 }
             }

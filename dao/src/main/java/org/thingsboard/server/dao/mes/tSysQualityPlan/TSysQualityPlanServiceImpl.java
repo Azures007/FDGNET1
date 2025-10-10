@@ -10,10 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityCategory;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityPlan;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanConfig;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanJudgment;
 import org.thingsboard.server.dao.mes.dto.TSysQualityPlanDto;
+import org.thingsboard.server.dao.sql.mes.tSysQualityCategory.TSysQualityCategoryRepository;
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanConfigRepository;
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanJudgmentRepository;
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanRepository;
@@ -44,6 +46,9 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
     TSysQualityPlanJudgmentRepository tSysQualityPlanJudgmentRepository;
     @Autowired
     protected UserService userService;
+
+    @Autowired
+    TSysQualityCategoryRepository tSysQualityCategoryRepository;
 
     @Override
     public Page<TSysQualityPlan> tSysQualityPlanList(String userId, Integer current,
@@ -156,7 +161,6 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
     public TSysQualityPlanVo getQualityPlanById(Integer planId) {
         TSysQualityPlanVo vo = new TSysQualityPlanVo();
 
-
         TSysQualityPlan tSysQualityPlan = tSysQualityPlanRepository.findById(planId).orElse(null);
         BeanUtils.copyProperties(tSysQualityPlan, vo);
 
@@ -164,6 +168,16 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         vo.settSysQualityPlanJudgmentList(tSysQualityPlanJudgmentList);
 
         List<TSysQualityPlanConfig> tSysQualityPlanConfigList =tSysQualityPlanConfigRepository.findByPlanIdOrderByIdAsc(planId);
+
+        for (TSysQualityPlanConfig config : tSysQualityPlanConfigList) {
+            if (config.getCategoryId() != null) {
+                TSysQualityCategory category = tSysQualityCategoryRepository.findById(config.getCategoryId()).orElse(null);
+                if (category != null) {
+                    config.setRemarks(category.getRemarks());
+                }
+            }
+        }
+        
         vo.settSysQualityPlanConfigList(tSysQualityPlanConfigList);
 
         if (null == tSysQualityPlan){
