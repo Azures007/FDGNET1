@@ -78,7 +78,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "and (c.process_number=?3 or ?3='' or ?3 is null) " +
             "and (a.body_lot=?4 or ?4='' or ?4 is null)" +
             "",nativeQuery = true)
-    List<Map> getTodayTaskList2(String userId, String currentDateStr, String processNumber, String bodyLot, PageRequest of);
+    Page<Map> getTodayTaskList2(String userId, String currentDateStr, String processNumber, String bodyLot, PageRequest of);
 
     /* 获取账号今日任务列表 行数 */
     @Query(value = "select count(1)\n" +
@@ -650,12 +650,12 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "a.body_material_id bodyMaterialId, \n" +
             "a.body_material_number as bodyMaterialNumber, \n" +
             "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
-            "null as processId,\n" +
-            "null as processName,\n" +
-            "null as processNumber, \n" +
-            "null as executeProcessId,\n" +
-            "null as executeProcessName,\n" +
-            "null as executeProcessNumber, \n" +
+            "a.process_id processId,\n" +
+            "a.process_name processName,\n" +
+            "a.process_number processNumber, \n" +
+            "c.process_id as executeProcessId,\n" +
+            "c.process_name as executeProcessName,\n" +
+            "c.process_number as executeProcessNumber, \n" +
             "null as executeProcessStatus  \n" +
             ",null executeRecordTypePd \n" +
             ",null recordTypePd \n" +
@@ -680,7 +680,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "group by class_id\n" +
             ")" +
             "", nativeQuery = true)
-    List<Map> getNextDayTaskList(String userId,String currentDateStr,String bodyLot, PageRequest sort);
+    Page<Map> getNextDayTaskList(String userId,String currentDateStr,String bodyLot, PageRequest sort);
 
     /* 移交待生产任务 行数 */
     @Query(value = "select sum(cout) from (\n" +

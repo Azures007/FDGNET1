@@ -130,14 +130,14 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
         String currentDateStr = sdf1.format(new Date());
 //        TSysRole role = roleRepository.getByUserId(userId);
 //        userId = role.getByFactory().equals("0") ? "" : userId;
-        List<Map> select = appOrderTaskRepository.getTodayTaskList2(userId, currentDateStr, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
+        Page<Map> select = appOrderTaskRepository.getTodayTaskList2(userId, currentDateStr, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
         try {
             PageVo<TaskListVo> pageVo = new PageVo(size, current);
             List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
             /*castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
             });*/
-            int total = select.size();//appOrderTaskRepository.getCountCurrentTask2(userId, currentDateStr, selectDto.getProcessNumber(), selectDto.getBodyLot());
+            int total = (int) select.getTotalElements();//appOrderTaskRepository.getCountCurrentTask2(userId, currentDateStr, selectDto.getProcessNumber(), selectDto.getBodyLot());
             pageVo.setTotal(total);
             pageVo.setList(castEntity);
             return pageVo;
@@ -289,7 +289,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
         String nextDayDateStr = sdf1.format(c.getTime());
 
 //        List<Object[]> select = orderHeadRepository.getNextDayTaskList(nextDayDateStr, of);
-        List<Map> select = appOrderTaskRepository.getNextDayTaskList(userId,nextDayDateStr, selectDto.getBodyLot(), of);
+        Page<Map> select = appOrderTaskRepository.getNextDayTaskList(userId,nextDayDateStr, selectDto.getBodyLot(), of);
         try {
             PageVo<TaskListVo> pageVo = new PageVo(size, current);
 //            List<TaskListVo> castEntity = EntityUtils.castEntity(select, TaskListVo.class, new TaskListVo());
@@ -297,7 +297,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
             /*castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
             });*/
-            int total = select.size();//appOrderTaskRepository.getCountNextDayTask(userId,nextDayDateStr, selectDto.getBodyLot());
+            int total = (int) select.getTotalElements();//appOrderTaskRepository.getCountNextDayTask(userId,nextDayDateStr, selectDto.getBodyLot());
             pageVo.setTotal(total);
             pageVo.setList(castEntity);
             return pageVo;
