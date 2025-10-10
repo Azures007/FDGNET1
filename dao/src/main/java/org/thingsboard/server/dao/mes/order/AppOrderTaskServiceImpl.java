@@ -133,7 +133,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
         Page<Map> select = appOrderTaskRepository.getTodayTaskList2(userId, currentDateStr, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
         try {
             PageVo<TaskListVo> pageVo = new PageVo(size, current);
-            List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select), TaskListVo.class);
+            List<TaskListVo> castEntity = JSON.parseArray(JSON.toJSONString(select.getContent()), TaskListVo.class);
             /*castEntity.stream().forEach(order -> {
                 order.setBodyUnitStr(GlobalConstant.getCodeDscName("UNIT0000", order.getBodyUnit()));
             });*/

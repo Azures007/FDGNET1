@@ -634,52 +634,60 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "a.craft_id as craftId, \n" +
             "t1.craft_name as craftName, \n" +
             "a.order_no as orderNo,\n" +
-            "a.body_lot as bodyLot," +
+            "a.body_lot as bodyLot,\n" +
             "a.material_id as materialId,\n" +
             "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
             "a.body_material_name as bodyMaterialName,\n" +
             "a.body_plan_prd_qty as billPlanQty,\n" +
             "a.body_unit as bodyUnit,\n" +
             "a.body_unit as bodyUnitStr,\n" +
+            "a.body_pot_qty as bodyPotQty,\n" +
             "a.order_status as orderStatus,\n" +
             "a.order_pending_desc as orderPendingDesc,\n" +
+            "a.mid_mo_customer_id as midMoCustomerId,\n" +
+            "a.mid_mo_customer_name as midMoCustomerName,\n" +
+            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
+            "a.mid_mo_customer_type as midMoCustomerType,\n" +
+            "a.mid_mo_desc as midMoDesc,\n" +
             "null as finishTime,\n" +
-            "null as type, \n" +
-            "a.body_material_specification bodyMaterialSpecification, \n"+
+            "'1' as type, \n" +
+            "a.body_material_specification bodyMaterialSpecification, \n" +
             "null as orderProcessId, \n" +
-            "a.body_material_id bodyMaterialId, \n" +
-            "a.body_material_number as bodyMaterialNumber, \n" +
-            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
+            "a.body_material_id as bodyMaterialId, \n" +
+            "a.body_material_number bodyMaterialNumber, \n" +
+            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') bodyPlanFinishDate, \n" +
             "a.process_id processId,\n" +
             "a.process_name processName,\n" +
             "a.process_number processNumber, \n" +
-            "c.process_id as executeProcessId,\n" +
-            "c.process_name as executeProcessName,\n" +
-            "c.process_number as executeProcessNumber, \n" +
-            "null as executeProcessStatus  \n" +
-            ",null executeRecordTypePd \n" +
-            ",null recordTypePd \n" +
-            "from t_bus_order_head a \n" +
-            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
+            "c.process_id executeProcessId,\n" +
+            "c.process_name executeProcessName,\n" +
+            "c.process_number executeProcessNumber, \n" +
+            "null executeProcessStatus \n" +
+            "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process=m2.process_id ) as a\n" +
             "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
-            "JOIN t_bus_order_process_lk b ON a.order_id = b.order_id \n" +
-            "JOIN t_bus_order_process c ON b.order_process_id = c.order_process_id \n" +
-            "JOIN t_sys_process_info d ON c.process_id = d.process_id \n" +
-            "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
-            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?2 and a.is_deleted='0' " +
-            "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
-            "and t2.class_id in (\n" +
-            "select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id\n" +
-            ")" +
-            "", nativeQuery = true)
+            "join t_sys_craft_process_rel b on a.craft_id =b.craft_id \n" +
+            "join t_sys_process_info c on b.process_id =c.process_id \n" +
+            "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
+            "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?2  " +
+            "AND d.class_id IN (\n" +
+            "    SELECT class_id\n" +
+            "    FROM (\n" +
+            "        SELECT a.class_id\n" +
+            "        FROM t_sys_class_group_leader_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "        UNION ALL \n" +
+            "        SELECT class_id\n" +
+            "        FROM t_sys_class_personnel_rel a \n" +
+            "        JOIN t_sys_personnel_info b ON a.personnel_id = b.personnel_id \n" +
+            "        WHERE b.user_id = ?1\n" +
+            "    ) AS t\n" +
+            "    GROUP BY class_id\n" +
+            ")\n" +
+            "and a.is_deleted='0' " +
+            "and (a.body_lot=?3 or ?3='' or ?3 is null)" +
+            "",nativeQuery = true)
     Page<Map> getNextDayTaskList(String userId,String currentDateStr,String bodyLot, PageRequest sort);
 
     /* 移交待生产任务 行数 */
