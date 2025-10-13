@@ -83,7 +83,8 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         //生产线名称
         tSysQualityPlan.setProductionLineName(StringUtils.isNotBlank(tSysQualityPlan.getProductionLineName())?tSysQualityPlan.getProductionLineName():"");
         //启停状态
-        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
+//        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
+        tSysQualityPlan.setIsEnabled("1");
 
 //        tSysQualityPlan.setName(StringUtils.isNotBlank(tSysQualityPlan.getName()) ? tSysQualityPlan.getName() : "");
 //        tSysQualityPlan.setClassNumber(StringUtils.isNotBlank(tSysQualityPlan.getClassNumber()) ? tSysQualityPlan.getClassNumber() : "");
