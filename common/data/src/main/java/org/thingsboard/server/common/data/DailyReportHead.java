@@ -79,12 +79,8 @@ public class DailyReportHead {
     @Column(name = "prod_line_name")
     private String prodLineName;
 
-    @ApiModelProperty("保存还是提交状态/保存是0,提交是1")
-    @Column(name = "save_status")
-    private String saveStatus;
-
-    @ApiModelProperty("是否提交复核,是1,否是0")
-    @Column(name = "submit")
-    private String submit;
+    @ApiModelProperty("保存还是提交状态/保存是0,提交是1,复核是2")
+    @Column(name = "status")
+    private String status;
 
 }

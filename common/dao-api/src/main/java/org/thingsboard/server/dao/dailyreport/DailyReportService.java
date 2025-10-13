@@ -23,5 +23,5 @@ public interface DailyReportService {
 
     PageVo<DailyReportVo> getDailyList(String userId,Integer current, Integer size, LocalDate startTime, LocalDate endTime);
 
-    PageVo<DailyReportVo> getDailySubmitList(String userId,Integer current, Integer size);
+    PageVo<DailyReportVo> getDailySubmitList(String userId,Integer current, Integer size,LocalDate startTime, LocalDate endTime);
 }

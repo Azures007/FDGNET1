@@ -19,7 +19,5 @@ public interface DailyReportRepository extends JpaRepository<DailyReportHead,Int
     String getHaveBillNo(@Param("billNoParam") String billNoParam);
     List<DailyReportHead> findAllByProdLineIdAndCreatedTimeBetweenOrderByIdDesc(String prodLineId,LocalDate startTime, LocalDate endTime);
 
-    List<DailyReportHead> findAllByProdLineIdAndSubmitOrderByIdDesc(String prodLineId,String submit);
-
-    List<DailyReportHead> findAllByProdLineIdAndSaveStatusOrderByIdDesc(String prodLineId,String saveStatus);
+    List<DailyReportHead> findAllByProdLineIdAndStatusInAndCreatedTimeBetweenOrderByIdDesc(String prodLineId, List<String> strings,LocalDate startTime, LocalDate endTime);
 }

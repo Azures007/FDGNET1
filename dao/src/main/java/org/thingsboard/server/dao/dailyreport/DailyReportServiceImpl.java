@@ -183,16 +183,7 @@ public class DailyReportServiceImpl implements DailyReportService{
             }
         }
         dailyReportHead.setEnabled(1);
-        if(dailyReportVo.getSaveStatus().equals("1")) {
-            dailyReportHead.setSaveStatus("1");
-        }
-        else {
-            dailyReportHead.setSaveStatus("0");
-        }
-        if(dailyReportVo.getSubmit().equals("1")) {
-            dailyReportHead.setSubmit("1");
-        }
-
+        dailyReportHead.setStatus(dailyReportVo.getStatus());
         dailyReportHead = dailyReportRepository.saveAndFlush(dailyReportHead);
         //插入明细
         List<DailyReportDto> items = dailyReportVo.getItemList();
@@ -213,7 +204,7 @@ public class DailyReportServiceImpl implements DailyReportService{
         }
         DailyReportVo planDetail= dailyReportService.DailyDetail(dailyReportHead.getId());
 
-        if(dailyReportVo.getSaveStatus().equals("1")&&dailyReportVo.getSubmit().equals("0")) {
+        if(dailyReportVo.getStatus().equals("1")) {
             // 提交每日报表，推送：品管日报表复核通知（面向指定基地/产线/角色）
             try {
                 String lineId = dailyReportHead.getProdLineId();
@@ -268,37 +259,24 @@ public class DailyReportServiceImpl implements DailyReportService{
     }
 
     @Override
-    public PageVo<DailyReportVo> getDailySubmitList(String userId,Integer current, Integer size) {
+    public PageVo<DailyReportVo> getDailySubmitList(String userId,Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
         //获取登录的产线
         String cwkid =userService.getUserCurrentCwkid(userId);
-        //已经提交复核的数据
-        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndSubmitOrderByIdDesc(cwkid,"1");
-        //已经提交的数据
-        List<DailyReportHead> plan1 = dailyReportRepository.findAllByProdLineIdAndSaveStatusOrderByIdDesc(cwkid,"1");
+        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndStatusInAndCreatedTimeBetweenOrderByIdDesc(cwkid,List.of("1", "2"),startTime,endTime);
         List<DailyReportVo> saveVos = new ArrayList<>();
-
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();
             BeanUtils.copyProperties(item,saveVo);
             saveVos.add(saveVo);
         }
-
-        for (DailyReportHead item : plan1) {
-            DailyReportVo saveVo = new DailyReportVo();
-            BeanUtils.copyProperties(item, saveVo);
-            if (!saveVos.contains(saveVo))
-                saveVos.add(saveVo);
-        }
-
         List<DailyReportVo> sortedListDesc = saveVos.stream()
-                .sorted(comparing(DailyReportVo::getCreatedTime).reversed()
-                        .thenComparing(comparing(DailyReportVo::getId).reversed()))
+                .sorted(comparing(DailyReportVo::getStatus))
                 .collect(Collectors.toList());
         PageVo<DailyReportVo> pageVo = new PageVo<>();
         pageVo.setList(sortedListDesc);
         pageVo.setCurrent(current);
         pageVo.setSize(size);
-        pageVo.setTotal(saveVos.size());
+        pageVo.setTotal(sortedListDesc.size());
         return pageVo;
     }
 
