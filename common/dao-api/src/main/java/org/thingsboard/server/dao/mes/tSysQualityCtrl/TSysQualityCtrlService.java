@@ -6,6 +6,7 @@ import org.thingsboard.server.common.data.mes.sys.TSysQualityCtrlDetail;
 import org.thingsboard.server.dao.mes.dto.TSysQualityCtrlDto;
 import org.thingsboard.server.dao.mes.vo.TSysQualityCtrlVo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,4 +68,16 @@ public interface TSysQualityCtrlService {
      * @return
      */
     Page<TSysQualityCtrl> tSysQualityCtrlCheckList(String userId,Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto);
+
+    /**
+     * 根据创建时间范围和产线查询质检管控品名列表
+     * @param userId 用户ID
+     * @param current 页码
+     * @param size 每页数量
+     * @param sortField 排序字段
+     * @param sortOrder 排序方式
+     * @param createTime 创建时间
+     * @return
+     */
+    Page<TSysQualityCtrl> qualityCtrlNameList(String userId, Integer current, Integer size, String sortField, String sortOrder, Date createTime);
 }

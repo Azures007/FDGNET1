@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.thingsboard.server.common.data.exception.ThingsboardErrorCode;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityCtrl;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityPlan;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
@@ -23,6 +24,9 @@ import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.vo.TSysQualityCtrlVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -153,5 +157,40 @@ public class TSysQualityCtrlAppController extends BaseController {
         return ResultUtil.success(pageVo);
     }
 
+    @ApiOperation("查询质检管控品名列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+            @ApiImplicitParam(name = "sortField", value = "排序字段", readOnly = false),
+            @ApiImplicitParam(name = "sortOrder", value = "排序方式（asc/desc）", readOnly = false)
+
+    })
+    @PostMapping("/qualityCtrlNameList")
+    public ResponseResult<PageVo<TSysQualityCtrl>> qualityCtrlNameList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                                                   @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                   @RequestParam(value = "sortField", defaultValue = "createTime") String sortField,
+                                                                   @RequestParam(value = "sortOrder", defaultValue = "desc") String sortOrder,
+                                                                   @RequestParam("createTime") String createTimeStr) throws ThingsboardException {
+        SecurityUser securityUser=getCurrentUser();
+        
+        // 解析日期字符串
+        Date createTime;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
+            createTime = sdf.parse(createTimeStr);
+        } catch (ParseException e) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                createTime = sdf.parse(createTimeStr);
+            } catch (ParseException ex) {
+                throw new ThingsboardException("日期格式错误，支持的格式: 'yyyy-MM-dd' 或 'yyyy-MM-dd HH:mm:ss.SS'", ThingsboardErrorCode.BAD_REQUEST_PARAMS);
+            }
+        }
+        
+        Page<TSysQualityCtrl> qualityCtrlList = tSysQualityCtrlService.
+                qualityCtrlNameList(securityUser.getId().getId().toString(),current, size, sortField, sortOrder, createTime);
+        PageVo<TSysQualityCtrl> pageVo = new PageVo<>(qualityCtrlList);
+        return ResultUtil.success(pageVo);
+    }
 
 }

@@ -300,6 +300,42 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
     }
 
     @Override
+    public Page<TSysQualityCtrl> qualityCtrlNameList(String userId, Integer current, Integer size, String sortField, String sortOrder, Date createTime) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))) {
+            sort = Sort.by(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+        }
+        Pageable pageable = PageRequest.of(current, size, sort);
+        String cwkid = userService.getUserCurrentCwkid(userId);
+
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.setTime(createTime);
+        startCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        startCalendar.set(Calendar.MINUTE, 0);
+        startCalendar.set(Calendar.SECOND, 0);
+        startCalendar.set(Calendar.MILLISECOND, 0);
+        Date startDate = startCalendar.getTime();
+        
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(createTime);
+        endCalendar.set(Calendar.HOUR_OF_DAY, 23);
+        endCalendar.set(Calendar.MINUTE, 59);
+        endCalendar.set(Calendar.SECOND, 59);
+        endCalendar.set(Calendar.MILLISECOND, 999);
+        Date endDate = endCalendar.getTime();
+
+        Page<TSysQualityCtrl> tSysQualityCtrlPage = tSysQualityCtrlRepository.findAll((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(criteriaBuilder.equal(root.get("productionLineId"), cwkid));
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime"), startDate));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime"), endDate));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        }, pageable);
+        return tSysQualityCtrlPage;
+    }
+
+    @Override
     public Page<TSysQualityCtrl> tSysQualityCtrlCheckList(String userId,Integer current, Integer size, String sortField, String sortOrder, TSysQualityCtrlDto tSysQualityCtrlDto) {
         // 默认按状态升序、创建时间降序排列（未复核的在前）
         Sort sort = Sort.by(Sort.Direction.ASC, "status").and(Sort.by(Sort.Direction.DESC, "createTime"));
