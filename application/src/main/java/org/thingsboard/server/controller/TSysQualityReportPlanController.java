@@ -59,7 +59,7 @@ public class TSysQualityReportPlanController extends BaseController{
     public ResponseResult<PageVo<TSysQualityReportPlanDto>> getPlanList(@RequestParam(value = "current",defaultValue = "0") Integer current,
                                     @RequestParam(value = "size",defaultValue = "10") Integer size,@RequestBody TSysQualityReportPlanSearchDto searchDto) throws Exception {
         SecurityUser currentUser = getCurrentUser();
-        PageVo<TSysQualityReportPlanDto> categoryList = tSysQualityReportPlanService.getPlanList(currentUser.getId().toString(),current,size,searchDto);
+        PageVo<TSysQualityReportPlanDto> categoryList = tSysQualityReportPlanService.getPlanList(currentUser.getId().toString(),current,size,searchDto,null);
         return ResultUtil.success(categoryList);
     }
 

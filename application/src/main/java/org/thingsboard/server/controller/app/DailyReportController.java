@@ -59,7 +59,7 @@ public class DailyReportController extends BaseController {
                                                                          @RequestParam(value = "size",defaultValue = "10") Integer size,
                                                                          @RequestBody TSysQualityReportPlanSearchDto searchDto) throws Exception {
         SecurityUser currentUser = getCurrentUser();
-        PageVo<TSysQualityReportPlanDto> categoryList = tSysQualityReportPlanService.getPlanList(currentUser.getId().toString(),current,size,searchDto);
+        PageVo<TSysQualityReportPlanDto> categoryList = tSysQualityReportPlanService.getPlanList(currentUser.getId().toString(),current,size,searchDto,1);
         return ResultUtil.success(categoryList);
     }
 

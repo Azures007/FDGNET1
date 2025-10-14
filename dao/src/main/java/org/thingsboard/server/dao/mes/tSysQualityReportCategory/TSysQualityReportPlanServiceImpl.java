@@ -95,7 +95,7 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
     }
 
     @Override
-    public PageVo<TSysQualityReportPlanDto> getPlanList(String userId,Integer current, Integer size, TSysQualityReportPlanSearchDto searchDto) {
+    public PageVo<TSysQualityReportPlanDto> getPlanList(String userId,Integer current, Integer size, TSysQualityReportPlanSearchDto searchDto,Integer enabled) {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = PageRequest.of(current, size, sort);
         String cwkid =userService.getUserCurrentCwkid(userId);
@@ -112,7 +112,7 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
         }
         BeanUtils.copyProperties(searchDto, plan);
 
-        plan.setEnabled(null);
+        plan.setEnabled(enabled);
         //设置生产线id过滤
         plan.setProdLineId(cwkid);
         Example<TSysQualityReportPlan> example = Example.of(plan, matcher);

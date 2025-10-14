@@ -18,7 +18,7 @@ public interface TSysQualityReportPlanService {
 
     void delete(Integer id);
 
-    PageVo<TSysQualityReportPlanDto> getPlanList(String userId,Integer current, Integer size, TSysQualityReportPlanSearchDto searchDto);
+    PageVo<TSysQualityReportPlanDto> getPlanList(String userId,Integer current, Integer size, TSysQualityReportPlanSearchDto searchDto,Integer enabled);
 
     void enablePlan(Integer planId, Integer enable, String name);
 }
