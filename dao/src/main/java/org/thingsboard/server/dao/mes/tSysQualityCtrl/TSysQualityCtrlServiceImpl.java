@@ -72,7 +72,24 @@ public class TSysQualityCtrlServiceImpl implements TSysQualityCtrlService {
             // 修复：排序时使用驼峰命名法字段名，而非转换后的下划线格式
             sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, sortField);
         }
-
+        if (tSysQualityCtrlDto.getInspectionStartTime() != null) {
+            Calendar startCalendar = Calendar.getInstance();
+            startCalendar.setTime(tSysQualityCtrlDto.getInspectionStartTime());
+            startCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            startCalendar.set(Calendar.MINUTE, 0);
+            startCalendar.set(Calendar.SECOND, 0);
+            startCalendar.set(Calendar.MILLISECOND, 0);
+            tSysQualityCtrlDto.setInspectionStartTime(startCalendar.getTime());
+        }
+        if (tSysQualityCtrlDto.getInspectionEndTime() != null) {
+            Calendar endCalendar = Calendar.getInstance();
+            endCalendar.setTime(tSysQualityCtrlDto.getInspectionEndTime());
+            endCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            endCalendar.set(Calendar.MINUTE, 59);
+            endCalendar.set(Calendar.SECOND, 59);
+            endCalendar.set(Calendar.MILLISECOND, 999);
+            tSysQualityCtrlDto.setInspectionEndTime(endCalendar.getTime());
+        }
         Pageable pageable = PageRequest.of(current, size, sort);
 //        ExampleMatcher matcher = ExampleMatcher.matching()
 //                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
