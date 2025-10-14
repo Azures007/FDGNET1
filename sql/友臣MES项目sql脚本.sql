@@ -795,110 +795,6 @@ COMMENT ON COLUMN public.t_sys_quality_report_plan_rel.id IS '主键ID';
 COMMENT ON COLUMN public.t_sys_quality_report_plan_rel.plan_id IS '质检日报方案ID';
 COMMENT ON COLUMN public.t_sys_quality_report_plan_rel.category_id IS '质检日报类目ID';
 
-
--- public.t_bus_daily_report_entry definition
-
--- Drop table
-
--- DROP TABLE t_bus_daily_report_entry;
-
-CREATE TABLE t_bus_daily_report_entry (
-                                          id serial4 NOT NULL, -- 表id
-                                          dailyreport_id int4 NULL, -- 连接表头id
-                                          fseq varchar(500) NULL, -- 序号
-                                          frequency varchar(500) NULL, -- 频次id
-                                          frequency_value varchar(500) NULL, -- 频次值
-                                          important_item varchar(500) NULL, -- 重点项目
-                                          CONSTRAINT daily_report_dto_pkey PRIMARY KEY (id)
-);
-COMMENT ON TABLE public.t_bus_daily_report_entry IS '每日报表表体信息';
-
--- Column comments
-
-COMMENT ON COLUMN public.t_bus_daily_report_entry.id IS '表id';
-COMMENT ON COLUMN public.t_bus_daily_report_entry.dailyreport_id IS '连接表头id';
-COMMENT ON COLUMN public.t_bus_daily_report_entry.fseq IS '序号';
-COMMENT ON COLUMN public.t_bus_daily_report_entry.frequency IS '频次id';
-COMMENT ON COLUMN public.t_bus_daily_report_entry.frequency_value IS '频次值';
-COMMENT ON COLUMN public.t_bus_daily_report_entry.important_item IS '重点项目';
-
-
--- public.t_bus_daily_report_entry_item definition
-
--- Drop table
-
--- DROP TABLE t_bus_daily_report_entry_item;
-
-CREATE TABLE t_bus_daily_report_entry_item (
-                                               id int4 NOT NULL DEFAULT nextval('"t_bus_daily_report_entry_Item_id_seq"'::regclass),
-                                               dailyreport_entry_id int4 NULL, -- 关联的每日报表明细id
-                                               field_name varchar(500) NULL, -- 达成（异常）清况描述"
-                                               status varchar(500) NULL, -- 达成情况
-                                               field_type_id varchar(500) NULL, -- 达成清况类型id
-                                               field_type_value varchar(500) NULL, -- 达成情况类型值
-                                               spilt_value varchar(500) NULL, -- 下拉列表对应字段值
-                                               CONSTRAINT "t_bus_daily_report_entry_Item_pkey" PRIMARY KEY (id)
-);
-COMMENT ON TABLE public.t_bus_daily_report_entry_item IS '每日报表表体关联得配置管理信息数据';
-
--- Column comments
-
-COMMENT ON COLUMN public.t_bus_daily_report_entry_item.dailyreport_entry_id IS '关联的每日报表明细id';
-COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_name IS '达成（异常）清况描述"';
-COMMENT ON COLUMN public.t_bus_daily_report_entry_item.status IS '达成情况';
-COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_type_id IS '达成清况类型id';
-COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_type_value IS '达成情况类型值';
-COMMENT ON COLUMN public.t_bus_daily_report_entry_item.spilt_value IS '下拉列表对应字段值';
-
-
--- public.t_bus_daily_report_head definition
-
--- Drop table
-
--- DROP TABLE t_bus_daily_report_head;
-
-CREATE TABLE t_bus_daily_report_head (
-                                         id serial4 NOT NULL, -- 表id
-                                         bill_no varchar(500) NULL, -- 单据编号
-                                         material_code varchar(500) NULL, -- 产品编码
-                                         material_name varchar(500) NULL, -- 产品名称
-                                         solut_id varchar(500) NULL, -- 方案id
-                                         solut_name varchar(500) NULL, -- 方案名称
-                                         shop_manager_id varchar(500) NULL, -- 车间主任id
-                                         shop_manager_name varchar(500) NULL, -- 车间主任名称
-                                         created_name varchar(500) NULL, -- 创建人
-                                         created_time date NULL, -- 创建时间
-                                         updated_name varchar(500) NULL, -- 修改人
-                                         updated_time date NULL, -- 修改日期
-                                         enabled int4 NULL, -- 启用/禁用
-                                         prod_line_id varchar(500) NULL, -- 生产线id
-                                         prod_line_name varchar(500) NULL, -- 生产线名称
-                                         save_staus bool NULL, -- 保存还是提交状态/保存是ture,提交是false
-                                         submit bool NULL, -- 是否提交复核
-                                         CONSTRAINT daily_report_vo_pkey PRIMARY KEY (id)
-);
-COMMENT ON TABLE public.t_bus_daily_report_head IS '每日报表表头信息';
-
--- Column comments
-
-COMMENT ON COLUMN public.t_bus_daily_report_head.id IS '表id';
-COMMENT ON COLUMN public.t_bus_daily_report_head.bill_no IS '单据编号';
-COMMENT ON COLUMN public.t_bus_daily_report_head.material_code IS '产品编码';
-COMMENT ON COLUMN public.t_bus_daily_report_head.material_name IS '产品名称';
-COMMENT ON COLUMN public.t_bus_daily_report_head.solut_id IS '方案id';
-COMMENT ON COLUMN public.t_bus_daily_report_head.solut_name IS '方案名称';
-COMMENT ON COLUMN public.t_bus_daily_report_head.shop_manager_id IS '车间主任id';
-COMMENT ON COLUMN public.t_bus_daily_report_head.shop_manager_name IS '车间主任名称';
-COMMENT ON COLUMN public.t_bus_daily_report_head.created_name IS '创建人';
-COMMENT ON COLUMN public.t_bus_daily_report_head.created_time IS '创建时间';
-COMMENT ON COLUMN public.t_bus_daily_report_head.updated_name IS '修改人';
-COMMENT ON COLUMN public.t_bus_daily_report_head.updated_time IS '修改日期';
-COMMENT ON COLUMN public.t_bus_daily_report_head.enabled IS '启用/禁用';
-COMMENT ON COLUMN public.t_bus_daily_report_head.prod_line_id IS '生产线id';
-COMMENT ON COLUMN public.t_bus_daily_report_head.prod_line_name IS '生产线名称';
-COMMENT ON COLUMN public.t_bus_daily_report_head.save_staus IS '保存还是提交状态/保存是ture,提交是false';
-COMMENT ON COLUMN public.t_bus_daily_report_head.submit IS '是否提交复核';
-
 -- 2025-09-11
 ALTER TABLE public.t_sys_pd_record ADD pd_workshop_nc_id varchar(255) NULL;
 COMMENT ON COLUMN public.t_sys_pd_record.pd_workshop_nc_id IS '盘点车间ncid';
@@ -915,124 +811,90 @@ ALTER TABLE "public"."t_bus_order_process_history"
   ALTER COLUMN "record_qty" TYPE numeric(24,6) USING "record_qty"::numeric(24,6),
   ALTER COLUMN "record_manual_qty" TYPE numeric(24,6) USING "record_manual_qty"::numeric(24,6);
 
---2025-10-14
---每日报表表头
-CREATE TABLE "public"."t_bus_daily_report_head" (
-                                                    "id" int4 NOT NULL DEFAULT nextval('t_bus_daily_report_head_id_seq'::regclass),
-                                                    "bill_no" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "material_code" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "material_name" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "solut_id" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "solut_name" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "shop_manager_id" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "shop_manager_name" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "created_name" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "created_time" date,
-                                                    "updated_name" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "updated_time" date,
-                                                    "enabled" int4,
-                                                    "prod_line_id" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "prod_line_name" varchar(500) COLLATE "pg_catalog"."default",
-                                                    "status" varchar COLLATE "pg_catalog"."default",
-                                                    CONSTRAINT "daily_report_vo_pkey" PRIMARY KEY ("id")
-)
-;
 
-ALTER TABLE "public"."t_bus_daily_report_head"
-    OWNER TO "postgres";
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."id" IS '表id';
+-- 每日报表表体信息 2025-10-14
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."bill_no" IS '单据编号';
+CREATE TABLE public.t_bus_daily_report_entry (
+                                                 id serial4 NOT NULL, -- 表id
+                                                 dailyreport_id int4 NULL, -- 连接表头id
+                                                 fseq varchar(500) NULL, -- 序号
+                                                 frequency varchar(500) NULL, -- 频次id
+                                                 frequency_value varchar(500) NULL, -- 频次值
+                                                 important_item varchar(500) NULL, -- 重点项目
+                                                 CONSTRAINT daily_report_dto_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_bus_daily_report_entry IS '每日报表表体信息';
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."material_code" IS '产品编码';
+COMMENT ON COLUMN public.t_bus_daily_report_entry.id IS '表id';
+COMMENT ON COLUMN public.t_bus_daily_report_entry.dailyreport_id IS '连接表头id';
+COMMENT ON COLUMN public.t_bus_daily_report_entry.fseq IS '序号';
+COMMENT ON COLUMN public.t_bus_daily_report_entry.frequency IS '频次id';
+COMMENT ON COLUMN public.t_bus_daily_report_entry.frequency_value IS '频次值';
+COMMENT ON COLUMN public.t_bus_daily_report_entry.important_item IS '重点项目';
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."material_name" IS '产品名称';
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."solut_id" IS '方案id';
+-- 每日报表表体关联得配置管理信息数据
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."solut_name" IS '方案名称';
+CREATE TABLE public.t_bus_daily_report_entry_item (
+                                                      id serial4 NOT NULL, -- 表id
+                                                      dailyreport_entry_id int4 NULL, -- 关联的每日报表明细id
+                                                      field_name varchar(500) NULL, -- 达成（异常）清况描述"
+                                                      status varchar(500) NULL, -- 达成情况
+                                                      field_type_id varchar(500) NULL, -- 达成清况类型id
+                                                      field_type_value varchar(500) NULL, -- 达成情况类型值
+                                                      spilt_value varchar(500) NULL, -- 下拉列表对应字段值
+                                                      required varchar(255) NULL, -- 是否必填
+                                                      CONSTRAINT "t_bus_daily_report_entry_Item_pkey" PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_bus_daily_report_entry_item IS '每日报表表体关联得配置管理信息数据';
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."shop_manager_id" IS '车间主任id';
+COMMENT ON COLUMN public.t_bus_daily_report_entry_item.dailyreport_entry_id IS '关联的每日报表明细id';
+COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_name IS '达成（异常）清况描述"';
+COMMENT ON COLUMN public.t_bus_daily_report_entry_item.status IS '达成情况';
+COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_type_id IS '达成清况类型id';
+COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_type_value IS '达成情况类型值';
+COMMENT ON COLUMN public.t_bus_daily_report_entry_item.spilt_value IS '下拉列表对应字段值';
+COMMENT ON COLUMN public.t_bus_daily_report_entry_item.required IS '是否必填';
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."shop_manager_name" IS '车间主任名称';
+-- 每日报表表头信息
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."created_name" IS '创建人';
+CREATE TABLE public.t_bus_daily_report_head (
+                                                id serial4 NOT NULL, -- 表id
+                                                bill_no varchar(500) NULL, -- 单据编号
+                                                material_code varchar(500) NULL, -- 产品编码
+                                                material_name varchar(500) NULL, -- 产品名称
+                                                solut_id varchar(500) NULL, -- 方案id
+                                                solut_name varchar(500) NULL, -- 方案名称
+                                                shop_manager_id varchar(500) NULL, -- 车间主任id
+                                                shop_manager_name varchar(500) NULL, -- 车间主任名称
+                                                created_name varchar(500) NULL, -- 创建人
+                                                created_time date NULL, -- 创建时间
+                                                updated_name varchar(500) NULL, -- 修改人
+                                                updated_time date NULL, -- 修改日期
+                                                enabled int4 NULL, -- 启用/禁用
+                                                prod_line_id varchar(500) NULL, -- 生产线id
+                                                prod_line_name varchar(500) NULL, -- 生产线名称
+                                                save_status varchar NULL, -- 保存还是提交状态/保存是ture,提交是false
+                                                submit varchar NULL, -- 是否提交复核
+                                                CONSTRAINT daily_report_vo_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.t_bus_daily_report_head IS '每日报表表头信息';
 
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."created_time" IS '创建时间';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."updated_name" IS '修改人';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."updated_time" IS '修改日期';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."enabled" IS '启用/禁用';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."prod_line_id" IS '生产线id';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."prod_line_name" IS '生产线名称';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_head"."status" IS '保存还是提交状态/保存是ture,提交是false';
-
-COMMENT ON TABLE "public"."t_bus_daily_report_head" IS '每日报表表头信息';
-
---每日报表表体关联表
-CREATE TABLE "public"."t_bus_daily_report_entry_item" (
-                                                          "id" int4 NOT NULL DEFAULT nextval('"t_bus_daily_report_entry_Item_id_seq"'::regclass),
-                                                          "dailyreport_entry_id" int4,
-                                                          "field_name" varchar(500) COLLATE "pg_catalog"."default",
-                                                          "status" varchar(500) COLLATE "pg_catalog"."default",
-                                                          "field_type_id" varchar(500) COLLATE "pg_catalog"."default",
-                                                          "field_type_value" varchar(500) COLLATE "pg_catalog"."default",
-                                                          "spilt_value" varchar(500) COLLATE "pg_catalog"."default",
-                                                          "required" varchar(255) COLLATE "pg_catalog"."default",
-                                                          CONSTRAINT "t_bus_daily_report_entry_Item_pkey" PRIMARY KEY ("id")
-)
-;
-
-ALTER TABLE "public"."t_bus_daily_report_entry_item"
-    OWNER TO "postgres";
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry_item"."dailyreport_entry_id" IS '关联的每日报表明细id';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry_item"."field_name" IS '达成（异常）清况描述"';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry_item"."status" IS '达成情况';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry_item"."field_type_id" IS '达成清况类型id';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry_item"."field_type_value" IS '达成情况类型值';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry_item"."spilt_value" IS '下拉列表对应字段值';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry_item"."required" IS '是否必填';
-
-COMMENT ON TABLE "public"."t_bus_daily_report_entry_item" IS '每日报表表体关联得配置管理信息数据';
-
-        --每日报表表体
-CREATE TABLE "public"."t_bus_daily_report_entry" (
-                                                     "id" int4 NOT NULL DEFAULT nextval('t_bus_daily_report_entry_id_seq'::regclass),
-                                                     "dailyreport_id" int4,
-                                                     "fseq" varchar(500) COLLATE "pg_catalog"."default",
-                                                     "frequency" varchar(500) COLLATE "pg_catalog"."default",
-                                                     "frequency_value" varchar(500) COLLATE "pg_catalog"."default",
-                                                     "important_item" varchar(500) COLLATE "pg_catalog"."default",
-                                                     CONSTRAINT "daily_report_dto_pkey" PRIMARY KEY ("id")
-)
-;
-
-ALTER TABLE "public"."t_bus_daily_report_entry"
-    OWNER TO "postgres";
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry"."id" IS '表id';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry"."dailyreport_id" IS '连接表头id';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry"."fseq" IS '序号';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry"."frequency" IS '频次id';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry"."frequency_value" IS '频次值';
-
-COMMENT ON COLUMN "public"."t_bus_daily_report_entry"."important_item" IS '重点项目';
-
-COMMENT ON TABLE "public"."t_bus_daily_report_entry" IS '每日报表表体信息';
+COMMENT ON COLUMN public.t_bus_daily_report_head.id IS '表id';
+COMMENT ON COLUMN public.t_bus_daily_report_head.bill_no IS '单据编号';
+COMMENT ON COLUMN public.t_bus_daily_report_head.material_code IS '产品编码';
+COMMENT ON COLUMN public.t_bus_daily_report_head.material_name IS '产品名称';
+COMMENT ON COLUMN public.t_bus_daily_report_head.solut_id IS '方案id';
+COMMENT ON COLUMN public.t_bus_daily_report_head.solut_name IS '方案名称';
+COMMENT ON COLUMN public.t_bus_daily_report_head.shop_manager_id IS '车间主任id';
+COMMENT ON COLUMN public.t_bus_daily_report_head.shop_manager_name IS '车间主任名称';
+COMMENT ON COLUMN public.t_bus_daily_report_head.created_name IS '创建人';
+COMMENT ON COLUMN public.t_bus_daily_report_head.created_time IS '创建时间';
+COMMENT ON COLUMN public.t_bus_daily_report_head.updated_name IS '修改人';
+COMMENT ON COLUMN public.t_bus_daily_report_head.updated_time IS '修改日期';
+COMMENT ON COLUMN public.t_bus_daily_report_head.enabled IS '启用/禁用';
+COMMENT ON COLUMN public.t_bus_daily_report_head.prod_line_id IS '生产线id';
+COMMENT ON COLUMN public.t_bus_daily_report_head.prod_line_name IS '生产线名称';
+COMMENT ON COLUMN public.t_bus_daily_report_head.save_status IS '保存还是提交状态/保存是ture,提交是false';
+COMMENT ON COLUMN public.t_bus_daily_report_head.submit IS '是否提交复核';
