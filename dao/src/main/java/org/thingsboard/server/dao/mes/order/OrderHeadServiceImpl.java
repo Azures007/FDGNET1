@@ -1730,7 +1730,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
                         execVo.setLot(record.getBodyLot());
                         execVo.setUnit(record.getRecordUnit());
                         execVo.setQty(record.getRecordQty());
-                        execVo.setClassName(process.getClassId() != null ? process.getClassId().getName() : "");
+                        execVo.setClassName(record.getClassId() != null ? record.getClassId().getName() : "");
                         execVo.setPotCount(record.getExportPot() != null ? record.getExportPot().intValue() : null);
                         if (record.getDevicePersonGroupId() != null && !record.getDevicePersonGroupId().isEmpty()) {
                             List<TBusOrderProcessPersonRel> personRels = orderProcessPersonRelRepository

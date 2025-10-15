@@ -64,7 +64,7 @@ public class TSysQualityCtrlAppController extends BaseController {
                                                                    @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                    @RequestBody TSysQualityPlanDto tSysQualityPlanDto) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
-        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanList(currentUser.getId().toString(), current, size, sortField, sortOrder, tSysQualityPlanDto);
+        Page<TSysQualityPlan> qualityPlanList = tSysQualityPlanService.tSysQualityPlanListWithEnable(currentUser.getId().toString(), current, size, sortField, sortOrder, tSysQualityPlanDto);
         PageVo<TSysQualityPlan> pageVo = new PageVo<>(qualityPlanList);
         return ResultUtil.success(pageVo);
     }

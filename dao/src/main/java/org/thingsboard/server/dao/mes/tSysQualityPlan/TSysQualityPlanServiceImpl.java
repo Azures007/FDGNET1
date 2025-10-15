@@ -83,8 +83,8 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         //生产线名称
         tSysQualityPlan.setProductionLineName(StringUtils.isNotBlank(tSysQualityPlan.getProductionLineName())?tSysQualityPlan.getProductionLineName():"");
         //启停状态
-//        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
-        tSysQualityPlan.setIsEnabled("1");
+        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
+//        tSysQualityPlan.setIsEnabled("1");
 
 //        tSysQualityPlan.setName(StringUtils.isNotBlank(tSysQualityPlan.getName()) ? tSysQualityPlan.getName() : "");
 //        tSysQualityPlan.setClassNumber(StringUtils.isNotBlank(tSysQualityPlan.getClassNumber()) ? tSysQualityPlan.getClassNumber() : "");
@@ -143,6 +143,8 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         tSysQualityPlanJudgmentRepository.saveAll(tSysQualityPlanJudgmentList);
     }
 
+
+
     @Override
     public void saveTSysQualityPlanConfig(Integer planId, List<TSysQualityPlanConfig> tSysQualityPlanConfigList) {
         tSysQualityPlanConfigRepository.deleteByPlanId(planId);
@@ -188,6 +190,49 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         }
 
 
+    }
+
+    @Override
+    public Page<TSysQualityPlan> tSysQualityPlanListWithEnable(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysQualityPlanDto tSysQualityPlanDto) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
+
+        if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
+            String converterSortField = StringConverterUtil.camelToSnake(sortField);
+            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
+        }
+
+        Pageable pageable = PageRequest.of(current, size, sort);
+//        ExampleMatcher matcher = ExampleMatcher.matching()
+//                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
+//                .withMatcher("enabledSt", ExampleMatcher.GenericPropertyMatchers.exact());
+        TSysQualityPlan tSysQualityPlan = new TSysQualityPlan();
+        BeanUtils.copyProperties(tSysQualityPlanDto, tSysQualityPlan);
+//        Example<TSysQualityPlan> example = Example.of(tSysClass, matcher);
+        //获取登录的产线
+        String cwkid =userService.getUserCurrentCwkid(userId);
+        tSysQualityPlan.setProductionLineId(cwkid);
+
+
+//        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
+        //产品名称
+        tSysQualityPlan.setPlanName(StringUtils.isNotBlank(tSysQualityPlan.getPlanName())?tSysQualityPlan.getPlanName():"");
+        //部门名称
+//        tSysQualityPlan.setProductionDepartmentName(StringUtils.isNotBlank(tSysQualityPlan.getProductionDepartmentName())?tSysQualityPlan.getProductionDepartmentName():"");
+        //生产线名称
+        tSysQualityPlan.setProductionLineName(StringUtils.isNotBlank(tSysQualityPlan.getProductionLineName())?tSysQualityPlan.getProductionLineName():"");
+        //启停状态
+//        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
+        tSysQualityPlan.setIsEnabled("1");
+
+//        tSysQualityPlan.setName(StringUtils.isNotBlank(tSysQualityPlan.getName()) ? tSysQualityPlan.getName() : "");
+//        tSysQualityPlan.setClassNumber(StringUtils.isNotBlank(tSysQualityPlan.getClassNumber()) ? tSysQualityPlan.getClassNumber() : "");
+
+        Page<TSysQualityPlan> tSysQualityPlanPage = tSysQualityPlanRepository.findAllBy(tSysQualityPlan, pageable);
+//        String code = "SCHEDULING0000";
+//        tSysQualityPlanPage.getContent().stream().forEach(tSysQualityPlan1 -> {
+//            tSysQualityPlan1.setSchedulingCodeDsc(GlobalConstant.getCodeDscName(code, tSysQualityPlan1.getScheduling()));
+//        });
+        return tSysQualityPlanPage;
     }
 
 

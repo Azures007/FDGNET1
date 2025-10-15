@@ -59,4 +59,7 @@ public interface TSysQualityPlanService {
 
 
     void saveTSysQualityPlanJudgment(Integer id, List<TSysQualityPlanJudgment> tSysQualityPlanJudgmentList);
+
+    Page<TSysQualityPlan> tSysQualityPlanListWithEnable(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysQualityPlanDto tSysQualityPlanDto);
+
 }
