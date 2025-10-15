@@ -44,7 +44,8 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "null as orderProcessId, \n" +
             "a.body_material_id as bodyMaterialId, \n" +
             "a.body_material_number bodyMaterialNumber, \n" +
-            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') bodyPlanFinishDate, \n" +
+            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
+            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
             "a.process_id processId,\n" +
             "a.process_name processName,\n" +
             "a.process_number processNumber, \n" +
@@ -179,7 +180,10 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "    c.order_process_id AS orderProcessId, \n" +
             "    NULL AS bodyMaterialId, \n" +
             "    NULL AS bodyMaterialNumber, \n" +
-            "    NULL AS bodyPlanFinishDate, \n" +
+            "    TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
+            "    TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
+//            "    NULL AS bodyPlanStartDate, \n" +
+//            "    NULL AS bodyPlanFinishDate, \n" +
             "    m2.process_id AS processId,\n" +
             "    m2.process_name AS processName,\n" +
             "    m2.process_number AS processNumber,\n" +
@@ -284,6 +288,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "a2.order_process_id as orderProcessId, \n" +
             "a.body_material_id as bodyMaterialId, \n" +
             "a.body_material_number as bodyMaterialNumber, \n" +
+            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
             "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
             "g.process_id processId,\n" +
             "g.process_name processName,\n" +
@@ -392,6 +397,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "null as orderProcessId, \n" +
             "null as bodyMaterialId, \n" +
             "null as bodyMaterialNumber, \n" +
+            "null as bodyPlanStartDate, \n" +
             "null as bodyPlanFinishDate, \n" +
             "a.process_id processId,\n" +
             "a.process_name processName,\n" +
@@ -456,6 +462,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "a2.order_process_id as orderProcessId, \n" +
             "a.body_material_id as bodyMaterialId, \n" +
             "a.body_material_number as bodyMaterialNumber, \n" +
+            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
             "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
             "g.process_id processId,\n" +
             "g.process_name processName,\n" +
@@ -655,7 +662,8 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "null as orderProcessId, \n" +
             "a.body_material_id as bodyMaterialId, \n" +
             "a.body_material_number bodyMaterialNumber, \n" +
-            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') bodyPlanFinishDate, \n" +
+            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
+            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
             "a.process_id processId,\n" +
             "a.process_name processName,\n" +
             "a.process_number processNumber, \n" +
@@ -740,6 +748,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "c.order_process_id as orderProcessId, \n" +
             "null as bodyMaterialId, \n" +
             "null as bodyMaterialNumber, \n" +
+            "null as bodyPlanStartDate, \n" +
             "null as bodyPlanFinishDate, \n" +
             "a.process_id processId,\n" +
             "a.process_name processName,\n" +
@@ -800,6 +809,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "c.old_order_process_id as orderProcessId, \n" +
             "a.body_material_id as bodyMaterialId, \n" +
             "a.body_material_number as bodyMaterialNumber, \n" +
+            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
             "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
             "g.process_id processId,\n" +
             "g.process_name processName,\n" +
@@ -859,6 +869,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "c.order_process_id as orderProcessId, \n" +
             "a.body_material_id as bodyMaterialId, \n" +
             "a.body_material_number as bodyMaterialNumber, \n" +
+            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
             "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
             "g.process_id processId,\n" +
             "g.process_name processName,\n" +
@@ -922,6 +933,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "c.order_process_id as orderProcessId, \n" +
             "null as bodyMaterialId, \n" +
             "null as bodyMaterialNumber, \n" +
+            "null as bodyPlanStartDate, \n" +
             "null as bodyPlanFinishDate, \n" +
             "d.process_id processId,\n" +
             "d.process_name processName,\n" +
@@ -964,6 +976,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "a2.order_process_id as orderProcessId, \n" +
             "a.body_material_id as bodyMaterialId, \n" +
             "a.body_material_number as bodyMaterialNumber, \n" +
+            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
             "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
             "g.process_id processId,\n" +
             "g.process_name processName,\n" +
@@ -1034,6 +1047,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "c.order_process_id as orderProcessId, \n" +
             "a.body_material_id as bodyMaterialId, \n" +
             "a.body_material_number as bodyMaterialNumber, \n" +
+            "a.body_plan_start_date as bodyPlanStartDate, \n" +
             "a.body_plan_finish_date as bodyPlanFinishDate, \n" +
             "a.process_id processId,\n" +
             "a.process_name processName,\n" +
