@@ -23,7 +23,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TSysRecipeInput {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "input_id")
@@ -43,7 +43,7 @@ public class TSysRecipeInput {
     private String materialCode;
 
     @ApiModelProperty("每锅投入标准")
-    @Column(name = "standard_input", nullable = false, precision = 10, scale = 2)
+    @Column(name = "standard_input", nullable = false, precision = 10, scale = 6)
     private BigDecimal standardInput;
 
     @ApiModelProperty("单位编码")

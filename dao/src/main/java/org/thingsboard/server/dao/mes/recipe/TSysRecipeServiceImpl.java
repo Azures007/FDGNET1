@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.sys.*;
@@ -53,7 +54,8 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
 
     @Override
     public Page<TSysRecipe> getRecipeList(String currentUser, Integer current, Integer size, RecipeQueryDto queryDto) {
-        Pageable pageable = PageRequest.of(current, size);
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        Pageable pageable = PageRequest.of(current, size, sort);
 
         String recipeName = queryDto.getRecipeName();
         String recipeCode = queryDto.getRecipeCode();
@@ -182,7 +184,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
     public void saveRecipeInputs(Integer recipeId, List<TSysRecipeInput> recipeInputs) {
         // 先删除原有的投入设置
         recipeInputRepository.deleteByRecipeId(recipeId);
-        
+
         // 保存新的投入设置
         if (recipeInputs != null && !recipeInputs.isEmpty()) {
             for (TSysRecipeInput input : recipeInputs) {
@@ -203,7 +205,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
     public void saveProductBindings(Integer recipeId, List<TSysRecipeProductBinding> productBindings) {
         // 先删除原有的产品绑定
         productBindingRepository.deleteByRecipeId(recipeId);
-        
+
         // 保存新的产品绑定
         if (productBindings != null && !productBindings.isEmpty()) {
             for (TSysRecipeProductBinding binding : productBindings) {
@@ -217,7 +219,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
     @Override
     public PageVo<TSyncMaterial> getAvailableProducts(String currentUser, Integer recipeId, String productName, String productCode, Integer current, Integer size) {
         Pageable pageable = PageRequest.of(current, size);
-        
+
         // 构建查询条件
         String searchTerm = "";
         if (productName != null && !productName.trim().isEmpty()) {
@@ -225,7 +227,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
         } else if (productCode != null && !productCode.trim().isEmpty()) {
             searchTerm = productCode.trim();
         }
-        
+
         // 如果recipeId为null，查询所有物料；否则过滤掉已绑定的产品
         Page<TSyncMaterial> page;
         if (recipeId == null) {
@@ -235,7 +237,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
             // 查询可用物料（排除已绑定的产品）
             page = syncMaterialRepository.findAvailableMaterialsExcludingRecipe(recipeId, searchTerm, pageable);
         }
-        
+
         // 转换为 PageVo
         PageVo<TSyncMaterial> pageVo = new PageVo<>();
         pageVo.setList(page.getContent());

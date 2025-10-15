@@ -892,3 +892,6 @@ COMMENT ON COLUMN public.t_bus_daily_report_head.enabled IS '启用/禁用';
 COMMENT ON COLUMN public.t_bus_daily_report_head.prod_line_id IS '生产线id';
 COMMENT ON COLUMN public.t_bus_daily_report_head.prod_line_name IS '生产线名称';
 COMMENT ON COLUMN public.t_bus_daily_report_head.status IS '保存还是提交状态/保存是ture,提交是false';
+
+-- 2025-10-15
+ALTER TABLE public.t_sys_recipe_input ALTER COLUMN standard_input TYPE numeric(16, 6) USING standard_input::numeric(16, 6);
