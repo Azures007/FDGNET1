@@ -511,13 +511,14 @@ public class UserController extends BaseController {
         SecurityUser currentUser = getCurrentUser();
         UserStatusVo userVo = new UserStatusVo();
         String useId = currentUser.getId().getId().toString();
-        String cwkid =userService.getUserCurrentCwkid(useId);
+        List<String> cwkids =userService.getUserCurrentCwkid(useId);
         String pkOrg = userService.getUserCurrentPkOrg(useId);
-        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(useId,pkOrg,cwkid);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrg(useId,pkOrg);
         userVo.setNcWarehouses(ncWarehouses);
         String cwkName = null;
-        if (cwkid != null) {
-            NcWorkline workline = ncWorklineService.findAllByCwkids(Arrays.asList(cwkid)).stream().findFirst().orElse(null);
+        if (cwkids != null && !cwkids.isEmpty()) {
+            //默认取第一个产线，作为盘点的产线
+            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
             if (workline != null) {
                 cwkName = workline.getVwkname();
             }
@@ -683,7 +684,7 @@ public class UserController extends BaseController {
     public ResponseResult<Void> switchOrgLine(@RequestParam("pkOrg") String pkOrg,
                                               @RequestParam("cwkid") String cwkid) throws ThingsboardException {
         SecurityUser securityUser = getCurrentUser();
-        if(securityUser != null&& securityUser.getPkOrg()!=null&&securityUser.getCwkid()!=null) {
+        if(securityUser != null&& securityUser.getPkOrg()!=null) {
             // 保存基地和产线到redis
             userService.saveUserCurrentOrgLine(securityUser.getId().toString(), pkOrg, cwkid);
         }
@@ -696,10 +697,10 @@ public class UserController extends BaseController {
         SecurityUser user = getCurrentUser();
         String userId = user.getId().toString();
         String pkOrg = userService.getUserCurrentPkOrg(userId);
-        String cwkid = userService.getUserCurrentCwkid(userId);
+        List<String> cwkids = userService.getUserCurrentCwkid(userId);
         Map<String, String> result = new HashMap<>();
         result.put("pkOrg", pkOrg);
-        result.put("cwkid", cwkid);
+        result.put("cwkid", cwkids != null && !cwkids.isEmpty() ? cwkids.get(0) : null);
         return ResultUtil.success(result);
     }
 

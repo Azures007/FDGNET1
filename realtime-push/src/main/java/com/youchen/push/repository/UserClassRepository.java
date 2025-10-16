@@ -35,7 +35,7 @@ public class UserClassRepository {
                 "join t_sys_role_user ru on cast(u.id as varchar)=ru.user_id\n" +
                 "join t_sys_role r on ru.role_id=r.role_id\n" +
                 "join t_sys_user_detail ud on cast(u.id as varchar)=ud.user_id\n" +
-                "where r.role_code=?1 and ud.nc_pk_org=?2 and ud.nc_cwkid=?3";
+                "where r.role_code=?1 and ud.nc_pk_org=?2 and ud.nc_cwkid= ?3";
         @SuppressWarnings("unchecked")
         List<Object> rows = entityManager.createNativeQuery(sql)
                 .setParameter(1, roleCode)

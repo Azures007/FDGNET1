@@ -37,8 +37,8 @@ public interface TSysUserDetailRepository extends JpaRepository<TSysUserDetail, 
      * @param ncCwkid 产线ID
      * @return 用户详细信息列表
      */
-    @Query("SELECT t FROM TSysUserDetail t WHERE t.ncCwkid = :ncCwkid")
-    List<TSysUserDetail> findByNcCwkid(@Param("ncCwkid") String ncCwkid);
+    @Query("SELECT t FROM TSysUserDetail t WHERE t.ncCwkid IN :ncCwkids")
+    List<TSysUserDetail> findByNcCwkid(@Param("ncCwkids") List<String> ncCwkids);
 
     /**
      * 删除指定用户的详细信息

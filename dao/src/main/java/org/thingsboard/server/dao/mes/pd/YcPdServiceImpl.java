@@ -55,15 +55,14 @@ public class YcPdServiceImpl implements YcPdService {
     @Transactional
     @Override
     public TSysPdRecord savePd(TSysPdRecord tSysPdRecord, String userId) {
-        String cwkid =userService.getUserCurrentCwkid(userId);
+        /*List<String> cwkids =userService.getUserCurrentCwkid(userId);
         // 获取产线名称
-        String cwkName = null;
-        if (cwkid != null) {
-            NcWorkline workline = ncWorklineService.findAllByCwkids(Arrays.asList(cwkid)).stream().findFirst().orElse(null);
-            if (workline != null) {
-                cwkName = workline.getVwkname();
-            }
-        }
+        List<String> cwkName = new ArrayList<>();
+        if (cwkids != null && !cwkids.isEmpty()) {
+            List<NcWorkline> workline = ncWorklineService.findAllByCwkids(cwkids);
+            //获取产线名称List
+            cwkName = workline.stream().map(NcWorkline::getVwkname).collect(Collectors.toList());
+        }*/
         
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         tSysPdRecord.setPdTime(new Date());
@@ -74,11 +73,11 @@ public class YcPdServiceImpl implements YcPdService {
         // 修改查询逻辑，按产线区分记录
         TSysPdRecord tSysPdRecord1 = null;
         // 执行查询，查找相同产线、日期、物料等条件的记录
-        if (cwkName != null && tSysPdRecord.getMaterialNumber() != null && 
+        if (tSysPdRecord.getNcVwkname() != null && tSysPdRecord.getMaterialNumber() != null &&
             tSysPdRecord.getPdClassNumber() != null && tSysPdRecord.getPdType() != null) {
             tSysPdRecord1 = tSysPdRecordRepository.findByGroupAndWorkshop(format,
                     tSysPdRecord.getMaterialNumber(), tSysPdRecord.getPdClassNumber(), tSysPdRecord.getPdType(),
-                    cwkName);
+                    tSysPdRecord.getNcVwkname());
         }
         // 无论是否查询到重复记录，都需要初始化pdSplit变量
         if (tSysPdRecord1 != null) {
@@ -127,7 +126,7 @@ public class YcPdServiceImpl implements YcPdService {
         tSysPdRecord.setPdTimeStr(format);
         tSysPdRecord.setPdRecordId(null);
         // 设置产线名称
-        tSysPdRecord.setNcVwkname(cwkName);
+        //tSysPdRecord.setNcVwkname(cwkName);
         tSysPdRecordRepository.saveAndFlush(tSysPdRecord);
         //更新库存
         List<NcInventory> ncInventories = null;
@@ -144,7 +143,7 @@ public class YcPdServiceImpl implements YcPdService {
             }
         }
         // 拆分还原拆料 - 修改逻辑，无论是否是重复盘点都需要检查生成还原物料
-        savePdBySplit(tSysPdRecord, pdSplit, cwkName);
+        savePdBySplit(tSysPdRecord, pdSplit, tSysPdRecord.getNcVwkname());
 
         return tSysPdRecord;
     }
@@ -195,9 +194,9 @@ public class YcPdServiceImpl implements YcPdService {
         
         // 获取当前用户的产线名称
         String cwkName = null;
-        String cwkid = userService.getUserCurrentCwkid(userId);
-        if (cwkid != null) {
-            NcWorkline workline = ncWorklineService.findAllByCwkids(Arrays.asList(cwkid)).stream().findFirst().orElse(null);
+        List<String> cwkids = userService.getUserCurrentCwkid(userId);
+        if (cwkids != null && !cwkids.isEmpty()) {
+            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
             if (workline != null) {
                 cwkName = workline.getVwkname();
             }
@@ -211,9 +210,9 @@ public class YcPdServiceImpl implements YcPdService {
 
     @Override
     public List<TSysPdRecord> fpWorkshopRecord(String startDate, String endDate,String userId) {
-        String cwkid =userService.getUserCurrentCwkid(userId);
+        //List<String> cwkids =userService.getUserCurrentCwkid(userId);
         String pkOrg = userService.getUserCurrentPkOrg(userId);
-        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrg(userId,pkOrg);
         List<String> wids=new ArrayList<>();
         if(ncWarehouses!=null&& !ncWarehouses.isEmpty()) {
             for (NcWarehouse ncWarehouse : ncWarehouses) {

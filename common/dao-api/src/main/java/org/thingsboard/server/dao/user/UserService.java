@@ -185,6 +185,13 @@ public interface UserService {
 	 */
 	List<NcWarehouse> findNcWarehouseByUserIdAndPkOrgAndWorkline(String userId, String pkOrg, String cwkid);
 	/**
+	 * 获取用户在某基地下的仓库列表
+	 * @param userId
+	 * @param pkOrg
+	 * @return
+	 */
+	List<NcWarehouse> findNcWarehouseByUserIdAndPkOrg(String userId, String pkOrg);
+	/**
 	 * 保存当前用户的基地和产线到redis
 	 * @param userId
 	 * @param pkOrg
@@ -204,5 +211,5 @@ public interface UserService {
 	 * @param userId
 	 * @return
 	 */
-	String getUserCurrentCwkid(String userId);
+	List<String> getUserCurrentCwkid(String userId);
 }

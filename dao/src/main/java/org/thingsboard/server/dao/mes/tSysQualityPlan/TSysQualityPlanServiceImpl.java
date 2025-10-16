@@ -71,8 +71,8 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         BeanUtils.copyProperties(tSysQualityPlanDto, tSysQualityPlan);
 //        Example<TSysQualityPlan> example = Example.of(tSysClass, matcher);
         //获取登录的产线
-        String cwkid =userService.getUserCurrentCwkid(userId);
-        tSysQualityPlan.setProductionLineId(cwkid);
+        List<String> cwkids =userService.getUserCurrentCwkid(userId);
+        tSysQualityPlan.setProductionLineId(cwkids != null && !cwkids.isEmpty() ? cwkids.get(0) : null);
 
 
 //        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
@@ -209,8 +209,8 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         BeanUtils.copyProperties(tSysQualityPlanDto, tSysQualityPlan);
 //        Example<TSysQualityPlan> example = Example.of(tSysClass, matcher);
         //获取登录的产线
-        String cwkid =userService.getUserCurrentCwkid(userId);
-        tSysQualityPlan.setProductionLineId(cwkid);
+        List<String> cwkids =userService.getUserCurrentCwkid(userId);
+        tSysQualityPlan.setProductionLineId(cwkids != null && !cwkids.isEmpty() ? cwkids.get(0) : null);
 
 
 //        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");

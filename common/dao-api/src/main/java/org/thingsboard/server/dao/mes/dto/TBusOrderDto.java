@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @ApiModel("订单列表条件模型(后台)")
@@ -53,5 +54,7 @@ public class TBusOrderDto {
 
     @ApiModelProperty("生产线ID")
     private String cwkid = "";
+    @ApiModelProperty("生产线IDs")
+    private List<String> cwkids;
 
 }

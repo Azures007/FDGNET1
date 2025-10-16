@@ -36,9 +36,9 @@ public class NcInventoryServiceImpl implements NcInventoryService {
     }
     @Override
     public PageVo<NcInventory> queryInventory(String userId,String warehouseName, String materialName, String spec,Integer current, Integer size) {
-        String cwkid =userService.getUserCurrentCwkid(userId);
+        //List<String> cwkids =userService.getUserCurrentCwkid(userId);
         String pkOrg = userService.getUserCurrentPkOrg(userId);
-        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrg(userId,pkOrg);
         List<Sort.Order> orders = new ArrayList<>();
         orders.add(new Sort.Order(Sort.Direction.DESC, "billId"));
         Sort sort1 = Sort.by(orders);
