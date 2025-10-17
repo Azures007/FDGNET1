@@ -84,7 +84,7 @@ public class RestAwareAuthenticationSuccessHandler implements AuthenticationSucc
             List<NcOrganization> list = userService.findBaseListByUserName(securityUser.getEmail());
             if(list!=null&&list.size()>0) {
                 securityUser.setPkOrg(list.get(0).getPkOrg());
-                securityUser.setCwkid(null);
+                securityUser.setCwkid(userService.getFirstUserCwkid(securityUser.getId().toString(), securityUser.getPkOrg()));
                 userService.saveUserCurrentOrgLine(securityUser.getId().toString(), securityUser.getPkOrg(), securityUser.getCwkid());
             }
         }

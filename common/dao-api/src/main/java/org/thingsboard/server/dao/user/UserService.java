@@ -212,4 +212,11 @@ public interface UserService {
 	 * @return
 	 */
 	List<String> getUserCurrentCwkid(String userId);
+	/**
+	 * 获取当前用户的第一个产线
+	 * @param userId
+	 * @param pkOrg
+	 * @return
+	 */
+	String getFirstUserCwkid(String userId, String pkOrg);
 }

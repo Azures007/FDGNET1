@@ -871,4 +871,14 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         List<String> cwkids = details.stream().map(TSysUserDetail::getNcCwkid).distinct().collect(Collectors.toList());
         return cwkids;
     }
+    @Override
+    public String getFirstUserCwkid(String userId, String pkOrg) {
+        List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrg(userId, pkOrg);
+        List<String> cwkids = details.stream().map(TSysUserDetail::getNcCwkid).distinct().collect(Collectors.toList());
+        if (cwkids.size() > 0) {
+            return cwkids.get(0);
+        }else{
+            return null;
+        }
+    }
 }
