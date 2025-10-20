@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { Utils } from '../../pages/order-management/w-utils';
 
 @Component({
   selector: 'tb-look-role-dialog',
@@ -8,7 +9,9 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dial
 })
 export class LookRoleDialogComponent implements OnInit {
 
-  constructor(public dialogRef: MatDialogRef<LookRoleDialogComponent>,
+  constructor(
+    private utils: Utils,
+    public dialogRef: MatDialogRef<LookRoleDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,) { }
 
   //状态下拉
@@ -27,6 +30,10 @@ export class LookRoleDialogComponent implements OnInit {
     this.dialogRef.close();
   }
   DialogSaveClose(){
+    if(!this.data.roleDetail.roleName) {
+      this.utils.showMessage('请输入角色名称', 'error');
+      return;
+    }
     this.dialogRef.close(this.data);
   }
 

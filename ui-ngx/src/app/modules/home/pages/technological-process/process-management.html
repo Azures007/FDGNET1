@@ -20,10 +20,11 @@
     </div>
     <div class="row-block cols4">
       <button class="search-btn btn" (click)="searchList()">
-        <mat-icon class="material-icons svgIcon">search</mat-icon>
+        <mat-icon>search</mat-icon>
         <span>查询</span>
       </button>
       <button class="search-btn btn" (click)="resetSearch()">
+        <mat-icon>refresh</mat-icon>
         重置
       </button>
     </div>
@@ -31,7 +32,7 @@
   </div>
   <div class="page-header page-header-btn">
     <button *ngIf="set.has('/technological/processManage/add')" class="search-btn btn" (click)="showAddVisibilly({})">
-      <mat-icon class="material-icons svgIcon">control_point</mat-icon>
+      <mat-icon>control_point</mat-icon>
       <span>新增工序</span>
     </button>
 

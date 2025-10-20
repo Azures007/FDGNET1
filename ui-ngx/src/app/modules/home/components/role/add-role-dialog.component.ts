@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { Utils } from '../../pages/order-management/w-utils';
 
 @Component({
   selector: 'tb-add-role-dialog',
@@ -9,6 +10,7 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dial
 export class AddRoleDialogComponent implements OnInit {
 
   constructor(
+    private utils: Utils,
     public dialogRef: MatDialogRef<AddRoleDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     ) { }
@@ -28,6 +30,14 @@ export class AddRoleDialogComponent implements OnInit {
   //关闭新增角色弹窗
   addDialogClose(): void {
     this.dialogRef.close();
+  }
+  //提交新增角色
+  addDialogSubmit(): void {
+    if(!this.data.roleName) {
+      this.utils.showMessage('请输入角色名称', 'error');
+      return;
+    }
+    this.dialogRef.close(this.data);
   }
 
 }

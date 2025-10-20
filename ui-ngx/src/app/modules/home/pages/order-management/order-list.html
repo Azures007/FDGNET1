@@ -59,14 +59,13 @@
       <label class="label"></label>
       <div class="btn-group">
         <button class="search_btn" (click)="searchList()">
-          <mat-icon class="material-icons svgIcon">search</mat-icon>查询
+          <mat-icon>search</mat-icon>查询
         </button>
         <button class="search_btn" (click)="resetQuery()">
-          <mat-icon class="material-icons svgIcon">search</mat-icon>重置
+          <mat-icon>refresh</mat-icon>重置
         </button>
         <button *ngIf="set.has('/order/list/up')" class="search_btn" (click)="export()">
-          <mat-icon class="material-icons svgIcon">vertical_align_bottom</mat-icon>
-          导出
+          <mat-icon>vertical_align_bottom</mat-icon>导出
         </button>
       </div>
 
