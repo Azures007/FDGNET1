@@ -53,11 +53,10 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
                                                      String sortField,
                                                      String sortOrder,
                                                      TSysQualityPlanDto tSysQualityPlanDto) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
 
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
-            String converterSortField = StringConverterUtil.camelToSnake(sortField);
-            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
+            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, sortField);
         }
 
         Pageable pageable = PageRequest.of(current, size, sort);
@@ -188,11 +187,10 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 
     @Override
     public Page<TSysQualityPlan> tSysQualityPlanListWithEnable(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysQualityPlanDto tSysQualityPlanDto) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
 
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
-            String converterSortField = StringConverterUtil.camelToSnake(sortField);
-            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
+            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, sortField);
         }
 
         Pageable pageable = PageRequest.of(current, size, sort);
