@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import org.thingsboard.server.dao.sql.mes.ncWorkline.NcWorklineRepository;
+import org.thingsboard.server.dao.user.UserService;
 
 import java.util.List;
 
@@ -12,7 +13,8 @@ import java.util.List;
 public class NcWorklineServiceImpl implements NcWorklineService {
     @Autowired
     private NcWorklineRepository repository;
-
+    @Autowired
+    protected UserService userService;
     @Override
     @Transactional
     public void saveOrUpdateBatchByCwkid(List<NcWorkline> entitys) {
@@ -24,8 +26,9 @@ public class NcWorklineServiceImpl implements NcWorklineService {
     }
 
     @Override
-    public List<NcWorkline> findAll() {
-        return repository.findByStatus("生效");
+    public List<NcWorkline> findAll(String userId) {
+        List<String> cwkids = userService.getUserCurrentCwkid(userId);
+        return repository.findByStatusAndCwkidIn("生效",cwkids);
     }
 
     @Override

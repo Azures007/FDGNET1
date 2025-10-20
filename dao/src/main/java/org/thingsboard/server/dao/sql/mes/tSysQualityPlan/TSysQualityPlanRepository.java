@@ -3,9 +3,11 @@ package org.thingsboard.server.dao.sql.mes.tSysQualityPlan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.sys.TSysQualityPlan;
+import org.thingsboard.server.common.data.mes.sys.TSysQualityReportPlan;
 
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
  * @description
  * @date 2025/7/1 17:47:43
  */
-public interface TSysQualityPlanRepository extends JpaRepository<TSysQualityPlan,Integer> {
+public interface TSysQualityPlanRepository extends JpaRepository<TSysQualityPlan,Integer>, JpaSpecificationExecutor<TSysQualityPlan> {
 
     @Query(value = "SELECT t.id, t.plan_name, t.production_line_id, t.remarks, \n" +
             "t.is_enabled, t.create_time, t.create_user, t.update_time, t.update_user,t.production_line_name \n" +
