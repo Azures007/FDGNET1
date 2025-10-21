@@ -76,7 +76,7 @@ export class AddCateComponent implements OnInit {
         inspectionItem: ['', [Validators.required]],
         keyProcess: ['', [Validators.required]],
         monitoringMethod: ['', [Validators.required]],
-        isEnabled: ['', [Validators.required]],
+        isEnabled: ['1', [Validators.required]],
         standard: [''],
         remarks: [''],
       });

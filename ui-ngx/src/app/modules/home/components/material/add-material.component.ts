@@ -77,7 +77,7 @@ export class AddMaterialComponent implements OnInit {
         ncMaterialCategory: ['', [Validators.required]],
         ncMaterialMainCategory: ['', [Validators.required]],
         ncMaterialClassification: ['', [Validators.required]],
-        materialStatus: ['', [Validators.required]],
+        materialStatus: ['1', [Validators.required]],
         materialUnit: ['', [Validators.required]],
         ncMaterialQualityUnit: ['', [Validators.required]],
         // 校验正整数

@@ -103,7 +103,7 @@ export class AddRecipeComponent implements OnInit {
         recipeName: ['', [Validators.required]],
         recipeCode: ['', [Validators.required]],
         pkOrg: ['', [Validators.required]],
-        status: ['', [Validators.required]],
+        status: ['1', [Validators.required]],
         recipeDescription: [''],
         creator: [{ value: '提交自动生成', disabled: true }],
         createTime: [{ value: '提交自动生成', disabled: true }],

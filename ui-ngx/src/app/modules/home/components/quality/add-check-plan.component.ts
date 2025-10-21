@@ -74,7 +74,7 @@ export class AddCheckPlanComponent implements OnInit {
       this.dataForm = this.fb.group({
         productName: ['', [Validators.required]],
         prodLineId: ['', [Validators.required]],
-        enabled: ['', [Validators.required]],
+        enabled: ['1', [Validators.required]],
         remark: [''],
       });
     } else {

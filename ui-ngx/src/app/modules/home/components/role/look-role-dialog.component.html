@@ -61,6 +61,6 @@
     </div>
 </div>
 <div class="footer">
-    <button (click)="DialogClose()" *ngIf="!data.isEdit">关闭</button>
     <button (click)="DialogSaveClose()" cdkFocusInitial *ngIf="data.isEdit">保存</button>
+    <button style="margin-left: 10px;" [mat-dialog-close]>取消</button>
 </div>

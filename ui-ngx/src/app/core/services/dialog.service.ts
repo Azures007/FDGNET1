@@ -48,6 +48,7 @@ export class DialogService {
   message(message){
     const dialogConfig: MatDialogConfig = {
       disableClose: true,
+      width: '300px',
       data: message
     };
     let dialogRef = this.dialog.open(AlertDialogComponent, dialogConfig);
@@ -57,6 +58,7 @@ export class DialogService {
   confirm(title: string, message: string, cancel: string = null, ok: string = null, fullscreen: boolean = false): Observable<boolean> {
     const dialogConfig: MatDialogConfig = {
       disableClose: true,
+      width: '300px',
       data: {
         title,
         message,
@@ -74,6 +76,7 @@ export class DialogService {
   alert(title: string, message: string, ok: string = null, fullscreen: boolean = false): Observable<boolean> {
     const dialogConfig: MatDialogConfig = {
       disableClose: true,
+      width: '300px',
       data: {
         title,
         message,

@@ -64,7 +64,7 @@ export class AddCheckCateComponent implements OnInit {
       this.dataForm = this.fb.group({
         frequency: ['', [Validators.required]],
         importantItem: ['', [Validators.required]],
-        enabled: ['', [Validators.required]],
+        enabled: ['1', [Validators.required]],
         remark: [''],
       });
     } else {

@@ -119,7 +119,7 @@ export class AddPlanComponent implements OnInit {
       this.dataForm = this.fb.group({
         planName: ['', [Validators.required]],
         productionLineId: ['', [Validators.required]],
-        isEnabled: ['', [Validators.required]],
+        isEnabled: ['1', [Validators.required]],
         remarks: [''],
       });
     } else {

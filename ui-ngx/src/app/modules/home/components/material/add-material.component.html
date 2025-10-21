@@ -167,13 +167,8 @@
 
 <div class="footer">
   <button *ngIf="formType !== 'details'" (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
-    <mat-icon class="material-icons svgIcon">done</mat-icon>
     <span>提交</span>
   </button>
 
-  <button *ngIf="formType === 'details'" (click)="addDialogClose()" mat-raised-button color="primary"
-    class="search-btn btn">
-    <mat-icon class="material-icons svgIcon">done</mat-icon>
-    <span>关闭</span>
-  </button>
+  <button style="margin-left: 10px;" [mat-dialog-close]>取消</button>
 </div>
