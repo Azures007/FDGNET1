@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.thingsboard.server.common.data.mes.ncOrg.NcOrganization;
 import org.thingsboard.server.common.data.security.model.JwtToken;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.service.security.auth.jwt.RefreshTokenRepository;
@@ -39,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -74,9 +76,17 @@ public class RestAwareAuthenticationSuccessHandler implements AuthenticationSucc
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
-        if(securityUser != null&& securityUser.getPkOrg()!=null&&securityUser.getCwkid()!=null) {
+        /*if(securityUser != null&& securityUser.getPkOrg()!=null&&securityUser.getCwkid()!=null) {
             // 登录时保存基地和产线到redis
             userService.saveUserCurrentOrgLine(securityUser.getId().toString(), securityUser.getPkOrg(), securityUser.getCwkid());
+        }*/
+        if(securityUser != null) {
+            List<NcOrganization> list = userService.findBaseListByUserName(securityUser.getEmail());
+            if(list!=null&&list.size()>0) {
+                securityUser.setPkOrg(list.get(0).getPkOrg());
+                securityUser.setCwkid(userService.getFirstUserCwkid(securityUser.getId().toString(), securityUser.getPkOrg()));
+                userService.saveUserCurrentOrgLine(securityUser.getId().toString(), securityUser.getPkOrg(), securityUser.getCwkid());
+            }
         }
 
         JwtToken accessToken = tokenFactory.createAccessJwtToken(securityUser);

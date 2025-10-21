@@ -83,8 +83,8 @@ public class MessageCenterServiceImpl implements MessageCenterService {
 
     @Override
     public int unreadCount(String userId) {
-        String cwkid =userService.getUserCurrentCwkid(userId);//登录的产线
-        return pushMessageRepository.countUnreadByUserIdAndLineId(userId,cwkid);
+        List<String> cwkids =userService.getUserCurrentCwkid(userId);//登录的产线
+        return pushMessageRepository.countUnreadByUserIdAndLineId(userId,cwkids);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class MessageCenterServiceImpl implements MessageCenterService {
     public PageVo<MessageItem> list(String userId, Integer current, Integer size, String readStatus, String pushStatus) {
         Pageable pageable = PageRequest.of(Math.max(0, current == null ? 0 : current), Math.max(1, size == null ? 10 : size));
         Page<PushMessageEntity> page;
-        String cwkid = userService.getUserCurrentCwkid(userId);//登录的产线
+        List<String> cwkids = userService.getUserCurrentCwkid(userId);//登录的产线
 
         // 根据readStatus和pushStatus参数决定查询条件
         Boolean isRead = null;
@@ -112,14 +112,14 @@ public class MessageCenterServiceImpl implements MessageCenterService {
         
         // 根据组合条件查询
         if (isRead != null && isPush != null) {
-            page = pushMessageRepository.findByUserIdAndIsReadAndIsPushAndLineIdOrderByCreatedTimeDesc(userId, isRead, isPush, cwkid, pageable);
+            page = pushMessageRepository.findByUserIdAndIsReadAndIsPushAndLineIdOrderByCreatedTimeDesc(userId, isRead, isPush, cwkids, pageable);
         } else if (isRead != null) {
-            page = pushMessageRepository.findByUserIdAndIsReadAndLineIdOrderByCreatedTimeDesc(userId, isRead, cwkid, pageable);
+            page = pushMessageRepository.findByUserIdAndIsReadAndLineIdOrderByCreatedTimeDesc(userId, isRead, cwkids, pageable);
         } else if (isPush != null) {
-            page = pushMessageRepository.findByUserIdAndIsPushAndLineIdOrderByCreatedTimeDesc(userId, isPush, cwkid, pageable);
+            page = pushMessageRepository.findByUserIdAndIsPushAndLineIdOrderByCreatedTimeDesc(userId, isPush, cwkids, pageable);
         } else {
             // 查询全部消息（默认或"all"）
-            page = pushMessageRepository.findByUserIdAndLineIdOrderByCreatedTimeDesc(userId, cwkid, pageable);
+            page = pushMessageRepository.findByUserIdAndLineIdOrderByCreatedTimeDesc(userId, cwkids, pageable);
         }
         
         List<MessageItem> items = page.getContent().stream().map(this::toMessageItem).collect(Collectors.toList());
@@ -127,7 +127,7 @@ public class MessageCenterServiceImpl implements MessageCenterService {
         // 标记返回的消息为已推送
         if (!items.isEmpty()) {
             List<Long> messageIds = items.stream().map(MessageItem::getId).collect(Collectors.toList());
-            markMessagesAsPushed(userId, messageIds, cwkid);
+            markMessagesAsPushed(userId, messageIds);
         }
         
         PageVo<MessageItem> pageVo = new PageVo<>();
@@ -141,15 +141,15 @@ public class MessageCenterServiceImpl implements MessageCenterService {
     @Override
     @Transactional
     public void markAllRead(String userId) {
-        String cwkid =userService.getUserCurrentCwkid(userId);//登录的产线
-        pushMessageRepository.markAllReadByUserIdAndLineId(userId,cwkid);
+        List<String> cwkids =userService.getUserCurrentCwkid(userId);//登录的产线
+        pushMessageRepository.markAllReadByUserIdAndLineId(userId,cwkids);
     }
 
     @Override
     @Transactional
     public void markReadByType(String userId, String msgType) {
-        String cwkid =userService.getUserCurrentCwkid(userId);//登录的产线
-        pushMessageRepository.markAllReadByUserIdAndTypeAndLineId(userId, msgType,cwkid);
+        List<String> cwkids =userService.getUserCurrentCwkid(userId);//登录的产线
+        pushMessageRepository.markAllReadByUserIdAndTypeAndLineId(userId, msgType,cwkids);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class MessageCenterServiceImpl implements MessageCenterService {
      * 标记指定消息为已推送
      */
     @Transactional
-    public void markMessagesAsPushed(String userId, List<Long> messageIds, String lineId) {
+    public void markMessagesAsPushed(String userId, List<Long> messageIds) {
         if (messageIds != null && !messageIds.isEmpty()) {
             for (Long messageId : messageIds) {
                 pushMessageRepository.markPushByUserIdAndId(userId, messageId);

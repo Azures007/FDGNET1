@@ -21,10 +21,10 @@
             <mat-icon>search</mat-icon> 查询
         </button>
         <button class="search_btn" (click)="reset()">
-          <mat-icon>clear</mat-icon> 重置
+          <mat-icon>refresh</mat-icon> 重置
         </button>
         <button *ngIf="set.has('/mydevice/down')" class="search_btn" (click)="hadnleExportTable()">
-            <mat-icon svgIcon="daochu" aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon>
+            <mat-icon>vertical_align_bottom</mat-icon>
             导出
         </button>
     </div>
@@ -38,7 +38,7 @@
                 </button>
 
                 <button *ngIf="set.has('/mydevice/up')" class="add_btn btn_color_primary" (click)="handleUploadData()">
-                    <mat-icon svgIcon="daoru" aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon>
+                    <mat-icon>file_upload</mat-icon>
                      导入
                 </button>
             </div>

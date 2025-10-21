@@ -98,25 +98,32 @@ public class TSysQualityReportPlanServiceImpl implements TSysQualityReportPlanSe
     public PageVo<TSysQualityReportPlanDto> getPlanList(String userId,Integer current, Integer size, TSysQualityReportPlanSearchDto searchDto,Integer enabled) {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = PageRequest.of(current, size, sort);
-        String cwkid =userService.getUserCurrentCwkid(userId);
-        ExampleMatcher matcher = ExampleMatcher.matching()
-                .withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("prodLineName", ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("prodLineId", ExampleMatcher.GenericPropertyMatchers.exact());
-        TSysQualityReportPlan plan = new TSysQualityReportPlan();
-        if (StringUtils.isEmpty(searchDto.getProductName())) {
-            searchDto.setEnabled(null);
-        }
-        if (StringUtils.isEmpty(searchDto.getProdLineName())) {
-            searchDto.setProdLineName(null);
-        }
-        BeanUtils.copyProperties(searchDto, plan);
+        List<String> cwkids =userService.getUserCurrentCwkid(userId);
+        Page<TSysQualityReportPlan> planInfos = reportPlanRepository.findAll((root, query, cb) -> {
+            List<javax.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
 
-        plan.setEnabled(enabled);
-        //设置生产线id过滤
-        plan.setProdLineId(cwkid);
-        Example<TSysQualityReportPlan> example = Example.of(plan, matcher);
-        Page<TSysQualityReportPlan> planInfos = reportPlanRepository.findAll(example, pageable);
+            // 产线IN过滤
+            if (cwkids != null && !cwkids.isEmpty()) {
+                predicates.add(root.get("prodLineId").in(cwkids));
+            }
+
+            // 启用状态
+            if (enabled != null) {
+                predicates.add(cb.equal(root.get("enabled"), enabled));
+            }
+
+            // 产品名称 模糊
+            if (!StringUtils.isEmpty(searchDto.getProductName())) {
+                predicates.add(cb.like(root.get("productName"), "%" + searchDto.getProductName() + "%"));
+            }
+
+            // 产线名称 模糊
+            if (!StringUtils.isEmpty(searchDto.getProdLineName())) {
+                predicates.add(cb.like(root.get("prodLineName"), "%" + searchDto.getProdLineName() + "%"));
+            }
+
+            return cb.and(predicates.toArray(new javax.persistence.criteria.Predicate[0]));
+        }, pageable);
         List<TSysQualityReportPlanDto> dtos = new ArrayList<>();
         for (TSysQualityReportPlan info : planInfos) {
             TSysQualityReportPlanDto categoryDto = new TSysQualityReportPlanDto();

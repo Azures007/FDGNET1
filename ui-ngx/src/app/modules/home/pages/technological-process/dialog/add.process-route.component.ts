@@ -445,7 +445,21 @@ export class AddProcessRouteComponent implements OnInit {
       let exist = true;
 
       this.addParams.processInfos = [];
-
+      const sortCheckFlag = this.settingSource.every(item => item.sort);
+      if (!sortCheckFlag) {
+        this.utils.showMessage('请输入工序设置执行序号', 'warn');
+        return;
+      }
+      const processCheckFlag = this.settingSource.every(item => item.processId);
+      if (!processCheckFlag) {
+        this.utils.showMessage('请选择工序设置工序', 'warn');
+        return;
+      }
+      const joinsCheckFlag = this.settingSource.every(item => item.joins.length);
+      if (!joinsCheckFlag) {
+        this.utils.showMessage('请选择工序设置班别', 'warn');
+        return;
+      }
       this.settingSource.forEach(item => {
         const obj = {
           className: '',

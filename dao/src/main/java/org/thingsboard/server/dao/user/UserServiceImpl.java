@@ -514,9 +514,9 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         }
 
         //获取用户详情
-        String cwkid =getUserCurrentCwkid(userVo.getUseId());//登录的产线
+        //List<String> cwkids =getUserCurrentCwkid(userVo.getUseId());//登录的产线
         String pkOrg = getUserCurrentPkOrg(userVo.getUseId());//登录的基地
-        List<NcWarehouse> ncWarehouses = findNcWarehouseByUserIdAndPkOrgAndWorkline(userVo.getUseId(),pkOrg,cwkid);
+        List<NcWarehouse> ncWarehouses = findNcWarehouseByUserIdAndPkOrg(userVo.getUseId(),pkOrg);
         userVo.setNcWarehouses(ncWarehouses);
 
     }
@@ -824,6 +824,12 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         return ncWarehouseService.findAllByWarehouseIds(warehouseIds);
     }
     @Override
+    public List<NcWarehouse> findNcWarehouseByUserIdAndPkOrg(String userId, String pkOrg) {
+        List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrg(userId, pkOrg);
+        List<String> warehouseIds = details.stream().map(TSysUserDetail::getNcWarehouseId).distinct().collect(Collectors.toList());
+        return ncWarehouseService.findAllByWarehouseIds(warehouseIds);
+    }
+    @Override
     public void saveUserCurrentOrgLine(String userId, String pkOrg, String cwkid) {
         // 先保存到表
         TBusUserCurrentOrgLine entity = new TBusUserCurrentOrgLine();
@@ -850,8 +856,8 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
     }
 
     @Override
-    public String getUserCurrentCwkid(String userId) {
-        Object val = redisTemplate.opsForHash().get("user:orgline:" + userId, "cwkid");
+    public List<String> getUserCurrentCwkid(String userId) {
+        /*Object val = redisTemplate.opsForHash().get("user:orgline:" + userId, "cwkid");
         if (val != null) {
             return val.toString();
         } else {
@@ -859,6 +865,20 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
             return userCurrentOrgLineRepository.findById(userId)
                     .map(TBusUserCurrentOrgLine::getWorkline)
                     .orElse(null);
+        }*/
+        String pkOrg = getUserCurrentPkOrg(userId);
+        List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrg(userId, pkOrg);
+        List<String> cwkids = details.stream().map(TSysUserDetail::getNcCwkid).distinct().collect(Collectors.toList());
+        return cwkids;
+    }
+    @Override
+    public String getFirstUserCwkid(String userId, String pkOrg) {
+        List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrg(userId, pkOrg);
+        List<String> cwkids = details.stream().map(TSysUserDetail::getNcCwkid).distinct().collect(Collectors.toList());
+        if (cwkids.size() > 0) {
+            return cwkids.get(0);
+        }else{
+            return null;
         }
     }
 }

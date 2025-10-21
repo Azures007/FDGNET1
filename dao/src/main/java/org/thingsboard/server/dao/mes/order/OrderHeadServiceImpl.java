@@ -213,6 +213,9 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             if (!StringUtils.isEmpty(orderDto.getCwkid())) {
                 predicates.add(criteriaBuilder.equal(root.get("cwkid"), orderDto.getCwkid()));
             }
+            if (orderDto.getCwkids() != null && !orderDto.getCwkids().isEmpty()) {
+                predicates.add(root.get("cwkid").in(orderDto.getCwkids()));
+            }
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 if (orderDto.getBillDateStart() != null) {
@@ -1550,8 +1553,8 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     @Override
     public PageVo<OrderSimpleListVo> getSimpleOrderList(String userId, Integer current, Integer size, TBusOrderDto orderDto) {
         //获取登录的产线
-        String cwkid = userService.getUserCurrentCwkid(userId);
-        orderDto.setCwkid(cwkid);
+        List<String> cwkids = userService.getUserCurrentCwkid(userId);
+        orderDto.setCwkids(cwkids);
         PageVo<TBusOrderHead> pageVo = tBusOrderHeadList(current, size, orderDto);
         PageVo<OrderSimpleListVo> result = new PageVo<>();
         result.setTotal(pageVo.getTotal());

@@ -59,9 +59,9 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
      */
     @Override
     public Page<TSysPdRecordVo> tSysPdRecordList(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto) {
-        String cwkid =userService.getUserCurrentCwkid(userId);
+        //List<String> cwkids =userService.getUserCurrentCwkid(userId);
         String pkOrg = userService.getUserCurrentPkOrg(userId);
-        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrg(userId,pkOrg);
 
         Sort sort = Sort.by(Sort.Direction.ASC, "createdTime");
         if ("desc".equalsIgnoreCase(sortOrder)) {
@@ -127,9 +127,9 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
      */
     @Override
     public Page<TSysPdRecordVo> tSysPdRecordListWithSplit(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto) {
-        String cwkid = userService.getUserCurrentCwkid(userId);
+        //List<String> cwkids = userService.getUserCurrentCwkid(userId);
         String pkOrg = userService.getUserCurrentPkOrg(userId);
-        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId, pkOrg, cwkid);
+        List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrg(userId, pkOrg);
         Sort sort = Sort.by(Sort.Direction.ASC, "createdTime");
         if ("desc".equalsIgnoreCase(sortOrder)) {
             sort = Sort.by(Sort.Direction.DESC, "createdTime");

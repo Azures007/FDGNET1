@@ -141,7 +141,7 @@ export class StaffComponent implements OnInit {
   }
 
   //获取账号列表
-  getAccountList() {
+  getAccountList(cb?) {
     let par = {
       current: 0,
       size: 999,
@@ -154,46 +154,49 @@ export class StaffComponent implements OnInit {
     this.AccountService.fetchGetTableList(par).subscribe(res => {
       this.accountList = res.data.list;
       this.getStationList();
+      cb && cb();
     })
   }
 
   //新增
   showAddVisibilly() {
-    let data = {
-      params: this.addParams,
-      edit: true,
-      stationList: this.stationList,
-      accountList: this.accountList,
-    }
-    let diaref = this._dialog.open(StaffAddComponent, {
-      width: "695px",
-      height: "auto",
-      panelClass: 'custom-modalbox',
-      data: JSON.parse(JSON.stringify(data))
-    })
-    diaref.afterClosed().subscribe(res => {
-      if (res) {
-        let parData = res.params;
-        this.StaffService.fetchSaveAdd(parData).subscribe(res => {
-          if (res.errcode == 0) {
-            let data = {
-              title: "消息提示",
-              message: res.errmsg,
-              ok: '确定',
-            }
-            this.dialogService.message(data)
-          } else {
-            let data = {
-              title: "消息提示",
-              message: '新增人员成功',
-              ok: '确定',
-            }
-            this.dialogService.message(data).subscribe(res => {
-              this.getTableData();
-            })
-          }
-        })
+    this.getAccountList(() => {
+      let data = {
+        params: this.addParams,
+        edit: true,
+        stationList: this.stationList,
+        accountList: this.accountList,
       }
+      let diaref = this._dialog.open(StaffAddComponent, {
+        width: "695px",
+        height: "auto",
+        panelClass: 'custom-modalbox',
+        data: JSON.parse(JSON.stringify(data))
+      })
+      diaref.afterClosed().subscribe(res => {
+        if (res) {
+          let parData = res.params;
+          this.StaffService.fetchSaveAdd(parData).subscribe(res => {
+            if (res.errcode == 0) {
+              let data = {
+                title: "消息提示",
+                message: res.errmsg,
+                ok: '确定',
+              }
+              this.dialogService.message(data)
+            } else {
+              let data = {
+                title: "消息提示",
+                message: '新增人员成功',
+                ok: '确定',
+              }
+              this.dialogService.message(data).subscribe(res => {
+                this.getTableData();
+              })
+            }
+          })
+        }
+      })
     })
   }
 
@@ -215,42 +218,43 @@ export class StaffComponent implements OnInit {
 
   //查看和编辑
   lookDia(value, n) {
-    console.log(value)
-    let data = {
-      params: JSON.parse(JSON.stringify(value)),
-      edit: n == 0 ? true : false,
-      stationList: this.stationList,
-      accountList: this.accountList,
-    }
-    let diaref = this._dialog.open(StaffAddComponent, {
-      width: "695px",
-      height: "auto",
-      panelClass: 'custom-modalbox',
-      data: JSON.parse(JSON.stringify(data))
-    })
-    diaref.afterClosed().subscribe(res => {
-      if (res) {
-        let parData = res.params;
-        this.StaffService.fetchSaveAdd(parData).subscribe(res => {
-          if (res.errcode == 0) {
-            let data = {
-              title: "消息提示",
-              message: res.errmsg,
-              ok: '确定',
-            }
-            this.dialogService.message(data)
-          } else {
-            let data = {
-              title: "消息提示",
-              message: '编辑人员成功',
-              ok: '确定',
-            }
-            this.dialogService.message(data).subscribe(res => {
-              this.getTableData();
-            })
-          }
-        })
+    this.getAccountList(() => {
+      let data = {
+        params: JSON.parse(JSON.stringify(value)),
+        edit: n == 0 ? true : false,
+        stationList: this.stationList,
+        accountList: this.accountList,
       }
+      let diaref = this._dialog.open(StaffAddComponent, {
+        width: "695px",
+        height: "auto",
+        panelClass: 'custom-modalbox',
+        data: JSON.parse(JSON.stringify(data))
+      })
+      diaref.afterClosed().subscribe(res => {
+        if (res) {
+          let parData = res.params;
+          this.StaffService.fetchSaveAdd(parData).subscribe(res => {
+            if (res.errcode == 0) {
+              let data = {
+                title: "消息提示",
+                message: res.errmsg,
+                ok: '确定',
+              }
+              this.dialogService.message(data)
+            } else {
+              let data = {
+                title: "消息提示",
+                message: '编辑人员成功',
+                ok: '确定',
+              }
+              this.dialogService.message(data).subscribe(res => {
+                this.getTableData();
+              })
+            }
+          })
+        }
+      })
     })
   }
 

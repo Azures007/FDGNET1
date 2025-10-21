@@ -36,8 +36,8 @@ export class LoginComponent extends PageComponent implements OnInit {
   loginFormGroup = this.fb.group({
     username: ['', [Validators.required]],
     password: ['', [Validators.required]],
-    pkOrg: ['', [Validators.required]],
-    cwkid: ['', [Validators.required]],
+    // pkOrg: ['', [Validators.required]],
+    // cwkid: ['', [Validators.required]],
     remember: [false],
   });
   oauth2Clients: Array<OAuth2ClientInfo> = null;
@@ -59,18 +59,18 @@ export class LoginComponent extends PageComponent implements OnInit {
       const rememberPasswordObj = JSON.parse(rememberPassword);
       this.loginFormGroup.controls.username.setValue(rememberPasswordObj.username);
       this.loginFormGroup.controls.password.setValue(rememberPasswordObj.password);
-      this.userNameComplete = true;
-      this.authService.getOrgList(this.loginFormGroup.value.username).subscribe(
-        (res: any) => {
-          this.orgList = res.data || [];
-          if(this.orgList.length) {
-            this.userNameComplete = true;
-          }
-        }
-      );
-      this.loginFormGroup.controls.pkOrg.setValue(rememberPasswordObj.pkOrg);
-      this.changeOrg(rememberPasswordObj.pkOrg);
-      this.loginFormGroup.controls.cwkid.setValue(rememberPasswordObj.cwkid);
+      // this.userNameComplete = true;
+      // this.authService.getOrgList(this.loginFormGroup.value.username).subscribe(
+      //   (res: any) => {
+      //     this.orgList = res.data || [];
+      //     if(this.orgList.length) {
+      //       this.userNameComplete = true;
+      //     }
+      //   }
+      // );
+      // this.loginFormGroup.controls.pkOrg.setValue(rememberPasswordObj.pkOrg);
+      // this.changeOrg(rememberPasswordObj.pkOrg);
+      // this.loginFormGroup.controls.cwkid.setValue(rememberPasswordObj.cwkid);
       this.loginFormGroup.controls.remember.setValue(rememberPasswordObj.remember);
     }
   }
@@ -92,21 +92,21 @@ export class LoginComponent extends PageComponent implements OnInit {
     this.userNameComplete = false;
   }
   login(): void {
-    if (!this.userNameComplete) {
-      if(!this.loginFormGroup.value.username) {
-        this.utils.showMessage('请输入账号', 'error');
-        return;
-      }
-      this.authService.getOrgList(this.loginFormGroup.value.username).subscribe(
-        (res: any) => {
-          this.orgList = res.data || [];
-          if(this.orgList.length) {
-            this.userNameComplete = true;
-          }
-        }
-      );
-      return;
-    }
+    // if (!this.userNameComplete) {
+    //   if(!this.loginFormGroup.value.username) {
+    //     this.utils.showMessage('请输入账号', 'error');
+    //     return;
+    //   }
+    //   this.authService.getOrgList(this.loginFormGroup.value.username).subscribe(
+    //     (res: any) => {
+    //       this.orgList = res.data || [];
+    //       if(this.orgList.length) {
+    //         this.userNameComplete = true;
+    //       }
+    //     }
+    //   );
+    //   return;
+    // }
     if (this.loginFormGroup.valid) {
 
       this.authService.login(this.loginFormGroup.value).subscribe(

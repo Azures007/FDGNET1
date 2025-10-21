@@ -242,8 +242,8 @@ public class DailyReportServiceImpl implements DailyReportService{
     @Override
     public PageVo<DailyReportVo> getDailyList(String userId,Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
         //获取登录的产线
-        String cwkid =userService.getUserCurrentCwkid(userId);
-        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndCreatedTimeBetweenOrderByIdDesc(cwkid,startTime,endTime);
+        List<String> cwkid =userService.getUserCurrentCwkid(userId);
+        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdInAndCreatedTimeBetweenOrderByIdDesc(cwkid,startTime,endTime);
         List<DailyReportVo> saveVos = new ArrayList<>();
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();
@@ -261,8 +261,8 @@ public class DailyReportServiceImpl implements DailyReportService{
     @Override
     public PageVo<DailyReportVo> getDailySubmitList(String userId,Integer current, Integer size, LocalDate startTime, LocalDate endTime) {
         //获取登录的产线
-        String cwkid =userService.getUserCurrentCwkid(userId);
-        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdAndStatusInAndCreatedTimeBetweenOrderByIdDesc(cwkid,List.of("1", "2"),startTime,endTime);
+        List<String> cwkid =userService.getUserCurrentCwkid(userId);
+        List<DailyReportHead> plan = dailyReportRepository.findAllByProdLineIdInAndStatusInAndCreatedTimeBetweenOrderByIdDesc(cwkid,List.of("1", "2"),startTime,endTime);
         List<DailyReportVo> saveVos = new ArrayList<>();
         for (DailyReportHead item : plan) {
             DailyReportVo saveVo = new DailyReportVo();

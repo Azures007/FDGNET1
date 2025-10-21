@@ -559,7 +559,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             } catch (Exception ignore) {}
         }
         //扣减线边仓库存
-        String cwkid =userService.getUserCurrentCwkid(userId);
+        String cwkid =tBusOrderHead.getCwkid();
         String pkOrg = userService.getUserCurrentPkOrg(userId);
         List<NcWarehouse> ncWarehouses = userService.findNcWarehouseByUserIdAndPkOrgAndWorkline(userId,pkOrg,cwkid);
         if(ncWarehouses!=null&& !ncWarehouses.isEmpty()){

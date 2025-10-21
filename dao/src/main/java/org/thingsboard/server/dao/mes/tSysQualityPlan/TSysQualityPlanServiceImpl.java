@@ -10,10 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thingsboard.server.common.data.mes.sys.TSysQualityCategory;
-import org.thingsboard.server.common.data.mes.sys.TSysQualityPlan;
-import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanConfig;
-import org.thingsboard.server.common.data.mes.sys.TSysQualityPlanJudgment;
+import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.dao.mes.dto.TSysQualityPlanDto;
 import org.thingsboard.server.dao.sql.mes.tSysQualityCategory.TSysQualityCategoryRepository;
 import org.thingsboard.server.dao.sql.mes.tSysQualityPlan.TSysQualityPlanConfigRepository;
@@ -56,11 +53,10 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
                                                      String sortField,
                                                      String sortOrder,
                                                      TSysQualityPlanDto tSysQualityPlanDto) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
 
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
-            String converterSortField = StringConverterUtil.camelToSnake(sortField);
-            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
+            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, sortField);
         }
 
         Pageable pageable = PageRequest.of(current, size, sort);
@@ -70,30 +66,27 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
         TSysQualityPlan tSysQualityPlan = new TSysQualityPlan();
         BeanUtils.copyProperties(tSysQualityPlanDto, tSysQualityPlan);
 //        Example<TSysQualityPlan> example = Example.of(tSysClass, matcher);
-        //获取登录的产线
-        String cwkid =userService.getUserCurrentCwkid(userId);
-        tSysQualityPlan.setProductionLineId(cwkid);
+        Page<TSysQualityPlan> tSysQualityPlanPage = tSysQualityPlanRepository.findAll((root, query, cb) -> {
 
+            List<javax.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
 
-//        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
-        //产品名称
-        tSysQualityPlan.setPlanName(StringUtils.isNotBlank(tSysQualityPlan.getPlanName())?tSysQualityPlan.getPlanName():"");
-        //部门名称
-//        tSysQualityPlan.setProductionDepartmentName(StringUtils.isNotBlank(tSysQualityPlan.getProductionDepartmentName())?tSysQualityPlan.getProductionDepartmentName():"");
-        //生产线名称
-        tSysQualityPlan.setProductionLineName(StringUtils.isNotBlank(tSysQualityPlan.getProductionLineName())?tSysQualityPlan.getProductionLineName():"");
-        //启停状态
-        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
-//        tSysQualityPlan.setIsEnabled("1");
+            // 产线IN过滤
+            List<String> cwkids = userService.getUserCurrentCwkid(userId);
+            if (cwkids != null && !cwkids.isEmpty()) {
+                predicates.add(root.get("productionLineId").in(cwkids));
+            }
+            if (!org.thingsboard.server.common.data.StringUtils.isEmpty(tSysQualityPlan.getPlanName())) {
+                predicates.add(cb.like(root.get("planName"), "%" + tSysQualityPlan.getPlanName() + "%"));
+            }
+            if (!org.thingsboard.server.common.data.StringUtils.isEmpty(tSysQualityPlan.getProductionLineName())) {
+                predicates.add(cb.equal(root.get("productionLineName"), tSysQualityPlan.getProductionLineName()));
+            }
+            if (!org.thingsboard.server.common.data.StringUtils.isEmpty(tSysQualityPlan.getIsEnabled())) {
+                predicates.add(cb.equal(root.get("isEnabled"), tSysQualityPlan.getIsEnabled()));
+            }
+            return cb.and(predicates.toArray(new javax.persistence.criteria.Predicate[0]));
+        }, pageable);
 
-//        tSysQualityPlan.setName(StringUtils.isNotBlank(tSysQualityPlan.getName()) ? tSysQualityPlan.getName() : "");
-//        tSysQualityPlan.setClassNumber(StringUtils.isNotBlank(tSysQualityPlan.getClassNumber()) ? tSysQualityPlan.getClassNumber() : "");
-
-        Page<TSysQualityPlan> tSysQualityPlanPage = tSysQualityPlanRepository.findAllBy(tSysQualityPlan, pageable);
-//        String code = "SCHEDULING0000";
-//        tSysQualityPlanPage.getContent().stream().forEach(tSysQualityPlan1 -> {
-//            tSysQualityPlan1.setSchedulingCodeDsc(GlobalConstant.getCodeDscName(code, tSysQualityPlan1.getScheduling()));
-//        });
         return tSysQualityPlanPage;
     }
 
@@ -180,7 +173,7 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
                 }
             }
         }
-        
+
         vo.settSysQualityPlanConfigList(tSysQualityPlanConfigList);
 
         if (null == tSysQualityPlan){
@@ -194,11 +187,10 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 
     @Override
     public Page<TSysQualityPlan> tSysQualityPlanListWithEnable(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysQualityPlanDto tSysQualityPlanDto) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "create_time");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
 
         if (!(StringUtils.isBlank(sortField) && StringUtils.isBlank(sortOrder))){
-            String converterSortField = StringConverterUtil.camelToSnake(sortField);
-            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, converterSortField);
+            sort = Sort.by(sortOrder.equals("asc")?Sort.Direction.ASC:Sort.Direction.DESC, sortField);
         }
 
         Pageable pageable = PageRequest.of(current, size, sort);
@@ -207,31 +199,24 @@ public class TSysQualityPlanServiceImpl implements TSysQualityPlanService {
 //                .withMatcher("enabledSt", ExampleMatcher.GenericPropertyMatchers.exact());
         TSysQualityPlan tSysQualityPlan = new TSysQualityPlan();
         BeanUtils.copyProperties(tSysQualityPlanDto, tSysQualityPlan);
-//        Example<TSysQualityPlan> example = Example.of(tSysClass, matcher);
-        //获取登录的产线
-        String cwkid =userService.getUserCurrentCwkid(userId);
-        tSysQualityPlan.setProductionLineId(cwkid);
+        Page<TSysQualityPlan> tSysQualityPlanPage = tSysQualityPlanRepository.findAll((root, query, cb) -> {
 
+            List<javax.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
 
-//        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
-        //产品名称
-        tSysQualityPlan.setPlanName(StringUtils.isNotBlank(tSysQualityPlan.getPlanName())?tSysQualityPlan.getPlanName():"");
-        //部门名称
-//        tSysQualityPlan.setProductionDepartmentName(StringUtils.isNotBlank(tSysQualityPlan.getProductionDepartmentName())?tSysQualityPlan.getProductionDepartmentName():"");
-        //生产线名称
-        tSysQualityPlan.setProductionLineName(StringUtils.isNotBlank(tSysQualityPlan.getProductionLineName())?tSysQualityPlan.getProductionLineName():"");
-        //启停状态
-//        tSysQualityPlan.setIsEnabled(StringUtils.isNotBlank(tSysQualityPlan.getIsEnabled()) ? tSysQualityPlan.getIsEnabled() : "");
-        tSysQualityPlan.setIsEnabled("1");
-
-//        tSysQualityPlan.setName(StringUtils.isNotBlank(tSysQualityPlan.getName()) ? tSysQualityPlan.getName() : "");
-//        tSysQualityPlan.setClassNumber(StringUtils.isNotBlank(tSysQualityPlan.getClassNumber()) ? tSysQualityPlan.getClassNumber() : "");
-
-        Page<TSysQualityPlan> tSysQualityPlanPage = tSysQualityPlanRepository.findAllBy(tSysQualityPlan, pageable);
-//        String code = "SCHEDULING0000";
-//        tSysQualityPlanPage.getContent().stream().forEach(tSysQualityPlan1 -> {
-//            tSysQualityPlan1.setSchedulingCodeDsc(GlobalConstant.getCodeDscName(code, tSysQualityPlan1.getScheduling()));
-//        });
+            // 产线IN过滤
+            List<String> cwkids = userService.getUserCurrentCwkid(userId);
+            if (cwkids != null && !cwkids.isEmpty()) {
+                predicates.add(root.get("productionLineId").in(cwkids));
+            }
+            if (!org.thingsboard.server.common.data.StringUtils.isEmpty(tSysQualityPlan.getPlanName())) {
+                predicates.add(cb.like(root.get("planName"), "%" + tSysQualityPlan.getPlanName() + "%"));
+            }
+            if (!org.thingsboard.server.common.data.StringUtils.isEmpty(tSysQualityPlan.getProductionLineName())) {
+                predicates.add(cb.equal(root.get("productionLineName"), tSysQualityPlan.getProductionLineName()));
+            }
+            predicates.add(cb.equal(root.get("isEnabled"), "1"));
+            return cb.and(predicates.toArray(new javax.persistence.criteria.Predicate[0]));
+        }, pageable);
         return tSysQualityPlanPage;
     }
 
