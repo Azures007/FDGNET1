@@ -75,7 +75,7 @@ public class UserAspect {
     private String mesPort;
 
 
-    @Pointcut("execution(public * org.thingsboard.server.controller.*.*(..))")
+    @Pointcut("execution(public * org.thingsboard.server.controller..*.*(..))")
     public void pointCut() {
     }
 
