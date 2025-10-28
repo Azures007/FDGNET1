@@ -897,5 +897,7 @@ COMMENT ON COLUMN public.t_bus_daily_report_head.status IS '保存还是提交�
 ALTER TABLE public.t_sys_recipe_input ALTER COLUMN standard_input TYPE numeric(16, 6) USING standard_input::numeric(16, 6);
 
 -- 2025-10-28
-ALTER TABLE t_sys_recipe_input ADD COLUMN semi_finished_product VARCHAR(255);
-COMMENT ON COLUMN t_sys_recipe_input.semi_finished_product IS '半成品';
+ALTER TABLE t_sys_recipe_input ADD COLUMN semi_finished_product_name VARCHAR(255);
+COMMENT ON COLUMN t_sys_recipe_input.semi_finished_product_name IS '半成品';
+ALTER TABLE t_sys_recipe_input ADD COLUMN semi_finished_product_code VARCHAR(255);
+COMMENT ON COLUMN t_sys_recipe_input.semi_finished_product_code IS '半成品编码';

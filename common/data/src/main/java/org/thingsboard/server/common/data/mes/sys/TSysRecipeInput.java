@@ -75,8 +75,12 @@ public class TSysRecipeInput {
     private Date updateTime;
 
     @ApiModelProperty("半成品")
-    @Column(name = "semi_finished_product")
-    private String semiFinishedProduct;
+    @Column(name = "semi_finished_product_name")
+    private String semiFinishedProductName;
+
+    @ApiModelProperty("半成品编码")
+    @Column(name = "semi_finished_product_code")
+    private String semiFinishedProductCode;
 
     // 多对一关系：配方（为避免详情序列化时出现循环/冗余，忽略该字段）
     @ManyToOne(fetch = FetchType.LAZY)
