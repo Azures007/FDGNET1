@@ -85,20 +85,25 @@
       <table class="table">
         <tr>
           <th><mat-checkbox [(ngModel)]="isAllChecked" [disabled]="formType === 'details'"></mat-checkbox></th>
+          <th>半成品</th>
           <th>物料名称</th>
           <th>物料编码</th>
-          <th>每锅投入标准</th>
+          <th>每锅/每次投入标准</th>
           <th>单位</th>
           <th>投入下限比例%</th>
           <th>投入上限比例%</th>
           <th>工序</th>
         </tr>
-        <tr *ngFor="let item of configs; let i = index">
+        <tr *ngFor="let item of configsSortBySemiFinishedProductName; let i = index">
           <td>
             <div>
               <mat-checkbox [(ngModel)]="item.isChecked" (change)="checkChange($event,i)"
                 [disabled]="formType === 'details'"></mat-checkbox>
             </div>
+          </td>
+          <td>
+            <div>{{item.semiFinishedProductName}}<span *ngIf="formType !== 'details'" class="btn btn-color"
+                (click)="selectSemiFinishedProduct(item, i)">选择</span></div>
           </td>
           <td>
             <div>{{item.materialName}}<span *ngIf="formType !== 'details'" class="btn btn-color"
