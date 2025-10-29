@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.sys.*;
+import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.dto.RecipeQueryDto;
 import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeInputRepository;
 import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeProductBindingRepository;
@@ -100,6 +101,20 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
         }
         TSysRecipe recipe=saveDto.getRecipe();
         List<TSysRecipeInput> recipeInputs = saveDto.getRecipeInputs();
+        // 校验半成品信息的完整性
+        if (recipeInputs != null && !recipeInputs.isEmpty()) {
+            boolean hasSemiFinished = recipeInputs.stream()
+                    .anyMatch(input -> input.getSemiFinishedProductName() != null && !input.getSemiFinishedProductName().isEmpty() &&
+                            input.getSemiFinishedProductCode() != null && !input.getSemiFinishedProductCode().isEmpty());
+            if (hasSemiFinished) {
+                boolean allHasSemiFinished = recipeInputs.stream()
+                        .allMatch(input -> input.getSemiFinishedProductName() != null && !input.getSemiFinishedProductName().isEmpty() &&
+                                input.getSemiFinishedProductCode() != null && !input.getSemiFinishedProductCode().isEmpty());
+                if (!allHasSemiFinished) {
+                    throw new RuntimeException("请完整设置半成品");
+                }
+            }
+        }
         boolean isNew = recipe.getRecipeId() == null;
 
         if (isNew) {
