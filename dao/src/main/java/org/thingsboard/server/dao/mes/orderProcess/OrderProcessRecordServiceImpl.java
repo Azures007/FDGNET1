@@ -490,7 +490,11 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                                 result.setInputUpperLimit(inputUpperLimit.floatValue());
                                             }
                                         }
-                                        groupResults.add(result);
+                                        try {
+                                            groupResults.add(result.clone());
+                                        } catch (CloneNotSupportedException e) {
+                                            throw new RuntimeException(e);
+                                        }
                                     }
                                 }
                                 
@@ -829,7 +833,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
             try {
                 int cnt = 0;
                 if (org.apache.commons.lang3.StringUtils.isNotBlank(orderPPbomResult.getMaterialNumber())) {
-                    cnt = orderPotCountRepository.sumInputCountByOrderProcessAndMaterialNumber(orderProcessId, orderPPbomResult.getMaterialNumber());
+                    cnt = orderPotCountRepository.sumInputCountByOrderProcessAndMaterialNumberAndGroup(orderProcessId, orderPPbomResult.getMaterialNumber(), groupCode);
                 }
                 orderPPbomResult.setInputCount(cnt);
             } catch (Exception ignore) {

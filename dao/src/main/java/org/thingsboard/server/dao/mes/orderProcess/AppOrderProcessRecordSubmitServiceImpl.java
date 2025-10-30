@@ -732,6 +732,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             rec.setProcessNumber(processNumber);
             rec.setProcessName(processName);
             rec.setInputCount(initial);
+            rec.setGroupCode(groupCode);
             orderPotCountRepository.save(rec);
             // 更新锅数：取当前订单所有物料投入次数的最小值（包括未投入的物料）
             if (delta > 0) {
