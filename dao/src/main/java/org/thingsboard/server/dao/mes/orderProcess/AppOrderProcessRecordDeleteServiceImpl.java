@@ -149,6 +149,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
             acc.setAccumulatedQty(qty);
             acc.setCreatedTime(new Date());
             acc.setLastUpdateTime(new Date());
+            acc.setGroupCode(groupCode);
             accumulationRepository.save(acc);
         }
     }
