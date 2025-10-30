@@ -421,7 +421,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                             // 检查工序编码是否匹配
                             if (StringUtils.isNotEmpty(input.getProcessNumber()) && currentProcessNumber.equals(input.getProcessNumber())) {
                                 recipeMaterialCodes.add(input.getMaterialCode());
-                                recipeMaterialMap.put(input.getMaterialCode(), input);
+                                recipeMaterialMap.put(input.getSemiFinishedProductCode()+"_"+input.getMaterialCode(), input);
                             }
                         }
                     }
@@ -466,7 +466,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                 // 添加原有的PPBOM结果中属于该分组的物料
                                 for (OrderPPbomResult result : orderPPbomResults) {
                                     if (groupMaterialCodes.contains(result.getMaterialNumber())) {
-                                        TSysRecipeInput recipeInput = recipeMaterialMap.get(result.getMaterialNumber());
+                                        TSysRecipeInput recipeInput = recipeMaterialMap.get(semiFinishedProductCode+"_"+result.getMaterialNumber());
                                         if (recipeInput != null) {
                                             result.setUnit(recipeInput.getUnit());
                                             result.setUnitStr(GlobalConstant.getCodeDscName("UNIT0000", recipeInput.getUnit()));
@@ -546,10 +546,13 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                             }
                             return ppbomGroupVos;
                         } else {
-                            // 没有半成品字段，使用原有逻辑
+                        // 没有半成品字段，使用原有逻辑
                         // 更新单位信息为配方管理的单位，并计算投入下限和投入上限
                         for (OrderPPbomResult result : orderPPbomResults) {
-                            TSysRecipeInput recipeInput = recipeMaterialMap.get(result.getMaterialNumber());
+                            // 从复合键映射中按物料编码找到任意一条匹配记录
+                            TSysRecipeInput recipeInput = recipeMaterialMap.values().stream()
+                                    .filter(in -> in != null && org.apache.commons.lang3.StringUtils.equals(in.getMaterialCode(), result.getMaterialNumber()))
+                                    .findFirst().orElse(null);
                             if (recipeInput != null) {
                                 result.setUnit(recipeInput.getUnit());
                                 result.setUnitStr(GlobalConstant.getCodeDscName("UNIT0000", recipeInput.getUnit()));
@@ -582,7 +585,9 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                     .collect(java.util.stream.Collectors.toSet());
                             for (String materialCode : recipeMaterialCodes) {
                                 if (!existingCodes.contains(materialCode)) {
-                                    TSysRecipeInput recipeInput = recipeMaterialMap.get(materialCode);
+                                    TSysRecipeInput recipeInput = recipeMaterialMap.values().stream()
+                                            .filter(in -> in != null && org.apache.commons.lang3.StringUtils.equals(in.getMaterialCode(), materialCode))
+                                            .findFirst().orElse(null);
                                     if (recipeInput != null) {
                                         OrderPPbomResult add = new OrderPPbomResult();
                                         add.setMaterialNumber(materialCode);
