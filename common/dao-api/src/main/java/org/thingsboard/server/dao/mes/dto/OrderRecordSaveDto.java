@@ -110,4 +110,10 @@ public class OrderRecordSaveDto {
 
     @ApiModelProperty("少于下限选择不补料也提交（true=直接提交）")
     private Boolean noSupplementCommit;
+
+    @ApiModelProperty("分组编码（半成品分组标识）")
+    private String groupCode;
+
+    @ApiModelProperty("分组名称")
+    private String groupName;
 }

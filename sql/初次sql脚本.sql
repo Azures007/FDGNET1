@@ -1807,3 +1807,16 @@ COMMENT ON COLUMN t_bus_order_accumulation.material_number IS '物料编码';
 COMMENT ON COLUMN t_bus_order_accumulation.accumulated_qty IS '累计数量';
 COMMENT ON COLUMN t_bus_order_accumulation.last_update_time IS '最后更新时间';
 COMMENT ON COLUMN t_bus_order_accumulation.created_time IS '创建时间';
+
+--2025-10-29
+ALTER TABLE t_bus_order_pot_count ADD COLUMN group_code VARCHAR(255);
+COMMENT ON COLUMN t_bus_order_pot_count.group_code IS '分组编码';
+
+ALTER TABLE t_bus_order_pot_count ADD COLUMN group_name VARCHAR(255);
+COMMENT ON COLUMN t_bus_order_pot_count.group_name IS '分组名称';
+
+ALTER TABLE t_bus_order_accumulation ADD COLUMN group_code VARCHAR(255);
+COMMENT ON COLUMN t_bus_order_accumulation.group_code IS '分组编码';
+
+ALTER TABLE t_bus_order_process_history ADD COLUMN group_code VARCHAR(255);
+COMMENT ON COLUMN t_bus_order_process_history.group_code IS '分组编码';

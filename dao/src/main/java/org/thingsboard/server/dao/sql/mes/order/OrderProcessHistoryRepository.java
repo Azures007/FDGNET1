@@ -223,6 +223,6 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
 //            " GROUP BY order_process_history_id ", nativeQuery = true)
 //    List<TBusOrderProcessHistory> getOrderProcessHistoryBg(Integer orderProcessId, Integer importPotGroup, String recordTypeBg, String orderProcessRecordId, String reportStatus, Float importPot);
     @Modifying
-    @Query("update TBusOrderProcessHistory t set t.potNumber = t.potNumber-1 where t.orderProcessId = :orderProcessId and t.materialNumber = :materialNumber and t.potNumber> :potNumber")
-    void updatePotNumberDecrement(@Param("orderProcessId") Integer orderProcessId, @Param("materialNumber") String materialNumber, @Param("potNumber") Integer potNumber);
+    @Query("update TBusOrderProcessHistory t set t.potNumber = t.potNumber-1 where t.orderProcessId = :orderProcessId and t.materialNumber = :materialNumber and t.groupCode = :groupCode and t.potNumber> :potNumber")
+    void updatePotNumberDecrement(@Param("orderProcessId") Integer orderProcessId, @Param("materialNumber") String materialNumber, @Param("groupCode") String groupCode, @Param("potNumber") Integer potNumber);
 }

@@ -210,4 +210,7 @@ public class TBusOrderProcessHistory {
     @Column(name = "is_supplement")
     private String isSupplement;
 
+    @ApiModelProperty("分组编码")
+    @Column(name = "group_code")
+    private String groupCode;
 }
