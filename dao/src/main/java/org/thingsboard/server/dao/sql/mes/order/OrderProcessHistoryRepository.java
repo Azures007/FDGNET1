@@ -93,7 +93,7 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
 
     @Query(value = "select order_ppbom_id,material_id,material_number,material_name,'kg' record_unit ,cast(sum(cast(record_qty * (case when record_unit='kg' then 1 else 0.001 end) as DECIMAL(19, 3))) as DECIMAL(19, 3)) record_qty,max(report_time) report_time  \n" +
             "from t_bus_order_process_history \n" +
-            "where order_process_id =?1 and order_ppbom_id =?2 and bus_type ='BG' and report_status<>'1' and import_pot =?3 and record_type_bg ='REPORTYPE0001' and device_person_group_id=?4 " +
+            "where order_process_id =?1 and (CASE WHEN ?2 IS NULL THEN TRUE ELSE order_ppbom_id = ?2 END) and bus_type ='BG' and report_status<>'1' and import_pot =?3 and record_type_bg ='REPORTYPE0001' and device_person_group_id=?4 " +
             "group by order_ppbom_id,material_id,material_number,material_name", nativeQuery = true)
     Map getByPpbomLimitTwo(Integer orderProcessId, Integer orderPpbomId, int importPot,String groupId);
 
@@ -152,8 +152,14 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
     List<TBusOrderProcessHistory> getOrderProcessHistoryBg(Integer orderProcessId, Integer orderPPBomId, String recordTypeBg, String orderProcessRecordId, String reportStatus);
 
     @Transactional
+    @Query(value = "select * from t_bus_order_process_history where bus_type='BG' and order_process_id = ?1 and record_type_bg = ?2 and device_person_group_id = ?3 and report_status = ?4 " +
+            " GROUP BY order_process_history_id ", nativeQuery = true)
+    List<TBusOrderProcessHistory> getOrderProcessHistoryBg1(Integer orderProcessId,String recordTypeBg, String orderProcessRecordId, String reportStatus);
+
+
+    @Transactional
     @Query(value = "select * from t_bus_order_process_history " +
-            "where bus_type='BG' and order_process_id = ?1 and order_ppbom_id = ?2 " +
+            "where bus_type='BG' and order_process_id = ?1 and (CASE WHEN ?2 IS NULL THEN TRUE ELSE order_ppbom_id = ?2 END) " +
             "and record_type_bg = ?3 and device_person_group_id = ?4 and report_status = ?5 " +
             " and import_pot_group = ?6 and import_pot = ?7 " +
             " GROUP BY order_process_history_id ", nativeQuery = true)
@@ -197,7 +203,7 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
      * @return
      */
     @Query(value = "(select  min(all_import_pot) from t_bus_order_process_history \n" +
-            "where order_process_id =?1 and record_type ='1' and bus_type ='BG' and order_ppbom_id =?2  and report_status='0')",nativeQuery = true)
+            "where order_process_id =?1 and record_type ='1' and bus_type ='BG' and (CASE WHEN ?2 IS NULL THEN TRUE ELSE order_ppbom_id = ?2 END)  and report_status='0')",nativeQuery = true)
     Integer getOneHistory(Integer orderProcessId, Integer orderPPBomId);
 
     /***
@@ -207,18 +213,18 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
      * @return
      */
     @Query(value = "select all_import_pot+1 from (select  all_import_pot from t_bus_order_process_history \n" +
-            "where order_process_id =?1 and record_type ='1' and bus_type ='BG' and order_ppbom_id =?2  and report_status='0') a\n" +
+            "where order_process_id =?1 and record_type ='1' and bus_type ='BG' and (CASE WHEN ?2 IS NULL THEN TRUE ELSE order_ppbom_id = ?2 END)  and report_status='0') a\n" +
             "where not exists (select 1 from (select  all_import_pot from t_bus_order_process_history \n" +
-            "where order_process_id =?1 and record_type ='1' and bus_type ='BG' and order_ppbom_id =?2  and report_status='0') b where b.all_import_pot=a.all_import_pot+1)\n" +
+            "where order_process_id =?1 and record_type ='1' and bus_type ='BG' and (CASE WHEN ?2 IS NULL THEN TRUE ELSE order_ppbom_id = ?2 END)  and report_status='0') b where b.all_import_pot=a.all_import_pot+1)\n" +
             "and all_import_pot<=(select max(all_import_pot) from (select  all_import_pot from t_bus_order_process_history \n" +
-            "where order_process_id =?1 and record_type ='1' and bus_type ='BG' and order_ppbom_id =?2  and report_status='0') as t )\n" +
+            "where order_process_id =?1 and record_type ='1' and bus_type ='BG' and (CASE WHEN ?2 IS NULL THEN TRUE ELSE order_ppbom_id = ?2 END)  and report_status='0') as t )\n" +
             "limit 1 offset 0",nativeQuery = true)
     Integer breakHistory(Integer orderProcessId, Integer orderPPBomId);
 
     List<TBusOrderProcessHistory> findAllByOrderProcessIdAndMaterialNumberAndPotNumberAndReportStatusAndOrderProcessHistoryIdIsNot(Integer orderProcessId,String materialNumber, Integer potNumber, String reportStatus, Integer orderProcessHistoryId);
 
     List<TBusOrderProcessHistory> findByOrderProcessIdAndIsSupplement(Integer orderProcessId, String isSupplement);
-//    @Transactional
+    //    @Transactional
 //    @Query(value = "select * from t_bus_order_process_history where bus_type='BG' and order_process_id = ?1 and import_pot_group = ?2 and record_type_bg = ?3 and device_person_group_id = ?4 and report_status = ?5 and import_pot = ?6 " +
 //            " GROUP BY order_process_history_id ", nativeQuery = true)
 //    List<TBusOrderProcessHistory> getOrderProcessHistoryBg(Integer orderProcessId, Integer importPotGroup, String recordTypeBg, String orderProcessRecordId, String reportStatus, Float importPot);

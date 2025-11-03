@@ -27,7 +27,7 @@ import java.util.UUID;
 public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderProcessRecord, Integer>, JpaSpecificationExecutor<TBusOrderProcessRecord> {
 
     @Query(value = "select * from t_bus_order_process_record " +
-            "where bus_type='BG' and order_process_id = ?1 and order_ppbom_id = ?2 and record_type_bg = ?3 and device_person_group_id = ?4 " +
+            "where bus_type='BG' and order_process_id = ?1 and order_ppbom_id = CAST(?2 AS INTEGER) and record_type_bg = ?3 and device_person_group_id = ?4 " +
             " and import_pot_group = ?5 and import_pot = ?6 " +
             " GROUP BY order_process_record_id ", nativeQuery = true)
     List<TBusOrderProcessRecord> getOrderProcessRecordBgGroup(Integer orderProcessId, Integer orderPPBomId, String recordTypeBg, String orderProcessRecordId

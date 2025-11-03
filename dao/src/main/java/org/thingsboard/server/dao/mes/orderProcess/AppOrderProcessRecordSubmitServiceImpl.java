@@ -454,8 +454,15 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 //报工类型为尾料或者其他，则默认为1
                 history.setImportPot(1f);
             } else {
-                var historyList = orderProcessHistoryRepository.getOrderProcessHistoryBg(history.getOrderProcessId(), history.getOrderPPBomId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_0);
-                var historyDeleteList = orderProcessHistoryRepository.getOrderProcessHistoryBg(history.getOrderProcessId(), history.getOrderPPBomId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1);
+                /*List<TBusOrderProcessHistory> historyList;
+                List<TBusOrderProcessHistory> historyDeleteList;
+                if(history.getOrderPPBomId()!=null){
+                    historyList = orderProcessHistoryRepository.getOrderProcessHistoryBg(history.getOrderProcessId(), history.getOrderPPBomId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_0);
+                    historyDeleteList = orderProcessHistoryRepository.getOrderProcessHistoryBg(history.getOrderProcessId(), history.getOrderPPBomId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1);
+                }else{
+                    historyList = orderProcessHistoryRepository.getOrderProcessHistoryBg1(history.getOrderProcessId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_0);
+                    historyDeleteList = orderProcessHistoryRepository.getOrderProcessHistoryBg1(history.getOrderProcessId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1);
+                }
                 for (int i = 0; i < historyDeleteList.stream().count(); i++) {
                     var historyDelete = historyDeleteList.get(i);
                     if (LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1.equals(historyDelete.getReportStatus())) {
@@ -474,7 +481,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 }
                 if (null == history.getImportPot()) {
                     history.setImportPot(record.getImportPot());
-                }
+                }*/
             }
         }
         history.setExportPot(record.getExportPot());
@@ -708,7 +715,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
     }
 
     private Integer upsertPotCount(Integer orderProcessId, Integer orderPPBomId, String devicePersonGroupId, Integer materialId, String materialNumber, String materialName, String processNumber, String processName, int delta,String groupCode) {
-        if (orderProcessId == null || orderPPBomId == null || materialNumber == null) return 0;
+        if (orderProcessId == null || materialNumber == null) return 0;
 
         var opt = orderPotCountRepository.findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumberAndGroupCode(orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber, groupCode);
         if (opt.isPresent()) {
@@ -1376,6 +1383,9 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
      * @return
      */
     private int getAllPot(Integer orderProcessId, Integer orderPPBomId) {
+        if (orderPPBomId == null) {
+            return 1;
+        }
 
         Integer all = orderProcessHistoryRepository.getOneHistory(orderProcessId, orderPPBomId);
         if (all == null || all != 1) {

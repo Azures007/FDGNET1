@@ -55,6 +55,9 @@ public class OrderPPBomServiceImpl implements OrderPPBomService {
 
     @Override
     public boolean getMainPpbomFlag(Integer orderPPBomId) {
+        if (orderPPBomId == null) {
+            return false;
+        }
         Integer countMainPpbomId = orderPPBomRepository.getCountMainPpbomId(orderPPBomId);
         if (countMainPpbomId > 0)
             return true;
