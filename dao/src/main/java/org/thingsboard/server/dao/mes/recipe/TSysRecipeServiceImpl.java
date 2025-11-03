@@ -18,11 +18,15 @@ import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
 import org.thingsboard.server.dao.mes.dto.RecipeSaveDto;
 import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
+import org.thingsboard.server.dao.sql.mes.TSysProcessInfo.TSysProcessInfoRepository;
+import org.thingsboard.server.dao.mes.TSysProcessInfo.TSysProcessInfoService;
 import org.thingsboard.server.dao.user.UserService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 配方服务实现类
@@ -52,6 +56,12 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TSysProcessInfoService processInfoService;
+
+    @Autowired
+    private TSysProcessInfoRepository processInfoRepository;
 
     @Override
     public Page<TSysRecipe> getRecipeList(String currentUser, Integer current, Integer size, RecipeQueryDto queryDto) {
@@ -103,15 +113,28 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
         List<TSysRecipeInput> recipeInputs = saveDto.getRecipeInputs();
         // 校验半成品信息的完整性
         if (recipeInputs != null && !recipeInputs.isEmpty()) {
-            boolean hasSemiFinished = recipeInputs.stream()
-                    .anyMatch(input -> input.getSemiFinishedProductName() != null && !input.getSemiFinishedProductName().isEmpty() &&
-                            input.getSemiFinishedProductCode() != null && !input.getSemiFinishedProductCode().isEmpty());
-            if (hasSemiFinished) {
-                boolean allHasSemiFinished = recipeInputs.stream()
-                        .allMatch(input -> input.getSemiFinishedProductName() != null && !input.getSemiFinishedProductName().isEmpty() &&
+            // 按工序编号分组校验半成品信息的完整性
+            Map<String, List<TSysRecipeInput>> inputsByProcessNumber = recipeInputs.stream()
+                    .filter(input -> input.getProcessNumber() != null && !input.getProcessNumber().isEmpty())
+                    .collect(Collectors.groupingBy(TSysRecipeInput::getProcessNumber));
+            for (Map.Entry<String, List<TSysRecipeInput>> entry : inputsByProcessNumber.entrySet()) {
+                List<TSysRecipeInput> inputsInSameProcess = entry.getValue();
+                boolean hasSemiFinished = inputsInSameProcess.stream()
+                        .anyMatch(input -> input.getSemiFinishedProductName() != null && !input.getSemiFinishedProductName().isEmpty() &&
                                 input.getSemiFinishedProductCode() != null && !input.getSemiFinishedProductCode().isEmpty());
-                if (!allHasSemiFinished) {
-                    throw new RuntimeException("请完整设置半成品");
+                if (hasSemiFinished) {
+                    boolean allHasSemiFinished = inputsInSameProcess.stream()
+                            .allMatch(input -> input.getSemiFinishedProductName() != null && !input.getSemiFinishedProductName().isEmpty() &&
+                                    input.getSemiFinishedProductCode() != null && !input.getSemiFinishedProductCode().isEmpty());
+                    if (!allHasSemiFinished) {
+                        // 根据工序编号查询工序名称
+                        List<TSysProcessInfo> processInfos = processInfoRepository.findByProcessNumber(entry.getKey());
+                        String processName = entry.getKey();
+                        if (processInfos != null && !processInfos.isEmpty()) {
+                            processName = processInfos.get(0).getProcessName();
+                        }
+                        throw new RuntimeException("工序 " + processName + " 的半成品设置不完整，请完整设置半成品");
+                    }
                 }
             }
         }
