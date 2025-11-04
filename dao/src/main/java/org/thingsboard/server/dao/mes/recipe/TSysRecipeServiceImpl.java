@@ -170,22 +170,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
                 }
             }
         }
-        // 校验工序必填且唯一
-        if (saveDto.getGroupedInputs() != null && !saveDto.getGroupedInputs().isEmpty()) {
-            Set<String> processNumbers = new HashSet<>();
-            Set<String> duplicates = new HashSet<>();
-            for (RecipeSaveDto.RecipeInputGroup group : saveDto.getGroupedInputs()) {
-                String processNumber = group.getProcessNumber();
-                if (processNumber != null) {
-                    if (!processNumbers.add(processNumber)) {
-                        duplicates.add(processNumber);
-                    }
-                }
-            }
-            if (!duplicates.isEmpty()) {
-                throw new RuntimeException("工序在配方中不能重复: " + String.join(", ", duplicates));
-            }
-        }
+        
         boolean isNew = recipe.getRecipeId() == null;
 
         if (isNew) {
