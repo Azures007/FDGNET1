@@ -20,7 +20,31 @@
   }
 }
 .setting-warp {
+  .material-icons {
+    font-size: 21px;
+  }
   max-height: unset !important;
+  .setting-panl {
+    margin-bottom: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    .common-configs {
+      display: flex;
+      .config-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        margin-right: 25px;
+        .label {
+          // width: 65px;
+        }
+        .value {
+          flex: 1;
+        }
+      }
+    }
+  }
 }
 
 .cate-content {

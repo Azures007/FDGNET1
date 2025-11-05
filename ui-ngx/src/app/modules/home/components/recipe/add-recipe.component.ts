@@ -53,7 +53,7 @@ export class AddRecipeComponent implements OnInit {
   methods = [];
   fieldNames = []
   fieldTypes = [];
-  configs = [];
+  groupedInputs = [];
   pkOrgList = [];
   unitList = [];
   get modalTitle() {
@@ -123,8 +123,8 @@ export class AddRecipeComponent implements OnInit {
       Object.keys(this.injectData.data.data.recipe).forEach(key => {
         obj[key] = this.injectData.data.data.recipe[key];
       });
-      if (this.injectData.data.data.recipeInputs) {
-        this.configs = this.injectData.data.data.recipeInputs;
+      if (this.injectData.data.data.groupedInputs) {
+        this.groupedInputs = this.injectData.data.data.groupedInputs;
       }
       if (this.formType === 'details') {
         this.dataForm = this.fb.group({
@@ -166,45 +166,46 @@ export class AddRecipeComponent implements OnInit {
       } else {
         delete this.addParams.recipeId;
       }
-      if(!this.configs.length) {
+      if(!this.groupedInputs.length) {
         this.utils.showMessage('请添加投入设置', 'error');
         return;
       } else {
+        // 校验工序必填
+        if (this.groupedInputs.some(item => !item.processNumber)) {
+          this.utils.showMessage('请选择工序', 'error');
+          return;
+        }
         // 校验物料名称不能为空
-        if (this.configs.some(item => !item.materialName)) {
+        if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.materialName))) {
           this.utils.showMessage('请选择物料名称', 'error');
           return;
         }
         // 校验每锅投入标准不能为空，且为数字，可以为小数
-        if (this.configs.some(item => !item.standardInput || isNaN(Number(item.standardInput)))) {
+        if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.standardInput || isNaN(Number(subItem.standardInput))))) {
           this.utils.showMessage('请填写每锅投入标准，且为数字', 'error');
           return;
         }
         // 校验单位为必填
-        if (this.configs.some(item => !item.unit)) {
+        if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.unit))) {
           this.utils.showMessage('请选择单位', 'error');
           return;
         }
         // 校验投入下限比例为必填，且为数字，可以为小数
-        if (this.configs.some(item => !item.lowerLimitRatio || isNaN(Number(item.lowerLimitRatio)))) {
+        if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.lowerLimitRatio || isNaN(Number(subItem.lowerLimitRatio))))) {
           this.utils.showMessage('请填写投入下限比例，且为数字', 'error');
           return;
         }
         // 校验投入上限比例为必填,且为数字，可以为小数
-        if (this.configs.some(item => !item.upperLimitRatio || isNaN(Number(item.upperLimitRatio)))) {
+        if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.upperLimitRatio || isNaN(Number(subItem.upperLimitRatio))))) {
           this.utils.showMessage('请填写投入上限比例，且为数字', 'error');
           return;
         }
         // 校验投入下限比例不能大于投入上限比例
-        if (this.configs.some(item => Number(item.lowerLimitRatio) > Number(item.upperLimitRatio))) {
+        if (this.groupedInputs.some(item => item.inputs.some(subItem => Number(subItem.lowerLimitRatio) > Number(subItem.upperLimitRatio)))) {
           this.utils.showMessage('投入下限比例不能大于投入上限比例', 'error');
           return;
         }
-        // 校验工序必填
-        if (this.configs.some(item => !item.processNumber)) {
-          this.utils.showMessage('请选择工序', 'error');
-          return;
-        }
+
       }
       const orgName = this.pkOrgList.find(item => item.id == this.dataForm.value.pkOrg)?.name;
       const params = {
@@ -212,7 +213,7 @@ export class AddRecipeComponent implements OnInit {
           ...this.addParams,
           orgName
         },
-        recipeInputs: this.configsSortBySemiFinishedProductName,
+        groupedInputs: this.groupedInputs,
       }
       this.recipeService.fetchSave(params).subscribe(res => {
         if (res.errcode === 200) {
@@ -230,36 +231,28 @@ export class AddRecipeComponent implements OnInit {
     }
   }
   get isAllChecked() {
-    if(this.configs.length === 0) {
+    if(this.groupedInputs.length === 0) {
       return false;
     }
-    return this.configs.every(item => item.isChecked);
+    return this.groupedInputs.every(item => item.isChecked);
   }
   set isAllChecked(value) {
-    this.configs.forEach(item => {
+    this.groupedInputs.forEach(item => {
       item.isChecked = value;
     })
   }
-  get configsSortBySemiFinishedProductName() {
-    return this.configs.sort((a, b) => {
-      if (a.semiFinishedProductCode < b.semiFinishedProductCode) {
-        return -1;
-      }
-      if (a.semiFinishedProductCode > b.semiFinishedProductCode) {
-        return 1;
-      }
-      return 0;
-    })
-  }
   addConfig() {
-    this.configs.push({
-      isChecked: false,
-      materialName: '',
-      materialCode: '',
-      standardInput: '',
-      unit: '',
-      lowerLimitRatio: '',
-      upperLimitRatio: '',
+    this.groupedInputs.push({
+      inputs: [
+        {
+          materialName: '',
+          materialCode: '',
+          standardInput: '',
+          unit: '',
+          lowerLimitRatio: '',
+          upperLimitRatio: '',
+        }
+      ],
       processNumber: '',
       semiFinishedProductName: '',
       semiFinishedProductCode: '',
@@ -268,21 +261,29 @@ export class AddRecipeComponent implements OnInit {
 
   checkChange(event, index) {
     for (let i = 0; i < this.fieldNames.length; i++) {
-      this.configs[i + index].isChecked = event.checked;
+      this.groupedInputs[i + index].isChecked = event.checked;
     }
   }
-  delConfig() {
-    if(!this.configs.filter(item => item.isChecked).length) {
-      return;
-    }
+  delConfig(i) {
     this.utils.confirm('温馨提示', `是否确认删除?`, () => {
-      this.configs = this.configs.filter(item => {
-        return !item.isChecked;
-      })
+      this.groupedInputs.splice(i, 1);
     })
   }
+  addInput(index, index2) {
+    this.groupedInputs[index].inputs.splice(index2 + 1, 0, {
+      materialName: '',
+      materialCode: '',
+      standardInput: '',
+      unit: '',
+      lowerLimitRatio: '',
+      upperLimitRatio: '',
+    })
+  }
+  delInput(index, index2) {
+    this.groupedInputs[index].inputs.splice(index2, 1);
+  }
 
-  selectMaterial(item, index) {
+  selectMaterial(item, index, index2) {
     let dialogRef = this._dialog.open(ChooseMaterialComponent, {
       width: "1400px",
       height: "800px",
@@ -293,8 +294,8 @@ export class AddRecipeComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.configs[index].materialName = result.materialName;
-        this.configs[index].materialCode = result.materialCode;
+        this.groupedInputs[index].inputs[index2].materialName = result.materialName;
+        this.groupedInputs[index].inputs[index2].materialCode = result.materialCode;
       }
     });
   }
@@ -309,8 +310,8 @@ export class AddRecipeComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.configs[index].semiFinishedProductName = result.materialName;
-        this.configs[index].semiFinishedProductCode = result.materialCode;
+        this.groupedInputs[index].semiFinishedProductName = result.materialName;
+        this.groupedInputs[index].semiFinishedProductCode = result.materialCode;
       }
     });
   }

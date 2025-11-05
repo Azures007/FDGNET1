@@ -75,52 +75,70 @@
         style="margin-left: 10px;">
         <mat-icon>add</mat-icon> 新增
       </button>
-      <button *ngIf="formType !== 'details' && configs.length" class="add_btn btn_color_primary btn" (click)="delConfig()"
-
-        style="margin-left: 10px;">
-        <mat-icon>delete</mat-icon> 删除
-      </button>
     </div>
-    <div class="setting-panl">
+    <div class="setting-panl" *ngFor="let item of groupedInputs; let i = index">
+      <div class="common-configs">
+        <div class="config-item">
+          <div class="label">半成品：</div>
+          <div class="value">
+            <div>{{item.semiFinishedProductName}}<span *ngIf="formType !== 'details'" class="btn btn-color"
+                (click)="selectSemiFinishedProduct(item, i)">选择</span></div>
+          </div>
+        </div>
+        <div class="config-item">
+          <div class="label">工序：</div>
+          <div class="value">
+            <select required [(ngModel)]="item.processNumber" [disabled]="formType === 'details'">
+              <option *ngFor="let process of injectData.processList" [value]="process.processNumber">
+                {{process.processName}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="config-item">
+          <div class="label"></div>
+          <div class="value">
+            <button *ngIf="formType !== 'details'" class="add_btn btn_color_primary btn" (click)="delConfig(i)"
+              style="margin-left: 10px;">
+              <mat-icon>delete</mat-icon> 删除
+            </button>
+          </div>
+        </div>
+      </div>
       <table class="table">
         <tr>
-          <th><mat-checkbox [(ngModel)]="isAllChecked" [disabled]="formType === 'details'"></mat-checkbox></th>
-          <th>半成品</th>
+          <!-- <th><mat-checkbox [(ngModel)]="isAllChecked" [disabled]="formType === 'details'"></mat-checkbox></th> -->
           <th>物料名称</th>
           <th>物料编码</th>
           <th>每锅/每次投入标准</th>
           <th>单位</th>
           <th>投入下限比例%</th>
           <th>投入上限比例%</th>
-          <th>工序</th>
+          <th>操作</th>
         </tr>
-        <tr *ngFor="let item of configsSortBySemiFinishedProductName; let i = index">
-          <td>
+        <tr *ngFor="let subItem of item.inputs; let j = index">
+          <!-- <td>
             <div>
-              <mat-checkbox [(ngModel)]="item.isChecked" (change)="checkChange($event,i)"
+              <mat-checkbox [(ngModel)]="item.isChecked" (change)="checkChange($event,i, j)"
                 [disabled]="formType === 'details'"></mat-checkbox>
             </div>
+          </td> -->
+          <td>
+            <div>{{subItem.materialName}}<span *ngIf="formType !== 'details'" class="btn btn-color"
+                (click)="selectMaterial(subItem, i, j)">选择</span></div>
           </td>
           <td>
-            <div>{{item.semiFinishedProductName}}<span *ngIf="formType !== 'details'" class="btn btn-color"
-                (click)="selectSemiFinishedProduct(item, i)">选择</span></div>
-          </td>
-          <td>
-            <div>{{item.materialName}}<span *ngIf="formType !== 'details'" class="btn btn-color"
-                (click)="selectMaterial(item, i)">选择</span></div>
-          </td>
-          <td>
-            <div>{{item.materialCode}}</div>
+            <div>{{subItem.materialCode}}</div>
           </td>
           <td>
             <div>
               <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
-                [(ngModel)]="item.standardInput">
+                [(ngModel)]="subItem.standardInput">
             </div>
           </td>
           <td>
             <div>
-              <select required [(ngModel)]="item.unit" [disabled]="formType === 'details'">
+              <select required [(ngModel)]="subItem.unit" [disabled]="formType === 'details'">
                 <option *ngFor="let unit of unitList" [value]="unit.codeValue">
                   {{unit.codeDsc}}
                 </option>
@@ -130,23 +148,24 @@
           <td>
             <div>
               <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
-                [(ngModel)]="item.lowerLimitRatio">
+                [(ngModel)]="subItem.lowerLimitRatio">
             </div>
           </td>
           <td>
             <div>
               <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
-                [(ngModel)]="item.upperLimitRatio">
+                [(ngModel)]="subItem.upperLimitRatio">
             </div>
           </td>
           <td>
-            <div>
-              <select required [(ngModel)]="item.processNumber" [disabled]="formType === 'details'">
-                <option *ngFor="let process of injectData.processList" [value]="process.processNumber">
-                  {{process.processName}}
-                </option>
-              </select>
-            </div>
+            <button *ngIf="formType !== 'details'" class="add_btn btn_color_primary btn" (click)="addInput(i, j)"
+              style="margin-left: 10px;">
+              <mat-icon>add</mat-icon> 新增
+            </button>
+            <button *ngIf="formType !== 'details' && item.inputs.length > 1" class="add_btn btn_color_primary btn" (click)="delInput(i, j)"
+              style="margin-left: 10px;">
+              <mat-icon>delete</mat-icon> 删除
+            </button>
           </td>
         </tr>
       </table>
