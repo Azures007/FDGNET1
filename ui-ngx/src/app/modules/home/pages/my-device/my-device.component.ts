@@ -76,7 +76,7 @@ export class MyDeviceComponent implements OnInit {
     deviceId: null,
     deviceName: "",
     deviceNumber: "",
-    enabled: null,
+    enabled: '1',
     note: "",
     // status: null,
     // workshop: "",

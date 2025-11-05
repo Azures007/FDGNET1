@@ -127,12 +127,12 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
     /**
      * 更新累计数量
      */
-    private void updateAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, Integer materialId, String materialNumber, BigDecimal qty) {
+    private void updateAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, Integer materialId, String materialNumber, String groupCode, BigDecimal qty) {
         if (orderNo == null || orderProcessId == null || orderPPBomId == null || materialNumber == null || qty == null) {
             return;
         }
-        var opt = accumulationRepository.findByOrderNoAndOrderProcessIdAndOrderPpbomIdAndDevicePersonGroupIdAndMaterialNumber(
-                orderNo, orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        var opt = accumulationRepository.findByOrderProcessIdAndMaterialNumberAndGroupCode(
+                orderProcessId, materialNumber,groupCode);
         if (opt.isPresent()) {
             var acc = opt.get();
             acc.setAccumulatedQty(new java.math.BigDecimal(qty.toString()));
@@ -149,6 +149,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
             acc.setAccumulatedQty(qty);
             acc.setCreatedTime(new Date());
             acc.setLastUpdateTime(new Date());
+            acc.setGroupCode(groupCode);
             accumulationRepository.save(acc);
         }
     }
@@ -175,9 +176,9 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
         }
         // 回退锅数记录表（正常类型才回退）
         if (!LichengConstants.REPORTYPE0002.equals(tBusOrderProcessHistory.getRecordTypeBg())) {
-            var opt = orderPotCountRepository.findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumber(
+            var opt = orderPotCountRepository.findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumberAndGroupCode(
                     tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getOrderPPBomId(),
-                    tBusOrderProcessHistory.getDevicePersonGroupId() == null ? "" : tBusOrderProcessHistory.getDevicePersonGroupId(), tBusOrderProcessHistory.getMaterialNumber());
+                    tBusOrderProcessHistory.getDevicePersonGroupId() == null ? "" : tBusOrderProcessHistory.getDevicePersonGroupId(), tBusOrderProcessHistory.getMaterialNumber(), tBusOrderProcessHistory.getGroupCode());
             opt.ifPresent(p -> {
                 if(p.getPotNumber()<=p.getInputCount()){
                     //已满足1次的记录
@@ -209,6 +210,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                                     tBusOrderProcessHistory.getOrderPPBomId(),
                                     tBusOrderProcessHistory.getMaterialId(),
                                     tBusOrderProcessHistory.getMaterialNumber(),
+                                    tBusOrderProcessHistory.getGroupCode(),
                                     sum);
                             //设置必须补料
                             tBusOrderProcessHistory.setIsSupplement("1");
@@ -217,9 +219,9 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                             //没有其他报工记录，在删除时扣投入次数
                             orderPotCountRepository.incrementInputCount(p.getId(), -1);
                             //没有其他订单报工记录，则更新锅数-1
-                            orderPotCountRepository.updatePotNumberByOrderProcessAndMaterialNumber(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), p.getPotNumber()-1);
+                            orderPotCountRepository.updatePotNumberByOrderProcessIdAndMaterialNumberAndGroupCode(p.getPotNumber()-1,tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), tBusOrderProcessHistory.getGroupCode());
                             //其他大于当前删除记录锅数的记录锅数-1
-                            orderProcessHistoryRepository.updatePotNumberDecrement(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), tBusOrderProcessHistory.getPotNumber());
+                            orderProcessHistoryRepository.updatePotNumberDecrement(tBusOrderProcessHistory.getOrderProcessId(), tBusOrderProcessHistory.getMaterialNumber(), tBusOrderProcessHistory.getGroupCode(), tBusOrderProcessHistory.getPotNumber());
                         }
                     }else{
                         //有其他订单报工记录
@@ -239,6 +241,7 @@ public class AppOrderProcessRecordDeleteServiceImpl implements AppOrderProcessRe
                                     tBusOrderProcessHistory.getOrderPPBomId(),
                                     tBusOrderProcessHistory.getMaterialId(),
                                     tBusOrderProcessHistory.getMaterialNumber(),
+                                    tBusOrderProcessHistory.getGroupCode(),
                                     sum);
                             //设置必须补料
                             tBusOrderProcessHistory.setIsSupplement("1");

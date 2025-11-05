@@ -76,7 +76,7 @@ export class StaffComponent implements OnInit {
   //新增人员参数
   addParams = {
     className: "",
-    enabledSt: null,
+    enabledSt: '1',
     name: "",
     phone: "",
     sex: "",

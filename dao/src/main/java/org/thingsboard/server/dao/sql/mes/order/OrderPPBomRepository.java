@@ -388,7 +388,7 @@ public interface OrderPPBomRepository extends JpaRepository<TBusOrderPPBom, Inte
             "join t_bus_order_head c on b.order_id =c.order_id \n" +
             "join t_bus_order_ppbom_lk d on c.order_id =d.order_id \n" +
             "join t_bus_order_ppbom e on d.order_ppbom_id =e.order_ppbom_id \n" +
-            "where a.order_process_id =?2 and e.mid_ppbom_entry_replace_group =(select mid_ppbom_entry_replace_group from t_bus_order_ppbom where order_ppbom_id=?1)\n", nativeQuery = true)
+            "where a.order_process_id =?2 and e.mid_ppbom_entry_replace_group =(select mid_ppbom_entry_replace_group from t_bus_order_ppbom where order_ppbom_id=CAST(?1 AS INTEGER))\n", nativeQuery = true)
     List<Integer> joinPpbomId(Integer orderPpbomId, Integer orderProcessId);
 
     @Query(value = "select mid_ppbom_entry_weigh_devept_qty from t_bus_order_ppbom where mid_ppbom_entry_item_type=1 and order_ppbom_id in (:ppboms) limit 1 offset 0", nativeQuery = true)
@@ -396,7 +396,7 @@ public interface OrderPPBomRepository extends JpaRepository<TBusOrderPPBom, Inte
 
     @Query(value = "select count(1) as su from t_bus_order_ppbom c \n" +
             "left join mid_material l on c.material_id=l.kd_material_id \n" +
-            "where c.order_ppbom_id=?1 " +
+            "where c.order_ppbom_id=CAST(?1 AS INTEGER) " +
             "and (c.mid_ppbom_entry_bom_number is not null and l.kd_material_props_id='2')\n", nativeQuery = true)
     Integer getCountMainPpbomId(Integer orderPpbomId);
 

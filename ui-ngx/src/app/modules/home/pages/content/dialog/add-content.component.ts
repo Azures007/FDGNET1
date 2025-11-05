@@ -63,7 +63,7 @@ export class AddContentComponent implements OnInit {
         materialModel: [{ value: '', disabled: true }, []],
         lowerLimit: ['', [Validators.required, Validators.pattern(/^[0-9]+(\.[0-9]+)?$/)]],
         upperLimit: ['', [Validators.required, Validators.pattern(/^[0-9]+(\.[0-9]+)?$/)]],
-        status: ['', [Validators.required]],
+        status: ['1', [Validators.required]],
       });
     } else {
       this.formType = this.injectData.edit ? 'edit' : 'details';

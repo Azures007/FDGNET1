@@ -454,8 +454,15 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 //报工类型为尾料或者其他，则默认为1
                 history.setImportPot(1f);
             } else {
-                var historyList = orderProcessHistoryRepository.getOrderProcessHistoryBg(history.getOrderProcessId(), history.getOrderPPBomId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_0);
-                var historyDeleteList = orderProcessHistoryRepository.getOrderProcessHistoryBg(history.getOrderProcessId(), history.getOrderPPBomId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1);
+                /*List<TBusOrderProcessHistory> historyList;
+                List<TBusOrderProcessHistory> historyDeleteList;
+                if(history.getOrderPPBomId()!=null){
+                    historyList = orderProcessHistoryRepository.getOrderProcessHistoryBg(history.getOrderProcessId(), history.getOrderPPBomId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_0);
+                    historyDeleteList = orderProcessHistoryRepository.getOrderProcessHistoryBg(history.getOrderProcessId(), history.getOrderPPBomId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1);
+                }else{
+                    historyList = orderProcessHistoryRepository.getOrderProcessHistoryBg1(history.getOrderProcessId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_0);
+                    historyDeleteList = orderProcessHistoryRepository.getOrderProcessHistoryBg1(history.getOrderProcessId(), history.getRecordTypeBg(), history.getDevicePersonGroupId(), LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1);
+                }
                 for (int i = 0; i < historyDeleteList.stream().count(); i++) {
                     var historyDelete = historyDeleteList.get(i);
                     if (LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1.equals(historyDelete.getReportStatus())) {
@@ -474,7 +481,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 }
                 if (null == history.getImportPot()) {
                     history.setImportPot(record.getImportPot());
-                }
+                }*/
             }
         }
         history.setExportPot(record.getExportPot());
@@ -491,10 +498,10 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         boolean shouldClearAcc = false;
         Limits limits = null;
         if (!isTail) {
-            limits = computeInputLimits(tBusOrderHead.getBodyMaterialNumber(), processInfo.getProcessNumber(), saveDto.getMaterialNumber());
+            limits = computeInputLimits(tBusOrderHead.getBodyMaterialNumber(), processInfo.getProcessNumber(), saveDto.getMaterialNumber(), saveDto.getGroupCode());
             if (limits != null && limits.lower != null && limits.upper != null && saveDto.getRecordQty() != null) {
                 float qty = saveDto.getRecordQty().floatValue();
-                accBefore = getAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialNumber());
+                accBefore = getAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialNumber(),saveDto.getGroupCode());
                 accAfter = accBefore + qty;
 
                 if (accAfter > limits.upper) {
@@ -522,9 +529,9 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         // 更新累计与锅数
         if (!isTail && limits != null) {
             if (shouldClearAcc) {
-                clearAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialNumber());
+                clearAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialNumber(),saveDto.getGroupCode());
             } else if (accAfter != null) {
-                updateAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialId(), saveDto.getMaterialNumber(), accAfter);
+                updateAccumulatedQty(saveDto.getOrderNo(), saveDto.getOrderProcessId(), devicePersonGroupId, saveDto.getOrderPPBomId(), saveDto.getMaterialId(), saveDto.getMaterialNumber(),saveDto.getGroupCode(), accAfter);
             }
         }
         // 写入锅数记录表：仅正常类型，且需要增加锅数时
@@ -535,17 +542,17 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             }else{
                 delta=0;
             }
-            Integer updatedInputCount = upsertPotCount(history.getOrderProcessId(), history.getOrderPPBomId(), devicePersonGroupId, saveDto.getMaterialId(), saveDto.getMaterialNumber(), saveDto.getMaterialName(), saveDto.getProcessNumber(), saveDto.getProcessName(), delta);
+            Integer updatedInputCount = upsertPotCount(history.getOrderProcessId(), history.getOrderPPBomId(), devicePersonGroupId, saveDto.getMaterialId(), saveDto.getMaterialNumber(), saveDto.getMaterialName(), saveDto.getProcessNumber(), saveDto.getProcessName(), delta, saveDto.getGroupCode());
             try {
                 if (accAfter < limits.lower && !java.lang.Boolean.TRUE.equals(saveDto.getNoSupplementCommit())) {
                     //补料的情况，投入次数没有加1，但锅数需要在投入次数加1
                     history.setPotNumber(updatedInputCount + 1);
 
-                    orderPotCountRepository.updatePotNumberByOrderProcessAndMaterialNumber(history.getOrderProcessId(), saveDto.getMaterialNumber(), updatedInputCount + 1);
+                    orderPotCountRepository.updatePotNumberByOrderProcessIdAndMaterialNumberAndGroupCode(updatedInputCount + 1,history.getOrderProcessId(), saveDto.getMaterialNumber(), saveDto.getGroupCode());
                 } else {
                     //锅数=投入次数
                     history.setPotNumber(updatedInputCount);
-                    orderPotCountRepository.updatePotNumberByOrderProcessAndMaterialNumber(history.getOrderProcessId(), saveDto.getMaterialNumber(), updatedInputCount);
+                    orderPotCountRepository.updatePotNumberByOrderProcessIdAndMaterialNumberAndGroupCode(updatedInputCount,history.getOrderProcessId(), saveDto.getMaterialNumber(), saveDto.getGroupCode());
                 }
                 TBusOrderProcessHistory delHis=orderProcessRecordService.checkIsSupplement(history.getOrderProcessId());
                 if(delHis!=null){
@@ -620,7 +627,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
     }
 
     // 计算投入上下限：按产品编码+工序编码+物料编码匹配配方明细
-    private Limits computeInputLimits(String productCode, String processNumber, String materialCode) {
+    private Limits computeInputLimits(String productCode, String processNumber, String materialCode, String groupCode) {
         if (StringUtils.isEmpty(productCode) || StringUtils.isEmpty(processNumber) || StringUtils.isEmpty(materialCode)) {
             return null;
         }
@@ -632,8 +639,10 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             List<TSysRecipeInput> inputs = recipeInputRepository.findByRecipeId(binding.getRecipeId());
             for (TSysRecipeInput input : inputs) {
                 if (input == null) continue;
-                if (!StringUtils.isEmpty(input.getProcessNumber()) && processNumber.equals(input.getProcessNumber())
-                        && materialCode.equals(input.getMaterialCode())) {
+                boolean processMatch = !StringUtils.isEmpty(input.getProcessNumber()) && processNumber.equals(input.getProcessNumber());
+                boolean materialMatch = materialCode.equals(input.getMaterialCode());
+                boolean groupMatch = StringUtils.isEmpty(groupCode) || groupCode.equals(input.getSemiFinishedProductCode());
+                if (processMatch && materialMatch && groupMatch) {
                     if (input.getStandardInput() != null) {
                         java.math.BigDecimal std = input.getStandardInput();
                         java.math.BigDecimal lowRatio = input.getLowerLimitRatio() != null ? input.getLowerLimitRatio() : new java.math.BigDecimal("100.00");
@@ -652,24 +661,24 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
     /**
      * 获取累计数量
      */
-    private Float getAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, String materialNumber) {
+    private Float getAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, String materialNumber,String groupCode) {
         if (orderNo == null || orderProcessId == null || orderPPBomId == null || materialNumber == null) {
             return 0f;
         }
-        var opt = accumulationRepository.findByOrderNoAndOrderProcessIdAndOrderPpbomIdAndDevicePersonGroupIdAndMaterialNumber(
-                orderNo, orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        var opt = accumulationRepository.findByOrderProcessIdAndMaterialNumberAndGroupCode(
+                orderProcessId, materialNumber,groupCode);
         return opt.map(acc -> acc.getAccumulatedQty() != null ? acc.getAccumulatedQty().floatValue() : 0f).orElse(0f);
     }
 
     /**
      * 更新累计数量
      */
-    private void updateAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, Integer materialId, String materialNumber, Float qty) {
+    private void updateAccumulatedQty(String orderNo, Integer orderProcessId, String devicePersonGroupId, Integer orderPPBomId, Integer materialId, String materialNumber,String groupCode, Float qty) {
         if (orderNo == null || orderProcessId == null || orderPPBomId == null || materialNumber == null || qty == null) {
             return;
         }
-        var opt = accumulationRepository.findByOrderNoAndOrderProcessIdAndOrderPpbomIdAndDevicePersonGroupIdAndMaterialNumber(
-                orderNo, orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        var opt = accumulationRepository.findByOrderProcessIdAndMaterialNumberAndGroupCode(
+                orderProcessId, materialNumber,groupCode);
         if (opt.isPresent()) {
             var acc = opt.get();
             acc.setAccumulatedQty(new java.math.BigDecimal(qty.toString()));
@@ -686,6 +695,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             acc.setAccumulatedQty(new java.math.BigDecimal(qty.toString()));
             acc.setCreatedTime(new Date());
             acc.setLastUpdateTime(new Date());
+            acc.setGroupCode(groupCode);
             accumulationRepository.save(acc);
         }
     }
@@ -693,21 +703,21 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
     /**
      * 清空累计数量
      */
-    private void clearAccumulatedQty(String orderNo, Integer processId, String devicePersonGroupId, Integer orderPPBomId, String materialNumber) {
+    private void clearAccumulatedQty(String orderNo, Integer processId, String devicePersonGroupId, Integer orderPPBomId, String materialNumber,String groupCode) {
         if (orderNo == null || processId == null || orderPPBomId == null || materialNumber == null) {
             return;
         }
-        var opt = accumulationRepository.findByOrderNoAndOrderProcessIdAndOrderPpbomIdAndDevicePersonGroupIdAndMaterialNumber(
-                orderNo, processId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        var opt = accumulationRepository.findByOrderProcessIdAndMaterialNumberAndGroupCode(
+                processId,materialNumber,groupCode);
         if (opt.isPresent()) {
             accumulationRepository.clearAccumulatedQty(opt.get().getId());
         }
     }
 
-    private Integer upsertPotCount(Integer orderProcessId, Integer orderPPBomId, String devicePersonGroupId, Integer materialId, String materialNumber, String materialName, String processNumber, String processName, int delta) {
-        if (orderProcessId == null || orderPPBomId == null || materialNumber == null) return 0;
+    private Integer upsertPotCount(Integer orderProcessId, Integer orderPPBomId, String devicePersonGroupId, Integer materialId, String materialNumber, String materialName, String processNumber, String processName, int delta,String groupCode) {
+        if (orderProcessId == null || materialNumber == null) return 0;
 
-        var opt = orderPotCountRepository.findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumber(orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber);
+        var opt = orderPotCountRepository.findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumberAndGroupCode(orderProcessId, orderPPBomId, devicePersonGroupId == null ? "" : devicePersonGroupId, materialNumber, groupCode);
         if (opt.isPresent()) {
             Integer current = opt.get().getInputCount() == null ? 0 : opt.get().getInputCount();
             int updated = Math.max(0, current + delta);
@@ -730,7 +740,8 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
             rec.setProcessNumber(processNumber);
             rec.setProcessName(processName);
             rec.setInputCount(initial);
-            orderPotCountRepository.save(rec);
+            rec.setGroupCode(groupCode);
+            orderPotCountRepository.saveAndFlush(rec);
             // 更新锅数：取当前订单所有物料投入次数的最小值（包括未投入的物料）
             if (delta > 0) {
                 //int minInputCount = orderProcessRecordService.getMinInputCountByOrderProcessIncludingUnused(orderProcessId);
@@ -1372,6 +1383,9 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
      * @return
      */
     private int getAllPot(Integer orderProcessId, Integer orderPPBomId) {
+        if (orderPPBomId == null) {
+            return 1;
+        }
 
         Integer all = orderProcessHistoryRepository.getOneHistory(orderProcessId, orderPPBomId);
         if (all == null || all != 1) {

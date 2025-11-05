@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.sys.*;
+import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.dto.RecipeQueryDto;
 import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeInputRepository;
 import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeProductBindingRepository;
@@ -17,11 +18,20 @@ import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
 import org.thingsboard.server.dao.mes.dto.RecipeSaveDto;
 import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
+import org.thingsboard.server.dao.sql.mes.TSysProcessInfo.TSysProcessInfoRepository;
+import org.thingsboard.server.dao.mes.TSysProcessInfo.TSysProcessInfoService;
 import org.thingsboard.server.dao.user.UserService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.stream.Stream;
 
 /**
  * 配方服务实现类
@@ -51,6 +61,12 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TSysProcessInfoService processInfoService;
+
+    @Autowired
+    private TSysProcessInfoRepository processInfoRepository;
 
     @Override
     public Page<TSysRecipe> getRecipeList(String currentUser, Integer current, Integer size, RecipeQueryDto queryDto) {
@@ -86,7 +102,46 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
             TSysRecipe recipe = recipeOpt.get();
             RecipeSaveDto dto = new RecipeSaveDto();
             dto.setRecipe(recipe);
-            dto.setRecipeInputs(recipeInputRepository.findByRecipeId(recipeId));
+            List<TSysRecipeInput> recipeInputs = recipeInputRepository.findByRecipeId(recipeId);
+            // dto.setRecipeInputs(recipeInputs);
+
+            if (recipeInputs != null && !recipeInputs.isEmpty()) {
+                Map<String, Map<String, Map<String, Map<String, List<TSysRecipeInput>>>>> groupedInputs = recipeInputs.stream()
+                    .collect(Collectors.groupingBy(
+                        input -> input.getSemiFinishedProductCode() != null ? input.getSemiFinishedProductCode() : "",
+                        Collectors.groupingBy(
+                            input -> input.getSemiFinishedProductName() != null ? input.getSemiFinishedProductName() : "",
+                            Collectors.groupingBy(
+                                input -> input.getProcessNumber() != null ? input.getProcessNumber() : "",
+                                Collectors.groupingBy(
+                                    input -> input.getProcessName() != null ? input.getProcessName() : ""
+                                )
+                            )
+                        )
+                    ));
+                List<RecipeSaveDto.RecipeInputGroup> groupedList = new ArrayList<>();
+                for (Map.Entry<String, Map<String, Map<String, Map<String, List<TSysRecipeInput>>>>> entry1 : groupedInputs.entrySet()) {
+                    String semiFinishedProductCode = entry1.getKey();
+                    for (Map.Entry<String, Map<String, Map<String, List<TSysRecipeInput>>>> entry2 : entry1.getValue().entrySet()) {
+                        String semiFinishedProductName = entry2.getKey();
+                        for (Map.Entry<String, Map<String, List<TSysRecipeInput>>> entry3 : entry2.getValue().entrySet()) {
+                            String processNumber = entry3.getKey();
+                            for (Map.Entry<String, List<TSysRecipeInput>> entry4 : entry3.getValue().entrySet()) {
+                                String processName = entry4.getKey();
+                                RecipeSaveDto.RecipeInputGroup group = new RecipeSaveDto.RecipeInputGroup();
+                                group.setSemiFinishedProductCode(semiFinishedProductCode.isEmpty() ? null : semiFinishedProductCode);
+                                group.setSemiFinishedProductName(semiFinishedProductName.isEmpty() ? null : semiFinishedProductName);
+                                group.setProcessNumber(processNumber.isEmpty() ? null : processNumber);
+                                group.setProcessName(processName.isEmpty() ? null : processName);
+                                group.setInputs(entry4.getValue());
+                                groupedList.add(group);
+                            }
+                        }
+                    }
+                }
+                dto.setGroupedInputs(groupedList);
+            }
+            
             return dto;
         }
         return null;
@@ -99,7 +154,23 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
             throw new RuntimeException("用户信息异常");
         }
         TSysRecipe recipe=saveDto.getRecipe();
-        List<TSysRecipeInput> recipeInputs = saveDto.getRecipeInputs();
+        List<TSysRecipeInput> recipeInputs = new ArrayList<>();
+
+        if (saveDto.getGroupedInputs() != null && !saveDto.getGroupedInputs().isEmpty()) {
+            for (RecipeSaveDto.RecipeInputGroup group : saveDto.getGroupedInputs()) {
+                if (group.getProcessNumber() == null || group.getProcessNumber().trim().isEmpty()) {
+                    throw new RuntimeException("工序不能为空");
+                }
+                for (TSysRecipeInput input : group.getInputs()) {
+                    input.setSemiFinishedProductName(group.getSemiFinishedProductName());
+                    input.setSemiFinishedProductCode(group.getSemiFinishedProductCode());
+                    input.setProcessNumber(group.getProcessNumber());
+                    input.setProcessName(group.getProcessName());
+                    recipeInputs.add(input);
+                }
+            }
+        }
+        
         boolean isNew = recipe.getRecipeId() == null;
 
         if (isNew) {
@@ -114,10 +185,8 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
             recipe.setUpdateUser(person.getName());
             recipe.setUpdateTime(new Date());
         }
-
         // 保存配方主表
         TSysRecipe savedRecipe = recipeRepository.save(recipe);
-
         // 保存投入设置
         if (recipeInputs != null && !recipeInputs.isEmpty()) {
             // 先删除原有的投入设置
@@ -132,7 +201,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
             recipeInputs=recipeInputRepository.saveAll(recipeInputs);
         }
         saveDto.setRecipe(savedRecipe);
-        saveDto.setRecipeInputs(recipeInputs);
+        // saveDto.setRecipeInputs(recipeInputs);
         return saveDto;
     }
 

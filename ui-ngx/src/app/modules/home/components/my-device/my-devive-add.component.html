@@ -53,5 +53,5 @@
 <div class="footer">
     <button (click)="submit()" cdkFocusInitial *ngIf="data.params.codeId == ''"> 提交</button>
     <button (click)="submit()" cdkFocusInitial *ngIf="data.params.codeId != '' && data.edit"> 保存</button>
-    <button [mat-dialog-close]="" cdkFocusInitial *ngIf="data.params.codeId != '' && data.edit == false"> 关闭</button>
+    <button style="margin-left: 10px;" [mat-dialog-close]>取消</button>
 </div>

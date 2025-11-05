@@ -114,7 +114,7 @@ export class DictionaryComponent implements OnInit {
       codeValue: "",
       crtTime: "",
       crtUser: "",
-      enabledSt: "",
+      enabledSt: "1",
       updateTime: "",
       updateUser: ""
     }
@@ -280,7 +280,7 @@ export class DictionaryComponent implements OnInit {
       codeValue: "",
       crtTime: "",
       crtUser: "",
-      enabledSt: "",
+      enabledSt: "1",
       updateTime: "",
       updateUser: ""
     }

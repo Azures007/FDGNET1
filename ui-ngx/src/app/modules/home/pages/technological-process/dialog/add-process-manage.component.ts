@@ -67,7 +67,7 @@ export class AddProcessManageComponent implements OnInit {
         processName: ['', [Validators.required]],
         processNumber: ['', [Validators.required]],
         reportType: [[]],
-        enabled: ['', [Validators.required]],
+        enabled: [1, [Validators.required]],
         // bySetImport: [0, [Validators.required]],
         // bySetExport: [0, [Validators.required]],
         // fingerprintAuthentication: [0, [Validators.required]],

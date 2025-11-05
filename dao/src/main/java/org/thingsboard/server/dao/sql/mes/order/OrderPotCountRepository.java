@@ -13,6 +13,9 @@ import java.util.Optional;
 @Repository
 public interface OrderPotCountRepository extends JpaRepository<TBusOrderPotCount, Integer> {
 
+    Optional<TBusOrderPotCount> findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumberAndGroupCode(
+            Integer orderProcessId, Integer orderPPBomId, String devicePersonGroupId, String materialNumber, String groupCode);
+
     Optional<TBusOrderPotCount> findByOrderProcessIdAndOrderPPBomIdAndDevicePersonGroupIdAndMaterialNumber(
             Integer orderProcessId, Integer orderPPBomId, String devicePersonGroupId, String materialNumber);
 
@@ -22,8 +25,14 @@ public interface OrderPotCountRepository extends JpaRepository<TBusOrderPotCount
     @Query("update TBusOrderPotCount t set t.inputCount = t.inputCount + :delta where t.id = :id")
     void incrementInputCount(@Param("id") Integer id, @Param("delta") int delta);
 
+    @Query("select coalesce(sum(t.inputCount),0) from TBusOrderPotCount t where t.orderProcessId = :orderProcessId and t.materialNumber = :materialNumber and (:groupCode is null or t.groupCode = :groupCode)")
+    int sumInputCountByOrderProcessAndMaterialNumberAndGroup(@Param("orderProcessId") Integer orderProcessId, @Param("materialNumber") String materialNumber, @Param("groupCode") String groupCode);
+
     @Query("select coalesce(sum(t.inputCount),0) from TBusOrderPotCount t where t.orderProcessId = :orderProcessId and t.materialNumber = :materialNumber")
     int sumInputCountByOrderProcessAndMaterialNumber(@Param("orderProcessId") Integer orderProcessId, @Param("materialNumber") String materialNumber);
+
+    @Query("select coalesce(min(t.inputCount),0) from TBusOrderPotCount t where t.orderProcessId = :orderProcessId and (:groupCode is null or t.groupCode = :groupCode)")
+    int getMinInputCountByOrderProcessAndGroup(@Param("orderProcessId") Integer orderProcessId, @Param("groupCode") String groupCode);
 
     @Query("select coalesce(min(t.inputCount),0) from TBusOrderPotCount t where t.orderProcessId = :orderProcessId")
     int getMinInputCountByOrderProcess(@Param("orderProcessId") Integer orderProcessId);
@@ -35,10 +44,10 @@ public interface OrderPotCountRepository extends JpaRepository<TBusOrderPotCount
     @Query("select coalesce(min(t.inputCount),0) from TBusOrderPotCount t where t.orderProcessId = :orderProcessId")
     int getMinInputCountByOrderProcessIncludingUnused(@Param("orderProcessId") Integer orderProcessId);
 
-    @Modifying
-    @Query("update TBusOrderPotCount t set t.potNumber = :potNumber where t.orderProcessId = :orderProcessId and t.materialNumber = :materialNumber")
-    void updatePotNumberByOrderProcessAndMaterialNumber(@Param("orderProcessId") Integer orderProcessId, @Param("materialNumber") String materialNumber, @Param("potNumber") Integer potNumber);
 
+    @Query("update TBusOrderPotCount t set t.potNumber = :potNumber where t.orderProcessId = :orderProcessId and t.materialNumber = :materialNumber and t.groupCode = :groupCode")
+    @Modifying
+    void updatePotNumberByOrderProcessIdAndMaterialNumberAndGroupCode(@Param("potNumber") Integer potNumber,@Param("orderProcessId") Integer orderProcessId,@Param("materialNumber") String materialNumber,@Param("groupCode") String groupCode);
 }
 
 

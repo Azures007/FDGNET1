@@ -85,7 +85,7 @@ export class MenuAddComponent implements OnInit {
         menuType: [{ value: null, disabled: false }],
         br: ['', [Validators.required]],
         sort: ['', [Validators.required]],
-        enabled: ['', [Validators.required]],
+        enabled: ['1', [Validators.required]],
         path: ['', [Validators.required]],
         flag: [{ value: '0', disabled: false }, [Validators.required]],
         skipUrl: ['', []],

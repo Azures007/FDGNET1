@@ -17,15 +17,9 @@ public interface TBusOrderAccumulationRepository extends JpaRepository<TBusOrder
     /**
      * 根据唯一键查找累计记录
      */
-    Optional<TBusOrderAccumulation> findByOrderNoAndOrderProcessIdAndOrderPpbomIdAndDevicePersonGroupIdAndMaterialNumber(
-            String orderNo, Integer orderProcessId, Integer orderPpbomId, String devicePersonGroupId, String materialNumber);
+    Optional<TBusOrderAccumulation> findByOrderProcessIdAndMaterialNumberAndGroupCode(
+            Integer orderProcessId, String materialNumber, String groupCode);
 
-    /**
-     * 增加累计数量
-     */
-    @Modifying
-    @Query("UPDATE TBusOrderAccumulation t SET t.accumulatedQty = t.accumulatedQty + :delta, t.lastUpdateTime = CURRENT_TIMESTAMP WHERE t.id = :id")
-    void incrementAccumulatedQty(@Param("id") Integer id, @Param("delta") BigDecimal delta);
 
     /**
      * 清空累计数量
@@ -35,21 +29,10 @@ public interface TBusOrderAccumulationRepository extends JpaRepository<TBusOrder
     void clearAccumulatedQty(@Param("id") Integer id);
 
     /**
-     * 根据订单和工序获取所有累计记录
-     */
-    List<TBusOrderAccumulation> findByOrderNoAndOrderProcessId(String orderNo, Integer orderProcessId);
-
-    /**
      * 根据物料编码获取累计数量总和
      */
-    @Query("SELECT COALESCE(SUM(t.accumulatedQty), 0) FROM TBusOrderAccumulation t WHERE t.orderProcessId = :orderProcessId AND t.materialNumber = :materialNumber")
-    BigDecimal sumAccumulatedQtyByOrderProcessAndMaterialNumber(@Param("orderProcessId") Integer orderProcessId, @Param("materialNumber") String materialNumber);
+    @Query("SELECT COALESCE(SUM(t.accumulatedQty), 0) FROM TBusOrderAccumulation t WHERE t.orderProcessId = :orderProcessId AND t.materialNumber = :materialNumber AND t.groupCode= :groupCode")
+    BigDecimal sumAccumulatedQtyByOrderProcessAndMaterialNumberAndGroupCode(@Param("orderProcessId") Integer orderProcessId, @Param("materialNumber") String materialNumber,@Param("groupCode") String groupCode);
 
-    /**
-     * 删除指定订单和工序的所有累计记录
-     */
-    @Modifying
-    @Query("DELETE FROM TBusOrderAccumulation t WHERE t.orderNo = :orderNo AND t.orderProcessId = :orderProcessId")
-    void deleteByOrderNoAndOrderProcessId(@Param("orderNo") String orderNo, @Param("orderProcessId") Integer orderProcessId);
 }
 

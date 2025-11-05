@@ -18,6 +18,8 @@ public class PpbomGroupVo {
     private Integer midPpbomEntryHandleGroup;
     @ApiModelProperty("分组名称")
     private String midPpbomEntryHandleGroupName;
+    @ApiModelProperty("分组编码")
+    private String groupCode;
     @ApiModelProperty("分组数据")
     private List<OrderPPbomResult> orderPPbomResultList;
 

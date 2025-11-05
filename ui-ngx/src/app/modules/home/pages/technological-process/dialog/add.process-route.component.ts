@@ -103,7 +103,7 @@ export class AddProcessRouteComponent implements OnInit {
       this.dataForm = this.fb.group({
         craftName: ['', [Validators.required]],
         // craftNumber: ['', [Validators.required]],
-        enabled: ['', [Validators.required]],
+        enabled: [1, [Validators.required]],
         craftDetail: '',
         effectiveTime: ['', [Validators.required]],
         failureTime: ['', [Validators.required]],

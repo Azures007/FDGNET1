@@ -1,5 +1,6 @@
 package org.thingsboard.server.common.data.mes.bus;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.thingsboard.server.common.data.BaseData;
 
@@ -40,6 +41,10 @@ public class TBusOrderAccumulation  {
 
     @Column(name = "accumulated_qty", precision = 10, scale = 3)
     private BigDecimal accumulatedQty;
+
+    @ApiModelProperty("分组编码")
+    @Column(name = "group_code")
+    private String groupCode;
 
     @Column(name = "last_update_time")
     @Temporal(TemporalType.TIMESTAMP)

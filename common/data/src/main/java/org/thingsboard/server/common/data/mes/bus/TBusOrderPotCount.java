@@ -55,6 +55,14 @@ public class TBusOrderPotCount {
     @Column(name = "process_name")
     private String processName;
 
+    @ApiModelProperty("分组编码（半成品分组标识）")
+    @Column(name = "group_code")
+    private String groupCode;
+
+    @ApiModelProperty("分组名称")
+    @Column(name = "group_name")
+    private String groupName;
+
     public Integer getId() {
         return id;
     }
@@ -141,6 +149,22 @@ public class TBusOrderPotCount {
 
     public void setProcessName(String processName) {
         this.processName = processName;
+    }
+
+    public String getGroupCode() {
+        return groupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 }
 

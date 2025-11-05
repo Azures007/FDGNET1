@@ -17,4 +17,21 @@
   .mat-dialog-content {
     padding: 0 24px 24px;
   }
+
+  .mat-dialog-actions {
+    button {
+      color: #fff;
+      font-size: 12px;
+      width: 50px;
+      height: 30px;
+      border: none;
+      margin-right: 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      background-color: #0099ff;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
 }

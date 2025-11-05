@@ -14,8 +14,12 @@ import java.math.BigDecimal;
  */
 @Data
 @ApiModel("订单用料清单")
-public class OrderPPbomResult {
+public class OrderPPbomResult implements Cloneable{
 
+    @Override
+    public OrderPPbomResult clone() throws CloneNotSupportedException {
+        return (OrderPPbomResult)super.clone();
+    }
     @ApiModelProperty("订单用料清单ID")
     private Integer orderPPBomId;
 

@@ -73,7 +73,7 @@ export class ClassComponent implements OnInit {
   addParams = {
     tSysClass: {
       classId: "",
-      enabledSt: "",
+      enabledSt: "1",
       groupLeader: "",
       groupLeaderID: "",
       name: "",

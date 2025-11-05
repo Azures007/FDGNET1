@@ -103,7 +103,7 @@ export class AddRecipeComponent implements OnInit {
         recipeName: ['', [Validators.required]],
         recipeCode: ['', [Validators.required]],
         pkOrg: ['', [Validators.required]],
-        status: ['', [Validators.required]],
+        status: ['1', [Validators.required]],
         recipeDescription: [''],
         creator: [{ value: '提交自动生成', disabled: true }],
         createTime: [{ value: '提交自动生成', disabled: true }],
@@ -212,7 +212,7 @@ export class AddRecipeComponent implements OnInit {
           ...this.addParams,
           orgName
         },
-        recipeInputs: this.configs,
+        recipeInputs: this.configsSortBySemiFinishedProductName,
       }
       this.recipeService.fetchSave(params).subscribe(res => {
         if (res.errcode === 200) {
@@ -240,6 +240,17 @@ export class AddRecipeComponent implements OnInit {
       item.isChecked = value;
     })
   }
+  get configsSortBySemiFinishedProductName() {
+    return this.configs.sort((a, b) => {
+      if (a.semiFinishedProductCode < b.semiFinishedProductCode) {
+        return -1;
+      }
+      if (a.semiFinishedProductCode > b.semiFinishedProductCode) {
+        return 1;
+      }
+      return 0;
+    })
+  }
   addConfig() {
     this.configs.push({
       isChecked: false,
@@ -250,6 +261,8 @@ export class AddRecipeComponent implements OnInit {
       lowerLimitRatio: '',
       upperLimitRatio: '',
       processNumber: '',
+      semiFinishedProductName: '',
+      semiFinishedProductCode: '',
     })
   }
 
@@ -282,6 +295,22 @@ export class AddRecipeComponent implements OnInit {
       if (result) {
         this.configs[index].materialName = result.materialName;
         this.configs[index].materialCode = result.materialCode;
+      }
+    });
+  }
+  selectSemiFinishedProduct(item, index) {
+    let dialogRef = this._dialog.open(ChooseMaterialComponent, {
+      width: "1400px",
+      height: "800px",
+      panelClass: 'custom-modalbox',
+      data: {
+        title: '选择半成品'
+      }
+    })
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.configs[index].semiFinishedProductName = result.materialName;
+        this.configs[index].semiFinishedProductCode = result.materialCode;
       }
     });
   }

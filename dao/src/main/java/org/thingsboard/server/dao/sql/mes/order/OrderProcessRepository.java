@@ -101,6 +101,6 @@ public interface OrderProcessRepository extends JpaRepository<TBusOrderProcess,I
      * @return
      */
     @Query(value = "select COALESCE(sum(import_pot),0) from t_bus_order_process_record tbopr \n" +
-            "where order_process_id=?1 and order_ppbom_id =?2 and record_type ='1' and bus_type ='BG' and record_type_bg=?3",nativeQuery = true)
+            "where order_process_id=?1 and order_ppbom_id =CAST(?2 AS INTEGER) and record_type ='1' and bus_type ='BG' and record_type_bg=?3",nativeQuery = true)
     int getImportByPPbomAndOrderProcessId(Integer orderProcessId, Integer orderPPBomId, String orderProcessHistoryStatus0);
 }
