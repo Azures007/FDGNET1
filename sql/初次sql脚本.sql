@@ -1820,3 +1820,9 @@ COMMENT ON COLUMN t_bus_order_accumulation.group_code IS '分组编码';
 
 ALTER TABLE t_bus_order_process_history ADD COLUMN group_code VARCHAR(255);
 COMMENT ON COLUMN t_bus_order_process_history.group_code IS '分组编码';
+
+-- 1. 删除原有的唯一约束
+ALTER TABLE "public"."t_bus_order_accumulation" DROP CONSTRAINT "uk_order_accumulation";
+
+-- 2. 添加新的唯一约束，可以指定新的列组合
+ALTER TABLE "public"."t_bus_order_accumulation" ADD CONSTRAINT "uk_order_accumulation" UNIQUE ("order_no", "order_process_id", "order_ppbom_id", "device_person_group_id", "material_number", "group_code");

@@ -604,8 +604,8 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                         add.setMidPpbomEntryWeighMesUnit(recipeInput.getUnit());
                                         add.setMidPpbomEntryWeighDeveptUnit(recipeInput.getUnit());
                                         // 计划投入数量取0
-                                        BigDecimal standardInput = BigDecimal.ZERO;//recipeInput.getStandardInput() != null ? recipeInput.getStandardInput() : BigDecimal.ZERO;
-                                        add.setMustQty(standardInput);
+                                        BigDecimal standardInput = recipeInput.getStandardInput();//recipeInput.getStandardInput() != null ? recipeInput.getStandardInput() : BigDecimal.ZERO;
+                                        add.setMustQty(BigDecimal.ZERO);
                                         // 上下限
                                         BigDecimal lowerLimitRatio = recipeInput.getLowerLimitRatio() != null ? recipeInput.getLowerLimitRatio() : new BigDecimal("100.00");
                                         BigDecimal upperLimitRatio = recipeInput.getUpperLimitRatio() != null ? recipeInput.getUpperLimitRatio() : new BigDecimal("110.00");
