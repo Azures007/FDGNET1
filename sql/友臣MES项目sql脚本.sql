@@ -901,3 +901,7 @@ ALTER TABLE t_sys_recipe_input ADD COLUMN semi_finished_product_name VARCHAR(255
 COMMENT ON COLUMN t_sys_recipe_input.semi_finished_product_name IS '半成品';
 ALTER TABLE t_sys_recipe_input ADD COLUMN semi_finished_product_code VARCHAR(255);
 COMMENT ON COLUMN t_sys_recipe_input.semi_finished_product_code IS '半成品编码';
+
+-- 2025-11-01
+ALTER TABLE public.t_bus_order_head ADD mid_mo_entry_seq_text varchar(10) NULL;
+COMMENT ON COLUMN public.t_bus_order_head.mid_mo_entry_seq_text IS '订单明细行号';

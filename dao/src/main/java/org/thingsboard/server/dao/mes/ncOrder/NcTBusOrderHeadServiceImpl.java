@@ -88,11 +88,12 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
     @Transactional
     public NcTBusOrderHead updateByCmoid(String cmoid, NcTBusOrderHead entity) {
         String vbillcode = entity.getVbillcode();
-        Integer seq = entity.getSeq();
+//        Integer seq = entity.getSeq();
+        String seq = entity.getSeq();
         if (vbillcode == null || seq == null) {
             throw new IllegalArgumentException("vbillcode or seq cannot be null when generating orderNo");
         }
-        String orderNo = vbillcode + "-" + String.format("%02d", seq);
+        String orderNo = vbillcode + "-" + seq;
         entity.setOrderNo(orderNo);
         entity.setOrderStatus("0");
         entity.setIsDeleted("0");
@@ -143,11 +144,12 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
         List<NcTBusOrderHead> toSave = new ArrayList<>();
         for (NcTBusOrderHead entity : entitys) {
             String vbillcode = entity.getVbillcode();
-            Integer seq = entity.getSeq();
+//            Integer seq = entity.getSeq();
+            String seq = entity.getSeq();
             if (vbillcode == null || seq == null) {
                 throw new IllegalArgumentException("vbillcode or seq cannot be null when generating orderNo");
             }
-            String orderNo = vbillcode + "-" + String.format("%02d", seq);
+            String orderNo = vbillcode + "-" + seq;
             entity.setOrderNo(orderNo);
             entity.setOrderStatus("0");
             entity.setIsDeleted("0");

@@ -56,9 +56,13 @@ public class NcTBusOrderHead {
     @ApiModelProperty("订单明细id")
     private String cmoid;
 
-    @Column(name = "mid_mo_entry_seq")
+//    @Column(name = "mid_mo_entry_seq")
+//    @ApiModelProperty("订单明细行号-废弃")
+//    private Integer seq;
+
+    @Column(name = "mid_mo_entry_seq_text")
     @ApiModelProperty("订单明细行号")
-    private Integer seq;
+    private String seq;
 
     @Column(name = "bill_date")
     @Temporal(TemporalType.TIMESTAMP)
