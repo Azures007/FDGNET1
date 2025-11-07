@@ -95,7 +95,7 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
         }
         String orderNo = vbillcode + "-" + seq;
         entity.setOrderNo(orderNo);
-        entity.setOrderStatus("0");
+
         entity.setIsDeleted("0");
         //entity.setCreatedName("system");
         entity.setCreatedTime(new java.util.Date());
@@ -113,6 +113,7 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             entity.setCmoid(cmoid);
             entity=repository.save(entity);
         } else {
+            entity.setOrderStatus("0");
             entity=repository.save(entity);
         }
         NcTBusOrderHead finalEntity = entity;
@@ -151,7 +152,7 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             }
             String orderNo = vbillcode + "-" + seq;
             entity.setOrderNo(orderNo);
-            entity.setOrderStatus("0");
+
             entity.setIsDeleted("0");
             //entity.setCreatedName("system");
             entity.setCreatedTime(new java.util.Date());
@@ -163,6 +164,8 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
                 bomRepository.deleteAllByOrderId(entity.getCmoid());
                 entity.setOrderId(orderId);
                 entity.setCmoid(existingOrder.getCmoid());
+            }else{
+                entity.setOrderStatus("0");
             }
             toSave.add(entity);
         }
