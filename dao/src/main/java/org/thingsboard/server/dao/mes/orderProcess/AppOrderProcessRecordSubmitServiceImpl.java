@@ -309,7 +309,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         if (saveDto.getDevicePersonIds() != null && saveDto.getDevicePersonIds().size() > 0) {
             devicePersonGroupId = orderProcessPersonRelService.createdPersonGroupId(saveDto.getOrderProcessId(), saveDto.getDevicePersonIds());
         }
-        maps = orderProcessRecordRepository.getBGRecord(saveDto.getOrderProcessId(), deviceGroupId, devicePersonGroupId, saveDto.getRecordTypeBg(), saveDto.getRecordUnit());
+        maps = orderProcessRecordRepository.getBGRecordYl(saveDto.getOrderProcessId(), deviceGroupId, devicePersonGroupId, saveDto.getRecordTypeBg(), saveDto.getRecordUnit(),saveDto.getMaterialNumber(), saveDto.getGroupCode());
 //        maps = orderProcessRecordRepository.getBGRecord(saveDto.getOrderProcessId(), deviceGroupId, devicePersonGroupId);
 
         String mapStr = JSON.toJSONString(maps);
@@ -340,7 +340,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 // 报工类型不同
                 continue;
             } else
-            if (recordVo.getMaterialId() != null && recordVo.getMaterialId().equals(saveDto.getMaterialId())
+            if (recordVo.getMaterialId() != null && recordVo.getMaterialId().equals(saveDto.getMaterialId()) && recordVo.getMaterialNumber().equals(saveDto.getMaterialNumber())&&recordVo.getGroupCode().equals(saveDto.getGroupCode())
                     || recordVo.getMaterialNumber() != null && recordVo.getMaterialNumber().equals(saveDto.getMaterialNumber())
                     || recordVo.getMaterialName() != null && recordVo.getMaterialName().equals(saveDto.getMaterialName())
                     || recordVo.getLsmMaterialId() != null && recordVo.getLsmMaterialId().equals(saveDto.getLsmMaterialId())) {
@@ -415,6 +415,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         record.setBusType(LichengConstants.ORDER_BUS_TYPE_BG);
         record.setIotCollectionStartTime(dateStartTime);
         record.setIotCollectionLastTime(date);
+        record.setGroupCode(saveDto.getGroupCode());
         orderProcessRecordRepository.saveAndFlush(record);
 
         TBusOrderProcessHistory history = new TBusOrderProcessHistory();

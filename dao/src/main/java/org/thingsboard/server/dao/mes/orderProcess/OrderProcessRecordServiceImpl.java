@@ -814,7 +814,9 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                     orderPPbomResult.setPersonalCount(null == personMap.get("personanl_count") ? "0" : String.valueOf(personMap.get("personanl_count")));
                 }
             } else {
-                var totalMap = ppbomRecordTotals.stream().filter(r -> String.valueOf(r.get("order_ppbom_id")).equals(orderPPbomResult.getOrderPPBomId() + "")).findFirst().orElse(null);
+                var totalMap = ppbomRecordTotals.stream().filter(r -> String.valueOf(r.get("order_ppbom_id")).equals(orderPPbomResult.getOrderPPBomId() + "")
+                &&String.valueOf(r.get("group_code")).equals(groupCode+"")
+                        &&String.valueOf(r.get("material_number")).equals(orderPPbomResult.getMaterialNumber()+"")).findFirst().orElse(null);
                 var personMap = finalPpbomRecordPersons.stream().filter(r -> String.valueOf(r.get("order_ppbom_id")).equals(orderPPbomResult.getOrderPPBomId() + "")).findFirst().orElse(null);
                 if (null != totalMap) {
                     orderPPbomResult.setRecordQtyTotal(Float.parseFloat(String.valueOf(totalMap.get("record_qty"))));
@@ -854,9 +856,16 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
             } catch (Exception ignore) {
                 orderPPbomResult.setPendingQty(0f);
             }
-            orderPPbomResult.setUnCompleteQty(Math.round((orderPPbomResult.getMustQty().floatValue()-orderPPbomResult.getRecordQtyTotal())*10000f)/10000f);
-            orderPPbomResult.setUnCompleteRate(String.valueOf(Math.round(orderPPbomResult.getUnCompleteQty()/orderPPbomResult.getMustQty().floatValue()*100))+"%");
-            orderPPbomResult.setCompleteRate(String.valueOf(Math.round((1-orderPPbomResult.getUnCompleteQty()/orderPPbomResult.getMustQty().floatValue())*100))+"%");
+            if(orderPPbomResult.getMustQty()!=BigDecimal.ZERO){
+                orderPPbomResult.setUnCompleteQty(Math.round((orderPPbomResult.getMustQty().floatValue()-orderPPbomResult.getRecordQtyTotal())*10000f)/10000f);
+                orderPPbomResult.setUnCompleteRate(String.valueOf(Math.round(orderPPbomResult.getUnCompleteQty()/orderPPbomResult.getMustQty().floatValue()*100))+"%");
+                orderPPbomResult.setCompleteRate(String.valueOf(Math.round((1-orderPPbomResult.getUnCompleteQty()/orderPPbomResult.getMustQty().floatValue())*100))+"%");
+            }else{
+                orderPPbomResult.setUnCompleteQty(0f);
+                orderPPbomResult.setUnCompleteRate("");
+                orderPPbomResult.setCompleteRate("");
+            }
+
         });
     }
 
@@ -1146,7 +1155,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                         // 计划锅数
                         int pot = tBusOrderHead.getBodyPotQty() == null ? 0 : tBusOrderHead.getBodyPotQty();
                         // 获取工序和用料id对应的累计投入数量
-                        float sumImportRecordQty = orderProcessRecordRepository.getBGSumRecordQty(saveDto.getProcessId(), orderPpbomId, saveDto.getRecordTypeBg());
+                        float sumImportRecordQty = 0;//orderProcessRecordRepository.getBGSumRecordQty0(saveDto.getProcessId(), orderPpbomId, saveDto.getRecordTypeBg(), tBusOrderHead.getBodyMaterialNumber(),);
                         sumImportRecordQty += saveDto.getRecordQty();//累加本次提交的数量
                         // 计划投入总数量
                         float sumPlanImportQty = 0;

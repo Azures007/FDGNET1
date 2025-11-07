@@ -94,5 +94,7 @@ public class OrderProcessRecordVo {
     @ApiModelProperty("拉伸膜物料ID")
     private Integer lsmMaterialId;
 
+    @ApiModelProperty("分组编码")
+    private String groupCode;
 
 }

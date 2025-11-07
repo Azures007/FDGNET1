@@ -174,4 +174,8 @@ public class TBusOrderProcessRecord {
     @Column(name = "lsm_material_id")
     private Integer lsmMaterialId;
 
+    @ApiModelProperty("分组编码")
+    @Column(name = "group_code")
+    private String groupCode;
+
 }

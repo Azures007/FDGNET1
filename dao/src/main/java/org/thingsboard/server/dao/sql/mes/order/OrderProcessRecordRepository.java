@@ -108,6 +108,25 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
     List<Map> getBGRecord(@Param("orderProcessId") Integer orderProcessId
             , @Param("deviceGroupId") String deviceGroupId, @Param("devicePersonGroupId") String devicePersonGroupId, @Param("recordTypeBg") String recordTypeBg, @Param("recordUnit") String recordUnit);
 
+    @Query(value = "select record.group_code,record.order_process_record_id, info.name personname ,tsc.name classname ,TO_CHAR(record.report_time,'YYYY-MM-DD HH24:MI:SS') as report_time,tspi.process_name ,record.record_unit,record.record_qty,record.record_manual_qty,record.material_id," +
+            "record.device_id,record.device_person_id, " +
+            "record.import_pot,record.export_pot,record.export_pot_min, " +
+            "record.material_number,record.material_name,record.record_type,record.capacity_unit,record.capacity_qty " +
+            "from t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
+            " left join t_sys_personnel_info info on record.person_id = info.personnel_id " +
+            " left join t_sys_process_info tspi on record.process_id = tspi.process_id " +
+            " where 1=1 " +
+            " and record.order_process_id=:orderProcessId" +
+            " and record.record_unit=:recordUnit" +
+            " and record.material_number=:materialNumber " +
+            " and record.group_code=:groupCode " +
+            " and (record.device_group_id=:deviceGroupId or ''=:deviceGroupId) " +
+            " and (record.device_person_group_id=:devicePersonGroupId or ''=:devicePersonGroupId) " +
+            " and (record.record_type_bg=:recordTypeBg or ''=:recordTypeBg) " +
+            " and record.bus_type='BG' order by tsc.update_time desc,created_time desc  ", nativeQuery = true)
+    List<Map> getBGRecordYl(@Param("orderProcessId") Integer orderProcessId
+            , @Param("deviceGroupId") String deviceGroupId, @Param("devicePersonGroupId") String devicePersonGroupId, @Param("recordTypeBg") String recordTypeBg, @Param("recordUnit") String recordUnit, @Param("materialNumber") String materialNumber, @Param("groupCode") String groupCode);
+
     //获取工序和用料id对应的累计投入数量
     @Query(value = "select coalesce(sum(record.record_qty),0) as record_qty " +
             "from t_bus_order_process_record record left join t_sys_class tsc on tsc.class_id = record.class_id " +
@@ -398,10 +417,10 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
     Double sumBG2(Integer orderProcessId, String groupId, String bglx);
 
     // 累计投入，不按操作员
-    @Query(value = "select a.order_ppbom_id,coalesce(sum(record_qty),0) as record_qty,max(record_unit) as record_unit from t_bus_order_process_record a \n" +
+    @Query(value = "select a.group_code,a.material_number,a.order_process_id,a.order_ppbom_id,coalesce(sum(record_qty),0) as record_qty,max(record_unit) as record_unit from t_bus_order_process_record a \n" +
             "where a.bus_type ='BG' and record_type ='1' and a.order_no =?1 and a.process_id =?2 \n" +
             "and (a.material_id=?3 or -1=?3) " +
-            "group by a.order_ppbom_id ", nativeQuery = true)
+            "group by a.group_code,a.material_number,a.order_process_id,a.order_ppbom_id ", nativeQuery = true)
     List<Map> getPpbomRecordQtyTotal(String orderNo, Integer processId, Integer ppbomMaterialId);
 
     // 个人投入，按操作员
