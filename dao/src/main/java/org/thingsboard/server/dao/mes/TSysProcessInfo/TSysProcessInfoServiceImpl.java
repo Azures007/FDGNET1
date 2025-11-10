@@ -150,20 +150,21 @@ public class TSysProcessInfoServiceImpl implements TSysProcessInfoService {
         for (Integer classId : classIds) {
             var sysClass = tSysClassRepository.findById(classId).orElse(null);
             var scheduling = sysClass.getScheduling();
-            if (scheduling.equals("SCHEDULING0001")) {
-                if (hasDayClass) {
-                    throw new RuntimeException("工序管理的工序设置仅允许绑定一个白班");
-                } else {
-                    hasDayClass = true;
-                }
-            }
-            if (scheduling.equals("SCHEDULING0002")) {
-                if (hasNightClass) {
-                    throw new RuntimeException("工序管理的工序设置仅允许绑定一个夜班");
-                } else {
-                    hasNightClass = true;
-                }
-            }
+            // 31465 处理班别只允许绑定一个白班或夜班的校验去掉
+//            if (scheduling.equals("SCHEDULING0001")) {
+//                if (hasDayClass) {
+//                    throw new RuntimeException("工序管理的工序设置仅允许绑定一个白班");
+//                } else {
+//                    hasDayClass = true;
+//                }
+//            }
+//            if (scheduling.equals("SCHEDULING0002")) {
+//                if (hasNightClass) {
+//                    throw new RuntimeException("工序管理的工序设置仅允许绑定一个夜班");
+//                } else {
+//                    hasNightClass = true;
+//                }
+//            }
             TSysProcessClassRel rel = new TSysProcessClassRel();
             rel.setProcessId(processId);
             rel.setClassId(classId);

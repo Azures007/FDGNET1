@@ -97,4 +97,8 @@ public class TSysClass {
     @Column(name = "pk_org")
     private String pkOrg;
 
+    @ApiModelProperty("产线id")
+    @Column(name = "nc_cwkid")
+    private String cwkid;
+
 }
