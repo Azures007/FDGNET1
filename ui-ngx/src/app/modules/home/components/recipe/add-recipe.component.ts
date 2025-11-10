@@ -124,7 +124,15 @@ export class AddRecipeComponent implements OnInit {
         obj[key] = this.injectData.data.data.recipe[key];
       });
       if (this.injectData.data.data.groupedInputs) {
-        this.groupedInputs = this.injectData.data.data.groupedInputs;
+        this.groupedInputs = this.injectData.data.data.groupedInputs.map(item => {
+          return {
+            ...item,
+            inputs: item.inputs.map(subItem => ({
+              ...subItem,
+              potCalculationBasis: subItem.potCalculationBasis === '1' ? true : false,
+            })),
+          }
+        });
       }
       if (this.formType === 'details') {
         this.dataForm = this.fb.group({
@@ -180,6 +188,13 @@ export class AddRecipeComponent implements OnInit {
           this.utils.showMessage('请选择物料名称', 'error');
           return;
         }
+
+        // 校验计划投入比例为必填，且为数字，可以为小数
+        if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.planInputRatio || isNaN(Number(subItem.planInputRatio))))) {
+          this.utils.showMessage('请填写计划投入比例，且为数字', 'error');
+          return;
+        }
+
         // 校验每锅投入标准不能为空，且为数字，可以为小数
         if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.standardInput || isNaN(Number(subItem.standardInput))))) {
           this.utils.showMessage('请填写每锅投入标准，且为数字', 'error');
@@ -206,6 +221,17 @@ export class AddRecipeComponent implements OnInit {
           return;
         }
 
+        // 校验锅数计算基准，同一个分组下只能有一个二级可以勾选，且一个分组下必须有一个二级勾选基准
+        if (this.groupedInputs.every(item => item.inputs.some(subItem => subItem.potCalculationBasis))) {
+          if (this.groupedInputs.some(item => item.inputs.filter(subItem => subItem.potCalculationBasis).length > 1)) {
+            this.utils.showMessage('同一个分组下只能有一个二级可以勾选校验锅数计算基准', 'error');
+            return;
+          }
+        } else {
+          this.utils.showMessage('一个分组下必须有一个二级勾选校验锅数计算基准', 'error');
+          return;
+        }
+
       }
       const orgName = this.pkOrgList.find(item => item.id == this.dataForm.value.pkOrg)?.name;
       const params = {
@@ -213,7 +239,15 @@ export class AddRecipeComponent implements OnInit {
           ...this.addParams,
           orgName
         },
-        groupedInputs: this.groupedInputs,
+        groupedInputs: this.groupedInputs.map(item => {
+          return {
+            ...item,
+            inputs: item.inputs.map(subItem => ({
+              ...subItem,
+              potCalculationBasis: subItem.potCalculationBasis ? '1' : '0',
+            })),
+          }
+        }),
       }
       this.recipeService.fetchSave(params).subscribe(res => {
         if (res.errcode === 200) {
@@ -251,6 +285,8 @@ export class AddRecipeComponent implements OnInit {
           unit: '',
           lowerLimitRatio: '',
           upperLimitRatio: '',
+          planInputRatio: '',
+          potCalculationBasis: false,
         }
       ],
       processNumber: '',
@@ -269,6 +305,18 @@ export class AddRecipeComponent implements OnInit {
       this.groupedInputs.splice(i, 1);
     })
   }
+  copyConfig(index) {
+    const config = JSON.parse(JSON.stringify(this.groupedInputs[index]));
+    this.groupedInputs.splice(index + 1, 0, {
+      ...config,
+      inputs: [...config.inputs.map(item => {
+        return {
+          ...item,
+          inputId: null
+        }
+      })],
+    })
+  }
   addInput(index, index2) {
     this.groupedInputs[index].inputs.splice(index2 + 1, 0, {
       materialName: '',
@@ -277,6 +325,8 @@ export class AddRecipeComponent implements OnInit {
       unit: '',
       lowerLimitRatio: '',
       upperLimitRatio: '',
+      planInputRatio: '',
+      potCalculationBasis: false,
     })
   }
   delInput(index, index2) {

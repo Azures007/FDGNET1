@@ -52,4 +52,9 @@ export class RecipeService {
     return this.http.post(`/api/recipe/saveProductBindings?recipeId=${data.recipeId}`, data.body);
   }
 
+  // 复制配方
+  public fetchCopy(data): Observable<any> {
+    return this.http.post(`/api/recipe/copy`, {recipeId: data});
+  }
+
 }

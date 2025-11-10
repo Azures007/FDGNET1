@@ -201,6 +201,18 @@ export class RecipeComponent implements OnInit {
         }
         this.router.navigate(['/recipe-material-bind'], queryParams);
         break;
+      case 'copy':
+        this.utils.confirm('温馨提示', `是否确认复制?`, () => {
+          this.recipeService.fetchCopy(data.recipeId).subscribe(res => {
+            if (res.errcode === 200) {
+              this.utils.showMessage('复制成功', 'success');
+              this.searchList();
+            } else {
+              this.utils.showMessage(res.errmsg, 'error');
+            }
+          })
+        })
+        break;
     }
   }
 

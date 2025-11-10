@@ -104,16 +104,27 @@
             </button>
           </div>
         </div>
+        <div class="config-item">
+          <div class="label"></div>
+          <div class="value">
+            <button *ngIf="formType !== 'details'" class="add_btn btn_color_primary btn" (click)="copyConfig(i)"
+              style="margin-left: 10px;">
+              <mat-icon svgIcon="mdi:clipboard-arrow-left"></mat-icon>复制
+            </button>
+          </div>
+        </div>
       </div>
       <table class="table">
         <tr>
           <!-- <th><mat-checkbox [(ngModel)]="isAllChecked" [disabled]="formType === 'details'"></mat-checkbox></th> -->
           <th>物料名称</th>
           <th>物料编码</th>
+          <th>计划投入比例%</th>
           <th>每锅/每次投入标准</th>
           <th>单位</th>
           <th>投入下限比例%</th>
           <th>投入上限比例%</th>
+          <th>锅数计算基准</th>
           <th>操作</th>
         </tr>
         <tr *ngFor="let subItem of item.inputs; let j = index">
@@ -129,6 +140,12 @@
           </td>
           <td>
             <div>{{subItem.materialCode}}</div>
+          </td>
+          <td>
+            <div>
+              <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
+                [(ngModel)]="subItem.planInputRatio">
+            </div>
           </td>
           <td>
             <div>
@@ -155,6 +172,11 @@
             <div>
               <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
                 [(ngModel)]="subItem.upperLimitRatio">
+            </div>
+          </td>
+          <td>
+            <div>
+              <mat-checkbox [(ngModel)]="subItem.potCalculationBasis" [disabled]="formType === 'details'"></mat-checkbox>
             </div>
           </td>
           <td>

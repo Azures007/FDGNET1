@@ -86,6 +86,8 @@
             class="mini_btn enter_btn" (click)="handleEvent(element,'enable')">启用</button>
           <button *ngIf="element.status == 1 && set.has('/recipe/disable')"
             class="mini_btn disable_btn" (click)="handleEvent(element,'disable')">禁用</button>
+          <button *ngIf="set.has('/recipe/copy')"
+          class="mini_btn edit_btn" (click)="handleEvent(element,'copy')">复制</button>
         </td>
       </ng-container>
 
