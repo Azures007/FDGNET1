@@ -117,6 +117,9 @@ public class OrderBackendServiceImpl implements OrderBackendService {
         if (tBusOrderHeadRt.getCraftId() != null) {
             throw new RuntimeException("工艺路线已经有值，不要重复接单");
         }
+        if (StringUtils.isEmpty(tBusOrderHeadRt.getCwkid())) {
+            throw new RuntimeException("订单没有绑定产线");
+        }
         boolean isSuccess = true;
         try {
             TSysCraftInfo tSysCraftInfo = craftInfoService.getAndCheck(craftId);
@@ -145,26 +148,29 @@ public class OrderBackendServiceImpl implements OrderBackendService {
                     } else {
                         for (var processClassRel : processClassRelList) {
                             TSysClass classById = classService.getClassById(processClassRel.getClassId());
-                            // 匹配订单的班组：通过班别中的ERP班组来匹配；如果没有匹配到则还是用原来的方式匹配
-                            if (StringUtils.isNotEmpty(tBusOrderHeadRt.getMidMoEntryTeamNumber())
-                                    && StringUtils.isNotEmpty(classById.getClassTeamNumber())
-                                    && tBusOrderHeadRt.getMidMoEntryTeamNumber().equals(classById.getClassTeamNumber())) {
-                                // 1.通过班别中的ERP班组来匹配
-                                startOrderClass = classById;
-                                break;
-                            }
-                            if (null == startOrderClass) {
-                                // 2.按当前时间获取早晚班
-                                var sysClassC = classService.getAndCheckByScheduling(processClassRel.getClassId());
-                                if (null != sysClassC) {
-                                    startOrderClass = sysClassC;
+                            // 工艺路线的班别允许绑定多个产线的白班和夜班，增加按产线id匹配班别
+                            if (classById.getCwkid() != null && classById.getCwkid().equals(tBusOrderHeadRt.getCwkid())) {
+                                // 匹配订单的班组：通过班别中的ERP班组来匹配；如果没有匹配到则还是用原来的方式匹配
+                                if (StringUtils.isNotEmpty(tBusOrderHeadRt.getMidMoEntryTeamNumber())
+                                        && StringUtils.isNotEmpty(classById.getClassTeamNumber())
+                                        && tBusOrderHeadRt.getMidMoEntryTeamNumber().equals(classById.getClassTeamNumber())) {
+                                    // 1.通过班别中的ERP班组来匹配
+                                    startOrderClass = classById;
                                     break;
+                                }
+                                if (null == startOrderClass) {
+                                    // 2.按当前时间获取早晚班
+                                    var sysClassC = classService.getAndCheckByScheduling(processClassRel.getClassId());
+                                    if (null != sysClassC) {
+                                        startOrderClass = sysClassC;
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
                     if (null == startOrderClass) {
-                        throw new RuntimeException("接单开工发生异常：第一道工序没有匹配到合适的班别，请检查下班别和排班信息");
+                        throw new RuntimeException("接单开工失败：第一道工序没有匹配到合适的班别，请检查下班别(产线)和排班信息");
                     } else {
                         //设置匹配工艺路线: -1: 不匹配, 1:匹配
 //                    setOrderHeadOrderMatching(orderId, tSysCraftProcessRelList.size() <= 0 ? LichengConstants.ORDER_HEAD_MATCHING__1 : LichengConstants.ORDER_HEAD_MATCHING_1);
@@ -208,7 +214,7 @@ public class OrderBackendServiceImpl implements OrderBackendService {
                         if (baseId == null || baseId.isEmpty()) {
                             baseId = ncWorklineService.getBaseIdByLineId(lineId);
                         }
-                        
+
 
                         String orderNo = tBusOrderHeadRt.getOrderNo();
                         String productName = tBusOrderHeadRt.getBodyMaterialName();

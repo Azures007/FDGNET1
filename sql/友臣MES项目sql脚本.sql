@@ -905,3 +905,7 @@ COMMENT ON COLUMN t_sys_recipe_input.semi_finished_product_code IS '半成品编
 -- 2025-11-01
 ALTER TABLE public.t_bus_order_head ADD mid_mo_entry_seq_text varchar(10) NULL;
 COMMENT ON COLUMN public.t_bus_order_head.mid_mo_entry_seq_text IS '订单明细行号';
+
+-- 2025-11-10 班别 增加产线id
+ALTER TABLE t_sys_class ADD COLUMN nc_cwkid VARCHAR(255);
+COMMENT ON COLUMN t_sys_class.nc_cwkid IS '产线id';
