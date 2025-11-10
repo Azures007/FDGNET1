@@ -82,6 +82,14 @@ public class TSysRecipeInput {
     @Column(name = "semi_finished_product_code")
     private String semiFinishedProductCode;
 
+    @ApiModelProperty("计划投入比例")
+    @Column(name = "plan_input_ratio", precision = 10, scale = 6)
+    private BigDecimal planInputRatio;
+
+    @ApiModelProperty("锅数计算基准（复选框）")
+    @Column(name = "pot_calculation_basis", length = 1)
+    private String potCalculationBasis;
+
     // 多对一关系：配方（为避免详情序列化时出现循环/冗余，忽略该字段）
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id", insertable = false, updatable = false)

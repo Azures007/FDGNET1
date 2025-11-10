@@ -819,7 +819,7 @@ CREATE TABLE t_bus_daily_report_entry (
                                           dailyreport_id int4 NULL, -- 连接表头id
                                           fseq varchar(500) NULL, -- 序号
                                           frequency varchar(500) NULL, -- 频次id
-                                          frequency_value varchar(500) NULL, -- 频次值
+                                          frequency_value varchar(500) NULL, -- 频次값
                                           important_item varchar(500) NULL, -- 重点项目
                                           CONSTRAINT daily_report_dto_pkey PRIMARY KEY (id)
 );
@@ -829,7 +829,7 @@ COMMENT ON COLUMN public.t_bus_daily_report_entry.id IS '表id';
 COMMENT ON COLUMN public.t_bus_daily_report_entry.dailyreport_id IS '连接表头id';
 COMMENT ON COLUMN public.t_bus_daily_report_entry.fseq IS '序号';
 COMMENT ON COLUMN public.t_bus_daily_report_entry.frequency IS '频次id';
-COMMENT ON COLUMN public.t_bus_daily_report_entry.frequency_value IS '频次值';
+COMMENT ON COLUMN public.t_bus_daily_report_entry.frequency_value IS '频次값';
 COMMENT ON COLUMN public.t_bus_daily_report_entry.important_item IS '重点项目';
 
 -- 每日报表表体关联得配置管理信息数据
@@ -839,7 +839,7 @@ CREATE TABLE t_bus_daily_report_entry_item (
                                                field_name varchar(500) NULL, -- 达成（异常）清况描述"
                                                status varchar(500) NULL, -- 达成情况
                                                field_type_id varchar(500) NULL, -- 达成清况类型id
-                                               field_type_value varchar(500) NULL, -- 达成情况类型值
+                                               field_type_value varchar(500) NULL, -- 达成情况类型값
                                                spilt_value varchar(500) NULL, -- 下拉列表对应字段值
                                                required varchar(255) NULL, -- 是否必填
                                                CONSTRAINT "t_bus_daily_report_entry_Item_pkey" PRIMARY KEY (id)
@@ -850,7 +850,7 @@ COMMENT ON COLUMN public.t_bus_daily_report_entry_item.dailyreport_entry_id IS '
 COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_name IS '达成（异常）清况描述"';
 COMMENT ON COLUMN public.t_bus_daily_report_entry_item.status IS '达成情况';
 COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_type_id IS '达成清况类型id';
-COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_type_value IS '达成情况类型值';
+COMMENT ON COLUMN public.t_bus_daily_report_entry_item.field_type_value IS '达成情况类型값';
 COMMENT ON COLUMN public.t_bus_daily_report_entry_item.spilt_value IS '下拉列表对应字段值';
 COMMENT ON COLUMN public.t_bus_daily_report_entry_item.required IS '是否必填';
 
@@ -901,6 +901,13 @@ ALTER TABLE t_sys_recipe_input ADD COLUMN semi_finished_product_name VARCHAR(255
 COMMENT ON COLUMN t_sys_recipe_input.semi_finished_product_name IS '半成品';
 ALTER TABLE t_sys_recipe_input ADD COLUMN semi_finished_product_code VARCHAR(255);
 COMMENT ON COLUMN t_sys_recipe_input.semi_finished_product_code IS '半成品编码';
+
+-- 2025-11-10
+ALTER TABLE t_sys_recipe_input ADD COLUMN plan_input_ratio NUMERIC(10,6);
+COMMENT ON COLUMN t_sys_recipe_input.plan_input_ratio IS '计划投入比例';
+
+ALTER TABLE t_sys_recipe_input ADD COLUMN pot_calculation_basis VARCHAR(1);
+COMMENT ON COLUMN t_sys_recipe_input.pot_calculation_basis IS '锅数计算基准（复选框）';
 
 -- 2025-11-01
 ALTER TABLE public.t_bus_order_head ADD mid_mo_entry_seq_text varchar(10) NULL;
