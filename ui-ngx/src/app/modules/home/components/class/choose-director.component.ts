@@ -37,7 +37,8 @@ export class ChooseDirectorComponent implements OnInit {
       body: {
         name: this.searchFormGroup.value.name,
         sex: this.searchFormGroup.value.sex || null,
-        className: null
+        className: null,
+        enabledSt:1,
       }
     }
     this.staffService.fetchGetTableList(par).subscribe(res => {

@@ -97,6 +97,10 @@
                     <th mat-header-cell *matHeaderCellDef> 基地 </th>
                     <td mat-cell *matCellDef="let element">  {{getOrgName(element.pkOrg)}} </td>
                 </ng-container>
+                <ng-container matColumnDef="cwkid">
+                    <th mat-header-cell *matHeaderCellDef> 产线 </th>
+                    <td mat-cell *matCellDef="let element"> {{getCwkName(element.cwkid)}} </td>
+                </ng-container>
 
                 <ng-container matColumnDef="enabledSt">
                     <th mat-header-cell *matHeaderCellDef> 状态 </th>

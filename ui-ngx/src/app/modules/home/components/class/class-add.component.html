@@ -70,6 +70,13 @@
             <option *ngFor="let wsItem of data.pkOrgList" [value]="wsItem.id">{{wsItem.name}}</option>
         </select>
     </div>
+    <div class="item">
+        <div class="label">产线:</div>
+        <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.cwkid" required
+            (ngModelChange)="test($event)" aria-placeholder="请选择">
+            <option *ngFor="let wsItem of data.worklineList" [value]="wsItem.cwkid">{{wsItem.vwkname}}</option>
+        </select>
+    </div>
 
     <!-- <div class="item">
         <div class="label">生产车间:</div>

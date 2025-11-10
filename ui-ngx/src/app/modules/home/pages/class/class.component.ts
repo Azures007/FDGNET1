@@ -66,7 +66,7 @@ export class ClassComponent implements OnInit {
   dataSource = [];
 
   //表格列参数
-  displayedColumns: string[] = ['name', 'classNumber', 'groupLeader', 'teamNum', 'scheduling', 'belongProcessId', 'pkOrg', 'enabledSt', 'customColumn1']
+  displayedColumns: string[] = ['name', 'classNumber', 'groupLeader', 'teamNum', 'scheduling', 'belongProcessId', 'pkOrg', 'cwkid', 'enabledSt', 'customColumn1']
 
 
   //新增班组参数
@@ -103,6 +103,7 @@ export class ClassComponent implements OnInit {
   midOrgList = [];
   processList = [];
   pkOrgList = [];
+  worklineList = [];
   //生产车间列表
   // midDeptList = localStorage.getItem('depts') ? JSON.parse(localStorage.getItem('depts')) : [];
 
@@ -146,12 +147,24 @@ export class ClassComponent implements OnInit {
         });
       }
     });
+    this.ClassService.fetchBaseList().subscribe(res => {
+      this.worklineList = res.data || [];
+    })
   }
   getOrgName(id) {
     let name = '';
     this.pkOrgList.forEach(item => {
       if(item.id == id) {
         name = item.name;
+      }
+    })
+    return name;
+  }
+  getCwkName(id) {
+    let name = '';
+    this.worklineList.forEach(item => {
+      if(item.cwkid == id) {
+        name = item.vwkname;
       }
     })
     return name;
@@ -314,6 +327,7 @@ export class ClassComponent implements OnInit {
       processList: this.processList,
       erpClassList: this.erpClassList,
       pkOrgList: this.pkOrgList,
+      worklineList: this.worklineList,
     }
     let diaref = this._dialog.open(ClassAddComponent, {
       width: "695px",
@@ -354,6 +368,7 @@ export class ClassComponent implements OnInit {
         processList: this.processList,
         erpClassList: this.erpClassList,
         pkOrgList: this.pkOrgList,
+        worklineList: this.worklineList,
       }
 
       this.roleService.fetchGetMidDept({ params: { current: 0, size: 999 }, body: { kdOrgId: data.params.tSysClass.kdOrgId } }).subscribe(res => {

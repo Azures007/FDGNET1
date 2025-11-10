@@ -71,7 +71,8 @@ export class ClassAddComponent implements OnInit {
   //选择组长
   handleTeamLeader() {
     let data = {
-      leaderIdGroup: []
+      leaderIdGroup: [],
+      title:'选择组长',
     }
 
     if (this.teamList.length == 0) {
@@ -80,14 +81,15 @@ export class ClassAddComponent implements OnInit {
       data.leaderIdGroup = this.teamList
     }
 
-    let diaref = this._dialog.open(ClassLeaderComponent, {
-      width: "695px",
-      height: "auto",
+    let diaref = this._dialog.open(ChooseDirectorComponent, {
+      width: "1400px",
+      height: "800px",
       panelClass: 'custom-modalbox',
       data: JSON.parse(JSON.stringify(data))
     })
     diaref.afterClosed().subscribe(res => {
       if (res) {
+        res = [res]
         console.log(res, 'output')
         this.teamList = res;
         let leader = "";
@@ -124,6 +126,7 @@ export class ClassAddComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        console.log(result, 'result');
         this.data.params.tSysClass.workshopDirector = result.name;
         this.data.params.tSysClass.workshopDirectorId = result.personnelId;
       }
@@ -169,6 +172,10 @@ export class ClassAddComponent implements OnInit {
     // }
     if (this.data.params.tSysClass.pkOrg == "" || this.data.params.tSysClass.pkOrg == null) {
       this.utils.showMessage("基地不能为空", 'error');
+      return
+    }
+    if (this.data.params.tSysClass.cwkid == "" || this.data.params.tSysClass.cwkid == null) {
+      this.utils.showMessage("产线不能为空", 'error');
       return
     }
     if (this.data.params.tSysClass.enabledSt == "") {

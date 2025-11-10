@@ -28,7 +28,7 @@ export class ClassService {
             observe: 'response',//要获取到完全的response,在 发起请求时 在option中添加 observe: ‘response’;
         })
     }
-    
+
 
 
     //新建或保存
@@ -66,5 +66,7 @@ export class ClassService {
         let url = `/api/class/getGroupLeaderRelByClassId?classId=${params.classId}`
         return this.http.get(url, defaultHttpOptionsFromConfig(config))
     }
-
+    public fetchBaseList(): Observable<any> {
+        return this.http.get('/api/manage/workline/list')
+    }
 }
