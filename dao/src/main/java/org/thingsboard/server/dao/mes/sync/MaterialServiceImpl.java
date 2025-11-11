@@ -107,6 +107,24 @@ public class MaterialServiceImpl implements MaterialService {
         // 更新主表字段
         BeanUtils.copyProperties(materialDto, tSyncMaterial, "id", "tSyncMaterialBoms"); // 排除 id 和 bom 集合
 
+        // 校验materialCode不能重复
+        if (StringUtils.isNotBlank(tSyncMaterial.getMaterialCode())) {
+            List<TSyncMaterial> existingMaterials = materialRepository.getByMaterialCode(tSyncMaterial.getMaterialCode());
+            final Integer currentMaterialId = materialId; // 创建final变量供lambda使用
+            if (materialId == null || materialId == 0) {
+                // 新增：检查是否存在相同的materialCode
+                if (existingMaterials != null && !existingMaterials.isEmpty()) {
+                    throw new RuntimeException("物料编码已存在，不能重复");
+                }
+            } else {
+                // 更新：检查是否存在相同的materialCode（排除当前记录）
+                if (existingMaterials != null && existingMaterials.stream()
+                        .anyMatch(m -> !m.getId().equals(currentMaterialId))) {
+                    throw new RuntimeException("物料编码已存在，不能重复");
+                }
+            }
+        }
+
         // 校验必填字段、赋值创建人创建时间
         updateVerify(tSyncMaterial);
 
