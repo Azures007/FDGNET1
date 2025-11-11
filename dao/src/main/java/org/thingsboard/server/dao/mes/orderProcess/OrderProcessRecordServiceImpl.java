@@ -223,10 +223,11 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
 
     /**
      * 计算分组的计划锅数
-     * 计划锅数 = 计划投入 / 每锅投入标准
+     * 注意：groupResults中的mustQty已经是调整后的值（用料清单的需求量 * 配方投入设置的计划投入比例% / 100）
+     * 计划锅数 = 计划投入（mustQty） / 每锅投入标准
      * 使用锅数计算基准='1'的物料的计划投入和每锅投入标准进行计算
      * 
-     * @param groupResults 分组内的物料结果列表
+     * @param groupResults 分组内的物料结果列表（mustQty已经是调整后的计划投入值）
      * @param recipeMaterialMap 配方物料映射（key: semiFinishedProductCode_materialCode, value: TSysRecipeInput）
      * @param groupCode 分组编码（半成品编码，可能为null）
      * @return 计划锅数，如果无法计算则返回null
@@ -271,14 +272,15 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
 
             // 检查是否满足锅数计算基准='1'的条件
             if (recipeInput != null && "1".equals(recipeInput.getPotCalculationBasis())) {
-                BigDecimal mustQty = result.getMustQty();
-                BigDecimal standardInput = recipeInput.getStandardInput();
+                BigDecimal mustQty = result.getMustQty(); // mustQty已经是调整后的值（用料清单的需求量 * 计划投入比例% / 100）
+                BigDecimal standardInput = recipeInput.getStandardInput(); // 每锅投入标准
 
-                // 计划投入和每锅投入标准都必须存在且大于0
+                // mustQty（计划投入）和每锅投入标准都必须存在且大于0
                 if (mustQty != null && standardInput != null 
                     && mustQty.compareTo(BigDecimal.ZERO) > 0 
                     && standardInput.compareTo(BigDecimal.ZERO) > 0) {
-                    // 计算计划锅数 = 计划投入 / 每锅投入标准，向上取整
+                    
+                    // 计算计划锅数 = 计划投入（mustQty） / 每锅投入标准，向上取整
                     BigDecimal planPotCount = mustQty.divide(standardInput, 2, RoundingMode.HALF_UP);
                     return planPotCount.setScale(0, RoundingMode.UP).intValue();
                 }
@@ -542,6 +544,19 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                             result.setMidPpbomEntryWeighMesUnit(recipeInput.getUnit());
                                             result.setMidPpbomEntryWeighDeveptUnit(recipeInput.getUnit());
 
+                                            // 调整mustQty：用料清单的需求量 * 配方投入设置的计划投入比例% / 100
+                                            BigDecimal mustQty = result.getMustQty();
+                                            BigDecimal planInputRatio = recipeInput.getPlanInputRatio();
+                                            if (mustQty != null && mustQty.compareTo(BigDecimal.ZERO) > 0) {
+                                                // 如果计划投入比例为空，默认为100%
+                                                if (planInputRatio == null) {
+                                                    planInputRatio = new BigDecimal("100.00");
+                                                }
+                                                // 计算调整后的mustQty = 用料清单的需求量 * 计划投入比例% / 100
+                                                BigDecimal adjustedMustQty = mustQty.multiply(planInputRatio).divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP);
+                                                result.setMustQty(adjustedMustQty);
+                                            }
+
                                             // 计算投入下限和投入上限
                                             if (recipeInput.getStandardInput() != null) {
                                                 BigDecimal standardInput = recipeInput.getStandardInput();
@@ -640,6 +655,19 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                 result.setRecordUnitStr(GlobalConstant.getCodeDscName("UNIT0000", recipeInput.getUnit()));
                                 result.setMidPpbomEntryWeighMesUnit(recipeInput.getUnit());
                                 result.setMidPpbomEntryWeighDeveptUnit(recipeInput.getUnit());
+
+                                // 调整mustQty：用料清单的需求量 * 配方投入设置的计划投入比例% / 100
+                                BigDecimal mustQty = result.getMustQty();
+                                BigDecimal planInputRatio = recipeInput.getPlanInputRatio();
+                                if (mustQty != null && mustQty.compareTo(BigDecimal.ZERO) > 0) {
+                                    // 如果计划投入比例为空，默认为100%
+                                    if (planInputRatio == null) {
+                                        planInputRatio = new BigDecimal("100.00");
+                                    }
+                                    // 计算调整后的mustQty = 用料清单的需求量 * 计划投入比例% / 100
+                                    BigDecimal adjustedMustQty = mustQty.multiply(planInputRatio).divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP);
+                                    result.setMustQty(adjustedMustQty);
+                                }
 
                                 // 计算投入下限和投入上限
                                 if (recipeInput.getStandardInput() != null) {
