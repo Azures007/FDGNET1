@@ -222,6 +222,73 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
     }
 
     /**
+     * 计算分组的计划锅数
+     * 计划锅数 = 计划投入 / 每锅投入标准
+     * 使用锅数计算基准='1'的物料的计划投入和每锅投入标准进行计算
+     * 
+     * @param groupResults 分组内的物料结果列表
+     * @param recipeMaterialMap 配方物料映射（key: semiFinishedProductCode_materialCode, value: TSysRecipeInput）
+     * @param groupCode 分组编码（半成品编码，可能为null）
+     * @return 计划锅数，如果无法计算则返回null
+     */
+    private Integer calculatePlanPotCount(List<OrderPPbomResult> groupResults, Map<String, TSysRecipeInput> recipeMaterialMap, String groupCode) {
+        if (groupResults == null || groupResults.isEmpty() || recipeMaterialMap == null || recipeMaterialMap.isEmpty()) {
+            return null;
+        }
+
+        // 找到分组内锅数计算基准='1'的物料
+        for (OrderPPbomResult result : groupResults) {
+            String materialCode = result.getMaterialNumber();
+            if (materialCode == null) {
+                continue;
+            }
+
+            // 从配方物料映射中查找对应的配方投入信息
+            TSysRecipeInput recipeInput = null;
+            if (groupCode != null && StringUtils.isNotEmpty(groupCode)) {
+                // 有分组编码时，使用分组编码+物料编码作为key
+                recipeInput = recipeMaterialMap.get(groupCode + "_" + materialCode);
+            }
+            
+            // 如果没有找到，或者找到的物料不满足锅数计算基准='1'的条件，则继续查找
+            if (recipeInput == null || !"1".equals(recipeInput.getPotCalculationBasis())) {
+                // 尝试多种方式查找锅数计算基准='1'的物料：
+                // 1. 先尝试使用null或空字符串作为前缀查找（兼容没有半成品的情况）
+                recipeInput = recipeMaterialMap.get("null_" + materialCode);
+                if (recipeInput == null || !"1".equals(recipeInput.getPotCalculationBasis())) {
+                    recipeInput = recipeMaterialMap.get("_" + materialCode);
+                }
+                // 2. 如果还是没找到，遍历查找匹配的物料编码（同时匹配锅数计算基准='1'）
+                if (recipeInput == null || !"1".equals(recipeInput.getPotCalculationBasis())) {
+                    recipeInput = recipeMaterialMap.values().stream()
+                            .filter(input -> input != null 
+                                    && materialCode.equals(input.getMaterialCode())
+                                    && "1".equals(input.getPotCalculationBasis()))
+                            .findFirst()
+                            .orElse(null);
+                }
+            }
+
+            // 检查是否满足锅数计算基准='1'的条件
+            if (recipeInput != null && "1".equals(recipeInput.getPotCalculationBasis())) {
+                BigDecimal mustQty = result.getMustQty();
+                BigDecimal standardInput = recipeInput.getStandardInput();
+
+                // 计划投入和每锅投入标准都必须存在且大于0
+                if (mustQty != null && standardInput != null 
+                    && mustQty.compareTo(BigDecimal.ZERO) > 0 
+                    && standardInput.compareTo(BigDecimal.ZERO) > 0) {
+                    // 计算计划锅数 = 计划投入 / 每锅投入标准，向上取整
+                    BigDecimal planPotCount = mustQty.divide(standardInput, 2, RoundingMode.HALF_UP);
+                    return planPotCount.setScale(0, RoundingMode.UP).intValue();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * 获取所有需要投入的物料编码列表
      * 包括配方管理中定义的物料
      *
@@ -530,6 +597,15 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                     }
                                 }
                                 
+                                // 计算并设置计划锅数
+                                Integer planPotCount = calculatePlanPotCount(groupResults, recipeMaterialMap, semiFinishedProductCode);
+                                if (planPotCount != null) {
+                                    // 将计划锅数设置到分组内所有物料上
+                                    for (OrderPPbomResult result : groupResults) {
+                                        result.setPlanPotCount(planPotCount);
+                                    }
+                                }
+                                
                                 groupVo.setOrderPPbomResultList(groupResults);
                                 ppbomGroupVos.add(groupVo);
                                 ind++;
@@ -615,6 +691,17 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                         add.setInputUpperLimit(inputUpperLimit.floatValue());
                                         orderPPbomResults.add(add);
                                     }
+                                }
+                            }
+                        }
+                        
+                        // 计算并设置计划锅数（没有半成品分组的情况）
+                        if (!recipeMaterialMap.isEmpty()) {
+                            Integer planPotCount = calculatePlanPotCount(orderPPbomResults, recipeMaterialMap, null);
+                            if (planPotCount != null) {
+                                // 将计划锅数设置到所有物料上
+                                for (OrderPPbomResult result : orderPPbomResults) {
+                                    result.setPlanPotCount(planPotCount);
                                 }
                             }
                         }

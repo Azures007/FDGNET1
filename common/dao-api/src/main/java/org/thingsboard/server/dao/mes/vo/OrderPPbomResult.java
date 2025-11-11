@@ -117,4 +117,7 @@ public class OrderPPbomResult implements Cloneable{
 
     @ApiModelProperty("未提交累计数量")
     private Float pendingQty;
+
+    @ApiModelProperty("计划锅数")
+    private Integer planPotCount;
 }
