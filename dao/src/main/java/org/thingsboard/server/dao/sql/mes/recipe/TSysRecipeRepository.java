@@ -95,4 +95,20 @@ public interface TSysRecipeRepository extends JpaRepository<TSysRecipe, Integer>
      * @return 数量
      */
     long countByPkOrg(String pkOrg);
+
+    /**
+     * 查找以指定前缀开头的配方
+     * @param prefix 前缀
+     * @return 配方列表
+     */
+    @Query("SELECT r FROM TSysRecipe r WHERE r.recipeCode LIKE :prefix%")
+    List<TSysRecipe> findByRecipeCodeStartingWith(@Param("prefix") String prefix);
+    
+    /**
+     * 统计指定前缀的配方编码数量
+     * @param prefix 前缀
+     * @return 数量
+     */
+    @Query("SELECT COUNT(r) FROM TSysRecipe r WHERE r.recipeCode LIKE :prefix%")
+    long countByRecipeCodeStartingWith(@Param("prefix") String prefix);
 }

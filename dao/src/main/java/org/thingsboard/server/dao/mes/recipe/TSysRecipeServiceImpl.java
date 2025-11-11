@@ -70,7 +70,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
 
     @Override
     public Page<TSysRecipe> getRecipeList(String currentUser, Integer current, Integer size, RecipeQueryDto queryDto) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime").and(Sort.by(Sort.Direction.ASC, "recipeCode"));
         Pageable pageable = PageRequest.of(current, size, sort);
 
         String recipeName = queryDto.getRecipeName();
@@ -161,6 +161,21 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
                 if (group.getProcessNumber() == null || group.getProcessNumber().trim().isEmpty()) {
                     throw new RuntimeException("工序不能为空");
                 }
+                if (group.getInputs() != null && !group.getInputs().isEmpty()) {
+                    long count = group.getInputs().stream()
+                            .filter(input -> "1".equals(input.getPotCalculationBasis()))
+                            .count();
+                    if (count != 1) {
+                        throw new RuntimeException("每个工序组必须且只能有一个锅数计算基准项");
+                    }
+                    long zeroCount = group.getInputs().stream()
+                            .filter(input -> "0".equals(input.getPotCalculationBasis()))
+                            .count();
+                    if ((count + zeroCount) != group.getInputs().size()) {
+                        throw new RuntimeException("锅数计算基准必须为0或1");
+                    }
+                }
+                
                 for (TSysRecipeInput input : group.getInputs()) {
                     input.setSemiFinishedProductName(group.getSemiFinishedProductName());
                     input.setSemiFinishedProductCode(group.getSemiFinishedProductCode());
@@ -329,5 +344,92 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
     @Override
     public long getRecipeCountByStatus(String status) {
         return recipeRepository.countByStatus(status);
+    }
+
+    @Override
+    @Transactional
+    public TSysRecipe copyRecipe(Integer recipeId) {
+        TSysRecipe originalRecipe = getRecipeById(recipeId);
+        if (originalRecipe == null) {
+            throw new RuntimeException("配方不存在");
+        }
+        String originalCode = originalRecipe.getRecipeCode();
+        String prefix = originalCode + "_";
+        List<TSysRecipe> existingRecipes = recipeRepository.findByRecipeCodeStartingWith(prefix);
+        // 提取已存在的流水号
+        Set<Integer> existingNumbers = new HashSet<>();
+        for (TSysRecipe recipe : existingRecipes) {
+            String code = recipe.getRecipeCode();
+            if (code.startsWith(prefix)) {
+                try {
+                    String numberStr = code.substring(prefix.length());
+                    if (numberStr.matches("\\d{3}")) {
+                        existingNumbers.add(Integer.parseInt(numberStr));
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }
+        int sequenceNum = 1;
+        while (existingNumbers.contains(sequenceNum)) {
+            sequenceNum++;
+        }
+        String sequence = String.format("%03d", sequenceNum);
+        String newRecipeCode = originalCode + "_" + sequence;
+        // 复制配方主表信息
+        TSysRecipe newRecipe = new TSysRecipe();
+        newRecipe.setRecipeName(originalRecipe.getRecipeName());
+        newRecipe.setRecipeCode(newRecipeCode);
+        newRecipe.setOrgName(originalRecipe.getOrgName());
+        newRecipe.setStatus(originalRecipe.getStatus());
+        newRecipe.setCreator(originalRecipe.getCreator());
+        newRecipe.setRecipeDescription(originalRecipe.getRecipeDescription());
+        newRecipe.setPkOrg(originalRecipe.getPkOrg());
+        newRecipe.setCreateTime(originalRecipe.getCreateTime());
+        newRecipe.setUpdateTime(originalRecipe.getUpdateTime());
+        newRecipe.setUpdateUser(originalRecipe.getUpdateUser());
+
+        // 保存新配方以获得ID
+        TSysRecipe savedRecipe = recipeRepository.save(newRecipe);
+        savedRecipe.setCreateTime(originalRecipe.getCreateTime());
+        savedRecipe.setUpdateTime(originalRecipe.getUpdateTime());
+        savedRecipe = recipeRepository.save(savedRecipe);
+
+        // 获取原始配方的投入设置
+        List<TSysRecipeInput> originalInputs = originalRecipe.getRecipeInputs();
+        if (originalInputs != null && !originalInputs.isEmpty()) {
+            // 保存新的投入设置
+            List<TSysRecipeInput> newInputs = new ArrayList<>();
+            for (TSysRecipeInput input : originalInputs) {
+                TSysRecipeInput newInput = new TSysRecipeInput();
+                newInput.setRecipeId(savedRecipe.getRecipeId());
+                newInput.setMaterialName(input.getMaterialName());
+                newInput.setMaterialCode(input.getMaterialCode());
+                newInput.setStandardInput(input.getStandardInput());
+                newInput.setUnit(input.getUnit());
+                newInput.setLowerLimitRatio(input.getLowerLimitRatio());
+                newInput.setUpperLimitRatio(input.getUpperLimitRatio());
+                newInput.setProcessName(input.getProcessName());
+                newInput.setProcessNumber(input.getProcessNumber());
+                newInput.setSemiFinishedProductName(input.getSemiFinishedProductName());
+                newInput.setSemiFinishedProductCode(input.getSemiFinishedProductCode());
+                newInput.setPlanInputRatio(input.getPlanInputRatio());
+                newInput.setPotCalculationBasis(input.getPotCalculationBasis());
+                newInput.setCreateTime(input.getCreateTime());
+                newInput.setUpdateTime(input.getUpdateTime());
+                newInputs.add(newInput);
+            }
+            // 保存新的投入设置
+            List<TSysRecipeInput> savedInputs = recipeInputRepository.saveAll(newInputs);
+            
+            for (int i = 0; i < savedInputs.size(); i++) {
+                TSysRecipeInput savedInput = savedInputs.get(i);
+                TSysRecipeInput originalInput = originalInputs.get(i);
+                savedInput.setCreateTime(originalInput.getCreateTime());
+                savedInput.setUpdateTime(originalInput.getUpdateTime());
+                recipeInputRepository.save(savedInput);
+            }
+        }
+        return savedRecipe;
     }
 }

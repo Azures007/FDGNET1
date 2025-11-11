@@ -23,6 +23,7 @@ import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 配方管理控制器
@@ -178,4 +179,20 @@ public class TSysRecipeController extends BaseController {
         
         return ResultUtil.success(totalCount);
     }*/
+
+    @ApiOperation("复制配方")
+    @PostMapping("/copy")
+    public ResponseResult<TSysRecipe> copyRecipe(@RequestBody Map<String, Integer> request) throws ThingsboardException {
+        try {
+            Integer recipeId = request.get("recipeId");
+            if (recipeId == null) {
+                return ResultUtil.error("recipeId参数不能为空");
+            }
+            TSysRecipe copiedRecipe = recipeService.copyRecipe(recipeId);
+            return ResultUtil.success(copiedRecipe);
+        } catch (Exception e) {
+            log.error("复制配方失败", e);
+            return ResultUtil.error("复制配方失败: " + e.getMessage());
+        }
+    }
 }

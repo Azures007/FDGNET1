@@ -131,4 +131,11 @@ public interface TSysRecipeService {
      * @return 统计信息
      */
     long getRecipeCountByStatus(String status);
+
+    /**
+     * 复制配方及其投入设置
+     * @param recipeId 要复制的配方ID
+     * @return 复制后的新配方
+     */
+    TSysRecipe copyRecipe(Integer recipeId);
 }
