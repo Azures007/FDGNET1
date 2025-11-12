@@ -80,7 +80,7 @@ export class MaterialComponent implements OnInit {
   workShop = [];
 
 
-  displayedColumns: string[] = ['ncMaterialCategory', 'ncMaterialMainCategory', 'ncMaterialClassification', 'materialCode', 'materialName', 'materialModel', 'materialUnit', 'ncMaterialQualityNum', 'materialStatus', 'customColumn1'];
+  displayedColumns: string[] = ['ncMaterialCategory', 'ncMaterialMainCategory', 'ncMaterialClassification', 'materialCode', 'ncMaterialId', 'materialName', 'materialModel', 'materialUnit', 'ncMaterialQualityNum', 'materialStatus', 'customColumn1'];
 
   ngOnInit(): void {
     this.setMyMap();
