@@ -22,6 +22,7 @@ import org.thingsboard.server.dao.sql.mes.TSysProcessInfo.TSysProcessInfoReposit
 import org.thingsboard.server.dao.mes.TSysProcessInfo.TSysProcessInfoService;
 import org.thingsboard.server.dao.user.UserService;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -157,10 +158,24 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
         List<TSysRecipeInput> recipeInputs = new ArrayList<>();
 
         if (saveDto.getGroupedInputs() != null && !saveDto.getGroupedInputs().isEmpty()) {
+            // 用于检查每组内半成品+工序的组合是否重复
+            Set<String> groupProcessCombinations = new HashSet<>();
+            // 用于检查同一分组下物料是否重复
+            Set<String> materialCodesInGroup = new HashSet<>();
             for (RecipeSaveDto.RecipeInputGroup group : saveDto.getGroupedInputs()) {
                 if (group.getProcessNumber() == null || group.getProcessNumber().trim().isEmpty()) {
                     throw new RuntimeException("工序不能为空");
                 }
+                // 检查同一组内半成品+工序不能重复
+                String semiFinishedProductCode = group.getSemiFinishedProductCode() != null ? group.getSemiFinishedProductCode() : "";
+                String processNumber = group.getProcessNumber() != null ? group.getProcessNumber() : "";
+                String combination = semiFinishedProductCode + "|" + processNumber;
+                if (groupProcessCombinations.contains(combination)) {
+                    throw new RuntimeException("同一配方下，半成品和工序的组合不能重复");
+                }
+                groupProcessCombinations.add(combination);
+                // 检查同一分组下物料是否重复
+                materialCodesInGroup.clear();
                 if (group.getInputs() != null && !group.getInputs().isEmpty()) {
                     long count = group.getInputs().stream()
                             .filter(input -> "1".equals(input.getPotCalculationBasis()))
@@ -173,6 +188,20 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
                             .count();
                     if ((count + zeroCount) != group.getInputs().size()) {
                         throw new RuntimeException("锅数计算基准必须为0或1");
+                    }
+                    // 检查物料是否重复及计划投入比例是否超过100
+                    for (TSysRecipeInput input : group.getInputs()) {
+                        // 检查物料编码是否重复
+                        if (input.getMaterialCode() != null) {
+                            if (materialCodesInGroup.contains(input.getMaterialCode())) {
+                                throw new RuntimeException("同一分组下物料不能重复");
+                            }
+                            materialCodesInGroup.add(input.getMaterialCode());
+                        }
+                        // 检查计划投入比例是否超过100
+                        if (input.getPlanInputRatio() != null && input.getPlanInputRatio().compareTo(new BigDecimal(100)) > 0) {
+                            throw new RuntimeException("计划投入比例不能超过100%");
+                        }
                     }
                 }
                 
@@ -346,9 +375,10 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
         return recipeRepository.countByStatus(status);
     }
 
+    
     @Override
     @Transactional
-    public TSysRecipe copyRecipe(Integer recipeId) {
+    public TSysRecipe copyRecipe(Integer recipeId, String creator) {
         TSysRecipe originalRecipe = getRecipeById(recipeId);
         if (originalRecipe == null) {
             throw new RuntimeException("配方不存在");
@@ -382,19 +412,12 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
         newRecipe.setRecipeCode(newRecipeCode);
         newRecipe.setOrgName(originalRecipe.getOrgName());
         newRecipe.setStatus(originalRecipe.getStatus());
-        newRecipe.setCreator(originalRecipe.getCreator());
         newRecipe.setRecipeDescription(originalRecipe.getRecipeDescription());
         newRecipe.setPkOrg(originalRecipe.getPkOrg());
-        newRecipe.setCreateTime(originalRecipe.getCreateTime());
-        newRecipe.setUpdateTime(originalRecipe.getUpdateTime());
-        newRecipe.setUpdateUser(originalRecipe.getUpdateUser());
-
-        // 保存新配方以获得ID
+        newRecipe.setCreator(creator);
+        newRecipe.setCreateTime(new Date());
+        newRecipe.setUpdateTime(new Date());
         TSysRecipe savedRecipe = recipeRepository.save(newRecipe);
-        savedRecipe.setCreateTime(originalRecipe.getCreateTime());
-        savedRecipe.setUpdateTime(originalRecipe.getUpdateTime());
-        savedRecipe = recipeRepository.save(savedRecipe);
-
         // 获取原始配方的投入设置
         List<TSysRecipeInput> originalInputs = originalRecipe.getRecipeInputs();
         if (originalInputs != null && !originalInputs.isEmpty()) {
@@ -415,20 +438,12 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
                 newInput.setSemiFinishedProductCode(input.getSemiFinishedProductCode());
                 newInput.setPlanInputRatio(input.getPlanInputRatio());
                 newInput.setPotCalculationBasis(input.getPotCalculationBasis());
-                newInput.setCreateTime(input.getCreateTime());
-                newInput.setUpdateTime(input.getUpdateTime());
+                newInput.setCreateTime(new Date());
+                newInput.setUpdateTime(new Date());
                 newInputs.add(newInput);
             }
             // 保存新的投入设置
-            List<TSysRecipeInput> savedInputs = recipeInputRepository.saveAll(newInputs);
-            
-            for (int i = 0; i < savedInputs.size(); i++) {
-                TSysRecipeInput savedInput = savedInputs.get(i);
-                TSysRecipeInput originalInput = originalInputs.get(i);
-                savedInput.setCreateTime(originalInput.getCreateTime());
-                savedInput.setUpdateTime(originalInput.getUpdateTime());
-                recipeInputRepository.save(savedInput);
-            }
+            recipeInputRepository.saveAll(newInputs);
         }
         return savedRecipe;
     }

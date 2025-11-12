@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
-import org.thingsboard.server.common.data.mes.sys.TSysRecipe;
-import org.thingsboard.server.common.data.mes.sys.TSysRecipeInput;
-import org.thingsboard.server.common.data.mes.sys.TSysRecipeProductBinding;
-import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
+import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.dto.RecipeDetailDto;
@@ -20,6 +17,7 @@ import org.thingsboard.server.dao.mes.dto.RecipeQueryDto;
 import org.thingsboard.server.dao.mes.dto.RecipeSaveDto;
 import org.thingsboard.server.dao.mes.recipe.TSysRecipeService;
 import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.sql.mes.tSysPersonnelInfo.TSysPersonnelInfoRepository;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
 import java.util.List;
@@ -39,6 +37,9 @@ public class TSysRecipeController extends BaseController {
 
     @Autowired
     private TSysRecipeService recipeService;
+    
+    @Autowired
+    TSysPersonnelInfoRepository tSysPersonnelInfoRepository;
 
     @ApiOperation("查询配方列表")
     @ApiImplicitParams({
@@ -188,7 +189,12 @@ public class TSysRecipeController extends BaseController {
             if (recipeId == null) {
                 return ResultUtil.error("recipeId参数不能为空");
             }
-            TSysRecipe copiedRecipe = recipeService.copyRecipe(recipeId);
+            // 获取当前用户信息
+            SecurityUser currentUser = getCurrentUser();
+            TSysPersonnelInfo person = tSysPersonnelInfoRepository.findAllByUserId(currentUser.getId().getId().toString());
+            String creator = (person != null) ? person.getName() : currentUser.getName();
+            
+            TSysRecipe copiedRecipe = recipeService.copyRecipe(recipeId, creator);
             return ResultUtil.success(copiedRecipe);
         } catch (Exception e) {
             log.error("复制配方失败", e);
