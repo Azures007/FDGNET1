@@ -847,3 +847,12 @@ INSERT INTO "public"."t_sys_code_dsc" ("code_cl_id", "code_cl_dsc", "code_value"
 INSERT INTO "public"."t_sys_code_dsc" ("code_cl_id", "code_cl_dsc", "code_value", "code_dsc", "enabled_st", "crt_time", "crt_user", "update_time", "update_user", "is_group") VALUES ('UPPERLIMITRATIO', '投入上限比例', '50', '50', '1', '2025-11-13 10:08:04.730', 'system', '2025-11-13 10:08:04.730', 'system', 0);
 INSERT INTO "public"."t_sys_code_dsc" ("code_cl_id", "code_cl_dsc", "code_value", "code_dsc", "enabled_st", "crt_time", "crt_user", "update_time", "update_user", "is_group") VALUES ('LOWERLIMITRATIO', '投入下限比例', '50', '50', '1', '2025-11-13 10:08:13.888', 'system', '2025-11-13 10:08:13.888', 'system', 0);
 
+
+-- 类目类型 改为 工序报工类型
+update t_sys_code_dsc set code_dsc = '工序报工类型'
+where is_group = '1'
+  and code_value='RECORDTYPE0000';
+
+update t_sys_code_dsc set code_cl_dsc = '工序报工类型'
+where is_group = '0'
+  and code_cl_id='RECORDTYPE0000';

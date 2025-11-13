@@ -286,6 +286,7 @@ public class OrderBackendServiceImpl implements OrderBackendService {
         }
     }
 
+    @Transactional
     @Override
     public void startOrderChange(Integer orderId, Integer craftId, String craftDesc) throws Exception {
         // 校验并删除原来的订单执行表记录
