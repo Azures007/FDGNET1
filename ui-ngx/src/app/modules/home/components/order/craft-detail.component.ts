@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { OrderService } from '@app/core/http/order.service';
+import { Utils } from '../../pages/order-management/w-utils';
 
 @Component({
   selector: 'tb-craft-detail',
@@ -16,6 +17,7 @@ export class CraftDetailComponent implements OnInit {
     public _dialog: MatDialog,
     private fb: FormBuilder,
     private apiOrder: OrderService,
+    private utils: Utils,
   ) { }
   displayedColumns: string[] = ['sort', 'processName', 'className', 'groupLeader'];
   ngOnInit(): void {
@@ -37,6 +39,8 @@ export class CraftDetailComponent implements OnInit {
       }).subscribe((res) => {
         if (res.errcode === 200) {
           this.dialogRef.close(true);
+        } else {
+          this.utils.showMessage(res.errmsg, 'error')
         }
       })
     } else {
