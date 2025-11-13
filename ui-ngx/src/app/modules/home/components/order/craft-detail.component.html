@@ -2,6 +2,21 @@
   {{injectData.title}}
   <span class="close_icon" (click)="addDialogClose()"><mat-icon>clear</mat-icon></span>
 </div>
+<form [formGroup]="dataForm" class="content page-container">
+  <div class="row-block equal-height">
+    <div class="label"><span class="red-star">*</span>工艺路线:</div>
+    <mat-form-field appearance="fill" class="select">
+      <mat-select formControlName="craftId">
+        <mat-option *ngFor="let item of [injectData.routeData]" [value]="item.craftId">
+          {{item.craftName}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','craftId')">
+        请选择<strong>工艺路线</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+</form>
 <div class="table-wrapper">
   <table mat-table [dataSource]="injectData.dataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="sort">
@@ -26,7 +41,10 @@
 </div>
 
 <div class="footer">
-  <button (click)="addDialogClose()" mat-raised-button color="primary" class="search-btn btn">
+  <button (click)="submit()" mat-raised-button color="primary" class="search-btn btn">
+    <span>提交</span>
+  </button>
+  <button style="margin-left: 10px;" (click)="addDialogClose()" mat-raised-button color="primary" class="search-btn btn">
     <span>关闭</span>
   </button>
 </div>

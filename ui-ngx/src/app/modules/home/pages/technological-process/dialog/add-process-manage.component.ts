@@ -66,7 +66,7 @@ export class AddProcessManageComponent implements OnInit {
       this.dataForm = this.fb.group({
         processName: ['', [Validators.required]],
         processNumber: ['', [Validators.required]],
-        reportType: [[]],
+        reportType: [[], [Validators.required]],
         enabled: [1, [Validators.required]],
         // bySetImport: [0, [Validators.required]],
         // bySetExport: [0, [Validators.required]],
@@ -98,7 +98,7 @@ export class AddProcessManageComponent implements OnInit {
         this.dataForm = this.fb.group({
           processName: [{ value: obj.processName, disabled: true }, [Validators.required]],
           processNumber: [{ value: obj.processNumber, disabled: true }, [Validators.required]],
-          reportType: [{ value: obj.reportType ? (obj.reportType as unknown as string).split(',') : [], disabled: true }, []],
+          reportType: [{ value: obj.reportType ? (obj.reportType as unknown as string).split(',') : [], disabled: true }, [Validators.required]],
           enabled: [{ value: obj.enabled, disabled: true }, [Validators.required]],
           // bySetImport: [{ value: obj.bySetImport ? Number(obj.bySetImport) : 0, disabled: true }, [Validators.required]],
           // bySetExport: [{ value: obj.bySetExport ? Number(obj.bySetExport) : 0, disabled: true }, [Validators.required]],
@@ -111,7 +111,7 @@ export class AddProcessManageComponent implements OnInit {
         this.dataForm = this.fb.group({
           processName: [{ value: obj.processName, disabled: false }, [Validators.required]],
           processNumber: [{ value: obj.processNumber, disabled: false }, [Validators.required]],
-          reportType: [{ value: obj.reportType ? (obj.reportType as unknown as string).split(',') : [], disabled: false }, []],
+          reportType: [{ value: obj.reportType ? (obj.reportType as unknown as string).split(',') : [], disabled: false }, [Validators.required]],
           enabled: [{ value: obj.enabled, disabled: false }, [Validators.required]],
           // bySetImport: [{ value: obj.bySetImport ? Number(obj.bySetImport) : 0, disabled: false }, [Validators.required]],
           // bySetExport: [{ value: obj.bySetExport ? Number(obj.bySetExport) : 0, disabled: false }, [Validators.required]],

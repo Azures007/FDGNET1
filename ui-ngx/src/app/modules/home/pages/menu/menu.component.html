@@ -24,6 +24,19 @@
         </mat-tree>
     </div>
     <div class="right">
+      <div class="search_form">
+        <div class="search_item">
+            <div class="label">菜单名称:</div>
+            <input type="text" [(ngModel)]="searchFormGroup.value.menuName">
+        </div>
+        <button class="search_btn" (click)="getTableData()" style="margin-right: 10px;">
+            <mat-icon>search</mat-icon> 查询
+        </button>
+        <button class="search_btn" (click)="reset()">
+            <mat-icon>refresh</mat-icon> 重置
+        </button>
+
+      </div>
         <div class="info_container">
             <div class="info_title">
                 <div class="btn_list">

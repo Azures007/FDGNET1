@@ -78,7 +78,7 @@
             </mat-checkbox>
           </section>
           <div fxLayout="row" style="padding-bottom: 16px;">
-            <button mat-button mat-raised-button color="primary"
+            <button class="button" mat-button mat-raised-button color="primary"
                     type="button"
                     [disabled]="(isLoading$ | async)" (click)="changePassword()">
               {{'profile.change-password' | translate}}
@@ -95,7 +95,7 @@
           </div>
           <div fxLayout="row" class="layout-wrap">
             <span fxFlex></span>
-            <button mat-button mat-raised-button color="primary"
+            <button class="button" mat-button mat-raised-button color="primary"
                     type="submit"
                     [disabled]="(isLoading$ | async) || profile.invalid || !profile.dirty">
               {{ 'action.save' | translate }}

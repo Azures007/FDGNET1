@@ -176,18 +176,29 @@ export class OrderListComponent implements OnInit {
     if(!row.craftName) {
       return;
     }
-    let dialogRef = this.dialog.open(CraftDetailComponent, {
-      width: "800px",
-      height: "auto",
-      panelClass: 'custom-modalbox',
-      data: {
-        title: row.craftName,
-        dataSource: row.craftProcesses
-      }
+    let par = {
+      materialNumber: row.code,
+      orderId: row.orderId,
+    }
+    this.apiOrder.fetchGetMaterial(par).subscribe(res => {
+      let dialogRef = this.dialog.open(CraftDetailComponent, {
+        width: "800px",
+        height: "auto",
+        panelClass: 'custom-modalbox',
+        data: {
+          title: row.craftName,
+          dataSource: row.craftProcesses,
+          routeData: res.data,
+          row
+        }
+      })
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.searchList();
+        }
+      });
     })
-    dialogRef.afterClosed().subscribe(result => {
 
-    });
   }
   getOrderStatus(status: string) {
     let label = '';

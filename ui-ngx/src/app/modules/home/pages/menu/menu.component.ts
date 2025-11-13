@@ -45,6 +45,7 @@ export class MenuComponent implements OnInit {
 
   //搜索参数
   searchFormGroup = this.fb.group({
+    menuName: '',
     current: 0,
     size: 50,
   });
@@ -146,7 +147,8 @@ export class MenuComponent implements OnInit {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
       body: {
-        ...this.curMenu
+        ...this.curMenu,
+        menuName: this.searchFormGroup.value.menuName,
       }
     }
     this.MenuAdminService.fetchGetTable(par).subscribe(res => {
@@ -154,7 +156,10 @@ export class MenuComponent implements OnInit {
       this.total = res.data.total;
     })
   }
-
+  reset() {
+    this.searchFormGroup.value.menuName = '';
+    this.getTableData();
+  }
   //显示类型
   handleUrlType() { }
 
