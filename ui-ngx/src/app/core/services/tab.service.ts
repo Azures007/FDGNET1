@@ -11,14 +11,22 @@ export class TabService {
     constructor(private router: Router, private route: ActivatedRoute) {
         this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd) {
+              if (!this.countTemp) {
+                setTimeout(() => {
+                  this.countTemp++;
+                  this.addTab(event.urlAfterRedirects);
+                }, 1100);
+              } else {
                 this.addTab(event.urlAfterRedirects);
+              }
             }
         });
     }
+    countTemp = 0;
     menu = JSON.parse(localStorage.getItem('menu') || '[]');
     get flatMenu() {
       const menu = [];
-      this.menu.forEach(item => {
+      JSON.parse(localStorage.getItem('menu') || '[]')?.forEach(item => {
         !item.pages?.length && menu.push({
           path: item.path,
           name: item.name,
