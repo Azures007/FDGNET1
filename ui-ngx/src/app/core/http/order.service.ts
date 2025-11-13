@@ -70,4 +70,7 @@ export class OrderService {
   public fetchBaseList(): Observable<any> {
         return this.http.get('/api/manage/workline/list')
     }
+  public startOrderChange(data): Observable<any> {
+    return this.http.post(`/api/orderhead/startOrderChange?orderId=${data.orderId}&craftId=${data.craftId}&craftDesc=${data.craftDesc}`, {});
+  }
 }

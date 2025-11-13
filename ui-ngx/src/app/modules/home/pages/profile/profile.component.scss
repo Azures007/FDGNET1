@@ -60,3 +60,16 @@
     }
   }
 }
+.button {
+		width: 120px;
+		height: 40px;
+		color: #fff !important;
+		font-size: 16px;
+		background-color: #3399ff !important;
+		border: 1px solid #3399ff;
+		border-radius: 4px;
+		cursor: pointer;
+    display: flex;
+		justify-content: center;
+		align-items: center;
+	}

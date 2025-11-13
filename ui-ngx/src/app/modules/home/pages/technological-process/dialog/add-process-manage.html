@@ -26,13 +26,16 @@
   </div>
 
   <div class="row-block">
-    <div class="label">报工类型:</div>
+    <div class="label"><span class="red-star">*</span>报工类型:</div>
     <mat-form-field appearance="fill" class="select">
       <mat-select multiple formControlName="reportType">
         <mat-option *ngFor="let item of reportTypeList" [value]="item.codeValue">
           {{item.codeDsc}}
         </mat-option>
       </mat-select>
+      <mat-error *ngIf="dataForm.hasError('required','reportType')">
+        请选择<strong>报工类型</strong>
+      </mat-error>
     </mat-form-field>
   </div>
 

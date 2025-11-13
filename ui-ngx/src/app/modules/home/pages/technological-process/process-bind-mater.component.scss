@@ -1,6 +1,7 @@
 .team_admin_container {
 	width: 100%;
-	height: 100%;
+	height: calc(100vh - 125px);
+  overflow-y: auto;
 	padding: 0 20px;
 	box-sizing: border-box;
 	background-color: #fff;
@@ -34,7 +35,7 @@
 			}
 			.list_content {
 				width: 100%;
-				height: 520px;
+				height: calc(100vh - 390px);
 				border: 1px solid #e0e0e0;
 				overflow-y: scroll;
 			}
