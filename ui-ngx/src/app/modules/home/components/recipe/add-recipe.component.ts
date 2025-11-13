@@ -59,6 +59,8 @@ export class AddRecipeComponent implements OnInit {
   get modalTitle() {
     return this.formType ? (this.formType === 'details' ? '查看配方' : '编辑配方') : '新增配方';
   }
+  upperLimit = 0;
+  lowerLimit = 0;
 
   ngOnInit(): void {
     let par = {
@@ -71,6 +73,18 @@ export class AddRecipeComponent implements OnInit {
       ...par,
     }).subscribe(res => {
       this.unitList = res.data.list;
+    })
+    this.DictionaryService.fetchGetTypeTableList({
+      ...par,
+      codeClId: 'UPPERLIMITRATIO',
+    }).subscribe(res => {
+      this.upperLimit = res.data.list[0].codeValue;
+    })
+    this.DictionaryService.fetchGetTypeTableList({
+      ...par,
+      codeClId: 'LOWERLIMITRATIO',
+    }).subscribe(res => {
+      this.lowerLimit = res.data.list[0].codeValue;
     })
     this.authService.getCurrentLine().subscribe((res: any) => {
       if (res.data && res.data.pkOrg) {
@@ -178,6 +192,18 @@ export class AddRecipeComponent implements OnInit {
         this.utils.showMessage('请添加投入设置', 'error');
         return;
       } else {
+        // 校验不能存在多个半成品(semiFinishedProductCode)和工序（processNumber）都一样的分组
+        const set = new Set();
+        for (const item of this.groupedInputs) {
+          const key = (item.semiFinishedProductCode || '') + (item.processNumber || '');
+          if (!set.has(key)) {
+            set.add(key);
+          }
+        }
+        if (set.size !== this.groupedInputs.length) {
+          this.utils.showMessage('不能存在多个半成品和工序都一样的分组', 'error');
+          return;
+        }
         // 校验工序必填
         if (this.groupedInputs.some(item => !item.processNumber)) {
           this.utils.showMessage('请选择工序', 'error');
@@ -189,9 +215,21 @@ export class AddRecipeComponent implements OnInit {
           return;
         }
 
+        // 校验同个分组下不能存在多个一样的物料
+        if (this.groupedInputs.some(item => item.inputs.some((subItem, index) => item.inputs.some((subItem2, index2) => index !== index2 && subItem.materialName === subItem2.materialName)))) {
+          this.utils.showMessage('同个分组下不能存在多个一样的物料', 'error');
+          return;
+        }
+
         // 校验计划投入比例为必填，且为数字，可以为小数
         if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.planInputRatio || isNaN(Number(subItem.planInputRatio))))) {
           this.utils.showMessage('请填写计划投入比例，且为数字', 'error');
+          return;
+        }
+
+        // 校验计划投入比例不能大于100
+        if (this.groupedInputs.some(item => item.inputs.some(subItem => Number(subItem.planInputRatio) > 100))) {
+          this.utils.showMessage('计划投入比例不能大于100', 'error');
           return;
         }
 
@@ -283,8 +321,8 @@ export class AddRecipeComponent implements OnInit {
           materialCode: '',
           standardInput: '',
           unit: '',
-          lowerLimitRatio: '',
-          upperLimitRatio: '',
+          lowerLimitRatio: this.lowerLimit,
+          upperLimitRatio: this.upperLimit,
           planInputRatio: '',
           potCalculationBasis: false,
         }
@@ -323,8 +361,8 @@ export class AddRecipeComponent implements OnInit {
       materialCode: '',
       standardInput: '',
       unit: '',
-      lowerLimitRatio: '',
-      upperLimitRatio: '',
+      lowerLimitRatio: this.lowerLimit,
+      upperLimitRatio: this.upperLimit,
       planInputRatio: '',
       potCalculationBasis: false,
     })

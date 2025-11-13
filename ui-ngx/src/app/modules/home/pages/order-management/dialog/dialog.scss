@@ -6,7 +6,8 @@
   font-size: 16px;
   text-align: center;
   position: relative;
-  background-color: #eec7a2;
+  // background-color: #eec7a2;
+  background-color: rgba(0, 153, 204, 1);
   margin-bottom: 40px;
   .close_icon {
     position: absolute;
@@ -193,6 +194,21 @@
   width: 100%;
   text-align: center;
   margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  button {
+		width: 120px;
+		height: 40px;
+		color: #fff;
+		font-size: 16px;
+		background-color: #3399ff;
+		border: 1px solid #3399ff;
+		border-radius: 4px;
+		cursor: pointer;
+    display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 }
 
 
