@@ -184,14 +184,24 @@ public class OrderHeadController extends BaseController {
         return ResultUtil.success(craftInfo);
     }
 
+    @ApiOperation("接单开工变更")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderId", value = "订单ID", required = true),
+            @ApiImplicitParam(name = "craftId", value = "工艺路线ID", required = true),
+            @ApiImplicitParam(name = "craftDesc", value = "备注说明", required = true)
+    })
+    @PostMapping("/startOrderChange")
+    public ResponseResult startOrderChange(@RequestParam("orderId") Integer orderId, @RequestParam("craftId") Integer craftId, @RequestParam("craftDesc") String craftDesc) throws Exception {
+        orderBackendService.startOrderChange(orderId, craftId, craftDesc);
+        return ResultUtil.success();
+    }
+
     @ApiOperation("excel导出")
     @PostMapping("/export")
     public void download(@RequestParam(value = "current", defaultValue = "0") Integer current,
                          @RequestParam(value = "size", defaultValue = "10") Integer size, @RequestBody TBusOrderHeadDto tBusOrderHeadDto, HttpServletResponse response) throws IOException {
         orderHeadExcelService.download(current, size, tBusOrderHeadDto, response);
     }
-
-
 
 //    @ApiOperation("excel导出(废弃)")
 //    @PostMapping("/exportorder")

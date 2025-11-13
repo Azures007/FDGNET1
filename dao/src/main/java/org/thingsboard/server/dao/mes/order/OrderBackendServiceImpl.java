@@ -287,6 +287,35 @@ public class OrderBackendServiceImpl implements OrderBackendService {
     }
 
     @Override
+    public void startOrderChange(Integer orderId, Integer craftId, String craftDesc) throws Exception {
+        // 校验并删除原来的订单执行表记录
+        this.unStartOrder(orderId);
+        // 重新接单开工
+        this.startOrder(orderId, craftId, craftDesc);
+    }
+
+    /**
+     * 取消接单开工
+     * @param orderId
+     */
+    private void unStartOrder(Integer orderId) {
+        TBusOrderHead tBusOrderHeadRt = orderHeadRepository.findById(orderId).orElse(null);
+        Set<TBusOrderProcess> tBusOrderProcessSet = tBusOrderHeadRt.getTBusOrderProcessSet();
+        for (TBusOrderProcess orderProcess : tBusOrderProcessSet) {
+            if (!orderProcess.getProcessStatus().equals(LichengConstants.PROCESSSTATUS_0)) {
+                throw new RuntimeException("订单的工单已经开工，无法变更工艺");
+            }
+        }
+        tBusOrderHeadRt.setCraftId(null);
+        tBusOrderHeadRt.setCraftDesc(null);
+        tBusOrderHeadRt.setOrderMatching(null);
+        tBusOrderHeadRt.setClassId(null);
+        tBusOrderHeadRt.setCurrentProcess(null);
+        tBusOrderHeadRt.setTBusOrderProcessSet(null);
+        orderHeadRepository.saveAndFlush(tBusOrderHeadRt);
+    }
+
+    @Override
     public List<TSysClass> getOrderClassInfo(Integer orderId) {
         List<TSysClass> sysClassList = null;
         TBusOrderHead tBusOrderHeadRt = orderHeadRepository.findById(orderId).orElse(null);

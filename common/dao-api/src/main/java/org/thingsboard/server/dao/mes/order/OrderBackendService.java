@@ -17,6 +17,10 @@ public interface OrderBackendService {
      */
     void startOrderBatch(List<OrderStartOrderSaveDto> saveDtoList) throws Exception;
     /**
+     * 订单变更接单开工
+     */
+    void startOrderChange(Integer orderId, Integer craftId, String craftDesc) throws Exception;
+    /**
      * 订单获取工序的班别
      */
     List<TSysClass> getOrderClassInfo(Integer orderId);
