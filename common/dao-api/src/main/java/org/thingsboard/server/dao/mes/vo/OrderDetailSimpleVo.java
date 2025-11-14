@@ -11,6 +11,10 @@ import java.util.List;
 @ApiModel("订单详情简要VO")
 @Data
 public class OrderDetailSimpleVo {
+
+    @ApiModelProperty("生产订单id")
+    private Integer orderId;
+
     @ApiModelProperty("生产订单号")
     private String billNo;
 
@@ -19,6 +23,9 @@ public class OrderDetailSimpleVo {
 
     @ApiModelProperty("订单状态")
     private String orderStatus;
+
+    @ApiModelProperty("工艺路线id")
+    private Integer craftId;
 
     @ApiModelProperty("工艺路线")
     private String craftName;
