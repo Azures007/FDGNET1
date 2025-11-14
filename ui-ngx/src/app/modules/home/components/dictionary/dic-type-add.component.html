@@ -4,16 +4,16 @@
 </div>
 <div class="content">
     <div class="item">
-        <div class="label">类型编码:</div>
+        <div class="label required">类型编码:</div>
         <input type="text" [(ngModel)]="data.codeValue" [disabled]="data.codeClId != '' ">
     </div>
     <div class="item">
-        <div class="label">类型名称:</div>
+        <div class="label required">类型名称:</div>
         <input type="text" [(ngModel)]="data.codeDsc" placeholder="请输入类型名称">
     </div>
 
     <div class="item">
-        <div class="label">状态:</div>
+        <div class="label required">状态:</div>
         <select [(ngModel)]="data.enabledSt" aria-placeholder="请选择">
             <option value="1">启用</option>
             <option value="0">禁用</option>
@@ -21,6 +21,6 @@
     </div>
 </div>
 <div class="footer">
-    <button [mat-dialog-close]="data" cdkFocusInitial> {{data.codeClId == ""?'提交':'保存'}}</button>
+    <button cdkFocusInitial (click)="commit()"> {{data.codeClId == ""?'提交':'保存'}}</button>
     <button style="margin-left: 10px;" [mat-dialog-close]>取消</button>
 </div>

@@ -162,3 +162,10 @@ tr.mat-header-row th {
 .page-header-btn {
   margin-bottom: 1px !important;
 }
+
+.required::before {
+  content: '*';
+  color: red;
+  font-size: 14px;
+  margin-right: 2px;
+}

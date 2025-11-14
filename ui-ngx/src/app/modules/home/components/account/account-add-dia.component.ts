@@ -124,7 +124,7 @@ export class AccountAddDiaComponent implements OnInit {
     this.data.password=this.data.password.replace(/[\W]/g,'');
     this.checkWord=this.checkWord.replace(/[\W]/g,'')
     let message = "";
-    if (this.data.first_name == "") {
+    if (!this.data.first_name) {
       message = "请输入用户名"
       this.showError(message);
       return

@@ -9,16 +9,16 @@
 </div>
 <div class="content">
     <div class="item">
-        <div class="label">设备名称:</div>
+        <div class="label required">设备名称:</div>
         <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.deviceName" placeholder="请输入设备名称">
     </div>
 
     <div class="item">
-        <div class="label">设备编码:</div>
+        <div class="label required">设备编码:</div>
         <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.deviceNumber" placeholder="请输入设备编码">
     </div>
     <div class="item">
-        <div class="label">工序:</div>
+        <div class="label required">工序:</div>
         <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.belongProcessId" required
             (ngModelChange)="test($event)" placeholder="请选择工序">
             <option *ngFor="let wsItem of data.processList" [value]="wsItem.processId">{{wsItem.processName}}</option>
@@ -26,7 +26,7 @@
     </div>
 
     <div class="item">
-        <div class="label">生产基地:</div>
+        <div class="label required">生产基地:</div>
         <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.pkOrg" required
              aria-placeholder="请选择">
             <option *ngFor="let wsItem of data.pkOrgList" [value]="wsItem.id">{{wsItem.name}}</option>
@@ -35,7 +35,7 @@
 
 
     <div class="item">
-        <div class="label">状态:</div>
+        <div class="label required">状态:</div>
         <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.enabled" required
             aria-placeholder="请选择">
             <option value=1>启用</option>

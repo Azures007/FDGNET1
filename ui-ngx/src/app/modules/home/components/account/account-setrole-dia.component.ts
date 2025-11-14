@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { AlertDialogComponent } from '@app/shared/components/dialog/alert-dialog.component';
 
 
 @Component({
@@ -11,6 +12,7 @@ export class AccountSetroleDiaComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<AccountSetroleDiaComponent>,
+    public _dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) { }
 
@@ -22,6 +24,22 @@ export class AccountSetroleDiaComponent implements OnInit {
   }
 
   DialogSaveClose() {
+    if (!this.data.roleId) {
+      this.showError("请选择角色");
+      return;
+    }
     this.dialogRef.close(this.data.roleId);
+  }
+  showError(message) {
+    let data = {
+      title: "消息提示",
+      message: message,
+      ok: '确定',
+    }
+    const dialogConfig: MatDialogConfig = {
+      disableClose: true,
+      data: data
+    };
+    this._dialog.open(AlertDialogComponent, dialogConfig);
   }
 }

@@ -4,21 +4,21 @@
 </div>
 <div class="content">
     <div class="item">
-        <div class="label">用户名:</div>
+        <div class="label required">用户名:</div>
         <input type="text" [(ngModel)]="data.first_name" placeholder="请输入用户名">
     </div>
     <div class="item">
-        <div class="label">账号:</div>
+        <div class="label required">账号:</div>
         <input type="text" maxlength="11"
             [(ngModel)]="data.username" placeholder="请输入登录账号" autocomplete="false">
     </div>
     <div class="item">
-        <div class="label">登录密码:</div>
+        <div class="label required">登录密码:</div>
         <input type="text" maxlength="6" [(ngModel)]="data.password"
             placeholder="请输入登录密码(6位字母或数字)" autocomplete="false" onfocus="this.type='password'">
     </div>
     <div class="item">
-        <div class="label">确认密码:</div>
+        <div class="label required">确认密码:</div>
         <input type="text" maxlength="6" [(ngModel)]="checkWord"
             placeholder="再次输入登录密码(6位字母或数字)" onfocus="this.type='password'">
     </div>

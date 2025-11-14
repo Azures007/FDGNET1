@@ -28,7 +28,8 @@ export class OrderDetailsComponent implements OnInit {
     billDate: '',
     creatorName: '',
     remark: '',
-    craftName: ''
+    craftName: '',
+    craftId: '',
   };
 
   materialList = [];
@@ -57,7 +58,7 @@ export class OrderDetailsComponent implements OnInit {
   bodyUnit = "";
 
   detailData: any;
-
+  orderId = '';
 
   constructor(
     private utils: Utils,
@@ -81,24 +82,43 @@ export class OrderDetailsComponent implements OnInit {
     this.DictionaryService.fetchGetTypeTableList(par).subscribe(res => {
       this.allUnits = res.data.list;
       this.activeRoute.params.subscribe(res => {
+        this.orderId = res.orderId;
         this.init(res);
       });
     })
 
   }
   openCraftDetail(){
-    let dialogRef = this._dialog.open(CraftDetailComponent, {
-      width: "800px",
-      height: "auto",
-      panelClass: 'custom-modalbox',
-      data: {
-        title: this.dataParams.craftName,
-        dataSource: this.craftDetail
-      }
+    if (!this.dataParams.craftName) {
+      return;
+    }
+    let par = {
+      materialNumber: this.materialList[0]?.code,
+      orderId: this.orderId,
+    }
+    this.apiOrder.fetchGetMaterial(par).subscribe(res => {
+      let dialogRef = this._dialog.open(CraftDetailComponent, {
+        width: "800px",
+        height: "auto",
+        panelClass: 'custom-modalbox',
+        data: {
+          title: this.dataParams.craftName,
+          dataSource: this.craftDetail,
+          routeData: res.data,
+          row: {
+            orderId: this.orderId,
+            craftId: this.dataParams.craftId,
+          }
+        }
+      })
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.init({
+            orderId: this.orderId,
+          })
+        }
+      });
     })
-    dialogRef.afterClosed().subscribe(result => {
-
-    });
   }
   // 数据查询
   init(data) {

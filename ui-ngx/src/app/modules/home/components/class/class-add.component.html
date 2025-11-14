@@ -11,7 +11,7 @@
 <div class="content">
 
     <div class="item">
-        <div class="label">班别名称:</div>
+        <div class="label required">班别名称:</div>
         <input [disabled]="data.edit == false " type="text" [(ngModel)]="data.params.tSysClass.name"
             placeholder="请输入班别名称">
     </div>
@@ -23,7 +23,7 @@
     </div>
 
     <div class="item bind_item">
-        <div class="label">组长:</div>
+        <div class="label required">组长:</div>
         <div class="right">
             <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.tSysClass.groupLeader"
                 placeholder="请选择">
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="item bind_item">
-        <div class="label">车间主任:</div>
+        <div class="label required">车间主任:</div>
         <div class="right">
             <input [disabled]="data.edit == false" type="text" [(ngModel)]="data.params.tSysClass.workshopDirector"
                 placeholder="请选择">
@@ -39,7 +39,7 @@
         </div>
     </div>
     <div class="item">
-        <div class="label">排班:</div>
+        <div class="label required">排班:</div>
         <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.scheduling" required
             (ngModelChange)="test($event)" aria-placeholder="请选择">
             <option *ngFor="let wsItem of data.schedulingList" [value]="wsItem.codeValue">{{wsItem.codeDsc}}</option>
@@ -64,14 +64,14 @@
 
 
     <div class="item">
-        <div class="label">基地:</div>
+        <div class="label required">基地:</div>
         <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.pkOrg" required
              aria-placeholder="请选择">
             <option *ngFor="let wsItem of data.pkOrgList" [value]="wsItem.id">{{wsItem.name}}</option>
         </select>
     </div>
     <div class="item">
-        <div class="label">产线:</div>
+        <div class="label required">产线:</div>
         <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.cwkid" required
             (ngModelChange)="test($event)" aria-placeholder="请选择">
             <option *ngFor="let wsItem of data.worklineList" [value]="wsItem.cwkid">{{wsItem.vwkname}}</option>
@@ -88,7 +88,7 @@
     </div> -->
 
     <div class="item">
-        <div class="label">状态:</div>
+        <div class="label required">状态:</div>
         <select [disabled]="data.edit == false" name="" id="" [(ngModel)]="data.params.tSysClass.enabledSt" required
             aria-placeholder="请选择">
             <option value=1>启用</option>
