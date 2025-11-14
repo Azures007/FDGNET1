@@ -1592,10 +1592,12 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         TBusOrderHead order = orderHeadRepository.findById(orderId).orElse(null);
         if (order == null) return null;
         OrderDetailSimpleVo vo = new OrderDetailSimpleVo();
+        vo.setOrderId(order.getOrderId());
         vo.setOrderNo(order.getOrderNo());
         vo.setBillNo(order.getBillNo());
         vo.setBillType(order.getBillType());
         vo.setOrderStatus(order.getOrderStatus());
+        vo.setCraftId(order.getCraftId() != null ? order.getCraftId().getCraftId() : 0);
         vo.setCraftName(order.getCraftId() != null ? order.getCraftId().getCraftName() : "");
         vo.setRemark(order.getNcNote());
         vo.setBillDate(order.getBillDate() != null ? order.getBillDate().toString() : "");
