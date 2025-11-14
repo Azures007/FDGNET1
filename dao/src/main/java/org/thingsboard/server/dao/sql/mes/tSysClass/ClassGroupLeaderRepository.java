@@ -78,4 +78,11 @@ public interface ClassGroupLeaderRepository extends JpaRepository<TSysClassGroup
     List<TSysClassGroupLeaderRel> findByPersonnelId(Integer personnelId);
 
     List<TSysClassGroupLeaderRel> findAllByClassId(Integer classId);
+
+    // 获取班别绑定的组长人员名称
+    @Query(value = "select c.name AS personnelName \n" +
+            "from t_sys_class_group_leader_rel b\n" +
+            "left join t_sys_personnel_info c on b.personnel_id = c.personnel_id \n" +
+            "where b.class_id = ?1 \n",nativeQuery = true)
+    List<String> getLeaderNameByClassId(Integer classId);
 }

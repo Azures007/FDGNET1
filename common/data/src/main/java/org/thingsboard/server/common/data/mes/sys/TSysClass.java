@@ -24,12 +24,15 @@ public class TSysClass {
     @ApiModelProperty("班别名称")
     @Column(name = "name")
     private String name;
+
     @ApiModelProperty("工序说明")
     @Column(name = "process")
     private String process;
-    @ApiModelProperty("组长")
+
+    @ApiModelProperty("组长，废弃，改为关联获取")
     @Column(name = "group_leader")
     private String groupLeader;
+
     @ApiModelProperty("组长用户id")
     @Column(name = "group_leader_id")
     private String groupLeaderID;
@@ -37,6 +40,7 @@ public class TSysClass {
     @ApiModelProperty("排班")
     @Column(name = "scheduling")
     private String scheduling;
+
     @ApiModelProperty("排班字典描述")
     @Column(name = "scheduling_code_dsc")
     private String schedulingCodeDsc;
@@ -79,7 +83,7 @@ public class TSysClass {
     @Column(name = "workshop_director_id")
     private Integer workshopDirectorId;
 
-    @ApiModelProperty("车间主任")
+    @ApiModelProperty("车间主任，废弃，改为关联获取")
     @Column(name = "workshop_director")
     private String workshopDirector;
 

@@ -81,6 +81,10 @@ public class TSysClassServiceImpl implements TSysClassService {
         String code = "SCHEDULING0000";
         tSysClassPage.getContent().stream().forEach(tSysClass1 -> {
             tSysClass1.setSchedulingCodeDsc(GlobalConstant.getCodeDscName(code, tSysClass1.getScheduling()));
+            // 通过关联查询班别和组长关系表，获取组长名称
+            List<String> leaderNames = classGroupLeaderRepository.getLeaderNameByClassId(tSysClass1.getClassId());
+            // 组长名称list按逗号拼接
+            tSysClass1.setGroupLeader(String.join(",", leaderNames));
         });
         return tSysClassPage;
     }
