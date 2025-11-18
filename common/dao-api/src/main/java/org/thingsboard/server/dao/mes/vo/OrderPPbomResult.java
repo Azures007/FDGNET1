@@ -120,4 +120,11 @@ public class OrderPPbomResult implements Cloneable{
 
     @ApiModelProperty("计划锅数")
     private Integer planPotCount;
+
+    @ApiModelProperty("每锅投入标准")
+    private BigDecimal standardInput;
+
+    @ApiModelProperty("显示默认值（复选框）")
+    private String displayDefaultValue;
+
 }
