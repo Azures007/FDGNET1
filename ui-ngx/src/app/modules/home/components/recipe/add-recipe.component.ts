@@ -144,6 +144,7 @@ export class AddRecipeComponent implements OnInit {
             inputs: item.inputs.map(subItem => ({
               ...subItem,
               potCalculationBasis: subItem.potCalculationBasis === '1' ? true : false,
+              displayDefaultValue: subItem.displayDefaultValue === '1' ? true : false,
             })),
           }
         });
@@ -283,6 +284,7 @@ export class AddRecipeComponent implements OnInit {
             inputs: item.inputs.map(subItem => ({
               ...subItem,
               potCalculationBasis: subItem.potCalculationBasis ? '1' : '0',
+              displayDefaultValue: subItem.displayDefaultValue ? '1' : '0',
             })),
           }
         }),
@@ -325,6 +327,7 @@ export class AddRecipeComponent implements OnInit {
           upperLimitRatio: this.upperLimit,
           planInputRatio: '',
           potCalculationBasis: false,
+          displayDefaultValue: false,
         }
       ],
       processNumber: '',
@@ -365,6 +368,7 @@ export class AddRecipeComponent implements OnInit {
       upperLimitRatio: this.upperLimit,
       planInputRatio: '',
       potCalculationBasis: false,
+      displayDefaultValue: false,
     })
   }
   delInput(index, index2) {

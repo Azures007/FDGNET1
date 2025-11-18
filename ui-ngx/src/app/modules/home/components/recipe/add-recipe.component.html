@@ -125,6 +125,7 @@
           <th>投入下限比例%</th>
           <th>投入上限比例%</th>
           <th>锅数计算基准</th>
+          <th>显示默认值</th>
           <th>操作</th>
         </tr>
         <tr *ngFor="let subItem of item.inputs; let j = index">
@@ -177,6 +178,11 @@
           <td>
             <div>
               <mat-checkbox [(ngModel)]="subItem.potCalculationBasis" [disabled]="formType === 'details'"></mat-checkbox>
+            </div>
+          </td>
+          <td>
+            <div>
+              <mat-checkbox [(ngModel)]="subItem.displayDefaultValue" [disabled]="formType === 'details'"></mat-checkbox>
             </div>
           </td>
           <td>
