@@ -570,6 +570,8 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                                 // 投入上限 = 每锅投入标准 * 投入上限比例 / 100
                                                 BigDecimal inputUpperLimit = standardInput.multiply(upperLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
                                                 result.setInputUpperLimit(inputUpperLimit.floatValue());
+                                                result.setStandardInput(standardInput);
+                                                result.setDisplayDefaultValue(recipeInput.getDisplayDefaultValue());
                                             }
                                         }
                                         try {
@@ -608,6 +610,8 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                         BigDecimal inputUpperLimit = standardInput.multiply(upperLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
                                         add.setInputLowerLimit(inputLowerLimit.floatValue());
                                         add.setInputUpperLimit(inputUpperLimit.floatValue());
+                                        add.setStandardInput(standardInput);
+                                        add.setDisplayDefaultValue(recipeInput.getDisplayDefaultValue());
                                         groupResults.add(add);
                                     }
                                 }
