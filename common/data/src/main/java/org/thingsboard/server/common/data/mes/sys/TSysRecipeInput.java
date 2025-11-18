@@ -90,6 +90,10 @@ public class TSysRecipeInput {
     @Column(name = "pot_calculation_basis", length = 1)
     private String potCalculationBasis;
 
+    @ApiModelProperty("显示默认值（复选框）")
+    @Column(name = "display_default_value", length = 1)
+    private String displayDefaultValue;
+
     // 多对一关系：配方（为避免详情序列化时出现循环/冗余，忽略该字段）
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id", insertable = false, updatable = false)

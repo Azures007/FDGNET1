@@ -916,3 +916,7 @@ COMMENT ON COLUMN public.t_bus_order_head.mid_mo_entry_seq_text IS '订单明细
 -- 2025-11-10 班别 增加产线id
 ALTER TABLE t_sys_class ADD COLUMN nc_cwkid VARCHAR(255);
 COMMENT ON COLUMN t_sys_class.nc_cwkid IS '产线id';
+
+-- 2025-11-18
+ALTER TABLE t_sys_recipe_input ADD COLUMN display_default_value VARCHAR(1);
+COMMENT ON COLUMN t_sys_recipe_input.display_default_value IS '显示默认值（复选框）';

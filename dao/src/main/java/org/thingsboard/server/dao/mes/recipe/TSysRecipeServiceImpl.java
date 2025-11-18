@@ -438,6 +438,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
                 newInput.setSemiFinishedProductCode(input.getSemiFinishedProductCode());
                 newInput.setPlanInputRatio(input.getPlanInputRatio());
                 newInput.setPotCalculationBasis(input.getPotCalculationBasis());
+                newInput.setDisplayDefaultValue(input.getDisplayDefaultValue());
                 newInput.setCreateTime(new Date());
                 newInput.setUpdateTime(new Date());
                 newInputs.add(newInput);
