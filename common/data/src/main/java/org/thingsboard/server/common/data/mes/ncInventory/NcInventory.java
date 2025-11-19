@@ -61,7 +61,7 @@ public class NcInventory {
     private Float qty;
 
     @Column(name = "status", nullable = false)
-    @ApiModelProperty(name="状态", required = true)
+    @ApiModelProperty(name="状态")
     private String status;
 
     @Transient

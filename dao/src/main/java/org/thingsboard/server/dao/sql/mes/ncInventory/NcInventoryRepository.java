@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
@@ -31,4 +32,10 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
 
     @Query(value = "select * from t_bus_inventory where warehouse_id=?1 and material_code=?2 and status=?3",nativeQuery = true)
     List<NcInventory> findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(String warehouseId, String materialCode, String status);
+
+    @Modifying
+    @Query(value = "delete from t_bus_inventory " +
+            "where ((:warehouseId is not null and :warehouseId <> '' and warehouse_id = :warehouseId) " +
+            "or (:warehouseCode is not null and :warehouseCode <> '' and warehouse_code = :warehouseCode))", nativeQuery = true)
+    void deleteByWarehouse(@Param("warehouseId") String warehouseId, @Param("warehouseCode") String warehouseCode);
 }
