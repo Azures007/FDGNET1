@@ -111,6 +111,7 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             entity.setOrderId(orderId);
             // 确保cmoid一致
             entity.setCmoid(cmoid);
+            entity.setOrderStatus(existingOrder.getOrderStatus());
             entity=repository.save(entity);
         } else {
             entity.setOrderStatus("0");
@@ -152,7 +153,6 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             }
             String orderNo = vbillcode + "-" + seq;
             entity.setOrderNo(orderNo);
-
             entity.setIsDeleted("0");
             //entity.setCreatedName("system");
             entity.setCreatedTime(new java.util.Date());
@@ -164,12 +164,13 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
                 bomRepository.deleteAllByOrderId(entity.getCmoid());
                 entity.setOrderId(orderId);
                 entity.setCmoid(existingOrder.getCmoid());
-            }else{
+                entity.setOrderStatus(existingOrder.getOrderStatus());
+            } else {
                 entity.setOrderStatus("0");
             }
             toSave.add(entity);
         }
-        entitys=repository.saveAll(toSave);
+        entitys = repository.saveAll(toSave);
         final List<NcTBusOrderHead> finalEntitys = entitys;
         // 注册事务同步回调
         TransactionSynchronizationManager.registerSynchronization(
