@@ -1,5 +1,6 @@
 package org.thingsboard.server.dao.mes.ncOrder;
 
+import com.youchen.push.service.DomainPushFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,19 +8,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import com.youchen.push.service.DomainPushFacade;
+import org.thingsboard.common.util.JacksonUtil;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcess;
+import org.thingsboard.server.common.data.mes.ncOrder.NcTBusOrderHead;
+import org.thingsboard.server.common.data.mes.sys.NcSyncLog;
+import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessClassRel;
 import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
-import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
-import org.thingsboard.server.common.data.mes.ncOrder.NcTBusOrderHead;
 import org.thingsboard.server.dao.mes.order.OrderBackendService;
 import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftInfoRepository;
 import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftMaterialRelRepository;
 import org.thingsboard.server.dao.sql.mes.TSysProcessInfo.TSysProcessClassRelRepository;
 import org.thingsboard.server.dao.sql.mes.ncOrder.NcTBusOrderHeadRepository;
 import org.thingsboard.server.dao.sql.mes.ncOrder.NcTBusOrderPPBomRepository;
+import org.thingsboard.server.dao.sql.mes.order.NcSyncLogRepository;
 import org.thingsboard.server.dao.sql.mes.order.OrderHeadRepository;
 
 import java.time.Instant;
@@ -60,6 +63,11 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
     @Autowired
     TSysProcessClassRelRepository processClassRelRepository;
 
+    @Autowired
+    private NcSyncLogRepository ncSyncLogRepository;
+
+    private static final String SYNC_TYPE_ORDER = "订单同步";
+
     @Override
     public List<NcTBusOrderHead> findAll() {
         return repository.findAll();
@@ -87,115 +95,138 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
     @Override
     @Transactional
     public NcTBusOrderHead updateByCmoid(String cmoid, NcTBusOrderHead entity) {
-        String vbillcode = entity.getVbillcode();
-//        Integer seq = entity.getSeq();
-        String seq = entity.getSeq();
-        if (vbillcode == null || seq == null) {
-            throw new IllegalArgumentException("vbillcode or seq cannot be null when generating orderNo");
-        }
-        String orderNo = vbillcode + "-" + seq;
-        entity.setOrderNo(orderNo);
-
-        entity.setIsDeleted("0");
-        //entity.setCreatedName("system");
-        entity.setCreatedTime(new java.util.Date());
-        //entity.setUnit("KG");
-        NcTBusOrderHead existingOrder = repository.findByCmoid(cmoid);
-        if (existingOrder != null) {
-            // 先删除原有 bomList
-            Integer orderId = existingOrder.getOrderId();
-            bomRepository.deleteAllLinkByOrderId(orderId);
-            bomRepository.deleteAllByOrderId(cmoid);
-
-            // 保留原有ID
-            entity.setOrderId(orderId);
-            // 确保cmoid一致
-            entity.setCmoid(cmoid);
-            entity.setOrderStatus(existingOrder.getOrderStatus());
-            entity=repository.save(entity);
-        } else {
-            entity.setOrderStatus("0");
-            entity=repository.save(entity);
-        }
-        NcTBusOrderHead finalEntity = entity;
-        // 注册事务同步回调
-        TransactionSynchronizationManager.registerSynchronization(
-                new TransactionSynchronization() {
-                    @Override
-                    public void afterCommit() {
-                        // 在事务提交后启动新线程
-                        new Thread(() -> {
-                            //订单自动绑定工艺路线
-                            try {
-                                TSysCraftInfo craft=orderBackendService.getCraftInfoByMaterial(finalEntity.getCode());
-                                orderBackendService.startOrder(finalEntity.getOrderId(),craft.getCraftId(),craft.getCraftDetail());
-                            } catch (Exception e) {
-                                log.info("订单自动绑定工艺路线失败OrderId："+ finalEntity.getOrderId()+"," + e.getMessage());
-                            }
-                        }).start();
-                    }
-                }
-        );
-
-
-        return entity;
-    }
-    @Override
-    @Transactional
-    public void updateByCmoidBatch(List<NcTBusOrderHead> entitys) {
-        List<NcTBusOrderHead> toSave = new ArrayList<>();
-        for (NcTBusOrderHead entity : entitys) {
+        long startTime = System.currentTimeMillis();
+        String requestJson = toJsonSafe(entity);
+        int dataCount = entity == null ? 0 : 1;
+        try {
             String vbillcode = entity.getVbillcode();
-//            Integer seq = entity.getSeq();
+//        Integer seq = entity.getSeq();
             String seq = entity.getSeq();
             if (vbillcode == null || seq == null) {
                 throw new IllegalArgumentException("vbillcode or seq cannot be null when generating orderNo");
             }
             String orderNo = vbillcode + "-" + seq;
             entity.setOrderNo(orderNo);
+
             entity.setIsDeleted("0");
             //entity.setCreatedName("system");
             entity.setCreatedTime(new java.util.Date());
             //entity.setUnit("KG");
-            NcTBusOrderHead existingOrder = repository.findByCmoid(entity.getCmoid());
+            NcTBusOrderHead existingOrder = repository.findByCmoid(cmoid);
             if (existingOrder != null) {
+                // 先删除原有 bomList
                 Integer orderId = existingOrder.getOrderId();
                 bomRepository.deleteAllLinkByOrderId(orderId);
-                bomRepository.deleteAllByOrderId(entity.getCmoid());
+                bomRepository.deleteAllByOrderId(cmoid);
+
+                // 保留原有ID
                 entity.setOrderId(orderId);
-                entity.setCmoid(existingOrder.getCmoid());
+                // 确保cmoid一致
+                entity.setCmoid(cmoid);
                 entity.setOrderStatus(existingOrder.getOrderStatus());
+                entity=repository.save(entity);
             } else {
                 entity.setOrderStatus("0");
+                entity=repository.save(entity);
             }
-            toSave.add(entity);
-        }
-        entitys = repository.saveAll(toSave);
-        final List<NcTBusOrderHead> finalEntitys = entitys;
-        // 注册事务同步回调
-        TransactionSynchronizationManager.registerSynchronization(
-                new TransactionSynchronization() {
-                    @Override
-                    public void afterCommit() {
-                        // 在事务提交后启动新线程
-                        new Thread(() -> {
-                            for (NcTBusOrderHead entity : finalEntitys) {
+            NcTBusOrderHead finalEntity = entity;
+            // 注册事务同步回调
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            // 在事务提交后启动新线程
+                            new Thread(() -> {
+                                //订单自动绑定工艺路线
                                 try {
-                                    TSysCraftInfo craft = orderBackendService.getCraftInfoByMaterial(entity.getCode());
-                                    orderBackendService.startOrder(
-                                            entity.getOrderId(),
-                                            craft.getCraftId(),
-                                            craft.getCraftDetail()
-                                    );
+                                    TSysCraftInfo craft=orderBackendService.getCraftInfoByMaterial(finalEntity.getCode());
+                                    orderBackendService.startOrder(finalEntity.getOrderId(),craft.getCraftId(),craft.getCraftDetail());
                                 } catch (Exception e) {
-                                    log.error("订单自动绑定工艺路线失败 OrderId: {}, 错误: {}",
-                                            entity.getOrderId(), e.getMessage(), e);
+                                    log.info("订单自动绑定工艺路线失败OrderId："+ finalEntity.getOrderId()+"," + e.getMessage());
                                 }
-                            }
-                        }).start();
+                            }).start();
+                        }
                     }
+            );
+
+
+            String syncContent = "同步成功，订单号：" + entity.getOrderNo();
+            saveSyncLog(SYNC_TYPE_ORDER, "0", syncContent, requestJson, dataCount, System.currentTimeMillis() - startTime, null);
+            return entity;
+        } catch (Exception ex) {
+            saveSyncLog(SYNC_TYPE_ORDER, "1", "同步失败：" + ex.getMessage(), requestJson, dataCount,
+                    System.currentTimeMillis() - startTime, ex.getMessage());
+            throw ex;
+        }
+    }
+    @Override
+    @Transactional
+    public void updateByCmoidBatch(List<NcTBusOrderHead> entitys) {
+        long startTime = System.currentTimeMillis();
+        String requestJson = toJsonSafe(entitys);
+        int dataCount = entitys == null ? 0 : entitys.size();
+        try {
+            List<NcTBusOrderHead> toSave = new ArrayList<>();
+            for (NcTBusOrderHead entity : entitys) {
+                String vbillcode = entity.getVbillcode();
+//            Integer seq = entity.getSeq();
+                String seq = entity.getSeq();
+                if (vbillcode == null || seq == null) {
+                    throw new IllegalArgumentException("vbillcode or seq cannot be null when generating orderNo");
                 }
-        );
+                String orderNo = vbillcode + "-" + seq;
+                entity.setOrderNo(orderNo);
+                entity.setIsDeleted("0");
+                //entity.setCreatedName("system");
+                entity.setCreatedTime(new java.util.Date());
+                //entity.setUnit("KG");
+                NcTBusOrderHead existingOrder = repository.findByCmoid(entity.getCmoid());
+                if (existingOrder != null) {
+                    Integer orderId = existingOrder.getOrderId();
+                    bomRepository.deleteAllLinkByOrderId(orderId);
+                    bomRepository.deleteAllByOrderId(entity.getCmoid());
+                    entity.setOrderId(orderId);
+                    entity.setCmoid(existingOrder.getCmoid());
+                    entity.setOrderStatus(existingOrder.getOrderStatus());
+                } else {
+                    entity.setOrderStatus("0");
+                }
+                toSave.add(entity);
+            }
+            entitys = repository.saveAll(toSave);
+            final List<NcTBusOrderHead> finalEntitys = entitys;
+            // 注册事务同步回调
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            // 在事务提交后启动新线程
+                            new Thread(() -> {
+                                for (NcTBusOrderHead entity : finalEntitys) {
+                                    try {
+                                        TSysCraftInfo craft = orderBackendService.getCraftInfoByMaterial(entity.getCode());
+                                        orderBackendService.startOrder(
+                                                entity.getOrderId(),
+                                                craft.getCraftId(),
+                                                craft.getCraftDetail()
+                                        );
+                                    } catch (Exception e) {
+                                        log.error("订单自动绑定工艺路线失败 OrderId: {}, 错误: {}",
+                                                entity.getOrderId(), e.getMessage(), e);
+                                    }
+                                }
+                            }).start();
+                        }
+                    }
+            );
+
+            String syncContent = String.format("批量同步成功，数量：%d", dataCount);
+            saveSyncLog(SYNC_TYPE_ORDER, "0", syncContent, requestJson, dataCount, System.currentTimeMillis() - startTime, null);
+        } catch (Exception ex) {
+            saveSyncLog(SYNC_TYPE_ORDER, "1", "批量同步失败：" + ex.getMessage(), requestJson, dataCount,
+                    System.currentTimeMillis() - startTime, ex.getMessage());
+            throw ex;
+        }
     }
 
     @Override
@@ -248,5 +279,32 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
         }
 
         repository.deleteByCpmohids(cpmohids);
+    }
+
+    private String toJsonSafe(Object obj) {
+        try {
+            return JacksonUtil.toString(obj);
+        } catch (Exception e) {
+            log.warn("序列化订单数据失败：{}", e.getMessage());
+            return "序列化失败：" + e.getMessage();
+        }
+    }
+
+    private void saveSyncLog(String syncType, String syncStatus, String syncContent,
+                             String requestJson, Integer dataCount, Long durationMs, String errorMessage) {
+        try {
+            NcSyncLog logEntity = new NcSyncLog();
+            logEntity.setSyncType(syncType);
+            logEntity.setSyncTime(new java.util.Date());
+            logEntity.setSyncStatus(syncStatus);
+            logEntity.setSyncContent(syncContent);
+            logEntity.setRequestJson(requestJson);
+            logEntity.setDataCount(dataCount);
+            logEntity.setDurationMs(durationMs);
+            logEntity.setErrorMessage(errorMessage);
+            ncSyncLogRepository.save(logEntity);
+        } catch (Exception e) {
+            log.error("保存NC订单同步日志失败", e);
+        }
     }
 }

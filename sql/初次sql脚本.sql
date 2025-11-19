@@ -1826,3 +1826,34 @@ ALTER TABLE "public"."t_bus_order_accumulation" DROP CONSTRAINT "uk_order_accumu
 
 -- 2. 添加新的唯一约束，可以指定新的列组合
 ALTER TABLE "public"."t_bus_order_accumulation" ADD CONSTRAINT "uk_order_accumulation" UNIQUE ("order_no", "order_process_id", "order_ppbom_id", "device_person_group_id", "material_number", "group_code");
+
+-- NC同步日志表
+DROP TABLE IF EXISTS t_bus_nc_sync_log;
+CREATE TABLE t_bus_nc_sync_log(
+                                  id SERIAL NOT NULL,
+                                  sync_type VARCHAR(50) NOT NULL,
+                                  sync_time TIMESTAMP NOT NULL,
+                                  sync_status VARCHAR(1) NOT NULL,
+                                  sync_content TEXT,
+                                  request_json TEXT,
+                                  data_count INTEGER,
+                                  duration_ms BIGINT,
+                                  error_message TEXT,
+                                  PRIMARY KEY (id)
+);
+
+COMMENT ON TABLE t_bus_nc_sync_log IS 'NC同步日志表';
+COMMENT ON COLUMN t_bus_nc_sync_log.id IS '主键ID';
+COMMENT ON COLUMN t_bus_nc_sync_log.sync_type IS '同步类型（如：库存同步、订单同步等）';
+COMMENT ON COLUMN t_bus_nc_sync_log.sync_time IS '同步时间';
+COMMENT ON COLUMN t_bus_nc_sync_log.sync_status IS '同步状态 0：成功 1：失败';
+COMMENT ON COLUMN t_bus_nc_sync_log.sync_content IS '同步内容描述';
+COMMENT ON COLUMN t_bus_nc_sync_log.request_json IS '原始JSON入参';
+COMMENT ON COLUMN t_bus_nc_sync_log.data_count IS '同步数据数量';
+COMMENT ON COLUMN t_bus_nc_sync_log.duration_ms IS '同步耗时（毫秒）';
+COMMENT ON COLUMN t_bus_nc_sync_log.error_message IS '错误信息';
+
+-- 创建索引以提高查询性能
+CREATE INDEX idx_nc_sync_log_sync_type ON t_bus_nc_sync_log(sync_type);
+CREATE INDEX idx_nc_sync_log_sync_time ON t_bus_nc_sync_log(sync_time);
+CREATE INDEX idx_nc_sync_log_sync_status ON t_bus_nc_sync_log(sync_status);
