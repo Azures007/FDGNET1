@@ -55,14 +55,22 @@ public class YcPdServiceImpl implements YcPdService {
     @Transactional
     @Override
     public TSysPdRecord savePd(TSysPdRecord tSysPdRecord, String userId) {
-        /*List<String> cwkids =userService.getUserCurrentCwkid(userId);
-        // 获取产线名称
-        List<String> cwkName = new ArrayList<>();
+//        List<String> cwkids =userService.getUserCurrentCwkid(userId);
+//        // 获取产线名称
+//        List<String> cwkName = new ArrayList<>();
+//        if (cwkids != null && !cwkids.isEmpty()) {
+//            List<NcWorkline> workline = ncWorklineService.findAllByCwkids(cwkids);
+//            //获取产线名称List
+//            cwkName = workline.stream().map(NcWorkline::getVwkname).collect(Collectors.toList());
+//        }
+        String cwkName = null;
+        List<String> cwkids = userService.getUserCurrentCwkid(userId);
         if (cwkids != null && !cwkids.isEmpty()) {
-            List<NcWorkline> workline = ncWorklineService.findAllByCwkids(cwkids);
-            //获取产线名称List
-            cwkName = workline.stream().map(NcWorkline::getVwkname).collect(Collectors.toList());
-        }*/
+            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
+            if (workline != null) {
+                cwkName = workline.getVwkname();
+            }
+        }
         
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         tSysPdRecord.setPdTime(new Date());
@@ -126,7 +134,7 @@ public class YcPdServiceImpl implements YcPdService {
         tSysPdRecord.setPdTimeStr(format);
         tSysPdRecord.setPdRecordId(null);
         // 设置产线名称
-        //tSysPdRecord.setNcVwkname(cwkName);
+        tSysPdRecord.setNcVwkname(cwkName);
         tSysPdRecordRepository.saveAndFlush(tSysPdRecord);
         //更新库存
         List<NcInventory> ncInventories = null;
