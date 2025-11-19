@@ -309,6 +309,9 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         if (saveDto.getDevicePersonIds() != null && saveDto.getDevicePersonIds().size() > 0) {
             devicePersonGroupId = orderProcessPersonRelService.createdPersonGroupId(saveDto.getOrderProcessId(), saveDto.getDevicePersonIds());
         }
+        if (saveDto.getGroupCode() == null) {
+            saveDto.setGroupCode("");
+        }
         maps = orderProcessRecordRepository.getBGRecordYl(saveDto.getOrderProcessId(), deviceGroupId, devicePersonGroupId, saveDto.getRecordTypeBg(), saveDto.getRecordUnit(),saveDto.getMaterialNumber(), saveDto.getGroupCode());
 //        maps = orderProcessRecordRepository.getBGRecord(saveDto.getOrderProcessId(), deviceGroupId, devicePersonGroupId);
 
