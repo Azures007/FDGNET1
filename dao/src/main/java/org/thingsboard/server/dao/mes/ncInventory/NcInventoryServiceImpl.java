@@ -31,6 +31,13 @@ public class NcInventoryServiceImpl implements NcInventoryService {
         if (list == null || list.isEmpty()) {
             return;
         }
+        // 为每个库存记录设置billId为warehouseId_materialId_lot的格式
+        list.forEach(inventory -> {
+            String warehouseId = StringUtils.defaultString(inventory.getWarehouseId(), "");
+            String materialId = StringUtils.defaultString(inventory.getMaterialId(), "");
+            String lot = StringUtils.defaultString(inventory.getLot(), "");
+            inventory.setBillId(warehouseId + "_" + materialId + "_" + lot);
+        });
         // 直接saveAll，JPA会根据主键billId自动新增或更新
         repository.saveAll(list);
     }

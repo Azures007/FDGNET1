@@ -12,8 +12,8 @@ import javax.persistence.*;
 @ApiModel("NC仓库库存表")
 public class NcInventory {
     @Id
-    @Column(name = "bill_id", nullable = false)
-    @ApiModelProperty(name="单据ID", required = true)
+    @Column(name = "bill_id")
+    @ApiModelProperty(name="单据ID")
     private String billId;
 
     @Column(name = "warehouse_id")
