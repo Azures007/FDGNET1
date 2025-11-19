@@ -920,3 +920,9 @@ COMMENT ON COLUMN t_sys_class.nc_cwkid IS '产线id';
 -- 2025-11-18
 ALTER TABLE t_sys_recipe_input ADD COLUMN display_default_value VARCHAR(1);
 COMMENT ON COLUMN t_sys_recipe_input.display_default_value IS '显示默认值（复选框）';
+
+-- 2025-11-19
+ALTER TABLE t_bus_order_process ADD COLUMN order_id int4;
+COMMENT ON COLUMN t_bus_order_process.order_id IS '订单id';
+ALTER TABLE t_bus_order_process ADD COLUMN nc_cmoid VARCHAR(255);
+COMMENT ON COLUMN t_bus_order_process.nc_cmoid IS '订单明细id';

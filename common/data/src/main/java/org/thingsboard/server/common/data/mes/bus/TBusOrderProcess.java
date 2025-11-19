@@ -127,6 +127,12 @@ TBusOrderProcess {
 //    @Column(name = "record_type_pd_time")
 //    private Date recordTypePdTime;
 
+    @ApiModelProperty("订单id")
+    @Column(name = "order_id")
+    private Integer orderId;
 
+    @Column(name = "nc_cmoid")
+    @ApiModelProperty("订单明细id")
+    private String cmoid;
 
 }

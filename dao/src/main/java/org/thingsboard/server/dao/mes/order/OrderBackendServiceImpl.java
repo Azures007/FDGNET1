@@ -187,6 +187,8 @@ public class OrderBackendServiceImpl implements OrderBackendService {
                         tBusOrderProcess.setProcessId(processInfo);
                         tBusOrderProcess.setProcessSeq(tSysCraftProcessRel.getSort());//工序执行序号，是否取值tSysCraftProcessRel的排序序号
                         tBusOrderProcess.setClassId(startOrderClass);//班别
+                        tBusOrderProcess.setOrderId(tBusOrderHeadRt.getOrderId());
+                        tBusOrderProcess.setCmoid(tBusOrderHeadRt.getCmoid());
                         tBusOrderProcessSet.add(tBusOrderProcess);
 
                         if (tBusOrderProcessSet.size() <= 0){
