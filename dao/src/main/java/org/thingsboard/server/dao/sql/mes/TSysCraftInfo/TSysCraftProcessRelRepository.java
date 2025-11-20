@@ -19,6 +19,7 @@ public interface TSysCraftProcessRelRepository extends JpaRepository<TSysCraftPr
     @Transactional
     @Modifying
     void deleteByCraftId(Integer craftId);
+    List<TSysCraftProcessRel> findAllByCraftId(Integer craftId);
 
     TSysCraftProcessRel findByCraftIdAndProcessId(Integer craftId, Integer processId);
 }

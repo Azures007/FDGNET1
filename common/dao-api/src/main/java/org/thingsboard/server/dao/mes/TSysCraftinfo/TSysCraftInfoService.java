@@ -31,7 +31,7 @@ public interface TSysCraftInfoService {
     TSysProcessInfo getCraftNextProcessInfo(Integer craftId, Integer processId);
 
     @Transactional
-    void delete(Integer craftId);
+    ResponseResult delete(Integer craftId);
 
     void enable(Integer craftId, Integer enable, String name);
 

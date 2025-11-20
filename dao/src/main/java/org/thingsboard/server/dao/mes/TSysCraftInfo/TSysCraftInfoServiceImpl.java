@@ -237,9 +237,16 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
     }
 
     @Override
-    public void delete(Integer craftId) {
-        tSysCraftProcessRelRepository.deleteByCraftId(craftId);
+    public ResponseResult delete(Integer craftId) {
+        List<TSysCraftProcessRel> rows=tSysCraftProcessRelRepository.findAllByCraftId(craftId);
+        if(rows.size()==0) {
+            return ResultUtil.error("已被接单无法删除");
+        }
+        else {
+            tSysCraftProcessRelRepository.deleteByCraftId(craftId);
+        }
         tSysCraftInfoRepository.deleteById(craftId);
+        return ResultUtil.success();
     }
 
     @Override

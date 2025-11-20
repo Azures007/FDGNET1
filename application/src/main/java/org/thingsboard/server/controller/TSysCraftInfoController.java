@@ -2,6 +2,7 @@ package org.thingsboard.server.controller;
 
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.sys.TSysCraftProcessRel;
 import org.thingsboard.server.common.data.web.ResponseResult;
@@ -57,8 +58,8 @@ public class TSysCraftInfoController extends BaseController{
     @ApiOperation("删除")
     @PostMapping("/delete")
     public ResponseResult delete(@RequestParam Integer craftId) throws Exception {
-        tSysCraftInfoService.delete(craftId);
-        return ResultUtil.success();
+        ResponseResult result=tSysCraftInfoService.delete(craftId);
+        return result;
     }
 
     @ApiOperation("启用/禁用 0：禁用 1：启用")
