@@ -120,7 +120,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
             " and record.record_unit=:recordUnit" +
 //            " and record.material_number=:materialNumber " +
             " and (record.material_number=:materialNumber or ''=:materialNumber) " +
-            " and record.group_code=:groupCode " +
+            " and (record.group_code IS NOT DISTINCT FROM CAST(:groupCode AS VARCHAR)) " +
             " and (record.device_group_id=:deviceGroupId or ''=:deviceGroupId) " +
             " and (record.device_person_group_id=:devicePersonGroupId or ''=:devicePersonGroupId) " +
             " and (record.record_type_bg=:recordTypeBg or ''=:recordTypeBg) " +
