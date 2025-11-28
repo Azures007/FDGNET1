@@ -19,7 +19,7 @@ export class StaffAddComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    
+
   }
 
   //关闭弹窗
@@ -31,13 +31,12 @@ export class StaffAddComponent implements OnInit {
 
   submit() {
     console.log(this.data)
-    let regexName = /^[\u4e00-\u9fa5]+$/;
-    if(regexName.test(this.data.params.name)){
+    if(this.data.params.name){
       this.dialogRef.close(this.data);
     }else{
       let data = {
         title: "消息提示",
-        message: "请输入正常的汉字姓名",
+        message: "请输入姓名",
         ok: '确定',
       }
       this.dialogService.message(data).subscribe(res => {
