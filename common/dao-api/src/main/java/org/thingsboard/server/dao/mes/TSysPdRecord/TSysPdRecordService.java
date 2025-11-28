@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.thingsboard.server.dao.mes.dto.TSysPdRecordDto;
 import org.thingsboard.server.dao.mes.vo.TSysPdRecordVo;
 
+import java.util.List;
+
 /**
  * @author 许文言
  * @project youchen_IOTServer
@@ -35,5 +37,11 @@ public interface TSysPdRecordService {
      * @return
      */
     Page<TSysPdRecordVo> tSysPdRecordListWithSplit(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto);
+    
+    /**
+     * 审核盘点记录
+     * @param ids 盘点记录ID列表
+     * @return 更新记录数
+     */
+    int reviewPdRecords(List<Integer> ids);
 }
-

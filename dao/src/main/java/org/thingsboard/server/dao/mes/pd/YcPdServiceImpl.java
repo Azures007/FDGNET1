@@ -12,6 +12,7 @@ import org.thingsboard.server.common.data.mes.sys.TSyncMaterialBom;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecordSplit;
 import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
+import org.thingsboard.server.dao.mes.vo.PdMaterialsVo;
 import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
 import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
 import org.thingsboard.server.dao.sql.mes.ncInventory.NcInventoryRepository;
@@ -196,9 +197,13 @@ public class YcPdServiceImpl implements YcPdService {
     }
 
     @Override
-    public List<NcInventory> pdMaterials(PdMaterialsDto pdMaterialsDto, String userId) {
+    public PdMaterialsVo pdMaterials(PdMaterialsDto pdMaterialsDto, String userId) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        pdMaterialsDto.setPdTimeStr(simpleDateFormat.format(new Date()));
+        String currentDate = simpleDateFormat.format(new Date());
+        
+        if (pdMaterialsDto.getPdTimeStr() == null || pdMaterialsDto.getPdTimeStr().isEmpty()) {
+            pdMaterialsDto.setPdTimeStr(currentDate);
+        }
         
         // 获取当前用户的产线名称
         String cwkName = null;
@@ -213,7 +218,30 @@ public class YcPdServiceImpl implements YcPdService {
         
         List<Map> ncInventorieMs = ncInventoryRepository.pdMaterials(pdMaterialsDto);
         List<NcInventory> ncInventories = JSON.parseArray(JSON.toJSONString(ncInventorieMs), NcInventory.class);
-        return ncInventories;
+        
+        // 计算统计信息
+        long totalCount = ncInventorieMs.size();
+        long pagedCount = ncInventorieMs.stream()
+                .mapToLong(m -> ((Number) m.get("by_pd")).longValue())
+                .sum();
+        long unpagedCount = totalCount - pagedCount;
+        
+        // 判断当前物料分类是否已完成盘点
+        boolean isMaterialTypeFinished = false;
+        if (pdMaterialsDto.getMaterialTypePd() != null && !pdMaterialsDto.getMaterialTypePd().isEmpty()) {
+            TSysPdRecord finishedRecord = findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(
+                    pdMaterialsDto.getPdTimeStr(), cwkName, pdMaterialsDto.getMaterialTypePd());
+            isMaterialTypeFinished = (finishedRecord != null);
+        }
+        
+        PdMaterialsVo result = new PdMaterialsVo();
+        result.setMaterials(ncInventories);
+        result.setTotalMaterials(totalCount);
+        result.setPagedCount(pagedCount);
+        result.setUnpagedCount(unpagedCount);
+        result.setMaterialTypeFinished(isMaterialTypeFinished); // 设置物料分类完成状态
+        
+        return result;
     }
 
     @Override
@@ -236,6 +264,10 @@ public class YcPdServiceImpl implements YcPdService {
     public List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber, String ncVwkname) {
         List<TSysPdRecord> tSysPdRecords = tSysPdRecordRepository.showWorkshopRecord(pdTimeStr, pdWorkshopNumber, ncVwkname);
         for (TSysPdRecord tSysPdRecord : tSysPdRecords) {
+            // 过滤掉特殊标记记录
+            if (tSysPdRecord.getMaterialNumber() != null && tSysPdRecord.getMaterialNumber().startsWith("FINISHED_MATERIAL_TYPE_MARKER_")) {
+                continue;
+            }
             tSysPdRecord.setPdQty(tSysPdRecord.getPdQty().setScale(3, RoundingMode.HALF_UP));
         }
         return tSysPdRecords;
@@ -245,5 +277,41 @@ public class YcPdServiceImpl implements YcPdService {
     public List<TSyncMaterial> listMaterial(String selectBy) {
         List<TSyncMaterial> tSyncMaterials = syncMaterialRepository.listMaterialsBySelctct(selectBy);
         return tSyncMaterials;
+    }
+    
+    @Override
+    public TSysPdRecord findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(String pdTimeStr, String ncVwkname, String materialType) {
+        return tSysPdRecordRepository.findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(pdTimeStr, ncVwkname, materialType);
+    }
+    
+    @Override
+    @Transactional
+    public boolean finishPdByMaterialType(String materialType, String userId, String pdTimeStr) throws Exception {
+        // 获取当前用户的产线名称
+        String cwkName = null;
+        List<String> cwkids = userService.getUserCurrentCwkid(userId);
+        if (cwkids != null && !cwkids.isEmpty()) {
+            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
+            if (workline != null) {
+                cwkName = workline.getVwkname();
+            }
+        }
+        
+        // 创建一条特殊记录标记该物料分类已完成盘点
+        TSysPdRecord finishRecord = new TSysPdRecord();
+        finishRecord.setPdTimeStr(pdTimeStr);
+        finishRecord.setNcVwkname(cwkName);
+        finishRecord.setByDeleted("0");
+        finishRecord.setByFp("0");
+        finishRecord.setPdType("2"); // 使用特殊类型标识，避免与正常记录冲突
+        finishRecord.setCreatedTime(new Date());
+        finishRecord.setCreatedName("系统自动结束");
+        finishRecord.setPdCreatedName("系统自动结束");
+        finishRecord.setMaterialNumber("FINISHED_MATERIAL_TYPE_MARKER_" + materialType); // 设置特殊标记，包含物料分类信息便于识别
+        
+        // 保存标记记录
+        tSysPdRecordRepository.save(finishRecord);
+        
+        return true;
     }
 }

@@ -105,4 +105,9 @@ public class TSysPdRecordVo {
     @Column(name = "nc_vwkname")
     private String ncVwkname;
 
+
+    @ApiModelProperty("审核状态")
+    @Column(name = "review_status")
+    private String reviewStatus;
+
 }

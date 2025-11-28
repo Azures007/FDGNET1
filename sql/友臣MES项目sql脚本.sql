@@ -927,6 +927,12 @@ COMMENT ON COLUMN t_bus_order_process.order_id IS '订单id';
 ALTER TABLE t_bus_order_process ADD COLUMN nc_cmoid VARCHAR(255);
 COMMENT ON COLUMN t_bus_order_process.nc_cmoid IS '订单明细id';
 
+-- 2025-11-27
+ALTER TABLE t_sys_pd_record ADD COLUMN review_status VARCHAR(1) DEFAULT '0';
+COMMENT ON COLUMN t_sys_pd_record.review_status IS '审核状态 0：未审核  1：已审核';
+ALTER TABLE t_sys_pd_record_split ADD COLUMN review_status VARCHAR(1) DEFAULT '0';
+COMMENT ON COLUMN t_sys_pd_record_split.review_status IS '审核状态 0：未审核  1：已审核';
+
 -- 2025-11-20
 ALTER TABLE t_bus_inventory ADD COLUMN material_type_pd VARCHAR(64);
 COMMENT ON COLUMN t_bus_inventory.material_type_pd IS '盘点物料分类';

@@ -12,8 +12,11 @@ import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
 import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.mes.vo.PdMaterialsVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -23,10 +26,10 @@ public class YcPdAppController extends BaseController {
 
     @PostMapping("/pdMaterials")
     @ApiOperation("盘点物料列表")
-    public ResponseResult<List<NcInventory>> pdMaterials(@RequestBody PdMaterialsDto pdMaterialsDto) throws ThingsboardException {
+    public ResponseResult<PdMaterialsVo> pdMaterials(@RequestBody PdMaterialsDto pdMaterialsDto) throws ThingsboardException {
         SecurityUser currentUser = getCurrentUser();
-        List<NcInventory> ncInventories=ycPdService.pdMaterials(pdMaterialsDto, currentUser.getId().getId().toString());
-        return ResultUtil.success(ncInventories);
+        PdMaterialsVo result = ycPdService.pdMaterials(pdMaterialsDto, currentUser.getId().getId().toString());
+        return ResultUtil.success(result);
     }
 
     @ApiOperation("自定义盘点物料")
@@ -61,5 +64,31 @@ public class YcPdAppController extends BaseController {
                                                                  @RequestParam("ncVwkname") String ncVwkname){
         List<TSysPdRecord> tSysPdRecords=ycPdService.showWorkshopRecord(pdTimeStr,pdWorkshopNumber,ncVwkname);
         return ResultUtil.success(tSysPdRecords);
+    }
+    
+    @PostMapping("/finishPdByMaterialType")
+    @ApiOperation("结束指定物料分类的盘点")
+    public ResponseResult<Boolean> finishPdByMaterialType(@RequestBody PdMaterialsDto pdMaterialsDto) throws ThingsboardException {
+        try {
+            SecurityUser currentUser = getCurrentUser();
+            
+            String pdTimeStr = pdMaterialsDto.getPdTimeStr();
+            if (pdTimeStr == null || pdTimeStr.isEmpty()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                pdTimeStr = sdf.format(new Date());
+            }
+            
+            // 直接结束盘点，处理所有未盘点物料
+            boolean result = ycPdService.finishPdByMaterialType(
+                pdMaterialsDto.getMaterialType(), 
+                currentUser.getId().getId().toString(),
+                pdTimeStr
+            );
+            
+            return ResultUtil.success(result);
+        } catch (Exception e) {
+            // 异常信息将作为提示信息返回给前端
+            return ResultUtil.error(e.getMessage());
+        }
     }
 }

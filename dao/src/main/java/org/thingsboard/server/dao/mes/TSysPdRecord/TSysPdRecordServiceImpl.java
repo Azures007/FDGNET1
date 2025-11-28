@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecordSplit;
 import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
@@ -265,6 +266,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                     vo.setPdTimeStr(splitRecord.getPdTimeStr());
                     vo.setIsReturn("是");
                     vo.setNcVwkname(splitRecord.getNcVwkname());
+                    vo.setReviewStatus(splitRecord.getReviewStatus());
                     voList.add(vo);
                 }
             }
@@ -287,6 +289,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                         vo.setCreatedTime(formatTimestampToString((Timestamp) record.getCreatedTime()));
                     }
                     vo.setIsReturn("否");
+                    vo.setReviewStatus(record.getReviewStatus());
                     voList.add(vo);
                 }
             }
@@ -298,5 +301,25 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
         }
 
         return new PageImpl<>(voList, pageable, totalElements);
+    }
+    
+    /**
+     * 审核盘点记录
+     * @param ids 盘点记录ID列表
+     * @return 更新记录数
+     */
+    @Override
+    @Transactional
+    public int reviewPdRecords(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return 0;
+        }
+        
+        List<TSysPdRecord> records = tSysPdRecordRepository.findAllById(ids);
+        for (TSysPdRecord record : records) {
+            record.setReviewStatus("1");
+        }
+        List<TSysPdRecord> savedRecords = tSysPdRecordRepository.saveAll(records);
+        return savedRecords.size();
     }
 }

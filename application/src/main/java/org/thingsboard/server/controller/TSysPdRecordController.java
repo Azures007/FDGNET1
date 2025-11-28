@@ -19,6 +19,7 @@ import org.thingsboard.server.service.security.model.SecurityUser;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author 许文言
@@ -76,6 +77,13 @@ public class TSysPdRecordController extends BaseController {
         Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordListWithSplit(currentUser.getId().toString(), current, size, sortField, sortOrder, tSysPdRecordDto);
         PageVo<TSysPdRecordVo> pageVo = new PageVo<>(pdRecordList);
         return ResultUtil.success(pageVo);
+    }
+
+    @ApiOperation("审核盘点记录")
+    @PostMapping("/reviewPdRecords")
+    public ResponseResult<Integer> reviewPdRecords(@RequestBody List<Integer> ids) throws ThingsboardException {
+        int count = tSysPdRecordService.reviewPdRecords(ids);
+        return ResultUtil.success(count);
     }
 
     /**

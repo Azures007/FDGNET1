@@ -28,5 +28,7 @@ public class PdMaterialsDto {
     @ApiModelProperty("产线名称")
     private String vwkname;
 
+    @ApiModelProperty("物料分类：原材料、半成品、包材")
+    private String materialTypePd;
 
 }
