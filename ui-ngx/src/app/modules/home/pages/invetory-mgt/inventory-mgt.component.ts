@@ -57,7 +57,7 @@ export class InventoryMgtComponent implements OnInit {
   // pageEvent: PageEvent;
 
   //table
-  displayedColumns: string[] = ['no', 'warehouseName', 'warehouseCode', 'materialName', 'materialType', 'materialCode', 'spec', 'unit', 'qty'];
+  displayedColumns: string[] = ['no', 'warehouseName', 'warehouseCode', 'materialName', 'materialTypePd', 'materialCode', 'spec', 'unit', 'qty'];
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
 
