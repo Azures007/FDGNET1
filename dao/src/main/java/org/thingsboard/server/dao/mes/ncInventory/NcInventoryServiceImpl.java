@@ -161,7 +161,8 @@ public class NcInventoryServiceImpl implements NcInventoryService {
         sqlBuilder.append("INSERT INTO t_bus_inventory(");
         sqlBuilder.append("bill_id, warehouse_id, warehouse_name, warehouse_code, ");
         sqlBuilder.append("material_id, material_code, material_name, material_type, ");
-        sqlBuilder.append("lot, spec, unit, qty, status");
+        sqlBuilder.append("lot, spec, unit, qty, status, ");
+        sqlBuilder.append("material_type_pd");
         sqlBuilder.append(") VALUES ");
 
         for (int i = 0; i < batch.size(); i++) {
@@ -182,7 +183,8 @@ public class NcInventoryServiceImpl implements NcInventoryService {
             sqlBuilder.append("'").append(escapeSql(inventory.getSpec())).append("',");
             sqlBuilder.append("'").append(escapeSql(inventory.getUnit())).append("',");
             sqlBuilder.append(inventory.getQty() != null ? inventory.getQty() : "0").append(",");
-            sqlBuilder.append("'").append(escapeSql(inventory.getStatus())).append("'");
+            sqlBuilder.append("'").append(escapeSql(inventory.getStatus())).append("'").append( ",");
+            sqlBuilder.append("'").append(escapeSql(inventory.getMaterialTypePd())).append("'");
             sqlBuilder.append(")");
         }
 
