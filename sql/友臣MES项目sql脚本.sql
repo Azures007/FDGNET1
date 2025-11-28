@@ -926,3 +926,7 @@ ALTER TABLE t_bus_order_process ADD COLUMN order_id int4;
 COMMENT ON COLUMN t_bus_order_process.order_id IS '订单id';
 ALTER TABLE t_bus_order_process ADD COLUMN nc_cmoid VARCHAR(255);
 COMMENT ON COLUMN t_bus_order_process.nc_cmoid IS '订单明细id';
+
+-- 2025-11-20
+ALTER TABLE t_bus_inventory ADD COLUMN material_type_pd VARCHAR(64);
+COMMENT ON COLUMN t_bus_inventory.material_type_pd IS '盘点物料分类';

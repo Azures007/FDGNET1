@@ -44,6 +44,10 @@ public class NcInventory {
     @ApiModelProperty("物料分类")
     private String materialType;
 
+    @Column(name = "material_type_pd")
+    @ApiModelProperty("盘点物料分类，用于盘点，包含：原材料，半成品，包材")
+    private String materialTypePd;
+
     @Column(name = "lot")
     @ApiModelProperty("批次")
     private String lot;

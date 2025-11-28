@@ -92,6 +92,7 @@ public class NcInventoryServiceImpl implements NcInventoryService {
                     inventory.setMaterialCode(StringUtils.defaultString(product.getMaterialCode(), ""));
                     inventory.setMaterialName(StringUtils.defaultString(product.getMaterialName(), ""));
                     inventory.setMaterialType(StringUtils.defaultString(product.getMaterialType(), ""));
+                    inventory.setMaterialTypePd(StringUtils.defaultString(product.getMaterialTypePd(), ""));
                     inventory.setLot(StringUtils.defaultString(product.getLot(), ""));
                     inventory.setSpec(StringUtils.defaultString(product.getSpec(), ""));
                     inventory.setUnit(StringUtils.defaultString(product.getUnit(), ""));
@@ -204,7 +205,7 @@ public class NcInventoryServiceImpl implements NcInventoryService {
     /**
      * 保存同步日志
      */
-    private void saveSyncLog(String syncType, String syncStatus, String syncContent, 
+    private void saveSyncLog(String syncType, String syncStatus, String syncContent,
                              String requestJson, Integer dataCount, Long durationMs, String errorMessage) {
         try {
             NcSyncLog ncSyncLog = new NcSyncLog();

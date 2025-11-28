@@ -21,6 +21,9 @@ public class NcInventoryProductDto {
     @ApiModelProperty("物料分类")
     private String materialType;
 
+    @ApiModelProperty("盘点物料分类")
+    private String materialTypePd;
+
     @ApiModelProperty("库存数量")
     private Float qty;
 
