@@ -320,6 +320,14 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             record.setReviewStatus("1");
         }
         List<TSysPdRecord> savedRecords = tSysPdRecordRepository.saveAll(records);
+        
+        // 同时更新对应的还原盘点记录的审核状态
+        List<TSysPdRecordSplit> splitRecords = tSysPdRecordSplitRepository.findByRePdRecordIdIn(ids);
+        for (TSysPdRecordSplit splitRecord : splitRecords) {
+            splitRecord.setReviewStatus("1");
+        }
+        tSysPdRecordSplitRepository.saveAll(splitRecords);
+        
         return savedRecords.size();
     }
 }
