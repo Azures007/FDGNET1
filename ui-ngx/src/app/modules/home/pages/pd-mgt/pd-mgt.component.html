@@ -46,7 +46,7 @@
     <div class="tag" (click)="changeTable(2)" [ngClass]="{'active': curTable === 2}">
       还原盘点记录
     </div>
-    <button class="search_btn" style="margin-left: 20px;" (click)="audit()" *ngIf="curTable === 1">
+    <button class="search_btn"  style="margin-left: 20px;" (click)="audit()" *ngIf="curTable === 1 && set.has('/pd-mgt/audit')">
       审核
     </button>
   </div>
