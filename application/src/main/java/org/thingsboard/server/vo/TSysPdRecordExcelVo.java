@@ -45,4 +45,7 @@ public class TSysPdRecordExcelVo extends BaseRowModel {
 
     @ExcelProperty("产线")
     private String ncVwkname;
+
+    @ExcelProperty("审核状态")
+    private String reviewStatus;
 }

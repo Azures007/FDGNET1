@@ -71,7 +71,7 @@ public interface TSysPdRecordRepository extends JpaRepository<TSysPdRecord, Inte
      * @return 完成状态记录
      */
     @Query(value = "select * from t_sys_pd_record " +
-            "where pd_time_str=?1 and nc_vwkname=?2 and by_deleted='0' " +
+            "where pd_time_str=?1 and (nc_vwkname=?2 or (?2 is null and nc_vwkname is null)) and by_deleted='0' " +
             "and pd_type='2' and material_number='FINISHED_MATERIAL_TYPE_MARKER_'||?3 " +
             "limit 1", nativeQuery = true)
     TSysPdRecord findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(String pdTimeStr, String ncVwkname, String materialType);

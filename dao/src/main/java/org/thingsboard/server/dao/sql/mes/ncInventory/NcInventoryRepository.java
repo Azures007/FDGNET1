@@ -21,7 +21,7 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
             ",CASE WHEN cou>0  THEN 1 ELSE 0 END AS by_pd " +
             "from t_bus_inventory a \n" +
             "left join (select material_number ,count(material_number) cou from t_sys_pd_record " +
-            "where pd_time_str=:#{#pdMaterialsDto.pdTimeStr} and by_deleted='0' and nc_vwkname=:#{#pdMaterialsDto.vwkname} group by material_number) b " +
+            "where pd_time_str=:#{#pdMaterialsDto.pdTimeStr} and by_deleted='0' and (nc_vwkname=:#{#pdMaterialsDto.vwkname} or (:#{#pdMaterialsDto.vwkname} is null and nc_vwkname is null)) group by material_number) b " +
             "on a.material_code=b.material_number " +
             "where a.status ='生效' \n" +
             "and (a.warehouse_id=:#{#pdMaterialsDto.warehouseCode} or a.warehouse_code=:#{#pdMaterialsDto.warehouseCode})" +
@@ -40,13 +40,4 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
             "or (:warehouseCode is not null and :warehouseCode <> '' and warehouse_code = :warehouseCode))", nativeQuery = true)
     void deleteByWarehouse(@Param("warehouseId") String warehouseId, @Param("warehouseCode") String warehouseCode);
 
-    @Query(value = "select distinct a.material_type_pd " +
-            "from t_bus_inventory a \n" +
-            "left join t_sys_pd_record b on a.material_code = b.material_number and b.pd_time_str = ?1 and b.nc_vwkname = ?2 and b.by_deleted = '0' \n" +
-            "where a.status ='生效' \n" +
-            "and b.material_number is not null \n" +
-            "and not exists (select 1 from t_bus_inventory c where c.material_code = a.material_code and c.status = '生效' \n" +
-            "and not exists (select 1 from t_sys_pd_record d where d.material_number = c.material_code and d.pd_time_str = ?1 and d.nc_vwkname = ?2 and d.by_deleted = '0'))", 
-            nativeQuery = true)
-    List<Map> getFinishedMaterialTypes(String pdTimeStr, String ncVwkname);
 }

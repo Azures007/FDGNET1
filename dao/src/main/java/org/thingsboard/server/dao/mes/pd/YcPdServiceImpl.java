@@ -206,15 +206,15 @@ public class YcPdServiceImpl implements YcPdService {
         }
         
         // 获取当前用户的产线名称
-        String cwkName = null;
-        List<String> cwkids = userService.getUserCurrentCwkid(userId);
-        if (cwkids != null && !cwkids.isEmpty()) {
-            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
-            if (workline != null) {
-                cwkName = workline.getVwkname();
-            }
-        }
-        pdMaterialsDto.setVwkname(cwkName);
+        String cwkName = pdMaterialsDto.getVwkname();
+//        List<String> cwkids = userService.getUserCurrentCwkid(userId);
+//        if (cwkids != null && !cwkids.isEmpty()) {
+//            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
+//            if (workline != null) {
+//                cwkName = workline.getVwkname();
+//            }
+//        }
+//        pdMaterialsDto.setVwkname(cwkName);
         
         List<Map> ncInventorieMs = ncInventoryRepository.pdMaterials(pdMaterialsDto);
         List<NcInventory> ncInventories = JSON.parseArray(JSON.toJSONString(ncInventorieMs), NcInventory.class);
