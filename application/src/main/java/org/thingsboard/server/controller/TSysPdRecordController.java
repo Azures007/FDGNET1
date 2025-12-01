@@ -20,6 +20,7 @@ import org.thingsboard.server.service.security.model.SecurityUser;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 许文言
@@ -81,7 +82,8 @@ public class TSysPdRecordController extends BaseController {
 
     @ApiOperation("审核盘点记录")
     @PostMapping("/reviewPdRecords")
-    public ResponseResult<Integer> reviewPdRecords(@RequestBody List<Integer> ids) throws ThingsboardException {
+    public ResponseResult<Integer> reviewPdRecords(@RequestBody Map<String, List<Integer>> request) throws ThingsboardException {
+        List<Integer> ids = request.get("ids");
         int count = tSysPdRecordService.reviewPdRecords(ids);
         return ResultUtil.success(count);
     }
