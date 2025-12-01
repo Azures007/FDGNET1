@@ -36,5 +36,9 @@ export class PdMgtService {
     })
 
   }
+  // 审核
+  public audit(data): Observable<any> {
+    return this.http.post(`/api/tSysPdRecord/reviewPdRecords`, data);
+  }
 
 }

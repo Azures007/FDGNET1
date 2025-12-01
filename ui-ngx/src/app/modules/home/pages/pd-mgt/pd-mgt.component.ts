@@ -4,6 +4,7 @@ import { AppState } from '@core/core.state';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { PdMgtService } from '@app/core/http/pd-mgt.service';
 import { Utils } from '../order-management/w-utils';
+import { SelectionModel } from '@angular/cdk/collections';
 
 export interface PeriodicElement {
   name: string;
@@ -13,6 +14,7 @@ export interface PeriodicElement {
   createTime: string;
   createPerson: string;
   status: number;
+  pdRecordId: number;
 }
 
 
@@ -60,7 +62,7 @@ export class PdMgtComponent implements OnInit {
   // pageEvent: PageEvent;
 
   //table
-  displayedColumns: string[] = ['no', 'pdTime', 'ncVwkname', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName'];
+  displayedColumns: string[] = ['select', 'no', 'pdTime', 'ncVwkname', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName', 'reviewStatus'];
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -78,9 +80,24 @@ export class PdMgtComponent implements OnInit {
   ngOnInit(): void {
     this.getTableData();
   }
-
+  audit() {
+    if (this.selection.selected.length === 0) {
+      this.utils.showMessage('请选择要审核的记录', 'warn');
+      return;
+    }
+    let par = {
+      ids: (this.selection.selected.map(item => item.pdRecordId)),
+    }
+    this.pdMgtService.audit(par).subscribe(res => {
+      if (res.errcode === 200) {
+        this.utils.showMessage('审核成功', 'success');
+        this.getTableData();
+      }
+    })
+  }
   //获取表格数据
   getTableData(): void {
+    this.selection.clear();
     let par = {
       current: this.searchFormGroup.value.current,
       size: this.searchFormGroup.value.size,
@@ -150,14 +167,32 @@ export class PdMgtComponent implements OnInit {
   changeTable(index) {
     this.curTable = index;
     if (index === 1) {
-      this.displayedColumns = ['no', 'pdTime', 'ncVwkname', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName'];
+      this.displayedColumns = ['select', 'no', 'pdTime', 'ncVwkname', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'pdWorkshopLeaderName', 'reviewStatus'];
     } else {
-      this.displayedColumns = ['no', 'pdTime', 'ncVwkname', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'isReturn', 'pdWorkshopLeaderName'];
+      this.displayedColumns = ['no', 'pdTime', 'ncVwkname', 'materialNumber', 'materialName', 'materialSpecifications', 'pdUnit', 'pdQty', 'pdCreatedName', 'pdWorkshopName', 'isReturn', 'pdWorkshopLeaderName', 'reviewStatus'];
 
     }
     this.getTableData();
   }
+  selection = new SelectionModel<PeriodicElement>(true, []);
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.length;
+    return numSelected === numRows;
+  }
+  masterToggle() {
+    this.isAllSelected() ?
+        this.selection.clear() :
+        this.dataSource.forEach(row => this.selection.select(row));
+  }
 
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: PeriodicElement): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  }
   //翻页事件
   getNotices($event): any {
     // 点击paginator事件，获取pageIndex，重新加载页面

@@ -46,12 +46,31 @@
     <div class="tag" (click)="changeTable(2)" [ngClass]="{'active': curTable === 2}">
       还原盘点记录
     </div>
+    <button class="search_btn" style="margin-left: 20px;" (click)="audit()" *ngIf="curTable === 1">
+      审核
+    </button>
   </div>
   <div class="page-content">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <!--- Note that these columns can be defined in any order.
                       The actual rendered columns are set as a property on the row definition" -->
       <!-- Position Column -->
+       <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
       <ng-container matColumnDef="no">
         <th mat-header-cell *matHeaderCellDef> 序号 </th>
         <td mat-cell *matCellDef="let element;index as i"> {{i+1}} </td>
@@ -106,6 +125,10 @@
       <ng-container matColumnDef="pdWorkshopLeaderName">
         <th mat-header-cell *matHeaderCellDef> 车间主任 </th>
         <td mat-cell *matCellDef="let element"> {{element.pdWorkshopLeaderName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="reviewStatus">
+        <th mat-header-cell *matHeaderCellDef> 状态 </th>
+        <td mat-cell *matCellDef="let element"> {{element.reviewStatus === '1' ? '已审核' : ''}} </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
