@@ -259,3 +259,5 @@ INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_i
 -- INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br) VALUES(4000012, '领料/退料记录-废弃', '领料pda', '/pickingPda/index/pickingRecord', '0', 400001, '1', NULL, NULL, NULL, NULL, 'link', NULL, NULL, NULL);
 
 INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br)  VALUES (236, '菜单管理', 'domain', '/menuAdmin', '0', 32, '1', '2025-08-15', 'tenant@thingsboard.org', '2025-08-15', 'tenant@thingsboard.org', 'link', '', 10, '菜单管理');
+-- 盘点记录-审核
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br, menu_icon) VALUES(253, '盘点记录-审核', '', '/pd-mgt/audit', '1', 233, '1', '2025-12-01', 'tenant@thingsboard.org', '2025-12-01', 'tenant@thingsboard.org', NULL, '', 0, '盘点记录-审核', NULL);
