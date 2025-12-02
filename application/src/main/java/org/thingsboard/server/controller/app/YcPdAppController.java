@@ -6,12 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
-import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
-import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.vo.PdMaterialsVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
@@ -80,9 +78,11 @@ public class YcPdAppController extends BaseController {
             
             // 直接结束盘点，处理所有未盘点物料
             boolean result = ycPdService.finishPdByMaterialType(
-                pdMaterialsDto.getMaterialType(), 
+                pdMaterialsDto.getMaterialTypePd(),
                 currentUser.getId().getId().toString(),
-                pdTimeStr
+                pdTimeStr,
+                    pdMaterialsDto.getVwkname(),
+                    pdMaterialsDto.getWarehouseCode()
             );
             
             return ResultUtil.success(result);
@@ -91,4 +91,13 @@ public class YcPdAppController extends BaseController {
             return ResultUtil.error(e.getMessage());
         }
     }
+
+    @GetMapping("/materialTypes")
+    @ApiOperation("获取所有物料分类名称")
+    public ResponseResult<List<String>> getMaterialTypes() throws ThingsboardException {
+        List<String> materialTypes = ncInventoryRepository.findDistinctMaterialTypePd();
+        return ResultUtil.success(materialTypes);
+    }
+
+
 }

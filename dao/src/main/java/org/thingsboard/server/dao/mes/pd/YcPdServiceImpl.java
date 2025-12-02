@@ -1,4 +1,4 @@
-package org.thingsboard.server.dao.mes.pd;
+ package org.thingsboard.server.dao.mes.pd;
 
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
@@ -206,7 +206,7 @@ public class YcPdServiceImpl implements YcPdService {
         }
         
         // 获取当前用户的产线名称
-        String cwkName = pdMaterialsDto.getVwkname();
+//        String cwkName = null;
 //        List<String> cwkids = userService.getUserCurrentCwkid(userId);
 //        if (cwkids != null && !cwkids.isEmpty()) {
 //            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
@@ -214,7 +214,7 @@ public class YcPdServiceImpl implements YcPdService {
 //                cwkName = workline.getVwkname();
 //            }
 //        }
-//        pdMaterialsDto.setVwkname(cwkName);
+        String cwkName = pdMaterialsDto.getVwkname();
         
         List<Map> ncInventorieMs = ncInventoryRepository.pdMaterials(pdMaterialsDto);
         List<NcInventory> ncInventories = JSON.parseArray(JSON.toJSONString(ncInventorieMs), NcInventory.class);
@@ -280,38 +280,41 @@ public class YcPdServiceImpl implements YcPdService {
     }
     
     @Override
-    public TSysPdRecord findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(String pdTimeStr, String ncVwkname, String materialType) {
-        return tSysPdRecordRepository.findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(pdTimeStr, ncVwkname, materialType);
+    public TSysPdRecord findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(String pdTimeStr, String ncVwkname, String materialTypePd) {
+        return tSysPdRecordRepository.findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(pdTimeStr, ncVwkname, materialTypePd);
     }
     
     @Override
     @Transactional
-    public boolean finishPdByMaterialType(String materialType, String userId, String pdTimeStr) throws Exception {
+    public boolean finishPdByMaterialType(String materialTypePd, String userId, String pdTimeStr,String ncVwkname, String workshopNumber) throws Exception {
         // 获取当前用户的产线名称
-        String cwkName = null;
-        List<String> cwkids = userService.getUserCurrentCwkid(userId);
-        if (cwkids != null && !cwkids.isEmpty()) {
-            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
-            if (workline != null) {
-                cwkName = workline.getVwkname();
-            }
-        }
+//        String cwkName = null;
+//        List<String> cwkids = userService.getUserCurrentCwkid(userId);
+//        if (cwkids != null && !cwkids.isEmpty()) {
+//            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
+//            if (workline != null) {
+//                cwkName = workline.getVwkname();
+//            }
+//        }
         
         // 创建一条特殊记录标记该物料分类已完成盘点
         TSysPdRecord finishRecord = new TSysPdRecord();
+        finishRecord.setPdTime(new Date()); // 设置盘点时间
         finishRecord.setPdTimeStr(pdTimeStr);
-        finishRecord.setNcVwkname(cwkName);
+        finishRecord.setNcVwkname(ncVwkname);
         finishRecord.setByDeleted("0");
+        finishRecord.setPdWorkshopNumber(workshopNumber);
+        finishRecord.setPdWorkshopName("");
         finishRecord.setByFp("0");
         finishRecord.setPdType("2"); // 使用特殊类型标识，避免与正常记录冲突
         finishRecord.setCreatedTime(new Date());
         finishRecord.setCreatedName("系统自动结束");
         finishRecord.setPdCreatedName("系统自动结束");
-        finishRecord.setMaterialNumber("FINISHED_MATERIAL_TYPE_MARKER_" + materialType); // 设置特殊标记，包含物料分类信息便于识别
-        
+        finishRecord.setMaterialNumber("FINISHED_MATERIAL_TYPE_MARKER_" + materialTypePd); // 设置特殊标记，包含物料分类信息便于识别
+
         // 保存标记记录
         tSysPdRecordRepository.save(finishRecord);
-        
+    
         return true;
     }
 }

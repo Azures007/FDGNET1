@@ -22,12 +22,12 @@ public interface YcPdService {
     
     /**
      * 结束指定物料分类的盘点
-     * @param materialType 物料分类
+     * @param materialTypePd 物料分类
      * @param userId 用户ID
      * @param pdTimeStr 盘点日期
      * @return 是否成功结束
      */
-    boolean finishPdByMaterialType(String materialType, String userId, String pdTimeStr) throws Exception;
+    boolean finishPdByMaterialType(String materialTypePd, String userId, String pdTimeStr,String ncVwkname, String workshopNumber) throws Exception;
     
     /**
      * 根据日期、产线和物料分类查询是否已完成盘点

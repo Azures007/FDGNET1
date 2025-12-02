@@ -34,6 +34,9 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
     @Query(value = "select * from t_bus_inventory where warehouse_id=?1 and material_code=?2 and status=?3",nativeQuery = true)
     List<NcInventory> findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(String warehouseId, String materialCode, String status);
 
+    @Query(value = "SELECT DISTINCT material_type_pd FROM t_bus_inventory WHERE material_type_pd IS NOT NULL AND material_type_pd != ''", nativeQuery = true)
+    List<String> findDistinctMaterialTypePd();
+
     @Modifying
     @Query(value = "delete from t_bus_inventory " +
             "where ((:warehouseId is not null and :warehouseId <> '' and warehouse_id = :warehouseId) " +

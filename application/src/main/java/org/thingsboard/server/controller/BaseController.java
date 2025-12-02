@@ -90,6 +90,7 @@ import org.thingsboard.server.dao.mes.tSysClass.TSysClassService;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscVersionService;
 import org.thingsboard.server.dao.mes.tSysPersonnelInfo.TSysPersonnelInfoService;
+import org.thingsboard.server.dao.sql.mes.ncInventory.NcInventoryRepository;
 import org.thingsboard.server.dao.tenant.TbTenantProfileCache;
 import org.thingsboard.server.dao.tenant.TenantProfileService;
 import org.thingsboard.server.dao.tenant.TenantService;
@@ -310,6 +311,9 @@ public abstract class BaseController {
 
     @Autowired
     NcWorklineService ncWorklineService;
+
+    @Autowired
+    protected NcInventoryRepository ncInventoryRepository;
 
     @Value("${server.log_controller_error_stack_trace}")
     @Getter
