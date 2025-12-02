@@ -52,7 +52,7 @@ public interface TSysPdRecordRepository extends JpaRepository<TSysPdRecord, Inte
             "WHERE to_timestamp(pd_time_str, 'YYYY-MM-DD') \n" +
             "    BETWEEN to_timestamp(?1, 'YYYY-MM-DD') \n" +
             "    AND to_timestamp(?2, 'YYYY-MM-DD') \n" +
-            "    and by_deleted ='0' and pd_workshop_number in ?3   \n" +
+            "    and by_deleted ='0' and pd_workshop_number in ?3 and pd_type != '2'  \n" +
             "group by pd_time_str, pd_workshop_number,pd_workshop_name,pd_workshop_leader_name,nc_vwkname,review_status \n" +
             "order by pd_time_str desc\n",nativeQuery = true)
     List<Map> fpWorkshopRecord(String startDate, String endDate,List<String> wokIds);

@@ -75,6 +75,7 @@ public class YcPdServiceImpl implements YcPdService {
         
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         tSysPdRecord.setPdTime(new Date());
+        tSysPdRecord.setNcVwkname(cwkName);
         Date pdTime = tSysPdRecord.getPdTime();
         String format = simpleDateFormat.format(pdTime);
         Integer pdSplit = null;
