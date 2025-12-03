@@ -58,7 +58,7 @@ public interface TSysPdRecordRepository extends JpaRepository<TSysPdRecord, Inte
     List<Map> fpWorkshopRecord(String startDate, String endDate,List<String> wokIds);
 
     @Query(value = "select * from t_sys_pd_record  \n" +
-            "where pd_time_str=?1 and pd_workshop_number=?2 and nc_vwkname=?3 and by_deleted ='0' and pd_qty > 0\n" +
+            "where pd_time_str=?1 and pd_workshop_number=?2 and nc_vwkname=?3 and by_deleted ='0'\n" +
             "and material_number not like 'FINISHED_MATERIAL_TYPE_MARKER_%' " +
             "order by pd_time desc ",nativeQuery = true)
     List<TSysPdRecord> showWorkshopRecord(String pdTimeStr, String pdWorkshopNumber, String ncVwkname);

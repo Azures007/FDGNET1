@@ -137,7 +137,8 @@ public class YcPdServiceImpl implements YcPdService {
         tSysPdRecord.setPdRecordId(null);
         // 设置产线名称
         tSysPdRecord.setNcVwkname(cwkName);
-        tSysPdRecordRepository.saveAndFlush(tSysPdRecord);
+        // 先保存主记录，以获得生成的ID
+        TSysPdRecord savedRecord = tSysPdRecordRepository.saveAndFlush(tSysPdRecord);
         //更新库存
         List<NcInventory> ncInventories = null;
         if (tSysPdRecord.getPdWorkshopNcId() != null) {
@@ -152,10 +153,10 @@ public class YcPdServiceImpl implements YcPdService {
                 ncInventoryRepository.saveAndFlush(ncInventory);
             }
         }
-        // 拆分还原拆料 - 修改逻辑，无论是否是重复盘点都需要检查生成还原物料
-        savePdBySplit(tSysPdRecord, pdSplit, tSysPdRecord.getNcVwkname());
+        // 拆分还原拆料 - 使用保存后获得的ID
+        savePdBySplit(savedRecord, savedRecord.getPdRecordId(), savedRecord.getNcVwkname());
 
-        return tSysPdRecord;
+        return savedRecord;
     }
 
     /**
