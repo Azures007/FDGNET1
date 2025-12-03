@@ -88,6 +88,8 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                 predicates.add(root.get("pdWorkshopNcId").in(warehouseIds));
             }
             predicates.add(cb.equal(root.get("byDeleted"), "0"));
+            // 添加过滤条件：不查询pd_type为2的数据
+            predicates.add(cb.notEqual(root.get("pdType"), "2"));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
         Page<TSysPdRecord> pdRecordPage = tSysPdRecordRepository.findAll(specification, pageable);
@@ -153,6 +155,8 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                 predicates.add(root.get("pdWorkshopNcId").in(warehouseIds));
             }
             predicates.add(cb.equal(root.get("byDeleted"), "0"));
+            // 添加过滤条件：不查询pd_type为2的数据
+            predicates.add(cb.notEqual(root.get("pdType"), "2"));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
         Page<TSysPdRecord> pdRecordPage = tSysPdRecordRepository.findAll(baseSpecification, pageable);
