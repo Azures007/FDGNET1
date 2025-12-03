@@ -40,6 +40,12 @@ public class TSysPdRecordExcelServiceImpl implements TSysPdRecordExcelService {
             BeanUtils.copyProperties(vo, excelVo);
             // 使用顺序序号而不是数据库ID
             excelVo.setPdRecordId(index++);
+            // 转换审核状态显示
+            if ("1".equals(vo.getReviewStatus())) {
+                excelVo.setReviewStatus("已审核");
+            } else if ("0".equals(vo.getReviewStatus())) {
+                excelVo.setReviewStatus("未审核");
+            }
             excelVos.add(excelVo);
         }
         ExcelUtil.writeExcel(response, excelVos, System.currentTimeMillis() + "", "sheet1", new TSysPdRecordExcelVo());
@@ -56,6 +62,12 @@ public class TSysPdRecordExcelServiceImpl implements TSysPdRecordExcelService {
             BeanUtils.copyProperties(vo, excelVo);
             // 使用顺序序号而不是数据库ID
             excelVo.setPdRecordId(index++);
+            // 转换审核状态显示
+            if ("1".equals(vo.getReviewStatus())) {
+                excelVo.setReviewStatus("已审核");
+            } else if ("0".equals(vo.getReviewStatus())) {
+                excelVo.setReviewStatus("未审核");
+            }
             excelVos.add(excelVo);
         }
         ExcelUtil.writeExcel(response, excelVos, System.currentTimeMillis() + "", "sheet1", new TSysPdRecordExcelWithoutReturnVo());
