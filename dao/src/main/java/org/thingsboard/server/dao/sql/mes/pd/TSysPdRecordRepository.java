@@ -47,13 +47,13 @@ public interface TSysPdRecordRepository extends JpaRepository<TSysPdRecord, Inte
             "where pd_time_str=?1 and pd_workshop_number=?2 and pd_class_number=?3  and pd_type='0' ",nativeQuery = true)
     void updatePd(String format, String pdWorkshopNumber, String pdClassNumber);
 
-    @Query(value = "SELECT pd_time_str, pd_workshop_number,pd_workshop_leader_name,pd_workshop_name,nc_vwkname,review_status,max(pd_created_name) pd_created_name\n" +
+    @Query(value = "SELECT pd_time_str, pd_workshop_number,pd_workshop_leader_name,pd_workshop_name,nc_vwkname,MAX(review_status) as review_status,max(pd_created_name) pd_created_name\n" +
             "FROM t_sys_pd_record\n" +
             "WHERE to_timestamp(pd_time_str, 'YYYY-MM-DD') \n" +
             "    BETWEEN to_timestamp(?1, 'YYYY-MM-DD') \n" +
             "    AND to_timestamp(?2, 'YYYY-MM-DD') \n" +
             "    and by_deleted ='0' and pd_workshop_number in ?3 and pd_type != '2'  \n" +
-            "group by pd_time_str, pd_workshop_number,pd_workshop_name,pd_workshop_leader_name,nc_vwkname,review_status \n" +
+            "group by pd_time_str, pd_workshop_number,pd_workshop_name,pd_workshop_leader_name,nc_vwkname \n" +
             "order by pd_time_str desc\n",nativeQuery = true)
     List<Map> fpWorkshopRecord(String startDate, String endDate,List<String> wokIds);
 
