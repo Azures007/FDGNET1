@@ -1,4 +1,4 @@
-.page-container{
+.page-container {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -11,14 +11,14 @@
 
 }
 
-.flex-column{
+.flex-column {
   display: flex;
   flex-direction: column;
 }
 
 
 
-.page-header{
+.page-header {
   display: flex;
   flex-wrap: wrap;
   background: #fff;
@@ -26,18 +26,21 @@
   margin-bottom: 10px;
   width: 100%;
   box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
-  .row-block{
+
+  .row-block {
     display: flex;
     align-items: center;
     font-size: 12px;
     margin-bottom: 12px;
-    .label{
+
+    .label {
       width: 95px;
       margin-right: 5px;
       text-align: right;
       font-size: 14px;
     }
-    .input{
+
+    .input {
       width: 160px;
       background-color: #fff;
       background-image: none;
@@ -51,55 +54,59 @@
       line-height: 36px;
       outline: none;
       padding: 0 15px;
-      transition: border-color .2s cubic-bezier(.645,.045,.355,1);
-      &:focus{
+      transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+
+      &:focus {
         outline: none;
         border-color: #eec7a2;
       }
     }
   }
-  .cols3{
+
+  .cols3 {
     width: 33.33%;
   }
-  .cols4{
+
+  .cols4 {
     width: 18%;
   }
 
-  .cols1{
+  .cols1 {
     width: 100%;
   }
 
-  .dateRange{
+  .dateRange {
     width: 210px;
   }
 
-  .btn-group{
+  .btn-group {
     width: 400px;
     display: flex;
 
-    .btn{
+    .btn {
       height: 33px;
       line-height: 33px;
     }
-    .pl_btn{
+
+    .pl_btn {
       width: 100px;
     }
   }
 }
 
-.page-content{
+.page-content {
   width: 100%;
   height: 100%;
   overflow: auto;
   box-shadow: 0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%);
 
-  .table-warp{
+  .table-warp {
     width: 1375px;
-    min-width:100%;
+    min-width: 100%;
     max-width: none;
   }
 
-  .opera-group{
+  .opera-group {
     display: flex;
   }
 
@@ -116,25 +123,30 @@
   .edit_btn {
     background-color: rgba(0, 153, 204, 1);
   }
+
   .enter_btn {
     background-color: rgba(102, 204, 0, 1);
   }
+
   .disable_btn {
     background-color: rgba(255, 153, 0, 1);
   }
+
   .look_btn {
     background-color: rgba(0, 153, 255, 1);
   }
+
   .del_btn {
     background-color: rgba(255, 51, 0, 1);
   }
 }
 
-.page-footer{
+.page-footer {
   margin-top: 10px;
   box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
 
 }
+
 .search-btn {
   margin-right: 8px;
 }
@@ -179,6 +191,7 @@
       .mat-cell {
         padding-right: 5px;
       }
+
       .mat-cell,
       .mat-header-cell {
         width: 8%;
@@ -229,20 +242,25 @@
 
 .tags {
   display: flex;
+  justify-content: space-between;
   margin-bottom: 10px;
 
-  .tag {
-    background-color: #fff;
-    padding: 4px 10px;
-    border-radius: 4px;
-    margin-right: 10px;
-    cursor: pointer;
+  .tags-wrapper {
+    display: flex;
+    .tag {
+      background-color: #fff;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-right: 10px;
+      cursor: pointer;
 
-    &.active {
-      color: #fff;
-      background-color: #3399ff;
+      &.active {
+        color: #fff;
+        background-color: #3399ff;
+      }
     }
   }
+
 }
 
 .search_btn {

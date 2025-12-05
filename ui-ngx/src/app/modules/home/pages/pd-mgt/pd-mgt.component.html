@@ -40,13 +40,16 @@
 
   </div>
   <div class="tags">
-    <div class="tag" (click)="changeTable(1)" [ngClass]="{'active': curTable === 1}">
-      盘点记录
+    <div class="tags-wrapper">
+      <div class="tag" (click)="changeTable(1)" [ngClass]="{'active': curTable === 1}">
+        盘点记录
+      </div>
+      <div class="tag" (click)="changeTable(2)" [ngClass]="{'active': curTable === 2}">
+        还原盘点记录
+      </div>
     </div>
-    <div class="tag" (click)="changeTable(2)" [ngClass]="{'active': curTable === 2}">
-      还原盘点记录
-    </div>
-    <button class="search_btn"  style="margin-left: 20px;" (click)="audit()" *ngIf="curTable === 1 && set.has('/pd-mgt/audit')">
+    <button class="search_btn" style="margin-left: 20px;" (click)="audit()"
+      *ngIf="curTable === 1 && set.has('/pd-mgt/audit')">
       审核
     </button>
   </div>
@@ -55,19 +58,15 @@
       <!--- Note that these columns can be defined in any order.
                       The actual rendered columns are set as a property on the row definition" -->
       <!-- Position Column -->
-       <ng-container matColumnDef="select">
+      <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()"
-                        [aria-label]="checkboxLabel()">
+          <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
           </mat-checkbox>
         </th>
         <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)"
-                        [aria-label]="checkboxLabel(row)">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
           </mat-checkbox>
         </td>
       </ng-container>
