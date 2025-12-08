@@ -25,7 +25,7 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
             "on a.material_code=b.material_number " +
             "where a.status ='生效' \n" +
             "and (a.warehouse_id=:#{#pdMaterialsDto.warehouseCode} or a.warehouse_code=:#{#pdMaterialsDto.warehouseCode})" +
-            "and (a.material_type=:#{#pdMaterialsDto.materialType} or :#{#pdMaterialsDto.materialType}='') " +
+//            "and (a.material_type=:#{#pdMaterialsDto.materialType} or :#{#pdMaterialsDto.materialType}='') " +
             "and (a.material_type_pd=:#{#pdMaterialsDto.materialTypePd} or :#{#pdMaterialsDto.materialTypePd}='') " +
             "and (a.material_code=:#{#pdMaterialsDto.materialNumber} or :#{#pdMaterialsDto.materialNumber}='') " +
             "and (:#{#pdMaterialsDto.material} ='' or a.material_name like %:#{#pdMaterialsDto.material}% or a.material_code like %:#{#pdMaterialsDto.material}%)",nativeQuery = true)
@@ -36,6 +36,9 @@ public interface NcInventoryRepository extends JpaRepository<NcInventory, String
 
     @Query(value = "SELECT DISTINCT material_type_pd FROM t_bus_inventory WHERE material_type_pd IS NOT NULL AND material_type_pd != ''", nativeQuery = true)
     List<String> findDistinctMaterialTypePd();
+
+    @Query(value = "SELECT DISTINCT material_type_pd FROM t_bus_inventory WHERE material_type_pd IS NOT NULL AND material_type_pd != '' AND warehouse_id = :warehouseId", nativeQuery = true)
+    List<String> findDistinctMaterialTypePdByWarehouseName(@Param("warehouseId") String warehouseId);
 
     @Modifying
     @Query(value = "delete from t_bus_inventory " +

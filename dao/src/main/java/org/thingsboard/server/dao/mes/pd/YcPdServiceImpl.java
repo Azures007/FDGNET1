@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
 import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
-import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
-import org.thingsboard.server.common.data.mes.sys.TSyncMaterialBom;
-import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
-import org.thingsboard.server.common.data.mes.sys.TSysPdRecordSplit;
+import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
 import org.thingsboard.server.dao.mes.vo.PdMaterialsVo;
 import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
@@ -20,6 +17,7 @@ import org.thingsboard.server.dao.sql.mes.pd.TSysPdRecordRepository;
 import org.thingsboard.server.dao.sql.mes.pd.TSysPdRecordSplitRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialBomRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
+import org.thingsboard.server.dao.sql.mes.user.TSysUserDetailRepository;
 import org.thingsboard.server.dao.user.UserService;
 
 import java.math.BigDecimal;
@@ -52,6 +50,9 @@ public class YcPdServiceImpl implements YcPdService {
 
     @Autowired
     NcWorklineService ncWorklineService;
+
+    @Autowired
+    TSysUserDetailRepository tSysUserDetailRepository;
 
     @Transactional
     @Override
@@ -217,6 +218,38 @@ public class YcPdServiceImpl implements YcPdService {
 //            }
 //        }
         String cwkName = pdMaterialsDto.getVwkname();
+        
+        // 根据用户信息查询仓库ID
+        String warehouseId = null;
+        List<String> cwkids = userService.getUserCurrentCwkid(userId);
+        String pkOrg = userService.getUserCurrentPkOrg(userId);
+        if (cwkids != null && !cwkids.isEmpty() && pkOrg != null) {
+            List<TSysUserDetail> userDetails = tSysUserDetailRepository.findByUserId(userId);
+            if (userDetails != null && !userDetails.isEmpty()) {
+                // 查找匹配的用户详情记录
+                for (TSysUserDetail detail : userDetails) {
+                    if (pkOrg.equals(detail.getNcPkOrg()) && cwkids.contains(detail.getNcCwkid())) {
+                        warehouseId = detail.getNcWarehouseId();
+                        break;
+                    }
+                }
+                
+                // 如果没有找到完全匹配的记录，则使用仅匹配ncPkOrg的记录
+                if (warehouseId == null) {
+                    for (TSysUserDetail detail : userDetails) {
+                        if (pkOrg.equals(detail.getNcPkOrg())) {
+                            warehouseId = detail.getNcWarehouseId();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 设置仓库ID到查询条件中
+        if (warehouseId != null) {
+            pdMaterialsDto.setWarehouseCode(warehouseId);
+        }
         
         List<Map> ncInventorieMs = ncInventoryRepository.pdMaterials(pdMaterialsDto);
         List<NcInventory> ncInventories = JSON.parseArray(JSON.toJSONString(ncInventorieMs), NcInventory.class);

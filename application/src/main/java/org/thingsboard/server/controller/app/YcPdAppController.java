@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
+import org.thingsboard.server.common.data.mes.sys.TSysUserDetail;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
@@ -95,7 +96,32 @@ public class YcPdAppController extends BaseController {
     @GetMapping("/materialTypes")
     @ApiOperation("获取所有物料分类名称")
     public ResponseResult<List<String>> getMaterialTypes() throws ThingsboardException {
-        List<String> materialTypes = ncInventoryRepository.findDistinctMaterialTypePd();
+        SecurityUser currentUser = getCurrentUser();
+        // 通过用户详细信息获取仓库名称
+        String ncCwkid = currentUser.getCwkid(); // 临时使用cwkid作为仓库名
+        String ncPkOrg =  currentUser.getPkOrg();
+        
+        // 根据用户信息查询仓库ID
+        List<TSysUserDetail> userDetails = tSysUserDetailRepository.findByUserId(currentUser.getId().getId().toString());
+        String warehouseId = null;
+        if (userDetails != null && !userDetails.isEmpty()) {
+            for (TSysUserDetail detail : userDetails) {
+                if (ncPkOrg.equals(detail.getNcPkOrg()) && ncCwkid.equals(detail.getNcCwkid())) {
+                    warehouseId = detail.getNcWarehouseId();
+                    break;
+                }
+            }
+            if (warehouseId == null) {
+                for (TSysUserDetail detail : userDetails) {
+                    if (ncPkOrg.equals(detail.getNcPkOrg())) {
+                        warehouseId = detail.getNcWarehouseId();
+                        break;
+                    }
+                }
+            }
+        }
+        
+        List<String> materialTypes = ncInventoryRepository.findDistinctMaterialTypePdByWarehouseName(warehouseId);
         return ResultUtil.success(materialTypes);
     }
 
