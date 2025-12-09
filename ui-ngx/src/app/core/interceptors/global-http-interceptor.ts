@@ -242,7 +242,7 @@ export class GlobalHttpInterceptor implements HttpInterceptor {
         return msg;
       }
     } else {
-      return data;
+      return data.message || data.error || data;
     }
   }
 
