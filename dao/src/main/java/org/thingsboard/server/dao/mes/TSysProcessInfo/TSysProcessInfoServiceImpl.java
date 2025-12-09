@@ -189,6 +189,10 @@ public class TSysProcessInfoServiceImpl implements TSysProcessInfoService {
 
     @Override
     public void delete(Integer processId) {
+        // 校验是否被t_bus_order_process引用
+        if (orderProcessRepository.countByProcessId(processId) > 0) {
+            throw new RuntimeException("当前工序被订单的工单表引用，不能删除");
+        }
         tSysProcessInfoRepository.deleteById(processId);
         tSysProcessClassRelRepository.deleteByProcessId(processId);
     }

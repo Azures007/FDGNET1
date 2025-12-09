@@ -20,6 +20,10 @@ public interface OrderProcessRepository extends JpaRepository<TBusOrderProcess,I
 
     TBusOrderProcess getByProcessId(Integer personId);
 
+    // 根据工序查询汇总数量
+    @Query(value = "select count(1) from t_bus_order_process a where a.process_id=?1",nativeQuery = true)
+    int countByProcessId(Integer processId);
+
     /**
      * 获取尾料工序转移数据
      * @param orderProcessId
