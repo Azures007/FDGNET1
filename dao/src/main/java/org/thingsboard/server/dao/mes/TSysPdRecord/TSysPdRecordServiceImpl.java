@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,12 @@ import org.thingsboard.server.dao.sql.mes.pd.TSysPdRecordRepository;
 import org.thingsboard.server.dao.sql.mes.pd.TSysPdRecordSplitRepository;
 import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.mes.vo.TSysPdRecordVo;
+import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
+import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -48,6 +55,18 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
     @Autowired
     @Qualifier("userServiceImpl")
     private UserService userService;
+
+    @Autowired
+    private SyncMaterialRepository syncMaterialRepository;
+
+    @Value("${nc.base-url:http://172.88.0.150:8077}")
+    private String inventoryBaseUrl;
+
+    private static final String INVENTORY_SUBMIT_PATH = "/api/ycnc/mes/mm/inventory/data/submit";
+
+    private RestTemplate restTemplate = new RestTemplate();
+    
+    private ObjectMapper objectMapper = new ObjectMapper();
     /**
      * 盘点记录列表
      * @param userId
@@ -332,6 +351,122 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
         }
         tSysPdRecordSplitRepository.saveAll(splitRecords);
         
+        // 审核后调用外部接口提交盘点数据
+        if (!splitRecords.isEmpty()) {
+            try {
+                submitInventoryData(splitRecords);
+            } catch (Exception e) {
+                log.error("提交盘点数据到外部接口失败", e);
+                throw new RuntimeException("提交盘点数据到NC接口失败"+e.getMessage());
+            }
+        }
+        
         return savedRecords.size();
+    }
+
+    /**
+     * 提交盘点数据到外部接口
+     * @param splitRecords 拆分记录列表
+     */
+    private void submitInventoryData(List<TSysPdRecordSplit> splitRecords) {
+        // 按仓库分组
+        Map<String, List<TSysPdRecordSplit>> recordsByWarehouse = splitRecords.stream()
+                .filter(split -> split.getPdWorkshopNcId() != null && !split.getPdWorkshopNcId().isEmpty())
+                .collect(Collectors.groupingBy(TSysPdRecordSplit::getPdWorkshopNcId));
+
+        // 为每个仓库构建请求并调用接口
+        for (Map.Entry<String, List<TSysPdRecordSplit>> entry : recordsByWarehouse.entrySet()) {
+            String pkStordoc = entry.getKey();
+            List<TSysPdRecordSplit> warehouseRecords = entry.getValue();
+
+            // 构建产品列表
+            List<Map<String, Object>> productList = new ArrayList<>();
+            for (TSysPdRecordSplit split : warehouseRecords) {
+                // 根据物料编码查找物料的ncMaterialId（pk_material）
+                String pkMaterial = null;
+                if (split.getMaterialNumber() != null && !split.getMaterialNumber().isEmpty()) {
+                    List<TSyncMaterial> materials = syncMaterialRepository.getByMaterialCode(split.getMaterialNumber());
+                    if (materials != null && !materials.isEmpty()) {
+                        TSyncMaterial material = materials.get(0);
+                        pkMaterial = material.getNcMaterialId();
+                    }
+                }
+
+                // 如果找不到pk_material，跳过该记录或使用默认值
+                if (pkMaterial == null || pkMaterial.isEmpty()) {
+                    log.warn("未找到物料编码 {} 对应的pk_material，跳过该记录", split.getMaterialNumber());
+                    continue;
+                }
+
+                Map<String, Object> product = new HashMap<>();
+                product.put("pk_material", pkMaterial);
+                product.put("name", split.getMaterialName() != null ? split.getMaterialName() : "");
+                product.put("code", split.getMaterialNumber() != null ? split.getMaterialNumber() : "");
+                // 数量转换为字符串
+                String number = split.getPdQty() != null ? String.valueOf(split.getPdQty()) : "0";
+                product.put("number", number);
+                productList.add(product);
+            }
+
+            // 如果产品列表为空，跳过该仓库
+            if (productList.isEmpty()) {
+                log.warn("仓库 {} 没有有效的产品数据，跳过提交", pkStordoc);
+                continue;
+            }
+
+            // 构建请求体
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("pk_stordoc", pkStordoc);
+            requestBody.put("productList", productList);
+
+            try {
+                // 设置请求头
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+                // 调用接口
+                String submitUrl = inventoryBaseUrl + INVENTORY_SUBMIT_PATH;
+                ResponseEntity<JsonNode> response = restTemplate.postForEntity(
+                        submitUrl,
+                        requestEntity,
+                        JsonNode.class
+                );
+
+                // 处理响应
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    JsonNode responseBody = response.getBody();
+                    int code = responseBody.has("code") ? response.getBody().get("code").asInt() : -1;
+                    String msg = responseBody.has("msg") ? responseBody.get("msg").asText() : "";
+                    
+                    if (code == 1) {
+                        String orderno = responseBody.has("data") && responseBody.get("data").has("orderno") 
+                                ? responseBody.get("data").get("orderno").asText() : "";
+                        log.info("盘点数据提交成功，仓库: {}, ERP盘点单号: {}", pkStordoc, orderno);
+                        
+                        // 更新该仓库所有记录的盘点单号
+                        if (orderno != null && !orderno.isEmpty()) {
+                            for (TSysPdRecordSplit split : warehouseRecords) {
+                                split.setNcOrderNo(orderno);
+                            }
+                            // 批量保存更新后的记录
+                            tSysPdRecordSplitRepository.saveAll(warehouseRecords);
+                            log.info("已更新仓库 {} 的 {} 条记录的盘点单号为: {}", pkStordoc, warehouseRecords.size(), orderno);
+                        }
+                    } else {
+                        String warnMsg = String.format("盘点数据提交失败，仓库: %s, 错误信息: %s", pkStordoc, msg);
+                        log.warn(warnMsg);
+                        throw new RuntimeException(warnMsg);
+                    }
+                } else {
+                    String warnMsg = String.format("盘点数据提交失败，仓库: %s, HTTP状态码: %s", pkStordoc, response.getStatusCode());
+                    log.warn(warnMsg);
+                    throw new RuntimeException(warnMsg);
+                }
+            } catch (Exception e) {
+                log.error("调用盘点数据提交接口异常，仓库: {}", pkStordoc, e);
+                throw new RuntimeException("调用盘点数据提交接口异常，仓库: " + pkStordoc + "，原因: " + e.getMessage(), e);
+            }
+        }
     }
 }

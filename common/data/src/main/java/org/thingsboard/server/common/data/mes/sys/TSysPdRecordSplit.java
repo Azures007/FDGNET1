@@ -127,4 +127,8 @@ public class TSysPdRecordSplit {
     @ApiModelProperty("复盘状态")
     @Column(name = "review_status")
     private String reviewStatus;
+    
+    @ApiModelProperty("ERP盘点单号")
+    @Column(name = "nc_order_no")
+    private String ncOrderNo;
 }
