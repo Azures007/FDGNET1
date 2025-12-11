@@ -8,6 +8,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.thingsboard.common.util.Utils;
 import org.thingsboard.server.common.data.*;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
 import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
@@ -22,6 +23,7 @@ import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftMaterialRelRepo
 import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftProcessRelRepository;
 import org.thingsboard.server.dao.sql.mes.TSysProcessInfo.TSysProcessClassRelRepository;
 import org.thingsboard.server.dao.sql.mes.TSysProcessInfo.TSysProcessInfoRepository;
+import org.thingsboard.server.dao.sql.mes.order.OrderHeadRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
 import org.thingsboard.server.dao.sql.mes.tSysClass.TSysClassRepository;
 import org.thingsboard.server.dao.user.UserService;
@@ -29,12 +31,8 @@ import org.thingsboard.server.dao.mes.vo.PageVo;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 /**
  * @Auther: l
  * @Date: 2022/4/21 16:43
@@ -57,6 +55,8 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
     TSysCraftMaterialRelRepository tSysCraftMaterialRelRepository;
     @Autowired
     SyncMaterialRepository syncMaterialRepository;
+    @Autowired
+    OrderHeadRepository orderHeadRepository;
     @Autowired
     @Qualifier("userServiceImpl")
     private UserService userService;
@@ -238,14 +238,14 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
 
     @Override
     public ResponseResult delete(Integer craftId) {
-        List<TSysCraftProcessRel> rows=tSysCraftProcessRelRepository.findAllByCraftId(craftId);
-        if(rows.size()==0) {
-            return ResultUtil.error("已被接单无法删除");
-        }
-        else {
+        TSysCraftInfo tSysCraftInfo = tSysCraftInfoRepository.findById(craftId).orElse(null);
+        int countOrder = orderHeadRepository.countByCraftId(tSysCraftInfo);
+        if (countOrder > 0) {
+            return ResultUtil.error("工艺路线已被订单绑定,无法删除!");
+        } else {
             tSysCraftProcessRelRepository.deleteByCraftId(craftId);
+            tSysCraftInfoRepository.deleteById(craftId);
         }
-        tSysCraftInfoRepository.deleteById(craftId);
         return ResultUtil.success();
     }
 

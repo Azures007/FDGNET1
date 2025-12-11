@@ -7,12 +7,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
+import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
 import org.thingsboard.server.dao.mes.dto.TBusOrderDto;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author hhh
@@ -584,4 +582,6 @@ public interface OrderHeadRepository extends JpaRepository<TBusOrderHead,Integer
     String getMidMoSaleOrderNoByBillNo(String billNo);
 
     List<TBusOrderHead> findAllByCpmohidIn(List<String> cpmohids);
+
+    int countByCraftId(TSysCraftInfo craftId);
 }
