@@ -646,12 +646,11 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                 if (processMatch && materialMatch && groupMatch) {
                     if (input.getStandardInput() != null) {
                         java.math.BigDecimal std = input.getStandardInput();
-                        java.math.BigDecimal lowRatio = input.getLowerLimitRatio() != null ? input.getLowerLimitRatio() : new java.math.BigDecimal("100.00");
-                        java.math.BigDecimal upRatio = input.getUpperLimitRatio() != null ? input.getUpperLimitRatio() : new java.math.BigDecimal("110.00");
-                        Limits limits = new Limits();
-                        limits.lower = std.multiply(lowRatio).divide(new java.math.BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP).floatValue();
-                        limits.upper = std.multiply(upRatio).divide(new java.math.BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP).floatValue();
-                        return limits;
+                            java.math.BigDecimal deviation = input.getAllowableDeviation() != null ? input.getAllowableDeviation() : new java.math.BigDecimal("0.00");
+                            Limits limits = new Limits();
+                            limits.lower = std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue();
+                            limits.upper = std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue();
+                            return limits;
                     }
                 }
             }

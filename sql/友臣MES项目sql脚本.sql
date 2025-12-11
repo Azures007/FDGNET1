@@ -939,4 +939,7 @@ COMMENT ON COLUMN t_bus_inventory.material_type_pd IS '盘点物料分类';
 -- 2025-12-10 添加ERP盘点单号字段
 ALTER TABLE t_sys_pd_record_split ADD COLUMN nc_order_no VARCHAR(255);
 COMMENT ON COLUMN t_sys_pd_record_split.nc_order_no IS 'ERP盘点单号';
+-- 2025-12-11
+ALTER TABLE t_sys_recipe_input ADD COLUMN allowable_deviation NUMERIC(10,6);
+COMMENT ON COLUMN t_sys_recipe_input.allowable_deviation IS '允许偏差';
 

@@ -94,6 +94,10 @@ public class TSysRecipeInput {
     @Column(name = "display_default_value", length = 1)
     private String displayDefaultValue;
 
+    @ApiModelProperty("允许偏差")
+    @Column(name = "allowable_deviation", nullable = false, precision = 10, scale = 6)
+    private BigDecimal allowableDeviation;
+
     // 多对一关系：配方（为避免详情序列化时出现循环/冗余，忽略该字段）
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id", insertable = false, updatable = false)
