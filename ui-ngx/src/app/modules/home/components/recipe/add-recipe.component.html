@@ -122,8 +122,7 @@
           <th>计划投入比例%</th>
           <th>每锅/每次投入标准</th>
           <th>单位</th>
-          <th>投入下限比例%</th>
-          <th>投入上限比例%</th>
+          <th>允许偏差</th>
           <th>锅数计算基准</th>
           <th>显示默认值</th>
           <th>操作</th>
@@ -164,15 +163,13 @@
             </div>
           </td>
           <td>
-            <div>
+            <div class="allowable-deviation-wrapper">
+              <div class="allowable-deviation">
+                <span class="add-btn">+</span>
+                <span class="sub-btn">-</span>
+              </div>
               <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
-                [(ngModel)]="subItem.lowerLimitRatio">
-            </div>
-          </td>
-          <td>
-            <div>
-              <input [disabled]="formType === 'details'" class="sortInput" autocomplete="off"
-                [(ngModel)]="subItem.upperLimitRatio">
+                [(ngModel)]="subItem.allowableDeviation">
             </div>
           </td>
           <td>

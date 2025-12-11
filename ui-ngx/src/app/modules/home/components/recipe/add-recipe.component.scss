@@ -51,3 +51,22 @@
   max-height: 80vh;
   overflow-y: auto;
 }
+.allowable-deviation-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .allowable-deviation {
+    margin-right: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .add-btn {
+      line-height: 12px;
+    }
+    .sub-btn {
+      line-height: 7px;
+      font-size: 24px;
+    }
+  }
+}

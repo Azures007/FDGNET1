@@ -126,7 +126,7 @@ export class RecipeComponent implements OnInit {
       body: {
         processName: '',
         processNumber: '',
-        enabled: '',
+        enabled: '1',
       }
     }
     this.api.fetchGetTableList(params).subscribe(res => {

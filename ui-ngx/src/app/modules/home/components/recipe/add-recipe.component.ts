@@ -74,18 +74,6 @@ export class AddRecipeComponent implements OnInit {
     }).subscribe(res => {
       this.unitList = res.data.list;
     })
-    this.DictionaryService.fetchGetTypeTableList({
-      ...par,
-      codeClId: 'UPPERLIMITRATIO',
-    }).subscribe(res => {
-      this.upperLimit = res.data.list[0].codeValue;
-    })
-    this.DictionaryService.fetchGetTypeTableList({
-      ...par,
-      codeClId: 'LOWERLIMITRATIO',
-    }).subscribe(res => {
-      this.lowerLimit = res.data.list[0].codeValue;
-    })
     this.authService.getCurrentLine().subscribe((res: any) => {
       if (res.data && res.data.pkOrg) {
         // 只显示用户当前选择的基地
@@ -244,19 +232,9 @@ export class AddRecipeComponent implements OnInit {
           this.utils.showMessage('请选择单位', 'error');
           return;
         }
-        // 校验投入下限比例为必填，且为数字，可以为小数
-        if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.lowerLimitRatio || isNaN(Number(subItem.lowerLimitRatio))))) {
-          this.utils.showMessage('请填写投入下限比例，且为数字', 'error');
-          return;
-        }
-        // 校验投入上限比例为必填,且为数字，可以为小数
-        if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.upperLimitRatio || isNaN(Number(subItem.upperLimitRatio))))) {
-          this.utils.showMessage('请填写投入上限比例，且为数字', 'error');
-          return;
-        }
-        // 校验投入下限比例不能大于投入上限比例
-        if (this.groupedInputs.some(item => item.inputs.some(subItem => Number(subItem.lowerLimitRatio) > Number(subItem.upperLimitRatio)))) {
-          this.utils.showMessage('投入下限比例不能大于投入上限比例', 'error');
+        // 校验允许偏差为必填，且为非负数，可以为小数
+        if (this.groupedInputs.some(item => item.inputs.some(subItem => !subItem.allowableDeviation || isNaN(Number(subItem.allowableDeviation)) || Number(subItem.allowableDeviation) < 0))) {
+          this.utils.showMessage('请填写允许偏差，且为非负数', 'error');
           return;
         }
 
@@ -323,8 +301,7 @@ export class AddRecipeComponent implements OnInit {
           materialCode: '',
           standardInput: '',
           unit: '',
-          lowerLimitRatio: this.lowerLimit,
-          upperLimitRatio: this.upperLimit,
+          allowableDeviation: '',
           planInputRatio: '',
           potCalculationBasis: false,
           displayDefaultValue: false,
@@ -364,8 +341,7 @@ export class AddRecipeComponent implements OnInit {
       materialCode: '',
       standardInput: '',
       unit: '',
-      lowerLimitRatio: this.lowerLimit,
-      upperLimitRatio: this.upperLimit,
+      allowableDeviation: '',
       planInputRatio: '',
       potCalculationBasis: false,
       displayDefaultValue: false,
