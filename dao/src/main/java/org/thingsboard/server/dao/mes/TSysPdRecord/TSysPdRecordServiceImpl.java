@@ -351,10 +351,21 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
         }
         tSysPdRecordSplitRepository.saveAll(splitRecords);
         
-        // 审核后调用外部接口提交盘点数据
-        if (!splitRecords.isEmpty()) {
+        // 找出主表记录中不存在于拆分记录的主记录ID集合
+        Set<Integer> splitRecordMainIds = splitRecords.stream()
+                .map(TSysPdRecordSplit::getRePdRecordId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        
+        // 筛选出主表记录中不存在于拆分记录的主记录
+        List<TSysPdRecord> mainRecordsWithoutSplit = savedRecords.stream()
+                .filter(record -> record.getPdRecordId() != null && !splitRecordMainIds.contains(record.getPdRecordId()))
+                .collect(Collectors.toList());
+        
+        // 审核后调用外部接口提交盘点数据（包括拆分记录和没有拆分记录的主表记录）
+        if (!splitRecords.isEmpty() || !mainRecordsWithoutSplit.isEmpty()) {
             try {
-                submitInventoryData(splitRecords);
+                submitInventoryData(splitRecords, mainRecordsWithoutSplit);
             } catch (Exception e) {
                 log.error("提交盘点数据到外部接口失败", e);
                 throw new RuntimeException("提交盘点数据到NC接口失败"+e.getMessage());
@@ -367,21 +378,34 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
     /**
      * 提交盘点数据到外部接口
      * @param splitRecords 拆分记录列表
+     * @param mainRecords 主表记录列表（不存在于拆分记录的主记录）
      */
-    private void submitInventoryData(List<TSysPdRecordSplit> splitRecords) {
-        // 按仓库分组
-        Map<String, List<TSysPdRecordSplit>> recordsByWarehouse = splitRecords.stream()
+    private void submitInventoryData(List<TSysPdRecordSplit> splitRecords, List<TSysPdRecord> mainRecords) {
+        // 按仓库分组拆分记录
+        Map<String, List<TSysPdRecordSplit>> splitRecordsByWarehouse = splitRecords.stream()
                 .filter(split -> split.getPdWorkshopNcId() != null && !split.getPdWorkshopNcId().isEmpty())
                 .collect(Collectors.groupingBy(TSysPdRecordSplit::getPdWorkshopNcId));
-
+        
+        // 按仓库分组主表记录
+        Map<String, List<TSysPdRecord>> mainRecordsByWarehouse = mainRecords.stream()
+                .filter(record -> record.getPdWorkshopNcId() != null && !record.getPdWorkshopNcId().isEmpty())
+                .collect(Collectors.groupingBy(TSysPdRecord::getPdWorkshopNcId));
+        
+        // 合并所有仓库ID
+        Set<String> allWarehouseIds = new HashSet<>();
+        allWarehouseIds.addAll(splitRecordsByWarehouse.keySet());
+        allWarehouseIds.addAll(mainRecordsByWarehouse.keySet());
+        
         // 为每个仓库构建请求并调用接口
-        for (Map.Entry<String, List<TSysPdRecordSplit>> entry : recordsByWarehouse.entrySet()) {
-            String pkStordoc = entry.getKey();
-            List<TSysPdRecordSplit> warehouseRecords = entry.getValue();
+        for (String pkStordoc : allWarehouseIds) {
+            List<TSysPdRecordSplit> warehouseSplitRecords = splitRecordsByWarehouse.getOrDefault(pkStordoc, new ArrayList<>());
+            List<TSysPdRecord> warehouseMainRecords = mainRecordsByWarehouse.getOrDefault(pkStordoc, new ArrayList<>());
 
             // 构建产品列表
             List<Map<String, Object>> productList = new ArrayList<>();
-            for (TSysPdRecordSplit split : warehouseRecords) {
+            
+            // 处理拆分记录
+            for (TSysPdRecordSplit split : warehouseSplitRecords) {
                 // 根据物料编码查找物料的ncMaterialId（pk_material）
                 String pkMaterial = null;
                 if (split.getMaterialNumber() != null && !split.getMaterialNumber().isEmpty()) {
@@ -404,6 +428,34 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                 product.put("code", split.getMaterialNumber() != null ? split.getMaterialNumber() : "");
                 // 数量转换为字符串
                 String number = split.getPdQty() != null ? String.valueOf(split.getPdQty()) : "0";
+                product.put("number", number);
+                productList.add(product);
+            }
+            
+            // 处理主表记录
+            for (TSysPdRecord record : warehouseMainRecords) {
+                // 根据物料编码查找物料的ncMaterialId（pk_material）
+                String pkMaterial = null;
+                if (record.getMaterialNumber() != null && !record.getMaterialNumber().isEmpty()) {
+                    List<TSyncMaterial> materials = syncMaterialRepository.getByMaterialCode(record.getMaterialNumber());
+                    if (materials != null && !materials.isEmpty()) {
+                        TSyncMaterial material = materials.get(0);
+                        pkMaterial = material.getNcMaterialId();
+                    }
+                }
+
+                // 如果找不到pk_material，跳过该记录
+                if (pkMaterial == null || pkMaterial.isEmpty()) {
+                    log.warn("未找到物料编码 {} 对应的pk_material，跳过该记录", record.getMaterialNumber());
+                    continue;
+                }
+
+                Map<String, Object> product = new HashMap<>();
+                product.put("pk_material", pkMaterial);
+                product.put("name", record.getMaterialName() != null ? record.getMaterialName() : "");
+                product.put("code", record.getMaterialNumber() != null ? record.getMaterialNumber() : "");
+                // 数量转换为字符串
+                String number = record.getPdQty() != null ? String.valueOf(record.getPdQty()) : "0";
                 product.put("number", number);
                 productList.add(product);
             }
@@ -446,12 +498,15 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                         
                         // 更新该仓库所有记录的盘点单号
                         if (orderno != null && !orderno.isEmpty()) {
-                            for (TSysPdRecordSplit split : warehouseRecords) {
-                                split.setNcOrderNo(orderno);
+                            // 更新拆分记录的盘点单号
+                            if (!warehouseSplitRecords.isEmpty()) {
+                                for (TSysPdRecordSplit split : warehouseSplitRecords) {
+                                    split.setNcOrderNo(orderno);
+                                }
+                                tSysPdRecordSplitRepository.saveAll(warehouseSplitRecords);
                             }
-                            // 批量保存更新后的记录
-                            tSysPdRecordSplitRepository.saveAll(warehouseRecords);
-                            log.info("已更新仓库 {} 的 {} 条记录的盘点单号为: {}", pkStordoc, warehouseRecords.size(), orderno);
+                            // 注意：主表记录没有ncOrderNo字段，如果需要保存盘点单号，需要添加字段
+                            log.info("已更新仓库 {} 的 {} 条拆分记录的盘点单号为: {}", pkStordoc, warehouseSplitRecords.size(), orderno);
                         }
                     } else {
                         String warnMsg = String.format("盘点数据提交失败，仓库: %s, 错误信息: %s", pkStordoc, msg);
