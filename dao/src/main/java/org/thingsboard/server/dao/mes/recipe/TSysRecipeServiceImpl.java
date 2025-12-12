@@ -432,6 +432,7 @@ public class TSysRecipeServiceImpl implements TSysRecipeService {
                 newInput.setUnit(input.getUnit());
                 newInput.setLowerLimitRatio(input.getLowerLimitRatio());
                 newInput.setUpperLimitRatio(input.getUpperLimitRatio());
+                newInput.setAllowableDeviation(input.getAllowableDeviation());
                 newInput.setProcessName(input.getProcessName());
                 newInput.setProcessNumber(input.getProcessNumber());
                 newInput.setSemiFinishedProductName(input.getSemiFinishedProductName());

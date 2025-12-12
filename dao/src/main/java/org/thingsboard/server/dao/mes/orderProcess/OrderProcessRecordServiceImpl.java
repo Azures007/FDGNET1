@@ -1,6 +1,7 @@
 package org.thingsboard.server.dao.mes.orderProcess;
 
 import com.alibaba.fastjson.JSON;
+import io.netty.channel.unix.Limits;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -559,18 +560,11 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
 
                                             // 计算投入下限和投入上限
                                             if (recipeInput.getStandardInput() != null) {
-                                                BigDecimal standardInput = recipeInput.getStandardInput();
-                                                BigDecimal lowerLimitRatio = recipeInput.getLowerLimitRatio() != null ? recipeInput.getLowerLimitRatio() : new BigDecimal("100.00");
-                                                BigDecimal upperLimitRatio = recipeInput.getUpperLimitRatio() != null ? recipeInput.getUpperLimitRatio() : new BigDecimal("110.00");
-
-                                                // 投入下限 = 每锅投入标准 * 投入下限比例 / 100
-                                                BigDecimal inputLowerLimit = standardInput.multiply(lowerLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                                                result.setInputLowerLimit(inputLowerLimit.floatValue());
-
-                                                // 投入上限 = 每锅投入标准 * 投入上限比例 / 100
-                                                BigDecimal inputUpperLimit = standardInput.multiply(upperLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                                                result.setInputUpperLimit(inputUpperLimit.floatValue());
-                                                result.setStandardInput(standardInput);
+                                                java.math.BigDecimal std = recipeInput.getStandardInput();
+                                                java.math.BigDecimal deviation = recipeInput.getAllowableDeviation() != null ? recipeInput.getAllowableDeviation() : new java.math.BigDecimal("0.00");
+                                                result.setInputLowerLimit(std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
+                                                result.setInputUpperLimit(std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
+                                                result.setStandardInput(std);
                                                 result.setDisplayDefaultValue(recipeInput.getDisplayDefaultValue());
                                             }
                                         }
@@ -604,12 +598,10 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                         BigDecimal standardInput = recipeInput.getStandardInput();
                                         add.setMustQty(BigDecimal.ZERO);
                                         // 上下限
-                                        BigDecimal lowerLimitRatio = recipeInput.getLowerLimitRatio() != null ? recipeInput.getLowerLimitRatio() : new BigDecimal("100.00");
-                                        BigDecimal upperLimitRatio = recipeInput.getUpperLimitRatio() != null ? recipeInput.getUpperLimitRatio() : new BigDecimal("110.00");
-                                        BigDecimal inputLowerLimit = standardInput.multiply(lowerLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                                        BigDecimal inputUpperLimit = standardInput.multiply(upperLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                                        add.setInputLowerLimit(inputLowerLimit.floatValue());
-                                        add.setInputUpperLimit(inputUpperLimit.floatValue());
+                                        java.math.BigDecimal std = standardInput;
+                                        java.math.BigDecimal deviation = recipeInput.getAllowableDeviation() != null ? recipeInput.getAllowableDeviation() : new java.math.BigDecimal("0.00");
+                                        add.setInputLowerLimit(std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
+                                        add.setInputUpperLimit(std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
                                         add.setStandardInput(standardInput);
                                         add.setDisplayDefaultValue(recipeInput.getDisplayDefaultValue());
                                         groupResults.add(add);
@@ -675,17 +667,10 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
 
                                 // 计算投入下限和投入上限
                                 if (recipeInput.getStandardInput() != null) {
-                                    BigDecimal standardInput = recipeInput.getStandardInput();
-                                    BigDecimal lowerLimitRatio = recipeInput.getLowerLimitRatio() != null ? recipeInput.getLowerLimitRatio() : new BigDecimal("100.00");
-                                    BigDecimal upperLimitRatio = recipeInput.getUpperLimitRatio() != null ? recipeInput.getUpperLimitRatio() : new BigDecimal("110.00");
-
-                                    // 投入下限 = 每锅投入标准 * 投入下限比例 / 100
-                                    BigDecimal inputLowerLimit = standardInput.multiply(lowerLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                                    result.setInputLowerLimit(inputLowerLimit.floatValue());
-
-                                    // 投入上限 = 每锅投入标准 * 投入上限比例 / 100
-                                    BigDecimal inputUpperLimit = standardInput.multiply(upperLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                                    result.setInputUpperLimit(inputUpperLimit.floatValue());
+                                    java.math.BigDecimal std = recipeInput.getStandardInput();
+                                    java.math.BigDecimal deviation = recipeInput.getAllowableDeviation() != null ? recipeInput.getAllowableDeviation() : new java.math.BigDecimal("0.00");
+                                    result.setInputLowerLimit(std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
+                                    result.setInputUpperLimit(std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
                                     }
                                 }
                             }
@@ -715,12 +700,10 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                         BigDecimal standardInput = recipeInput.getStandardInput();//recipeInput.getStandardInput() != null ? recipeInput.getStandardInput() : BigDecimal.ZERO;
                                         add.setMustQty(BigDecimal.ZERO);
                                         // 上下限
-                                        BigDecimal lowerLimitRatio = recipeInput.getLowerLimitRatio() != null ? recipeInput.getLowerLimitRatio() : new BigDecimal("100.00");
-                                        BigDecimal upperLimitRatio = recipeInput.getUpperLimitRatio() != null ? recipeInput.getUpperLimitRatio() : new BigDecimal("110.00");
-                                        BigDecimal inputLowerLimit = standardInput.multiply(lowerLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                                        BigDecimal inputUpperLimit = standardInput.multiply(upperLimitRatio).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                                        add.setInputLowerLimit(inputLowerLimit.floatValue());
-                                        add.setInputUpperLimit(inputUpperLimit.floatValue());
+                                        java.math.BigDecimal std = standardInput;
+                                        java.math.BigDecimal deviation = recipeInput.getAllowableDeviation() != null ? recipeInput.getAllowableDeviation() : new java.math.BigDecimal("0.00");
+                                        add.setInputLowerLimit(std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
+                                        add.setInputUpperLimit(std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
                                         orderPPbomResults.add(add);
                                     }
                                 }
