@@ -23,6 +23,8 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.thingsboard.server.dao.sql.mes.order.NcSyncLogRepository;
+import org.thingsboard.server.common.data.mes.sys.NcSyncLog;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -70,6 +72,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
 
     private static final String INVENTORY_SUBMIT_PATH = "/api/ycnc/mes/mm/inventory/data/submit";
     private static final String GET_TOKEN_PATH = "/api/ycnc/mes/config/gettoken";
+    private static final String SYNC_TYPE_PD_SUBMIT = "盘点提交";
 
     private RestTemplate restTemplate = new RestTemplate();
     
@@ -78,6 +81,9 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
     // Token缓存
     private String cachedToken;
     private long tokenExpireTime;
+
+    @Autowired
+    private NcSyncLogRepository ncSyncLogRepository;
     /**
      * 盘点记录列表
      * @param userId
@@ -350,6 +356,16 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
         }
         
         List<TSysPdRecord> records = tSysPdRecordRepository.findAllById(ids);
+        // 校验是否已审核，禁止重复审核
+        List<Integer> reviewedIds = records.stream()
+                .filter(r -> "1".equals(r.getReviewStatus()))
+                .map(TSysPdRecord::getPdRecordId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!reviewedIds.isEmpty()) {
+            throw new RuntimeException("存在已审核的盘点记录，禁止重复审核，记录ID：" + reviewedIds);
+        }
+
         for (TSysPdRecord record : records) {
             record.setReviewStatus("1");
         }
@@ -392,8 +408,9 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
      * @param mainRecords 主表记录列表（不存在于拆分记录的主记录）
      */
     private void submitInventoryData(List<TSysPdRecordSplit> splitRecords, List<TSysPdRecord> mainRecords) {
-        // 按仓库分组拆分记录
+        // 仅提交未生成盘点单号的拆分记录，并按仓库分组
         Map<String, List<TSysPdRecordSplit>> splitRecordsByWarehouse = splitRecords.stream()
+                .filter(split -> (split.getNcOrderNo() == null || split.getNcOrderNo().isEmpty()))
                 .filter(split -> split.getPdWorkshopNcId() != null && !split.getPdWorkshopNcId().isEmpty())
                 .collect(Collectors.groupingBy(TSysPdRecordSplit::getPdWorkshopNcId));
         
@@ -414,6 +431,8 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
 
             // 构建产品列表
             List<Map<String, Object>> productList = new ArrayList<>();
+            long startTime = System.currentTimeMillis();
+            String requestJson = "";
             
             // 处理拆分记录
             for (TSysPdRecordSplit split : warehouseSplitRecords) {
@@ -483,6 +502,13 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             requestBody.put("productList", productList);
 
             try {
+                try {
+                    requestJson = objectMapper.writeValueAsString(requestBody);
+                } catch (Exception ex) {
+                    log.warn("序列化盘点提交请求体失败", ex);
+                    requestJson = "序列化失败: " + ex.getMessage();
+                }
+
                 // 获取token
                 String token = getToken();
                 
@@ -523,20 +549,53 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                             // 注意：主表记录没有ncOrderNo字段，如果需要保存盘点单号，需要添加字段
                             log.info("已更新仓库 {} 的 {} 条拆分记录的盘点单号为: {}", pkStordoc, warehouseSplitRecords.size(), orderno);
                         }
+                        saveNcSyncLog(SYNC_TYPE_PD_SUBMIT, "0",
+                                String.format("仓库:%s 提交成功, ERP单号:%s", pkStordoc, orderno),
+                                requestJson, productList.size(), System.currentTimeMillis() - startTime, null);
                     } else {
                         String warnMsg = String.format("盘点数据提交失败，仓库: %s, 错误信息: %s", pkStordoc, msg);
                         log.warn(warnMsg);
+                        saveNcSyncLog(SYNC_TYPE_PD_SUBMIT, "1",
+                                String.format("仓库:%s 提交失败", pkStordoc),
+                                requestJson, productList.size(), System.currentTimeMillis() - startTime, warnMsg);
                         throw new RuntimeException(warnMsg);
                     }
                 } else {
                     String warnMsg = String.format("盘点数据提交失败，仓库: %s, HTTP状态码: %s", pkStordoc, response.getStatusCode());
                     log.warn(warnMsg);
+                    saveNcSyncLog(SYNC_TYPE_PD_SUBMIT, "1",
+                            String.format("仓库:%s 提交失败", pkStordoc),
+                            requestJson, productList.size(), System.currentTimeMillis() - startTime, warnMsg);
                     throw new RuntimeException(warnMsg);
                 }
             } catch (Exception e) {
                 log.error("调用盘点数据提交接口异常，仓库: {}", pkStordoc, e);
+                saveNcSyncLog(SYNC_TYPE_PD_SUBMIT, "1",
+                        String.format("仓库:%s 提交异常", pkStordoc),
+                        requestJson, productList.size(), System.currentTimeMillis() - startTime, e.getMessage());
                 throw new RuntimeException("调用盘点数据提交接口异常，仓库: " + pkStordoc + "，原因: " + e.getMessage(), e);
             }
+        }
+    }
+
+    /**
+     * 保存NC同步日志
+     */
+    private void saveNcSyncLog(String syncType, String syncStatus, String syncContent,
+                               String requestJson, Integer dataCount, long durationMs, String errorMessage) {
+        try {
+            NcSyncLog logEntity = new NcSyncLog();
+            logEntity.setSyncType(syncType);
+            logEntity.setSyncTime(new Date());
+            logEntity.setSyncStatus(syncStatus);
+            logEntity.setSyncContent(syncContent);
+            logEntity.setRequestJson(requestJson);
+            logEntity.setDataCount(dataCount);
+            logEntity.setDurationMs(durationMs);
+            logEntity.setErrorMessage(errorMessage);
+            ncSyncLogRepository.save(logEntity);
+        } catch (Exception e) {
+            log.error("保存NC同步日志失败", e);
         }
     }
 
