@@ -22,7 +22,7 @@ server:
   # Server bind address
   address: "${HTTP_BIND_ADDRESS:0.0.0.0}"
   # Server bind port
-  port: "${HTTP_BIND_PORT:8080}"
+  port: "${HTTP_BIND_PORT:8090}"
   #mes端代理端口
   mes_port: 4200
   # Server SSL configuration
@@ -1148,7 +1148,9 @@ log:
   enabled: 0
 # NC 接口基础地址
 nc:
-    base-url: "http://172.88.0.150:8077"
+  base-url: "http://172.88.0.150:8077"
+  app-id: "yc9t8188f4e0j2ce13"
+  app-secret: "e6eed684852d619a5292c4753628ed56"
 #“产出锅数”大于“投入锅数”开关
 submit:
   #1:启用 0：不启用

@@ -62,11 +62,22 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
     @Value("${nc.base-url:http://172.88.0.150:8077}")
     private String inventoryBaseUrl;
 
+    @Value("${nc.app-id:yc9t8188f4e0j2ce13}")
+    private String ncAppId;
+
+    @Value("${nc.app-secret:e6eed684852d619a5292c4753628ed56}")
+    private String ncAppSecret;
+
     private static final String INVENTORY_SUBMIT_PATH = "/api/ycnc/mes/mm/inventory/data/submit";
+    private static final String GET_TOKEN_PATH = "/api/ycnc/mes/config/gettoken";
 
     private RestTemplate restTemplate = new RestTemplate();
     
     private ObjectMapper objectMapper = new ObjectMapper();
+    
+    // Token缓存
+    private String cachedToken;
+    private long tokenExpireTime;
     /**
      * 盘点记录列表
      * @param userId
@@ -472,9 +483,13 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             requestBody.put("productList", productList);
 
             try {
+                // 获取token
+                String token = getToken();
+                
                 // 设置请求头
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
+                headers.set("token", token);
                 HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
 
                 // 调用接口
@@ -522,6 +537,68 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                 log.error("调用盘点数据提交接口异常，仓库: {}", pkStordoc, e);
                 throw new RuntimeException("调用盘点数据提交接口异常，仓库: " + pkStordoc + "，原因: " + e.getMessage(), e);
             }
+        }
+    }
+
+    /**
+     * 获取NC接口token（带缓存机制）
+     * @return token
+     */
+    private String getToken() {
+        // 检查缓存的token是否有效
+        if (cachedToken != null && System.currentTimeMillis() < tokenExpireTime) {
+            return cachedToken;
+        }
+
+        try {
+            // 构建获取token的请求体
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("appId", ncAppId);
+            requestBody.put("appSecret", ncAppSecret);
+
+            // 设置请求头
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+            // 调用获取token接口
+            String tokenUrl = inventoryBaseUrl + GET_TOKEN_PATH;
+            ResponseEntity<JsonNode> response = restTemplate.postForEntity(
+                    tokenUrl,
+                    requestEntity,
+                    JsonNode.class
+            );
+
+            // 处理响应
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                JsonNode responseBody = response.getBody();
+                int code = responseBody.has("code") ? responseBody.get("code").asInt() : -1;
+                String msg = responseBody.has("msg") ? responseBody.get("msg").asText() : "";
+
+                if (code == 1 && responseBody.has("data")) {
+                    JsonNode data = responseBody.get("data");
+                    if (data.has("token")) {
+                        String token = data.get("token").asText();
+                        // 获取有效期（秒），默认7200秒，提前5分钟过期
+                        int expiresIn = data.has("expires_in") ? data.get("expires_in").asInt() : 7200;
+                        // 计算过期时间（提前5分钟过期，避免边界情况）
+                        tokenExpireTime = System.currentTimeMillis() + (expiresIn - 300) * 1000L;
+                        cachedToken = token;
+                        log.info("成功获取NC接口token，有效期: {}秒", expiresIn);
+                        return token;
+                    }
+                }
+                String errorMsg = String.format("获取NC接口token失败，错误信息: %s", msg);
+                log.error(errorMsg);
+                throw new RuntimeException(errorMsg);
+            } else {
+                String errorMsg = String.format("获取NC接口token失败，HTTP状态码: %s", response.getStatusCode());
+                log.error(errorMsg);
+                throw new RuntimeException(errorMsg);
+            }
+        } catch (Exception e) {
+            log.error("调用获取NC接口token异常", e);
+            throw new RuntimeException("调用获取NC接口token异常: " + e.getMessage(), e);
         }
     }
 }
