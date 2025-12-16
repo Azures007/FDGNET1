@@ -1,6 +1,8 @@
 package org.thingsboard.server.controller.app;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
@@ -32,9 +34,17 @@ public class YcPdAppController extends BaseController {
     }
 
     @ApiOperation("自定义盘点物料")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "selectBy", value = "搜索条件", required = false),
+            @ApiImplicitParam(name = "page", value = "页码(默认第0页,页码从0开始)", required = false),
+            @ApiImplicitParam(name = "size", value = "数量(默认10条)", required = false)
+    })
     @GetMapping("/listMaterial")
-    public ResponseResult<List<TSyncMaterial>> listMaterial(@RequestParam(value = "selectBy",defaultValue = "") String selectBy){
-        List<TSyncMaterial> tSyncMaterials=ycPdService.listMaterial(selectBy);
+    public ResponseResult<List<TSyncMaterial>> listMaterial(
+            @RequestParam(value = "selectBy", defaultValue = "") String selectBy,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        List<TSyncMaterial> tSyncMaterials = ycPdService.listMaterial(selectBy, page, size);
         return ResultUtil.success(tSyncMaterials);
     }
 

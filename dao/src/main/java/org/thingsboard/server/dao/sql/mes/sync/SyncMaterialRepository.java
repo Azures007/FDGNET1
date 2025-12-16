@@ -134,6 +134,22 @@ public interface SyncMaterialRepository extends JpaRepository<TSyncMaterial,Inte
     List<TSyncMaterial> listMaterialsBySelctct(String selectBy);
 
     /**
+     * 自定义盘点物料列表 (分页)
+     * @param searchTerm 搜索条件（物料编码或名称）
+     * @param pageable 分页参数
+     * @return 物料分页列表，自制品优先排序
+     */
+    @Query(value = "select * from t_sync_material " +
+            "where material_status = '1' " +
+            "and (?1 = '' or material_code like %?1% or material_name like %?1%) " +
+            "order by case when nc_material_category='自制品' then 0 else 1 end, nc_material_category, created_time desc, id desc", 
+            countQuery = "select count(*) from t_sync_material " +
+            "where material_status = '1' " +
+            "and (?1 = '' or material_code like %?1% or material_name like %?1%)", 
+            nativeQuery = true)
+    Page<TSyncMaterial> findCustomPdMaterials(String searchTerm, Pageable pageable);
+
+    /**
      * 查询可用物料列表（分页）
      * @param searchTerm 搜索条件（物料编码或名称）
      * @param pageable 分页参数

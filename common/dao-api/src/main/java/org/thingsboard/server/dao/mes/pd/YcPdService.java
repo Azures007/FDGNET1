@@ -20,6 +20,8 @@ public interface YcPdService {
 
     List<TSyncMaterial> listMaterial(String selectBy);
     
+    List<TSyncMaterial> listMaterial(String selectBy, Integer page, Integer size);
+    
     /**
      * 结束指定物料分类的盘点
      * @param materialTypePd 物料分类

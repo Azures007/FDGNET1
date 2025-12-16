@@ -3,6 +3,9 @@
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
@@ -312,6 +315,16 @@ public class YcPdServiceImpl implements YcPdService {
     public List<TSyncMaterial> listMaterial(String selectBy) {
         List<TSyncMaterial> tSyncMaterials = syncMaterialRepository.listMaterialsBySelctct(selectBy);
         return tSyncMaterials;
+    }
+    
+    @Override
+    public List<TSyncMaterial> listMaterial(String selectBy, Integer page, Integer size) {
+        if (page == null || size == null) {
+            return listMaterial(selectBy);
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TSyncMaterial> materialPage = syncMaterialRepository.findCustomPdMaterials(selectBy, pageable);
+        return materialPage.getContent();
     }
     
     @Override
