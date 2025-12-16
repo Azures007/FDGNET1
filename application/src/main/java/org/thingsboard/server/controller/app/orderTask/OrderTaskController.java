@@ -168,45 +168,45 @@ public class OrderTaskController extends BaseController {
         }
     }
 
-    @ApiOperation("转移未接受列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
-            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
-    })
-    @PostMapping("/listShiftNoAcceptTaskList")
-    public ResponseResult<PageVo<TaskListVo>> listShiftNoAcceptTaskList(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                                        @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                                        @RequestParam(value = "sort", defaultValue = "desc") String sort,
-                                                                        @RequestBody(required = false) OrderTaskSelectDto selectDto) throws ThingsboardException {
-        if ("desc".equals(sort) || "asc".equals(sort)) {
-            SecurityUser currentUser = getCurrentUser();
-            PageVo<TaskListVo> taskListVoPageVo = orderHeadService.listShiftNoAcceptTaskList(current, size ,sort,currentUser.getId().getId().toString(),selectDto);
-            return ResultUtil.success(taskListVoPageVo);
-        } else {
-            return ResultUtil.error("排序参数值错误！");
-        }
-    }
-
-    @ApiOperation("转移记录列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
-            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
-    })
-    @PostMapping("/listShiftTaskList")
-    public ResponseResult<PageVo<TaskListVo>> listShiftTaskList(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                                @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                                @RequestParam(value = "sort", defaultValue = "desc") String sort,
-                                                                @RequestBody(required = false) OrderTaskSelectDto selectDto) throws ThingsboardException {
-        if ("desc".equals(sort) || "asc".equals(sort)) {
-            SecurityUser currentUser = getCurrentUser();
-            PageVo<TaskListVo> taskListVoPageVo = orderHeadService.listShiftTaskList(current, size ,sort,currentUser.getId().getId().toString(),selectDto);
-            return ResultUtil.success(taskListVoPageVo);
-        } else {
-            return ResultUtil.error("排序参数值错误！");
-        }
-    }
+//    @ApiOperation("转移未接受列表")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+//            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+//            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
+//    })
+//    @PostMapping("/listShiftNoAcceptTaskList")
+//    public ResponseResult<PageVo<TaskListVo>> listShiftNoAcceptTaskList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+//                                                                        @RequestParam(value = "size", defaultValue = "10") Integer size,
+//                                                                        @RequestParam(value = "sort", defaultValue = "desc") String sort,
+//                                                                        @RequestBody(required = false) OrderTaskSelectDto selectDto) throws ThingsboardException {
+//        if ("desc".equals(sort) || "asc".equals(sort)) {
+//            SecurityUser currentUser = getCurrentUser();
+//            PageVo<TaskListVo> taskListVoPageVo = orderHeadService.listShiftNoAcceptTaskList(current, size ,sort,currentUser.getId().getId().toString(),selectDto);
+//            return ResultUtil.success(taskListVoPageVo);
+//        } else {
+//            return ResultUtil.error("排序参数值错误！");
+//        }
+//    }
+//
+//    @ApiOperation("转移记录列表")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+//            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+//            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
+//    })
+//    @PostMapping("/listShiftTaskList")
+//    public ResponseResult<PageVo<TaskListVo>> listShiftTaskList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+//                                                                @RequestParam(value = "size", defaultValue = "10") Integer size,
+//                                                                @RequestParam(value = "sort", defaultValue = "desc") String sort,
+//                                                                @RequestBody(required = false) OrderTaskSelectDto selectDto) throws ThingsboardException {
+//        if ("desc".equals(sort) || "asc".equals(sort)) {
+//            SecurityUser currentUser = getCurrentUser();
+//            PageVo<TaskListVo> taskListVoPageVo = orderHeadService.listShiftTaskList(current, size ,sort,currentUser.getId().getId().toString(),selectDto);
+//            return ResultUtil.success(taskListVoPageVo);
+//        } else {
+//            return ResultUtil.error("排序参数值错误！");
+//        }
+//    }
 
     @ApiOperation("获取已完工任务(拌料工序)")
     @ApiImplicitParams({
@@ -250,49 +250,49 @@ public class OrderTaskController extends BaseController {
         }
     }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
-            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
-    })
-    @ApiOperation("移交待生产任务列表")
-    @PostMapping("/getWaithandOverVerify")
-    public ResponseResult<PageVo<TaskListVo>> getWaithandOverVerify(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                                    @RequestParam(value = "sort", defaultValue = "desc") String sort,
-                                                                    @RequestBody(required = false) OrderTaskSelectDto selectDto) throws ThingsboardException {
-        if ("desc".equals(sort) || "asc".equals(sort)) {
-            SecurityUser currentUser = getCurrentUser();
-            PageVo<TaskListVo> taskListVoPageVo = appOrderTaskService.getWaithandOverVerify(current, size, currentUser.getId().getId().toString(), sort,selectDto);
-            return ResultUtil.success(taskListVoPageVo);
-        } else {
-            return ResultUtil.error("排序参数值错误！");
-        }
-    }
-
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
-            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
-    })
-    @ApiOperation("移交生产中任务列表")
-    @PostMapping("/gethandOverTask")
-    public ResponseResult<PageVo<TaskListVo>> gethandOverTask(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                              @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                              @RequestParam(value = "sort", defaultValue = "desc") String sort,
-                                                              @RequestBody(required = false) OrderTaskSelectDto selectDto) throws ThingsboardException {
-        if ("desc".equals(sort) || "asc".equals(sort)) {
-            SecurityUser currentUser = getCurrentUser();
-            List<String> processStatusList = new ArrayList<>();
-            processStatusList.add("1");
-            processStatusList.add("2");
-            String orderProcessType = LichengConstants.ORDER_PROCESS_TYPE_2;
-            PageVo<TaskListVo> classList = appOrderTaskService.getTaskListByPersonIdAndProcessStatus(current, size, processStatusList, orderProcessType, currentUser.getId().getId().toString(), sort,selectDto);
-            return ResultUtil.success(classList);
-        } else {
-            return ResultUtil.error("排序参数值错误！");
-        }
-    }
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+//            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+//            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
+//    })
+//    @ApiOperation("移交待生产任务列表")
+//    @PostMapping("/getWaithandOverVerify")
+//    public ResponseResult<PageVo<TaskListVo>> getWaithandOverVerify(@RequestParam(value = "current", defaultValue = "0") Integer current,
+//                                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
+//                                                                    @RequestParam(value = "sort", defaultValue = "desc") String sort,
+//                                                                    @RequestBody(required = false) OrderTaskSelectDto selectDto) throws ThingsboardException {
+//        if ("desc".equals(sort) || "asc".equals(sort)) {
+//            SecurityUser currentUser = getCurrentUser();
+//            PageVo<TaskListVo> taskListVoPageVo = appOrderTaskService.getWaithandOverVerify(current, size, currentUser.getId().getId().toString(), sort,selectDto);
+//            return ResultUtil.success(taskListVoPageVo);
+//        } else {
+//            return ResultUtil.error("排序参数值错误！");
+//        }
+//    }
+//
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+//            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+//            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
+//    })
+//    @ApiOperation("移交生产中任务列表")
+//    @PostMapping("/gethandOverTask")
+//    public ResponseResult<PageVo<TaskListVo>> gethandOverTask(@RequestParam(value = "current", defaultValue = "0") Integer current,
+//                                                              @RequestParam(value = "size", defaultValue = "10") Integer size,
+//                                                              @RequestParam(value = "sort", defaultValue = "desc") String sort,
+//                                                              @RequestBody(required = false) OrderTaskSelectDto selectDto) throws ThingsboardException {
+//        if ("desc".equals(sort) || "asc".equals(sort)) {
+//            SecurityUser currentUser = getCurrentUser();
+//            List<String> processStatusList = new ArrayList<>();
+//            processStatusList.add("1");
+//            processStatusList.add("2");
+//            String orderProcessType = LichengConstants.ORDER_PROCESS_TYPE_2;
+//            PageVo<TaskListVo> classList = appOrderTaskService.getTaskListByPersonIdAndProcessStatus(current, size, processStatusList, orderProcessType, currentUser.getId().getId().toString(), sort,selectDto);
+//            return ResultUtil.success(classList);
+//        } else {
+//            return ResultUtil.error("排序参数值错误！");
+//        }
+//    }
 
     @ApiOperation("获取明日订单任务")
     @ApiImplicitParams({

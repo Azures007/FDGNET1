@@ -28,10 +28,10 @@ public interface AppOrderTaskService {
 
 //    PageVo<TaskListHandOverVo> getTaskHandOverListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort);
 
-    /**
-     * 移交待确认任务列表
-     */
-    PageVo<TaskListVo> getWaithandOverVerify(Integer current, Integer size,String toString, String sort,OrderTaskSelectDto selectDto);
+//    /**
+//     * 移交待确认任务列表
+//     */
+//    PageVo<TaskListVo> getWaithandOverVerify(Integer current, Integer size,String toString, String sort,OrderTaskSelectDto selectDto);
 
     /**
      * 获取账号未开工任务列表

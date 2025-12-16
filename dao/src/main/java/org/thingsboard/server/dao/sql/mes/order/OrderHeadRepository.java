@@ -494,57 +494,57 @@ public interface OrderHeadRepository extends JpaRepository<TBusOrderHead,Integer
             "",nativeQuery = true)
     int countShiftTaskList(String userId, String processNumber, String bodyLot);
 
-    @Query(value = "select a.order_id as orderId,\n" +
-            "a.craft_id as craftId, \n" +
-            "a.order_no as orderNo, \n" +
-            "a.body_lot as bodyLot,\n" +
-            "a.material_id as materialId,\n" +
-            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
-            "a.body_material_name as bodyMaterialName,\n" +
-            "a.body_plan_prd_qty as billPlanQty,\n" +
-            "a.body_unit as bodyUnit,\n" +
-            "a.body_unit as bodyUnitStr,\n" +
-            "a.order_status as orderStatus,\n" +
-            "a.order_pending_desc as orderPendingDesc,\n" +
-            "null as finishTime,\n" +
-            "c.type as type, \n" +
-            "a.body_material_specification bodyMaterialSpecification, \n" +
-            "c.old_order_process_id as orderProcessId, \n" +
-            "a.body_material_id as bodyMaterialId, \n" +
-            "a.body_material_number as bodyMaterialNumber, \n" +
-            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
-            "g.process_id processId,\n" +
-            "g.process_name processName,\n" +
-            "g.process_number processNumber,\n" +
-            "a.process_id executeProcessId,\n" +
-            "a.process_name executeProcessName,\n" +
-            "a.process_number executeProcessNumber, \n" +
-            "null executeProcessStatus \n" +
-            ",null executeRecordTypePd \n" +
-            ",null recordTypePd ,\n" +
-            "c.order_process_id  to_order_process_id\n" +
-            "from (select * from t_bus_order_head a left join t_sys_process_info a2 on a.current_process=a2.process_id ) as a \n" +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
-            "left join t_sys_process_info g on c.process_id = g.process_id \n" +
-            "where c.process_status='0' and c.type='3' and c.old_order_process_id is not null and d.user_id =?1\n" +
-            "and (g.process_number=?2 or ?2='' or ?2 is null)\n" +
-            "and(a.body_lot=?3 or ?3='' or ?3 is null)" +
-            "",nativeQuery = true)
-    List<Map> listShiftNoAcceptTaskList(String userId, String processNumber, String bodyLot, PageRequest of);
-
-    @Query(value = "select count(1)\n" +
-            "from t_bus_order_head a \n" +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
-            "left join t_sys_process_info g on g.process_id = a.current_process \n" +
-            "where c.process_status='0' and c.type='3' and c.old_order_process_id is not null and d.user_id =?1 " +
-            "and (g.process_number=?2 or ?2='' or ?2 is null)\n" +
-            "and(a.body_lot=?3 or ?3='' or ?3 is null)" +
-            "",nativeQuery = true)
-    int countShiftNoAcceptTaskList(String userId,String processNumber,String bodyIot);
+//    @Query(value = "select a.order_id as orderId,\n" +
+//            "a.craft_id as craftId, \n" +
+//            "a.order_no as orderNo, \n" +
+//            "a.body_lot as bodyLot,\n" +
+//            "a.material_id as materialId,\n" +
+//            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
+//            "a.body_material_name as bodyMaterialName,\n" +
+//            "a.body_plan_prd_qty as billPlanQty,\n" +
+//            "a.body_unit as bodyUnit,\n" +
+//            "a.body_unit as bodyUnitStr,\n" +
+//            "a.order_status as orderStatus,\n" +
+//            "a.order_pending_desc as orderPendingDesc,\n" +
+//            "null as finishTime,\n" +
+//            "c.type as type, \n" +
+//            "a.body_material_specification bodyMaterialSpecification, \n" +
+//            "c.old_order_process_id as orderProcessId, \n" +
+//            "a.body_material_id as bodyMaterialId, \n" +
+//            "a.body_material_number as bodyMaterialNumber, \n" +
+//            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
+//            "g.process_id processId,\n" +
+//            "g.process_name processName,\n" +
+//            "g.process_number processNumber,\n" +
+//            "a.process_id executeProcessId,\n" +
+//            "a.process_name executeProcessName,\n" +
+//            "a.process_number executeProcessNumber, \n" +
+//            "null executeProcessStatus \n" +
+//            ",null executeRecordTypePd \n" +
+//            ",null recordTypePd ,\n" +
+//            "c.order_process_id  to_order_process_id\n" +
+//            "from (select * from t_bus_order_head a left join t_sys_process_info a2 on a.current_process=a2.process_id ) as a \n" +
+//            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
+//            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
+//            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
+//            "left join t_sys_process_info g on c.process_id = g.process_id \n" +
+//            "where c.process_status='0' and c.type='3' and c.old_order_process_id is not null and d.user_id =?1\n" +
+//            "and (g.process_number=?2 or ?2='' or ?2 is null)\n" +
+//            "and(a.body_lot=?3 or ?3='' or ?3 is null)" +
+//            "",nativeQuery = true)
+//    List<Map> listShiftNoAcceptTaskList(String userId, String processNumber, String bodyLot, PageRequest of);
+//
+//    @Query(value = "select count(1)\n" +
+//            "from t_bus_order_head a \n" +
+//            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
+//            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
+//            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
+//            "left join t_sys_process_info g on g.process_id = a.current_process \n" +
+//            "where c.process_status='0' and c.type='3' and c.old_order_process_id is not null and d.user_id =?1 " +
+//            "and (g.process_number=?2 or ?2='' or ?2 is null)\n" +
+//            "and(a.body_lot=?3 or ?3='' or ?3 is null)" +
+//            "",nativeQuery = true)
+//    int countShiftNoAcceptTaskList(String userId,String processNumber,String bodyIot);
 
     @Query(value = "select \n" +
             "a2.receive_time as receiveTime,\n" +

@@ -613,26 +613,29 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "JOIN t_bus_order_process c ON b.order_process_id = c.order_process_id \n" +
             "JOIN t_sys_process_info d ON c.process_id = d.process_id \n" +
             "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
+            "-- 关联班别获取组长组员，改为视图关联，用班别id和产线id关联\n" +
+            "JOIN class_personnel_view cpv on cpv.class_id = t2.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
             "where 1=1 \n" +
             "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
             "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
             "where  ud.user_id=?1 ) \n"+
             "and TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?2 and a.is_deleted='0' " +
             "and (body_lot=?3 or ?3='' or ?3 is null)" +
-            "and t2.class_id in (\n" +
-            "select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id\n" +
-            ")" +
+//            "and t2.class_id in (\n" +
+//            "select class_id  from \n" +
+//            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
+//            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+//            "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
+//            "where b.user_id =?1 \n" +
+//            "union all \n" +
+//            "select class_id from t_sys_class_personnel_rel a \n" +
+//            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+//            "where b.user_id =?1) as t\n" +
+//            "group by class_id\n" +
+//            ")" +
+            "AND cpv.user_id = ?1\n" +
             "", nativeQuery = true)
-    Integer getCountNextDayTask(String userId,String currentDateStr,String bodyIot);
+    Integer getCountNextDayTask(String userId,String currentDateStr,String bodyLot);
 
     /* 获取明日任务 */
     //查询订单表“计划开工时间”是明日日期（取系统日期）的订单
@@ -702,216 +705,216 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "",nativeQuery = true)
     Page<Map> getNextDayTaskList(String userId,String currentDateStr,String bodyLot, PageRequest sort);
 
-    /* 移交待生产任务 行数 */
-    @Query(value = "select sum(cout) from (\n" +
-            "select count(1) cout from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a " +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_personnel_info d on c.person_id =d.personnel_id\n" +
-            "join t_sys_process_info f on c.process_id =f.process_id \n" +
-            "where c.process_status='0' and c.type='2' " +
-            "and c.class_id in (\n" +
-            "select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id\n" +
-            ")" +
-            "and a.is_deleted='0'\n" +
-            "and (f.process_number=?2 or ?2='' or ?2 is null) " +
-            "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
-            "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
-            ") as t",nativeQuery = true)
-    int getWaitTaskCountByUserIdHandOver(String userId,String processNumber,String bodyIot,String flies);
-
-    /* 移交待生产任务 */
-    @Query(value = "select a.order_id as orderId,\n" +
-            "a.craft_id as craftId, \n" +
-            "a.order_no as orderNo, \n" +
-            "a.body_lot as bodyLot,\n" +
-            "a.material_id as materialId,\n" +
-            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
-            "a.body_material_name as bodyMaterialName,\n" +
-            "a.body_plan_prd_qty as billPlanQty,\n" +
-            "a.body_unit as bodyUnit,\n" +
-            "a.body_unit as bodyUnitStr,\n" +
-            "a.order_status as orderStatus,\n" +
-            "a.order_pending_desc as orderPendingDesc,\n" +
-            "a.mid_mo_customer_id as midMoCustomerId,\n" +
-            "a.mid_mo_customer_name as midMoCustomerName,\n" +
-            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
-            "a.mid_mo_customer_type as midMoCustomerType,\n" +
-            "a.mid_mo_desc as midMoDesc,\n" +
-            "null as finishTime,\n" +
-            "c.type as type, \n" +
-            "a.body_material_specification bodyMaterialSpecification, \n" +
-            "c.order_process_id as orderProcessId, \n" +
-            "null as bodyMaterialId, \n" +
-            "null as bodyMaterialNumber, \n" +
-            "null as bodyPlanStartDate, \n" +
-            "null as bodyPlanFinishDate, \n" +
-            "a.process_id processId,\n" +
-            "a.process_name processName,\n" +
-            "a.process_number processNumber,\n" +
-            "f.process_id executeProcessId,\n" +
-            "f.process_name executeProcessName,\n" +
-            "f.process_number executeProcessNumber, \n" +
-            "c.process_status executeProcessStatus, \n" +
-            "h2.record_type_pd executeRecordTypePd, \n" +
-            "c.old_record_type_pd recordTypePd \n" +
-            "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a\n" +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_process_info f on c.process_id =f.process_id \n" +
-            "join t_sys_personnel_info d on c.person_id =d.personnel_id\n" +
-            "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h2 on c.order_process_id = h2.order_process_id \n" +
-            "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h on c.old_order_process_id = h.order_process_id \n" +
-            "where c.process_status='0' and c.type='2' " +
-            "and c.class_id in (\n" +
-            "select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id\n" +
-            ")" +
-            "and a.is_deleted='0'\n" +
-            "and (f.process_number=?2 or ?2='' or ?2 is null) " +
-            "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
-            "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
-            "",nativeQuery = true)
-    List<Map> getWaitTaskUserIdHandOver(String userId, String processNumber, String bodyLot,String fileds, PageRequest of);
+//    /* 移交待生产任务 行数 */
+//    @Query(value = "select sum(cout) from (\n" +
+//            "select count(1) cout from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a " +
+//            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
+//            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
+//            "join t_sys_personnel_info d on c.person_id =d.personnel_id\n" +
+//            "join t_sys_process_info f on c.process_id =f.process_id \n" +
+//            "where c.process_status='0' and c.type='2' " +
+//            "and c.class_id in (\n" +
+//            "select class_id  from \n" +
+//            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
+//            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+//            "where b.user_id =?1 \n" +
+//            "union all \n" +
+//            "select class_id from t_sys_class_personnel_rel a \n" +
+//            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+//            "where b.user_id =?1) as t\n" +
+//            "group by class_id\n" +
+//            ")" +
+//            "and a.is_deleted='0'\n" +
+//            "and (f.process_number=?2 or ?2='' or ?2 is null) " +
+//            "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
+//            "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
+//            ") as t",nativeQuery = true)
+//    int getWaitTaskCountByUserIdHandOver(String userId,String processNumber,String bodyIot,String flies);
+//
+//    /* 移交待生产任务 */
+//    @Query(value = "select a.order_id as orderId,\n" +
+//            "a.craft_id as craftId, \n" +
+//            "a.order_no as orderNo, \n" +
+//            "a.body_lot as bodyLot,\n" +
+//            "a.material_id as materialId,\n" +
+//            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
+//            "a.body_material_name as bodyMaterialName,\n" +
+//            "a.body_plan_prd_qty as billPlanQty,\n" +
+//            "a.body_unit as bodyUnit,\n" +
+//            "a.body_unit as bodyUnitStr,\n" +
+//            "a.order_status as orderStatus,\n" +
+//            "a.order_pending_desc as orderPendingDesc,\n" +
+//            "a.mid_mo_customer_id as midMoCustomerId,\n" +
+//            "a.mid_mo_customer_name as midMoCustomerName,\n" +
+//            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
+//            "a.mid_mo_customer_type as midMoCustomerType,\n" +
+//            "a.mid_mo_desc as midMoDesc,\n" +
+//            "null as finishTime,\n" +
+//            "c.type as type, \n" +
+//            "a.body_material_specification bodyMaterialSpecification, \n" +
+//            "c.order_process_id as orderProcessId, \n" +
+//            "null as bodyMaterialId, \n" +
+//            "null as bodyMaterialNumber, \n" +
+//            "null as bodyPlanStartDate, \n" +
+//            "null as bodyPlanFinishDate, \n" +
+//            "a.process_id processId,\n" +
+//            "a.process_name processName,\n" +
+//            "a.process_number processNumber,\n" +
+//            "f.process_id executeProcessId,\n" +
+//            "f.process_name executeProcessName,\n" +
+//            "f.process_number executeProcessNumber, \n" +
+//            "c.process_status executeProcessStatus, \n" +
+//            "h2.record_type_pd executeRecordTypePd, \n" +
+//            "c.old_record_type_pd recordTypePd \n" +
+//            "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process =m2.process_id ) as a\n" +
+//            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
+//            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
+//            "join t_sys_process_info f on c.process_id =f.process_id \n" +
+//            "join t_sys_personnel_info d on c.person_id =d.personnel_id\n" +
+//            "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h2 on c.order_process_id = h2.order_process_id \n" +
+//            "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h on c.old_order_process_id = h.order_process_id \n" +
+//            "where c.process_status='0' and c.type='2' " +
+//            "and c.class_id in (\n" +
+//            "select class_id  from \n" +
+//            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
+//            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+//            "where b.user_id =?1 \n" +
+//            "union all \n" +
+//            "select class_id from t_sys_class_personnel_rel a \n" +
+//            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
+//            "where b.user_id =?1) as t\n" +
+//            "group by class_id\n" +
+//            ")" +
+//            "and a.is_deleted='0'\n" +
+//            "and (f.process_number=?2 or ?2='' or ?2 is null) " +
+//            "and (a.body_lot=?3 or ?3='' or ?3 is null) " +
+//            "and ( a.order_no like CONCAT('%',?4,'%') or a.body_lot like CONCAT('%',?4,'%') or a.body_material_name like CONCAT('%',?4,'%') or a.bill_no like CONCAT('%',?4,'%') or ?4='') \n" +
+//            "",nativeQuery = true)
+//    List<Map> getWaitTaskUserIdHandOver(String userId, String processNumber, String bodyLot,String fileds, PageRequest of);
 
     /* 转移列表 */
-    @Query(value = "select a.order_id as orderId,\n" +
-            "a.craft_id as craftId, \n" +
-            "a.order_no as orderNo, \n" +
-            "a.body_lot as bodyLot,\n" +
-            "a.material_id as materialId,\n" +
-            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
-            "a.body_material_name as bodyMaterialName,\n" +
-            "a.body_plan_prd_qty as billPlanQty,\n" +
-            "a.body_unit as bodyUnit,\n" +
-            "a.body_unit as bodyUnitStr,\n" +
-            "a.order_status as orderStatus,\n" +
-            "a.order_pending_desc as orderPendingDesc,\n" +
-            "a.mid_mo_customer_id as midMoCustomerId,\n" +
-            "a.mid_mo_customer_name as midMoCustomerName,\n" +
-            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
-            "a.mid_mo_customer_type as midMoCustomerType,\n" +
-            "a.mid_mo_desc as midMoDesc,\n" +
-            "null as finishTime,\n" +
-            "c.type as type, \n" +
-            "a.body_material_specification bodyMaterialSpecification, \n" +
-            "c.old_order_process_id as orderProcessId, \n" +
-            "a.body_material_id as bodyMaterialId, \n" +
-            "a.body_material_number as bodyMaterialNumber, \n" +
-            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
-            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
-            "g.process_id processId,\n" +
-            "g.process_name processName,\n" +
-            "g.process_number processNumber,\n" +
-            "a.process_id executeProcessId,\n" +
-            "a.process_name executeProcessName,\n" +
-            "a.process_number executeProcessNumber, \n" +
-            "null executeProcessStatus \n" +
-            ",null executeRecordTypePd \n" +
-            ",null recordTypePd ,\n" +
-            "c.order_process_id  to_order_process_id\n" +
-            "from (select * from t_bus_order_head a left join t_sys_process_info a2 on a.current_process=a2.process_id ) as a \n" +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
-            "left join t_sys_process_info g on c.process_id = g.process_id \n" +
-            "where c.process_status='0' and c.type='3' and c.old_order_process_id is not null and d.user_id =?1\n" +
-            "and (g.process_number=?2 or ?2='' or ?2 is null)\n" +
-            "and(a.body_lot=?3 or ?3='' or ?3 is null)" +
-            "",nativeQuery = true)
-    List<Map> listShiftNoAcceptTaskList(String userId, String processNumber, String bodyLot, PageRequest of);
+//    @Query(value = "select a.order_id as orderId,\n" +
+//            "a.craft_id as craftId, \n" +
+//            "a.order_no as orderNo, \n" +
+//            "a.body_lot as bodyLot,\n" +
+//            "a.material_id as materialId,\n" +
+//            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
+//            "a.body_material_name as bodyMaterialName,\n" +
+//            "a.body_plan_prd_qty as billPlanQty,\n" +
+//            "a.body_unit as bodyUnit,\n" +
+//            "a.body_unit as bodyUnitStr,\n" +
+//            "a.order_status as orderStatus,\n" +
+//            "a.order_pending_desc as orderPendingDesc,\n" +
+//            "a.mid_mo_customer_id as midMoCustomerId,\n" +
+//            "a.mid_mo_customer_name as midMoCustomerName,\n" +
+//            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
+//            "a.mid_mo_customer_type as midMoCustomerType,\n" +
+//            "a.mid_mo_desc as midMoDesc,\n" +
+//            "null as finishTime,\n" +
+//            "c.type as type, \n" +
+//            "a.body_material_specification bodyMaterialSpecification, \n" +
+//            "c.old_order_process_id as orderProcessId, \n" +
+//            "a.body_material_id as bodyMaterialId, \n" +
+//            "a.body_material_number as bodyMaterialNumber, \n" +
+//            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
+//            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
+//            "g.process_id processId,\n" +
+//            "g.process_name processName,\n" +
+//            "g.process_number processNumber,\n" +
+//            "a.process_id executeProcessId,\n" +
+//            "a.process_name executeProcessName,\n" +
+//            "a.process_number executeProcessNumber, \n" +
+//            "null executeProcessStatus \n" +
+//            ",null executeRecordTypePd \n" +
+//            ",null recordTypePd ,\n" +
+//            "c.order_process_id  to_order_process_id\n" +
+//            "from (select * from t_bus_order_head a left join t_sys_process_info a2 on a.current_process=a2.process_id ) as a \n" +
+//            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
+//            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
+//            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
+//            "left join t_sys_process_info g on c.process_id = g.process_id \n" +
+//            "where c.process_status='0' and c.type='3' and c.old_order_process_id is not null and d.user_id =?1\n" +
+//            "and (g.process_number=?2 or ?2='' or ?2 is null)\n" +
+//            "and(a.body_lot=?3 or ?3='' or ?3 is null)" +
+//            "",nativeQuery = true)
+//    List<Map> listShiftNoAcceptTaskList(String userId, String processNumber, String bodyLot, PageRequest of);
+//
+//    /* 转移列表 行数 */
+//    @Query(value = "select count(1)\n" +
+//            "from t_bus_order_head a \n" +
+//            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
+//            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
+//            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
+//            "left join t_sys_process_info g on g.process_id = a.current_process \n" +
+//            "where c.process_status='0' and c.type='3' and c.old_order_process_id is not null and d.user_id =?1 " +
+//            "and (g.process_number=?2 or ?2='' or ?2 is null)\n" +
+//            "and(a.body_lot=?3 or ?3='' or ?3 is null)" +
+//            "",nativeQuery = true)
+//    int countShiftNoAcceptTaskList(String userId,String processNumber,String bodyIot);
 
-    /* 转移列表 行数 */
-    @Query(value = "select count(1)\n" +
-            "from t_bus_order_head a \n" +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
-            "left join t_sys_process_info g on g.process_id = a.current_process \n" +
-            "where c.process_status='0' and c.type='3' and c.old_order_process_id is not null and d.user_id =?1 " +
-            "and (g.process_number=?2 or ?2='' or ?2 is null)\n" +
-            "and(a.body_lot=?3 or ?3='' or ?3 is null)" +
-            "",nativeQuery = true)
-    int countShiftNoAcceptTaskList(String userId,String processNumber,String bodyIot);
-
-    /* 转移记录列表 */
-    @Query(value = "select d.user_id,a.order_id as orderId,\n" +
-            "a.craft_id as craftId, \n" +
-            "a.order_no as orderNo, \n" +
-            "a.body_lot as bodyLot,\n" +
-            "a.material_id as materialId,\n" +
-            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
-            "a.body_material_name as bodyMaterialName,\n" +
-            "a.body_plan_prd_qty as billPlanQty,\n" +
-            "a.body_unit as bodyUnit,\n" +
-            "a.body_unit as bodyUnitStr,\n" +
-            "a.order_status as orderStatus,\n" +
-            "a.order_pending_desc as orderPendingDesc,\n" +
-            "a.mid_mo_customer_id as midMoCustomerId,\n" +
-            "a.mid_mo_customer_name as midMoCustomerName,\n" +
-            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
-            "a.mid_mo_customer_type as midMoCustomerType,\n" +
-            "a.mid_mo_desc as midMoDesc,\n" +
-            "null as finishTime,\n" +
-            "c.type as type, \n" +
-            "a.body_material_specification bodyMaterialSpecification, \n" +
-            "c.order_process_id as orderProcessId, \n" +
-            "a.body_material_id as bodyMaterialId, \n" +
-            "a.body_material_number as bodyMaterialNumber, \n" +
-            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
-            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
-            "g.process_id processId,\n" +
-            "g.process_name processName,\n" +
-            "g.process_number processNumber,\n" +
-            "a.process_id executeProcessId,\n" +
-            "a.process_name executeProcessName,\n" +
-            "a.process_number executeProcessNumber, \n" +
-            "null executeProcessStatus \n" +
-            ",null executeRecordTypePd \n" +
-            ",null recordTypePd ,\n" +
-            "c.to_orderProcess_id  to_order_process_id\n" +
-            "from (select * from t_bus_order_head a left join t_sys_process_info a2 on a.current_process=a2.process_id ) as a \n" +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join (select a.*,b.order_process_id as to_orderProcess_id \n" +
-            "from t_bus_order_process a join t_bus_order_process b on a.order_process_id =b.old_order_process_id \n" +
-            "where a.type='3') c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
-            "left join t_sys_process_info g on g.process_id = a.current_process \n" +
-            "where  d.user_id =?1\n" +
-            "and (a.body_lot=?3 or ?3='' or ?3 is null)\n " +
-            "and(g.process_number=?2 or ?2='' or ?2 is null)" +
-            "",nativeQuery = true)
-    List<Map> listShiftTaskList(String userId, String processNumber, String bodyLot, PageRequest of);
-
-    /* 转移记录列表 行数 */
-    @Query(value = "select count(1)\n" +
-            "from t_bus_order_head a \n" +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join (select a.*,b.order_process_id as to_orderProcess_id \n" +
-            "from t_bus_order_process a join t_bus_order_process b on a.order_process_id =b.old_order_process_id \n" +
-            "where a.type='3') c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
-            "left join t_sys_process_info g on g.process_id = a.current_process \n" +
-            "where  d.user_id =?1 " +
-            "and (a.body_lot=?3 or ?3='' or ?3 is null)\n " +
-            "and(g.process_number=?2 or ?2='' or ?2 is null)" +
-            "",nativeQuery = true)
-    int countShiftTaskList(String userId, String processNumber, String bodyLot);
+//    /* 转移记录列表 */
+//    @Query(value = "select d.user_id,a.order_id as orderId,\n" +
+//            "a.craft_id as craftId, \n" +
+//            "a.order_no as orderNo, \n" +
+//            "a.body_lot as bodyLot,\n" +
+//            "a.material_id as materialId,\n" +
+//            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
+//            "a.body_material_name as bodyMaterialName,\n" +
+//            "a.body_plan_prd_qty as billPlanQty,\n" +
+//            "a.body_unit as bodyUnit,\n" +
+//            "a.body_unit as bodyUnitStr,\n" +
+//            "a.order_status as orderStatus,\n" +
+//            "a.order_pending_desc as orderPendingDesc,\n" +
+//            "a.mid_mo_customer_id as midMoCustomerId,\n" +
+//            "a.mid_mo_customer_name as midMoCustomerName,\n" +
+//            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
+//            "a.mid_mo_customer_type as midMoCustomerType,\n" +
+//            "a.mid_mo_desc as midMoDesc,\n" +
+//            "null as finishTime,\n" +
+//            "c.type as type, \n" +
+//            "a.body_material_specification bodyMaterialSpecification, \n" +
+//            "c.order_process_id as orderProcessId, \n" +
+//            "a.body_material_id as bodyMaterialId, \n" +
+//            "a.body_material_number as bodyMaterialNumber, \n" +
+//            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
+//            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
+//            "g.process_id processId,\n" +
+//            "g.process_name processName,\n" +
+//            "g.process_number processNumber,\n" +
+//            "a.process_id executeProcessId,\n" +
+//            "a.process_name executeProcessName,\n" +
+//            "a.process_number executeProcessNumber, \n" +
+//            "null executeProcessStatus \n" +
+//            ",null executeRecordTypePd \n" +
+//            ",null recordTypePd ,\n" +
+//            "c.to_orderProcess_id  to_order_process_id\n" +
+//            "from (select * from t_bus_order_head a left join t_sys_process_info a2 on a.current_process=a2.process_id ) as a \n" +
+//            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
+//            "join (select a.*,b.order_process_id as to_orderProcess_id \n" +
+//            "from t_bus_order_process a join t_bus_order_process b on a.order_process_id =b.old_order_process_id \n" +
+//            "where a.type='3') c on b.order_process_id =c.order_process_id \n" +
+//            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
+//            "left join t_sys_process_info g on g.process_id = a.current_process \n" +
+//            "where  d.user_id =?1\n" +
+//            "and (a.body_lot=?3 or ?3='' or ?3 is null)\n " +
+//            "and(g.process_number=?2 or ?2='' or ?2 is null)" +
+//            "",nativeQuery = true)
+//    List<Map> listShiftTaskList(String userId, String processNumber, String bodyLot, PageRequest of);
+//
+//    /* 转移记录列表 行数 */
+//    @Query(value = "select count(1)\n" +
+//            "from t_bus_order_head a \n" +
+//            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
+//            "join (select a.*,b.order_process_id as to_orderProcess_id \n" +
+//            "from t_bus_order_process a join t_bus_order_process b on a.order_process_id =b.old_order_process_id \n" +
+//            "where a.type='3') c on b.order_process_id =c.order_process_id \n" +
+//            "join t_sys_personnel_info d on c.person_id =d.personnel_id \n" +
+//            "left join t_sys_process_info g on g.process_id = a.current_process \n" +
+//            "where  d.user_id =?1 " +
+//            "and (a.body_lot=?3 or ?3='' or ?3 is null)\n " +
+//            "and(g.process_number=?2 or ?2='' or ?2 is null)" +
+//            "",nativeQuery = true)
+//    int countShiftTaskList(String userId, String processNumber, String bodyLot);
 
     /* 获取已完工任务(拌料工序) */
     @Query(value = "select a.order_id as orderId,\n" +

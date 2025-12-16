@@ -204,9 +204,9 @@ public interface OrderHeadService {
 
     ShiftRecordDetailVo shiftRecordDetail(Integer orderProcessId, Integer toOrderProcessId);
 
-    PageVo<TaskListVo> listShiftTaskList(Integer current, Integer size, String sort, String userId, OrderTaskSelectDto selectDto);
-
-    PageVo<TaskListVo> listShiftNoAcceptTaskList(Integer current, Integer size, String sort, String userId,OrderTaskSelectDto selectDto);
+//    PageVo<TaskListVo> listShiftTaskList(Integer current, Integer size, String sort, String userId, OrderTaskSelectDto selectDto);
+//
+//    PageVo<TaskListVo> listShiftNoAcceptTaskList(Integer current, Integer size, String sort, String userId,OrderTaskSelectDto selectDto);
 
     /**
      * 接受转移

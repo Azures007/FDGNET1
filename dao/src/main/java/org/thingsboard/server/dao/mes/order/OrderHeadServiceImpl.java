@@ -334,40 +334,40 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         return shiftRecordDetailVo;
     }
 
-    @Override
-    public PageVo<TaskListVo> listShiftTaskList(Integer current, Integer size, String sort, String userId, OrderTaskSelectDto selectDto) {
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "order_no");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-//        current = current * size;
-        PageRequest of = PageRequest.of(current, size, sort1);
-        List<Map> select = orderHeadRepository.listShiftTaskList(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
-        PageVo<TaskListVo> pageVo = new PageVo(size, current);
-        pageVo.setList(JSON.parseArray(JSON.toJSONString(select), TaskListVo.class));
-        int count = orderHeadRepository.countShiftTaskList(userId, selectDto.getProcessNumber(), selectDto.getBodyLot());
-        pageVo.setTotal(count);
-        return pageVo;
-    }
-
-    @Override
-    public PageVo<TaskListVo> listShiftNoAcceptTaskList(Integer current, Integer size, String sort, String userId, OrderTaskSelectDto selectDto) {
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "order_no");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-//        current = current * size;
-        PageRequest of = PageRequest.of(current, size, sort1);
-        List<Map> select = orderHeadRepository.listShiftNoAcceptTaskList(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
-        PageVo<TaskListVo> pageVo = new PageVo(size, current);
-        pageVo.setList(JSON.parseArray(JSON.toJSONString(select), TaskListVo.class));
-        pageVo.setTotal(orderHeadRepository.countShiftNoAcceptTaskList(userId, selectDto.getProcessNumber(), selectDto.getBodyLot()));
-        return pageVo;
-    }
+//    @Override
+//    public PageVo<TaskListVo> listShiftTaskList(Integer current, Integer size, String sort, String userId, OrderTaskSelectDto selectDto) {
+//        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
+//        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "order_no");
+//        List<Sort.Order> orders = new ArrayList<>();
+//        orders.add(order1);
+//        orders.add(order2);
+//        Sort sort1 = Sort.by(orders);
+////        current = current * size;
+//        PageRequest of = PageRequest.of(current, size, sort1);
+//        List<Map> select = orderHeadRepository.listShiftTaskList(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
+//        PageVo<TaskListVo> pageVo = new PageVo(size, current);
+//        pageVo.setList(JSON.parseArray(JSON.toJSONString(select), TaskListVo.class));
+//        int count = orderHeadRepository.countShiftTaskList(userId, selectDto.getProcessNumber(), selectDto.getBodyLot());
+//        pageVo.setTotal(count);
+//        return pageVo;
+//    }
+//
+//    @Override
+//    public PageVo<TaskListVo> listShiftNoAcceptTaskList(Integer current, Integer size, String sort, String userId, OrderTaskSelectDto selectDto) {
+//        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
+//        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "order_no");
+//        List<Sort.Order> orders = new ArrayList<>();
+//        orders.add(order1);
+//        orders.add(order2);
+//        Sort sort1 = Sort.by(orders);
+////        current = current * size;
+//        PageRequest of = PageRequest.of(current, size, sort1);
+//        List<Map> select = orderHeadRepository.listShiftNoAcceptTaskList(userId, selectDto.getProcessNumber(), selectDto.getBodyLot(), of);
+//        PageVo<TaskListVo> pageVo = new PageVo(size, current);
+//        pageVo.setList(JSON.parseArray(JSON.toJSONString(select), TaskListVo.class));
+//        pageVo.setTotal(orderHeadRepository.countShiftNoAcceptTaskList(userId, selectDto.getProcessNumber(), selectDto.getBodyLot()));
+//        return pageVo;
+//    }
 
     @Transactional
     @Override

@@ -23,27 +23,27 @@ import java.util.List;
 @RequestMapping("/api/waitTask")
 public class WaitTaskController extends BaseController {
 
-    @ApiOperation("获取待生产任务")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
-            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
-    })
-    @PostMapping("/getWaitTaskList")
-    public ResponseResult<PageVo<TaskListVo>> getWaitTaskList(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                   @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                   @RequestParam(value = "sort", defaultValue = "desc") String sort,
-                                                              @RequestBody(required = false) OrderTaskSelectDto selectDto) throws Exception {
-        if ("desc".equals(sort) || "asc".equals(sort)) {
-            SecurityUser currentUser = getCurrentUser();
-            List<String> processStatusList = new ArrayList<>();
-            processStatusList.add("0");
-            PageVo<TaskListVo> classList = appOrderTaskService.getWaitTaskUserId2(current, size, processStatusList, currentUser.getId().getId().toString(), sort,selectDto);
-            return ResultUtil.success(classList);
-        } else {
-            return ResultUtil.error("排序参数值错误！");
-        }
-    }
+//    @ApiOperation("获取待生产任务")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+//            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+//            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
+//    })
+//    @PostMapping("/getWaitTaskList")
+//    public ResponseResult<PageVo<TaskListVo>> getWaitTaskList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+//                                                   @RequestParam(value = "size", defaultValue = "10") Integer size,
+//                                                   @RequestParam(value = "sort", defaultValue = "desc") String sort,
+//                                                              @RequestBody(required = false) OrderTaskSelectDto selectDto) throws Exception {
+//        if ("desc".equals(sort) || "asc".equals(sort)) {
+//            SecurityUser currentUser = getCurrentUser();
+//            List<String> processStatusList = new ArrayList<>();
+//            processStatusList.add("0");
+//            PageVo<TaskListVo> classList = appOrderTaskService.getWaitTaskUserId2(current, size, processStatusList, currentUser.getId().getId().toString(), sort,selectDto);
+//            return ResultUtil.success(classList);
+//        } else {
+//            return ResultUtil.error("排序参数值错误！");
+//        }
+//    }
 
     @ApiOperation("接单开工接口")
     @ApiImplicitParams({
