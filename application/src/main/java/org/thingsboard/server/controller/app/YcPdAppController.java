@@ -36,15 +36,15 @@ public class YcPdAppController extends BaseController {
     @ApiOperation("自定义盘点物料")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "selectBy", value = "搜索条件", required = false),
-            @ApiImplicitParam(name = "page", value = "页码(默认第0页,页码从0开始)", required = false),
+            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", required = false),
             @ApiImplicitParam(name = "size", value = "数量(默认10条)", required = false)
     })
     @GetMapping("/listMaterial")
     public ResponseResult<List<TSyncMaterial>> listMaterial(
             @RequestParam(value = "selectBy", defaultValue = "") String selectBy,
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "current", defaultValue = "0") Integer current,
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        List<TSyncMaterial> tSyncMaterials = ycPdService.listMaterial(selectBy, page, size);
+        List<TSyncMaterial> tSyncMaterials = ycPdService.listMaterial(selectBy, current, size);
         return ResultUtil.success(tSyncMaterials);
     }
 
