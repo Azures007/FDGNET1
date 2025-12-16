@@ -12,6 +12,8 @@ import org.thingsboard.server.common.data.mes.ncWarehouse.NcWarehouse;
 import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import org.thingsboard.server.common.data.mes.sys.*;
 import org.thingsboard.server.common.data.mes.ncInventory.NcInventory;
+import org.thingsboard.server.common.data.page.PageData;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.vo.PdMaterialsVo;
 import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
 import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
@@ -318,13 +320,25 @@ public class YcPdServiceImpl implements YcPdService {
     }
     
     @Override
-    public List<TSyncMaterial> listMaterial(String selectBy, Integer page, Integer size) {
+    public PageVo<TSyncMaterial> listMaterial(String selectBy, Integer page, Integer size) {
         if (page == null || size == null) {
-            return listMaterial(selectBy);
+            List<TSyncMaterial> list = listMaterial(selectBy);
+            PageVo<TSyncMaterial> pageVo = new PageVo<>();
+            pageVo.setList(list);
+            pageVo.setTotal(list.size());
+            pageVo.setCurrent(0);
+            pageVo.setSize(list.size());
+            return pageVo;
         }
         Pageable pageable = PageRequest.of(page, size);
         Page<TSyncMaterial> materialPage = syncMaterialRepository.findCustomPdMaterials(selectBy, pageable);
-        return materialPage.getContent();
+        
+        PageVo<TSyncMaterial> pageVo = new PageVo<>();
+        pageVo.setList(materialPage.getContent());
+        pageVo.setTotal((int) materialPage.getTotalElements());
+        pageVo.setCurrent(materialPage.getNumber());
+        pageVo.setSize(materialPage.getSize());
+        return pageVo;
     }
     
     @Override

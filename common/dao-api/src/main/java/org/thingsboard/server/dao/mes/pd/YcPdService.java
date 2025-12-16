@@ -3,7 +3,9 @@ package org.thingsboard.server.dao.mes.pd;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
 import org.thingsboard.server.dao.mes.vo.PdMaterialsVo;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
+import org.thingsboard.server.common.data.page.PageData;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ public interface YcPdService {
 
     List<TSyncMaterial> listMaterial(String selectBy);
     
-    List<TSyncMaterial> listMaterial(String selectBy, Integer page, Integer size);
+    PageVo<TSyncMaterial> listMaterial(String selectBy, Integer page, Integer size);
     
     /**
      * 结束指定物料分类的盘点

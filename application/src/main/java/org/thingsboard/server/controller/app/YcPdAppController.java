@@ -9,10 +9,12 @@ import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.common.data.mes.sys.TSysPdRecord;
 import org.thingsboard.server.common.data.mes.sys.TSysUserDetail;
+import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.mes.dto.PdMaterialsDto;
+import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.vo.PdMaterialsVo;
 import org.thingsboard.server.service.security.model.SecurityUser;
 
@@ -40,12 +42,12 @@ public class YcPdAppController extends BaseController {
             @ApiImplicitParam(name = "size", value = "数量(默认10条)", required = false)
     })
     @GetMapping("/listMaterial")
-    public ResponseResult<List<TSyncMaterial>> listMaterial(
+    public ResponseResult<PageVo<TSyncMaterial>> listMaterial(
             @RequestParam(value = "selectBy", defaultValue = "") String selectBy,
             @RequestParam(value = "current", defaultValue = "0") Integer current,
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        List<TSyncMaterial> tSyncMaterials = ycPdService.listMaterial(selectBy, current, size);
-        return ResultUtil.success(tSyncMaterials);
+        PageVo<TSyncMaterial> pageData = ycPdService.listMaterial(selectBy, current, size);
+        return ResultUtil.success(pageData);
     }
 
 
