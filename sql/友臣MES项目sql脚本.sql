@@ -943,3 +943,28 @@ COMMENT ON COLUMN t_sys_pd_record_split.nc_order_no IS 'ERP盘点单号';
 ALTER TABLE t_sys_recipe_input ADD COLUMN allowable_deviation NUMERIC(10,6);
 COMMENT ON COLUMN t_sys_recipe_input.allowable_deviation IS '允许偏差';
 
+
+-- 2025-12-11 创建班别人员视图，用于APP工单列表查询
+-- public.class_personnel_view source
+
+CREATE OR REPLACE VIEW class_personnel_view
+AS SELECT class_id,
+          personnel_id,
+          user_id,
+          nc_cwkid
+   FROM ( SELECT t_1.class_id,
+                 b.personnel_id,
+                 b.user_id,
+                 t_1.nc_cwkid
+          FROM t_sys_class t_1
+                   LEFT JOIN t_sys_class_group_leader_rel t1 ON t_1.class_id = t1.class_id
+                   JOIN t_sys_personnel_info b ON t1.personnel_id = b.personnel_id
+          UNION ALL
+          SELECT t_1.class_id,
+                 b.personnel_id,
+                 b.user_id,
+                 t_1.nc_cwkid
+          FROM t_sys_class t_1
+                   LEFT JOIN t_sys_class_personnel_rel t1 ON t_1.class_id = t1.class_id
+                   JOIN t_sys_personnel_info b ON t1.personnel_id = b.personnel_id) t
+   GROUP BY class_id, personnel_id, user_id, nc_cwkid;
