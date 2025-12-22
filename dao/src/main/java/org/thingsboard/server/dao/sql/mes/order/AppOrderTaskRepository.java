@@ -60,10 +60,8 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
             "-- 关联班别获取组长组员，改为视图关联，用班别id和产线id关联\n" +
             "JOIN class_personnel_view cpv on cpv.class_id = d.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "where TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD')=?2 " +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
 //            "AND d.class_id IN (\n" +
 //            "    SELECT class_id\n" +
 //            "    FROM (\n" +
@@ -93,10 +91,8 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_process_info c on b.process_id =c.process_id \n" +
             "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
             "JOIN class_personnel_view cpv on cpv.class_id = d.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "where TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD')=?2 " +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
             "and a.is_deleted='0' " +
             "AND cpv.user_id = ?1\n" +
             "and (c.process_number=?3 or ?3='' or ?3 is null) " +
@@ -115,10 +111,8 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "-- 关联班别获取组长组员，改为视图关联，用班别id和产线id关联\n" +
             "JOIN class_personnel_view cpv on cpv.class_id = t2.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
             //"LEFT JOIN t_sys_personnel_info p ON c.person_id = p.personnel_id\n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "WHERE c.process_status = '0'\n" +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
             "AND a.is_deleted = '0'\n" +
             "AND cpv.user_id = ?1\n" +
             "-- 合并两种情况的判断条件\n" +
@@ -186,11 +180,9 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "JOIN t_sys_process_class_rel t2 ON t2.process_id = d.process_id \n" +
             "-- 关联班别获取组长组员，改为视图关联，用班别id和产线id关联\n" +
             "JOIN class_personnel_view cpv on cpv.class_id = t2.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             //"LEFT JOIN t_sys_personnel_info f ON c.person_id = f.personnel_id\n" +
             "WHERE c.process_status = '0'\n" +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
             "AND a.is_deleted = '0'\n" +
             "AND cpv.user_id = ?1\n" +
             "-- 合并两种情况的判断条件\n" +
@@ -218,10 +210,8 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
             "left join t_sys_process_info g on g.process_id = a2.process_id \n" +
             "JOIN t_sys_process_class_rel t2 ON t2.process_id = a2.process_id \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "where 1=1 \n" +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
             "and t2.class_id in (select class_id  from \n" +
             "(select a.class_id from t_sys_class_group_leader_rel a \n" +
             "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
@@ -277,6 +267,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "a2.old_record_type_pd recordTypePd \n" +
             "from t_bus_order_head a \n" +
             "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
             //"join t_sys_personnel_info b on a2.person_id =b.personnel_id  \n" +
@@ -288,9 +279,6 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h2 on a2.order_process_id = h2.order_process_id \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h on a2.old_order_process_id = h.order_process_id \n" +
             "where 1=1 \n" +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
 //            "and t2.class_id in (select class_id  from \n" +
 //            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
 //            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
@@ -311,14 +299,13 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     /* 获取生产中任务 行数 */
     @Query(value = "select count(1)\n" +
             "from t_bus_order_head a \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
             "join t_sys_personnel_info b on a2.person_id =b.personnel_id \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h on a2.old_order_process_id = h.order_process_id \n" +
             "where 1=1 " +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
+
             "and b.user_id =?1 and a2.process_status in (?2) and a.is_deleted='0' and h.record_type_pd is not null",nativeQuery = true)
     int getTaskListHandOverCountByPersonIdAndProcessStatus(String userId, List<String> processStatus);
 
@@ -458,6 +445,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "h2.record_type_pd executeRecordTypePd, \n" +
             "a2.old_record_type_pd recordTypePd \n" +
             "from t_bus_order_head a \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
             "join t_sys_personnel_info b on a2.person_id =b.personnel_id  \n" +
@@ -466,9 +454,6 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD' GROUP BY order_process_id) h2 on a2.order_process_id = h2.order_process_id \n" +
             "left join (select order_process_id,max(record_type_pd) as record_type_pd from t_bus_order_process_record where bus_type='PD'  and record_type_pd is not null GROUP BY order_process_id) h on a2.old_order_process_id = h.order_process_id \n" +
             "where 1=1 \n" +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
             "and (b.user_id =?1 or \n" +
             "b.user_id in (select b.user_id \n" +
             "from  (select * from t_sys_personnel_info b1 join t_sys_class_personnel_rel b2 on b1.personnel_id=b2.personnel_id) a\n" +
@@ -482,6 +467,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     /* 已完工任务 行数 */
     @Query(value = "select COUNT(1)\n" +
             "from t_bus_order_head a \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join (select a.*,b.order_process_id  to_order_process_id " +
             "from t_bus_order_process a left join (select order_process_id ,old_order_process_id from t_bus_order_process where type='3') as  b " +
@@ -494,9 +480,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "-- 关联班别获取组长组员，改为视图关联，用班别id和产线id关联\n" +
             "JOIN class_personnel_view cpv on cpv.class_id = t2.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
             "where 1=1 " +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
+
 //            "and t2.class_id in (\n" +
 //            "select class_id  from \n" +
 //            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
@@ -563,6 +547,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             ",b2.name as handOverPersonName \n" +
             ",TO_CHAR(a2.old_hand_over_time,'YYYY-MM-DD HH24:MI:SS') as transferTime \n" +
             "from t_bus_order_head a \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join (select a.*,b.order_process_id  to_order_process_id from t_bus_order_process a " +
@@ -583,9 +568,6 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "-- 关联班别获取组长组员，改为视图关联，用班别id和产线id关联\n" +
             "JOIN class_personnel_view cpv on cpv.class_id = t2.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
             "where 1=1 " +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
 //            "and t2.class_id in (\n" +
 //            "select class_id  from \n" +
 //            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
@@ -608,6 +590,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     /* 获取明日任务 行数 */
     @Query(value = "select count(1) \n" +
             "from t_bus_order_head a \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "JOIN t_bus_order_process_lk b ON a.order_id = b.order_id \n" +
             "JOIN t_bus_order_process c ON b.order_process_id = c.order_process_id \n" +
@@ -616,9 +599,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "-- 关联班别获取组长组员，改为视图关联，用班别id和产线id关联\n" +
             "JOIN class_personnel_view cpv on cpv.class_id = t2.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
             "where 1=1 \n" +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
+
             "and TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?2 and a.is_deleted='0' " +
             "and (body_lot=?3 or ?3='' or ?3 is null)" +
 //            "and t2.class_id in (\n" +
@@ -680,10 +661,8 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
             "-- 关联班别获取组长组员，改为视图关联，用班别id和产线id关联\n" +
             "JOIN class_personnel_view cpv on cpv.class_id = d.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "where TO_CHAR(body_plan_start_date,'YYYY-MM-DD') =?2  " +
-            "and a.nc_cwkid in(SELECT ud.nc_cwkid FROM t_sys_user_detail ud\n" +
-            "join t_bus_user_current_org_line col on ud.nc_pk_org=col.org and ud.user_id=col.user_id\n" +
-            "where  ud.user_id=?1 ) \n"+
 //            "AND d.class_id IN (\n" +
 //            "    SELECT class_id\n" +
 //            "    FROM (\n" +
