@@ -968,3 +968,32 @@ AS SELECT class_id,
                    LEFT JOIN t_sys_class_personnel_rel t1 ON t_1.class_id = t1.class_id
                    JOIN t_sys_personnel_info b ON t1.personnel_id = b.personnel_id) t
    GROUP BY class_id, personnel_id, user_id, nc_cwkid;
+
+
+--- 2025-12-22 补充开发遗漏脚本
+ALTER TABLE t_sys_recipe ADD COLUMN pk_org VARCHAR(255);
+COMMENT ON COLUMN t_sys_recipe.pk_org IS '基地ID';
+
+ALTER TABLE t_sys_recipe ADD COLUMN org_name VARCHAR(100);
+COMMENT ON COLUMN t_sys_recipe.org_name IS '基地';
+
+ALTER TABLE t_sys_pd_record ADD COLUMN nc_vwkname VARCHAR(255);
+COMMENT ON COLUMN t_sys_pd_record.nc_vwkname IS '产线';
+
+ALTER TABLE t_sys_pd_record ADD COLUMN review_status VARCHAR(255);
+COMMENT ON COLUMN t_sys_pd_record.review_status IS '审核状态';
+
+
+ALTER TABLE "public"."t_bus_order_process_record" ADD COLUMN "group_code" varchar(255) COLLATE "pg_catalog"."default";
+COMMENT ON COLUMN "public"."t_bus_order_process_record"."group_code" IS '分组编码';
+
+ALTER TABLE "public"."t_bus_push_message" ADD COLUMN "is_push" bool NOT NULL DEFAULT false;
+COMMENT ON COLUMN "public"."t_bus_push_message"."is_push" IS '是否已推送';
+
+ALTER TABLE "public"."t_sys_pd_record" ADD COLUMN "nc_vwkname" varchar(255) COLLATE "pg_catalog"."default";
+COMMENT ON COLUMN "public"."t_sys_pd_record"."nc_vwkname" IS '产线名称';
+
+ALTER TABLE "public"."t_sys_pd_record_split" ADD COLUMN "nc_vwkname" varchar(255) COLLATE "pg_catalog"."default";
+COMMENT ON COLUMN "public"."t_sys_pd_record_split"."nc_vwkname" IS '产线名称';
+
+
