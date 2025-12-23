@@ -63,6 +63,7 @@ import org.thingsboard.server.dao.mes.ncWarehouse.NcWarehouseService;
 import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
 import org.thingsboard.server.dao.service.DataValidator;
 import org.thingsboard.server.dao.service.PaginatedRemover;
+import org.thingsboard.server.dao.sql.mes.ncWorkline.NcWorklineRepository;
 import org.thingsboard.server.dao.sql.mes.role.RoleUserRepository;
 import org.thingsboard.server.dao.sql.mes.user.TBusUserCurrentOrgLineRepository;
 import org.thingsboard.server.dao.sql.mes.user.UserDetailRepository;
@@ -120,6 +121,8 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
     @Autowired
     private NcWarehouseService ncWarehouseService;
 
+    @Autowired
+    private NcWorklineRepository ncWorklineRepository;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
@@ -813,7 +816,13 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
             return Collections.emptyList();
         }
         String userId = user.getId().toString();
-        List<TSysUserDetail> details = userDetailRepository.findByUserIdAndNcPkOrg(userId, pkOrg);
+        List<TSysUserDetail> details;
+        if(StringUtils.isEmpty(pkOrg)){
+            details = userDetailRepository.findByUserId(userId);
+        }else{
+            details = userDetailRepository.findByUserIdAndNcPkOrg(userId, pkOrg);
+        }
+
         List<String> cwkids = details.stream().map(TSysUserDetail::getNcCwkid).distinct().collect(Collectors.toList());
         return ncWorklineService.findAllByCwkids(cwkids);
     }
@@ -834,11 +843,13 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         // 先保存到表
         TBusUserCurrentOrgLine entity = new TBusUserCurrentOrgLine();
         entity.setUserId(userId);
-        entity.setOrg(pkOrg);
+        NcWorkline wl=ncWorklineRepository.findByCwkid(cwkid);
+        if(wl==null){throw  new RuntimeException("未找到产线信息:"+cwkid);}
+        entity.setOrg(wl.getPkOrg());
         entity.setWorkline(cwkid);
         userCurrentOrgLineRepository.save(entity);
         // 再存入redis
-        redisTemplate.opsForHash().put("user:orgline:" + userId, "pkOrg", pkOrg);
+        redisTemplate.opsForHash().put("user:orgline:" + userId, "pkOrg", wl.getPkOrg());
         redisTemplate.opsForHash().put("user:orgline:" + userId, "cwkid", cwkid);
     }
 

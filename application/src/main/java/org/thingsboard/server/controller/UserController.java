@@ -674,14 +674,14 @@ public class UserController extends BaseController {
     @GetMapping("/noauth/user/worklineList")
     public ResponseResult<List<NcWorkline>> getWorkLineListByUserNameAndPkOrg(
             @RequestParam("username") String username,
-            @RequestParam("pkOrg") String pkOrg) {
+            @RequestParam(value = "pkOrg", required = false) String pkOrg) {
         List<NcWorkline> list = userService.findLineListByUserNameAndPkOrg(username, pkOrg);
         return ResultUtil.success(list);
     }
 
     @ApiOperation("切换当前用户的基地和产线")
     @PostMapping("/user/switchOrgLine")
-    public ResponseResult<Void> switchOrgLine(@RequestParam("pkOrg") String pkOrg,
+    public ResponseResult<Void> switchOrgLine(@RequestParam(value = "pkOrg", required = false) String pkOrg,
                                               @RequestParam("cwkid") String cwkid) throws ThingsboardException {
         SecurityUser securityUser = getCurrentUser();
         if(securityUser != null&& securityUser.getPkOrg()!=null) {
