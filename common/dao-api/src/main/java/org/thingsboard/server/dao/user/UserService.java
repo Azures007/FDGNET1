@@ -212,6 +212,8 @@ public interface UserService {
 	 * @return
 	 */
 	List<String> getUserCurrentCwkid(String userId);
+
+	String getOneUserCurrentCwkid(String userId);
 	/**
 	 * 获取当前用户的第一个产线
 	 * @param userId

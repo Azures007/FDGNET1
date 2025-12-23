@@ -111,10 +111,10 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "-- 关联班别获取组长组员，改为视图关联，用班别id和产线id关联\n" +
             "JOIN class_personnel_view cpv on cpv.class_id = t2.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
             //"LEFT JOIN t_sys_personnel_info p ON c.person_id = p.personnel_id\n" +
-            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
+            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id=?1 \n" +
             "WHERE c.process_status = '0'\n" +
             "AND a.is_deleted = '0'\n" +
-            "AND cpv.user_id = ?1\n" +
+            "AND cpv.user_id =?1\n" +
             "-- 合并两种情况的判断条件\n" +
             "AND (\n" +
             "    (c.person_id IS NULL AND (c.type = '1' OR c.type IS NULL))  -- 未分配任务的条件\n" +
@@ -210,19 +210,11 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
             "left join t_sys_process_info g on g.process_id = a2.process_id \n" +
             "JOIN t_sys_process_class_rel t2 ON t2.process_id = a2.process_id \n" +
-            "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
-            "where 1=1 \n" +
-            "and t2.class_id in (select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id)  " +
-            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='0' " +
-            "and (g.process_number=?4 or ?4='' or ?4 is null) " +
+            "JOIN class_personnel_view cpv on cpv.class_id = t2.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
+            "join t_bus_user_current_org_line e on e.workline=a.nc_cwkid and e.user_id=?1\n" +
+            "where cpv.user_id=?1\n"+
+            "and a2.process_status in (?2) and a2.type =?3 and a.is_deleted='0'\n" +
+            "and (g.process_number=?4 or ?4='' or ?4 is null) \n" +
             "and (a.body_lot=?5 or ?5='' or ?5 is null) \n" +
             "and (a.order_no like CONCAT('%',?6,'%') or a.body_lot like CONCAT('%',?6,'%') or a.body_material_name like CONCAT('%',?6,'%') or a.bill_no like CONCAT('%',?6,'%') or ?6='')" +
             "",nativeQuery = true)
@@ -323,18 +315,10 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "join t_bus_order_process_lk b2 on a2.order_id=b2.order_id\n" +
             "join t_bus_order_process c2 on b2.order_process_id =c2.order_process_id\n" +
             ") as p on a.order_id =p.order_id and c.process_id =p.process_id\n" +
+            "JOIN class_personnel_view cpv on cpv.class_id = d.class_id and cpv.nc_cwkid=a.nc_cwkid \n" +
+            "join t_bus_user_current_org_line e1 on e1.workline =a.nc_cwkid and e1.user_id=?1 \n" +
             "where 1=1 " +
-            "and p.class_id in (\n" +
-            "select class_id  from \n" +
-            "(select a.class_id from t_sys_class_group_leader_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1 \n" +
-            "union all \n" +
-            "select class_id from t_sys_class_personnel_rel a \n" +
-            "join t_sys_personnel_info b on a.personnel_id =b.personnel_id \n" +
-            "where b.user_id =?1) as t\n" +
-            "group by class_id\n" +
-            ")" +
+            "AND cpv.user_id =?1\n" +
             "and a.is_deleted='0' and p.order_process_id is null \n" +
             "and (c.process_number=?2 or ?2='' or ?2 is null)\n" +
             "and (a.body_lot=?3 or ?3='' or ?3 is null)" +

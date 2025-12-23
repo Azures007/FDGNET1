@@ -52,9 +52,9 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
     @Override
     public GetOrderSizeVo getOrderSize(String userId) {
         GetOrderSizeVo getOrderSizeVo;
-        String pkorg =userService.getUserCurrentPkOrg(userId);
+        String Cwkid =userService.getOneUserCurrentCwkid(userId);
         ValueOperations valueOperations = redisTemplate.opsForValue();
-        Object val = valueOperations.get(ORDER_HEAD_HEADER_SIZE + userId+":"+(pkorg != null ? pkorg : ""));
+        Object val = valueOperations.get(ORDER_HEAD_HEADER_SIZE + userId+":"+(Cwkid != null ? Cwkid : ""));
         if (val != null) {
             Map map = JSON.parseObject(JSON.toJSONString(val), Map.class);
             getOrderSizeVo = JSON.parseObject(JSON.toJSONString(map), GetOrderSizeVo.class);
@@ -96,7 +96,7 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
             Integer shiftTask = 0;//appOrderTaskRepository.countShiftNoAcceptTaskList(userId, "", "");
             getOrderSizeVo = new GetOrderSizeVo(currentTask, waitTask, startTask, offTask, endTask, tomorrowTask, handOverTask, waithandOverVerify, shiftTask);
             if (getOrderSizeVo != null) {
-                valueOperations.set(ORDER_HEAD_HEADER_SIZE + userId+":"+pkorg,getOrderSizeVo, 30, TimeUnit.SECONDS);
+                valueOperations.set(ORDER_HEAD_HEADER_SIZE + userId+":"+Cwkid,getOrderSizeVo, 10, TimeUnit.SECONDS);
             }
         }
         return getOrderSizeVo;

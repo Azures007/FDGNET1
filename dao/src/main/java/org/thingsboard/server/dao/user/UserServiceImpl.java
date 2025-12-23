@@ -865,7 +865,18 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
                     .orElse(null);
         }
     }
-
+    @Override
+    public String getOneUserCurrentCwkid(String userId) {
+        Object val = redisTemplate.opsForHash().get("user:orgline:" + userId, "cwkid");
+        if (val != null) {
+            return val.toString();
+        } else {
+            // 从表获取
+            return userCurrentOrgLineRepository.findById(userId)
+                    .map(TBusUserCurrentOrgLine::getWorkline)
+                    .orElse(null);
+        }
+    }
     @Override
     public List<String> getUserCurrentCwkid(String userId) {
         /*Object val = redisTemplate.opsForHash().get("user:orgline:" + userId, "cwkid");
