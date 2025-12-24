@@ -218,7 +218,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
 
     @Query(value = "select " +
-            "a.kd_material_name as lsm_material_name,record.order_process_history_id,info.name personname ,tsc.name class_name ,record.report_time||'' as report_time,tspi.process_name ,record.record_unit,record.record_qty,record.material_id," +
+            "a.kd_material_name as lsm_material_name,record.order_process_history_id,info.name personname,info.name as device_person_groups ,tsc.name class_name ,record.report_time||'' as report_time,tspi.process_name ,record.record_unit,record.record_unit as record_unit_str,record.record_qty,record.material_id," +
             "record.material_number,record.material_name,record.record_type,COALESCE(record.record_manual_qty,0) record_manual_qty ," +
             "record.iot_qty,record.iot_math,record.device_person_group_id,record.device_group_id,record.pot_number,record.record_type_bg " +
             "from t_bus_order_process_history record left join t_sys_class tsc on tsc.class_id = record.class_id " +
@@ -230,7 +230,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
             "where 1=1 " +
             "and  record.order_no=:orderNo " +
             "and record.process_id=:processId  " +
-            "and record.class_id=:classId " +
+            "and record.class_id in :classId " +
             "and record.bus_type='BG' " +
             "and record.record_type in(:recordTypeList) " +
             "and record.report_status='0' " +
@@ -243,10 +243,10 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
             " and (exists (select a.*,b.device_name from t_bus_order_process_device_rel a join t_sys_device b on a.device_id =b.device_id where record.device_group_id =a.device_group_id " +
             "  and (a.device_id=:deviceId or :deviceId=-1)\n" +
             ") or :deviceId=-1)\n" +
-            "order by record.report_time desc ", nativeQuery = true)
+            "order by record.report_time desc", nativeQuery = true)
     List<Map> getBGRecordByRecordtype(@Param("orderNo") String orderNo,
                                       @Param("processId") Integer processId,
-                                      @Param("classId") Integer classId,
+                                      @Param("classId") List<Integer> classId,
                                       @Param("recordTypeList") List<String> recordTypeList,
                                       @Param("materialName") String materialName,
                                       @Param("devicePersonId") Integer devicePersonId,

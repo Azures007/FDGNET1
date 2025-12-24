@@ -1482,15 +1482,18 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         //班组改成操作员班组id
         TSysClass tSysClass=null;
         TSysPersonnelInfo tSysPersonnelInfo = tSysPersonnelInfoRepository.getByUserId(userId);
+        List<Integer> classIdList = new ArrayList<>();
         if (tSysPersonnelInfo != null) {
             List<TSysClassGroupLeaderRel> classGroupLeaderRel=classGroupLeaderRepository.findByPersonnelId(tSysPersonnelInfo.getPersonnelId());
             if(!classGroupLeaderRel.isEmpty()){
-                tSysClass = tSysClassRepository.getOne(classGroupLeaderRel.get(0).getClassId());
-            }else{
-                List<TSysClassPersonnelRel> classPersonnelRel= classPersonnelRepository.findByPersonnelId(tSysPersonnelInfo.getPersonnelId());
-                if (!classPersonnelRel.isEmpty()){
-                    tSysClass = tSysClassRepository.getOne(classPersonnelRel.get(0).getClassId());
-                }
+                //tSysClass = tSysClassRepository.getOne(classGroupLeaderRel.get(0).getClassId());
+                classIdList.add(classGroupLeaderRel.get(0).getClassId());
+            }
+            List<TSysClassPersonnelRel> classPersonnelRel= classPersonnelRepository.findByPersonnelId(tSysPersonnelInfo.getPersonnelId());
+            //取所有ClassId，放到list 中
+
+            for (TSysClassPersonnelRel rel : classPersonnelRel) {
+                classIdList.add(rel.getClassId());
             }
         }
 
@@ -1506,7 +1509,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         }
         List<Map> maps = orderProcessRecordRepository.getBGRecordByRecordtype(searchDto.getOrderNo(),
                 searchDto.getProcessId(),
-                tSysClass.getClassId(),
+                classIdList,
                 recordTypeList,
                 searchDto.getSelectMaterialName(),
                 searchDto.getSelectDevicePersonnelId(),
@@ -1532,14 +1535,14 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         HashMap<String, String> deviceGroupMap = new HashMap<>();
         HashMap<String, String> personStationGroupMap = new HashMap<>();
         recordVos.stream().forEach(recordVo -> {
-            recordVo.setRecordUnitStr(recordVo.getRecordUnit());
-            TBusOrderBindCode tBusOrderBindCode = orderBindCodeRepository.findByOrderProcessHistoryId(recordVo.getOrderProcessHistoryId());
-            recordVo.setBindCodeNumber(tBusOrderBindCode == null ? "" : tBusOrderBindCode.getBindCodeNumber());
+            //recordVo.setRecordUnitStr(recordVo.getRecordUnit());
+            //TBusOrderBindCode tBusOrderBindCode = orderBindCodeRepository.findByOrderProcessHistoryId(recordVo.getOrderProcessHistoryId());
+            recordVo.setBindCodeNumber("");
             if (recordVo.getRecordType().equals("5")) {
                 recordVo.setMaterialName(LichengConstants.ORDER_REPORT_MATERIAL_NAME_5);//订单串联投入扫码时，报工提交，会保存上道订单的物料名称，这里特殊处理
             }
             //机台和机台手名称多选
-            if (StringUtils.isNotEmpty(recordVo.getDeviceGroupId())) {
+            /*if (StringUtils.isNotEmpty(recordVo.getDeviceGroupId())) {
                 if (deviceGroupMap.containsKey(recordVo.getDeviceGroupId())) {
                     recordVo.setDeviceGroups(deviceGroupMap.get(recordVo.getDeviceGroupId()));
                 } else {
@@ -1573,7 +1576,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
             }
             if (StringUtils.isNotEmpty(recordVo.getDeviceGroupId())) {
                 deviceGroupIds.add(recordVo.getDeviceGroupId());
-            }
+            }*/
 //            // 操作员列表添加数据
 //            if (recordVo.getDevicePersonId() != null && StringUtils.isNotEmpty(recordVo.getDevicePersonName())) {
 //                DevicePersonVo devicePersonVo = new DevicePersonVo();
