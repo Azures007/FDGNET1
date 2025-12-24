@@ -458,23 +458,23 @@ public class AppOrderTaskServiceImpl implements AppOrderTaskService {
      * @param orderProcessId
      * @return
      */
-    @Override
-    public PageVo<TaskListVo> listFinishProcessTaskList(Integer current, Integer size, String sort, Integer orderProcessId) {
-        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
-        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(order1);
-        orders.add(order2);
-        Sort sort1 = Sort.by(orders);
-        PageRequest of = PageRequest.of(current, size, sort1);
-        current = current * size;
-        List<Map> maps = appOrderTaskRepository.listFinishProcessTaskList(orderProcessId, of);
-        int count = appOrderTaskRepository.countFinishProcessTaskList(orderProcessId);
-        PageVo<TaskListVo> pageVo = new PageVo(size, current);
-        pageVo.setTotal(count);
-        pageVo.setList(JSON.parseArray(JSON.toJSONString(maps), TaskListVo.class));
-        return pageVo;
-    }
+//    @Override
+//    public PageVo<TaskListVo> listFinishProcessTaskList(Integer current, Integer size, String sort, Integer orderProcessId) {
+//        Sort.Order order1 = new Sort.Order("desc".equals(sort) ? Sort.Direction.DESC : Sort.Direction.ASC, "bill_date");
+//        Sort.Order order2 = new Sort.Order(Sort.Direction.DESC, "orderNo");
+//        List<Sort.Order> orders = new ArrayList<>();
+//        orders.add(order1);
+//        orders.add(order2);
+//        Sort sort1 = Sort.by(orders);
+//        PageRequest of = PageRequest.of(current, size, sort1);
+//        current = current * size;
+//        List<Map> maps = appOrderTaskRepository.listFinishProcessTaskList(orderProcessId, of);
+//        int count = appOrderTaskRepository.countFinishProcessTaskList(orderProcessId);
+//        PageVo<TaskListVo> pageVo = new PageVo(size, current);
+//        pageVo.setTotal(count);
+//        pageVo.setList(JSON.parseArray(JSON.toJSONString(maps), TaskListVo.class));
+//        return pageVo;
+//    }
 
     /**
      * 获取任务列表详情

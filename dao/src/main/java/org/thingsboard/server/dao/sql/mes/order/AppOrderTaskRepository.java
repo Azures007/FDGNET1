@@ -156,12 +156,10 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "    c.type AS type, \n" +
             "    a.body_material_specification AS bodyMaterialSpecification, \n" +
             "    c.order_process_id AS orderProcessId, \n" +
-            "    NULL AS bodyMaterialId, \n" +
-            "    NULL AS bodyMaterialNumber, \n" +
+            "    a.body_material_id as bodyMaterialId, \n" +
+            "    a.body_material_number bodyMaterialNumber, \n" +
             "    TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
             "    TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
-//            "    NULL AS bodyPlanStartDate, \n" +
-//            "    NULL AS bodyPlanFinishDate, \n" +
             "    m2.process_id AS processId,\n" +
             "    m2.process_name AS processName,\n" +
             "    m2.process_number AS processNumber,\n" +
@@ -350,10 +348,12 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "null as type, \n" +
             "null as bodyMaterialSpecification, \n" +
             "null as orderProcessId, \n" +
-            "null as bodyMaterialId, \n" +
-            "null as bodyMaterialNumber, \n" +
-            "null as bodyPlanStartDate, \n" +
-            "null as bodyPlanFinishDate, \n" +
+
+            "a.body_material_id as bodyMaterialId, \n" +
+            "a.body_material_number bodyMaterialNumber, \n" +
+            "TO_CHAR(a.body_plan_start_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanStartDate, \n" +
+            "TO_CHAR(a.body_plan_finish_date,'YYYY-MM-DD HH24:MI:SS') as bodyPlanFinishDate, \n" +
+
             "a.process_id processId,\n" +
             "a.process_name processName,\n" +
             "a.process_number processNumber, \n" +
@@ -879,48 +879,48 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
 //            "",nativeQuery = true)
 //    int countShiftTaskList(String userId, String processNumber, String bodyLot);
 
-    /* 获取已完工任务(拌料工序) */
-    @Query(value = "select a.order_id as orderId,\n" +
-            "a.craft_id as craftId, \n" +
-            "a.order_no as orderNo,\n" +
-            "a.body_lot as bodyLot,\n" +
-            "a.body_material_id as materialId,\n" +
-            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
-            "a.body_material_name as bodyMaterialName,\n" +
-            "a.body_plan_prd_qty as billPlanQty,\n" +
-            "a.body_unit as bodyUnit,\n" +
-            "a.body_unit as bodyUnitStr,\n" +
-            "a.order_status as orderStatus,\n" +
-            "a.order_pending_desc as orderPendingDesc,\n" +
-            "a.mid_mo_customer_id as midMoCustomerId,\n" +
-            "a.mid_mo_customer_name as midMoCustomerName,\n" +
-            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
-            "a.mid_mo_customer_type as midMoCustomerType,\n" +
-            "a.mid_mo_desc as midMoDesc,\n" +
-            "null as finishTime,\n" +
-            "null as type, \n" +
-            "null as bodyMaterialSpecification, \n" +
-            "c.order_process_id as orderProcessId, \n" +
-            "null as bodyMaterialId, \n" +
-            "null as bodyMaterialNumber, \n" +
-            "null as bodyPlanStartDate, \n" +
-            "null as bodyPlanFinishDate, \n" +
-            "d.process_id processId,\n" +
-            "d.process_name processName,\n" +
-            "d.process_number processNumber, \n" +
-            "null as executeProcessId,\n" +
-            "null as executeProcessName,\n" +
-            "null as executeProcessNumber, \n" +
-            "null as executeProcessStatus \n" +
-            ",null executeRecordTypePd \n" +
-            ",null recordTypePd \n" +
-            "from t_bus_order_head as a\n" +
-            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
-            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
-            "join t_sys_process_info d on c.process_id =d.process_id \n" +
-            "where a.order_status='1' \n" +
-            "and c.process_status ='1' and d.process_number ='GX004' and c.order_process_id<>?1" ,nativeQuery = true)
-    List<Map> listFinishProcessTaskList(Integer orderProcessId,PageRequest of);
+//    /* 获取已完工任务(拌料工序) */
+//    @Query(value = "select a.order_id as orderId,\n" +
+//            "a.craft_id as craftId, \n" +
+//            "a.order_no as orderNo,\n" +
+//            "a.body_lot as bodyLot,\n" +
+//            "a.body_material_id as materialId,\n" +
+//            "TO_CHAR(a.bill_date,'YYYY-MM-DD HH24:MI:SS') as billDate,\n" +
+//            "a.body_material_name as bodyMaterialName,\n" +
+//            "a.body_plan_prd_qty as billPlanQty,\n" +
+//            "a.body_unit as bodyUnit,\n" +
+//            "a.body_unit as bodyUnitStr,\n" +
+//            "a.order_status as orderStatus,\n" +
+//            "a.order_pending_desc as orderPendingDesc,\n" +
+//            "a.mid_mo_customer_id as midMoCustomerId,\n" +
+//            "a.mid_mo_customer_name as midMoCustomerName,\n" +
+//            "a.mid_mo_customer_number as midMoCustomerNumber,\n" +
+//            "a.mid_mo_customer_type as midMoCustomerType,\n" +
+//            "a.mid_mo_desc as midMoDesc,\n" +
+//            "null as finishTime,\n" +
+//            "null as type, \n" +
+//            "null as bodyMaterialSpecification, \n" +
+//            "c.order_process_id as orderProcessId, \n" +
+//            "null as bodyMaterialId, \n" +
+//            "null as bodyMaterialNumber, \n" +
+//            "null as bodyPlanStartDate, \n" +
+//            "null as bodyPlanFinishDate, \n" +
+//            "d.process_id processId,\n" +
+//            "d.process_name processName,\n" +
+//            "d.process_number processNumber, \n" +
+//            "null as executeProcessId,\n" +
+//            "null as executeProcessName,\n" +
+//            "null as executeProcessNumber, \n" +
+//            "null as executeProcessStatus \n" +
+//            ",null executeRecordTypePd \n" +
+//            ",null recordTypePd \n" +
+//            "from t_bus_order_head as a\n" +
+//            "join t_bus_order_process_lk b on a.order_id =b.order_id \n" +
+//            "join t_bus_order_process c on b.order_process_id =c.order_process_id \n" +
+//            "join t_sys_process_info d on c.process_id =d.process_id \n" +
+//            "where a.order_status='1' \n" +
+//            "and c.process_status ='1' and d.process_number ='GX004' and c.order_process_id<>?1" ,nativeQuery = true)
+//    List<Map> listFinishProcessTaskList(Integer orderProcessId,PageRequest of);
 
     /* 获取用户的移交记录 */
     @Query(value = "select  distinct a.order_id as orderId,\n" +

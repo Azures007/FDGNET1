@@ -74,7 +74,7 @@ public interface AppOrderTaskService {
      */
     PageVo<TaskListFinishVo> getTaskListByPersonIdAndProcessStatus(Integer current, Integer size, List<String> processStatusList, String userId, String sort, OrderTaskSelectDto selectDto);
 
-    PageVo<TaskListVo> listFinishProcessTaskList(Integer current, Integer size, String sort,Integer orderProcessId);
+//    PageVo<TaskListVo> listFinishProcessTaskList(Integer current, Integer size, String sort,Integer orderProcessId);
 
     /**
      * 获取任务列表详情

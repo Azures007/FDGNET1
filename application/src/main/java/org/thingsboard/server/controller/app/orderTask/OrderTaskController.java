@@ -208,24 +208,24 @@ public class OrderTaskController extends BaseController {
 //        }
 //    }
 
-    @ApiOperation("获取已完工任务(拌料工序)")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
-            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
-    })
-    @PostMapping("/listFinishProcessTaskList")
-    public ResponseResult<PageVo<TaskListVo>> listFinishProcessTaskList(@RequestParam(value = "current", defaultValue = "0") Integer current,
-                                                                        @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                                        @RequestParam(value = "sort", defaultValue = "desc") String sort,
-                                                                        @RequestParam("orderProcessId") Integer orderProcessId) {
-        if ("desc".equals(sort) || "asc".equals(sort)) {
-            PageVo<TaskListVo> taskListVoPageVo = appOrderTaskService.listFinishProcessTaskList(current, size ,sort,orderProcessId);
-            return ResultUtil.success(taskListVoPageVo);
-        } else {
-            return ResultUtil.error("排序参数值错误！");
-        }
-    }
+//    @ApiOperation("获取已完工任务(拌料工序)")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
+//            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false),
+//            @ApiImplicitParam(name = "sort", value = "下单时间排序，desc倒叙，asc正序", readOnly = false)
+//    })
+//    @PostMapping("/listFinishProcessTaskList")
+//    public ResponseResult<PageVo<TaskListVo>> listFinishProcessTaskList(@RequestParam(value = "current", defaultValue = "0") Integer current,
+//                                                                        @RequestParam(value = "size", defaultValue = "10") Integer size,
+//                                                                        @RequestParam(value = "sort", defaultValue = "desc") String sort,
+//                                                                        @RequestParam("orderProcessId") Integer orderProcessId) {
+//        if ("desc".equals(sort) || "asc".equals(sort)) {
+//            PageVo<TaskListVo> taskListVoPageVo = appOrderTaskService.listFinishProcessTaskList(current, size ,sort,orderProcessId);
+//            return ResultUtil.success(taskListVoPageVo);
+//        } else {
+//            return ResultUtil.error("排序参数值错误！");
+//        }
+//    }
 
 
     @ApiOperation("获取已完工任务")
