@@ -261,3 +261,5 @@ INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_i
 INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br)  VALUES (236, '菜单管理', 'domain', '/menuAdmin', '0', 32, '1', '2025-08-15', 'tenant@thingsboard.org', '2025-08-15', 'tenant@thingsboard.org', 'link', '', 10, '菜单管理');
 -- 盘点记录-审核
 INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br, menu_icon) VALUES(253, '盘点记录-审核', '', '/pd-mgt/audit', '1', 233, '1', '2025-12-01', 'tenant@thingsboard.org', '2025-12-01', 'tenant@thingsboard.org', NULL, '', 0, '盘点记录-审核', NULL);
+
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br, menu_icon) VALUES(252, '复制', 'domain', '/recipe/copy', '1', 244, '1', '2025-11-10', 'tenant@thingsboard.org', '2025-11-10', 'tenant@thingsboard.org', NULL, '', 4, '复制', NULL);
