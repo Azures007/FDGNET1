@@ -648,8 +648,8 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
                         java.math.BigDecimal std = input.getStandardInput();
                             java.math.BigDecimal deviation = input.getAllowableDeviation() != null ? input.getAllowableDeviation() : new java.math.BigDecimal("0.00");
                             Limits limits = new Limits();
-                            limits.lower = std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue();
-                            limits.upper = std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue();
+                            limits.lower = std.subtract(deviation).floatValue();
+                            limits.upper = std.add(deviation).floatValue();
                             return limits;
                     }
                 }

@@ -562,8 +562,8 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                             if (recipeInput.getStandardInput() != null) {
                                                 java.math.BigDecimal std = recipeInput.getStandardInput();
                                                 java.math.BigDecimal deviation = recipeInput.getAllowableDeviation() != null ? recipeInput.getAllowableDeviation() : new java.math.BigDecimal("0.00");
-                                                result.setInputLowerLimit(std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
-                                                result.setInputUpperLimit(std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
+                                                result.setInputLowerLimit(std.subtract(deviation).floatValue());
+                                                result.setInputUpperLimit(std.add(deviation).floatValue());
                                                 result.setStandardInput(std);
                                                 result.setDisplayDefaultValue(recipeInput.getDisplayDefaultValue());
                                             }
@@ -600,8 +600,8 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                         // 上下限
                                         java.math.BigDecimal std = standardInput;
                                         java.math.BigDecimal deviation = recipeInput.getAllowableDeviation() != null ? recipeInput.getAllowableDeviation() : new java.math.BigDecimal("0.00");
-                                        add.setInputLowerLimit(std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
-                                        add.setInputUpperLimit(std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
+                                        add.setInputLowerLimit(std.subtract(deviation).floatValue());
+                                        add.setInputUpperLimit(std.add(deviation).floatValue());
                                         add.setStandardInput(standardInput);
                                         add.setDisplayDefaultValue(recipeInput.getDisplayDefaultValue());
                                         groupResults.add(add);
@@ -669,8 +669,8 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                 if (recipeInput.getStandardInput() != null) {
                                     java.math.BigDecimal std = recipeInput.getStandardInput();
                                     java.math.BigDecimal deviation = recipeInput.getAllowableDeviation() != null ? recipeInput.getAllowableDeviation() : new java.math.BigDecimal("0.00");
-                                    result.setInputLowerLimit(std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
-                                    result.setInputUpperLimit(std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
+                                    result.setInputLowerLimit(std.subtract(deviation).floatValue());
+                                    result.setInputUpperLimit(std.add(deviation).floatValue());
                                     }
                                 }
                             }
@@ -702,8 +702,8 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                                         // 上下限
                                         java.math.BigDecimal std = standardInput;
                                         java.math.BigDecimal deviation = recipeInput.getAllowableDeviation() != null ? recipeInput.getAllowableDeviation() : new java.math.BigDecimal("0.00");
-                                        add.setInputLowerLimit(std.subtract(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
-                                        add.setInputUpperLimit(std.add(deviation).setScale(2, java.math.RoundingMode.HALF_UP).floatValue());
+                                        add.setInputLowerLimit(std.subtract(deviation).floatValue());
+                                        add.setInputUpperLimit(std.add(deviation).floatValue());
                                         orderPPbomResults.add(add);
                                     }
                                 }
