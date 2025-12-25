@@ -844,13 +844,21 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         TBusUserCurrentOrgLine entity = new TBusUserCurrentOrgLine();
         entity.setUserId(userId);
         NcWorkline wl=ncWorklineRepository.findByCwkid(cwkid);
-        if(wl==null){throw  new RuntimeException("未找到产线信息:"+cwkid);}
-        entity.setOrg(wl.getPkOrg());
+        //if(wl==null){throw  new RuntimeException("未找到产线信息:"+cwkid);}
+        if(wl==null) {
+            entity.setOrg(pkOrg);
+        }else{
+            entity.setOrg(wl.getPkOrg());
+        }
         entity.setWorkline(cwkid);
         userCurrentOrgLineRepository.save(entity);
         // 再存入redis
-        redisTemplate.opsForHash().put("user:orgline:" + userId, "pkOrg", wl.getPkOrg());
-        redisTemplate.opsForHash().put("user:orgline:" + userId, "cwkid", cwkid);
+        if (entity.getOrg() != null) {
+            redisTemplate.opsForHash().put("user:orgline:" + userId, "pkOrg", entity.getOrg());
+        }
+        if (cwkid != null) {
+            redisTemplate.opsForHash().put("user:orgline:" + userId, "cwkid", cwkid);
+        }
     }
 
     @Override

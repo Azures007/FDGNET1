@@ -916,19 +916,19 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
                     orderPPbomResult.setPersonalCount(null == personMap.get("personanl_count") ? "0" : String.valueOf(personMap.get("personanl_count")));
                 }
             } else {
-                var totalMap = ppbomRecordTotals.stream().filter(r -> String.valueOf(r.get("order_ppbom_id")).equals(orderPPbomResult.getOrderPPBomId() + "")
-                &&String.valueOf(r.get("group_code")).equals(groupCode+"")
+                var totalMap = ppbomRecordTotals.stream().filter(r -> String.valueOf(r.get("group_code")).equals(groupCode+"")
                         &&String.valueOf(r.get("material_number")).equals(orderPPbomResult.getMaterialNumber()+"")).findFirst().orElse(null);
-                var personMap = finalPpbomRecordPersons.stream().filter(r -> String.valueOf(r.get("order_ppbom_id")).equals(orderPPbomResult.getOrderPPBomId() + "")).findFirst().orElse(null);
+                //var personMap = finalPpbomRecordPersons.stream().filter(r -> String.valueOf(r.get("order_ppbom_id")).equals(orderPPbomResult.getOrderPPBomId() + "")).findFirst().orElse(null);
                 if (null != totalMap) {
                     orderPPbomResult.setRecordQtyTotal(Float.parseFloat(String.valueOf(totalMap.get("record_qty"))));
                     orderPPbomResult.setRecordUnit(String.valueOf(totalMap.get("record_unit")));
                     orderPPbomResult.setRecordUnitStr(String.valueOf(totalMap.get("record_unit")));
+                    orderPPbomResult.setRecordQtyPersonal(Float.parseFloat(String.valueOf(totalMap.get("record_qty"))));
                 }
-                if (null != personMap) {
+                /*if (null != personMap) {
                     orderPPbomResult.setRecordQtyPersonal(Float.parseFloat(String.valueOf(personMap.get("record_qty"))));
                     orderPPbomResult.setPersonalCount(String.valueOf(personMap.get("personanl_count")));
-                }
+                }*/
             }//"personanl_count" -> "9.0"
             //累计锅数取分组中每个物料投入次数的最小值
             int allPotCount = getMinInputCountByGroup(orderProcessId, groupMaterialCodes, groupCode);
