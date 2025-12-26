@@ -150,8 +150,10 @@ public class OrderBackendServiceImpl implements OrderBackendService {
                             TSysClass classById = classService.getClassById(processClassRel.getClassId());
                             // 工艺路线的班别允许绑定多个产线的白班和夜班，增加按产线id匹配班别
                             if (classById.getCwkid() != null && classById.getCwkid().equals(tBusOrderHeadRt.getCwkid())) {
+                                startOrderClass = classById;
+                                break;
                                 // 匹配订单的班组：通过班别中的ERP班组来匹配；如果没有匹配到则还是用原来的方式匹配
-                                if (StringUtils.isNotEmpty(tBusOrderHeadRt.getMidMoEntryTeamNumber())
+                                /*if (StringUtils.isNotEmpty(tBusOrderHeadRt.getMidMoEntryTeamNumber())
                                         && StringUtils.isNotEmpty(classById.getClassTeamNumber())
                                         && tBusOrderHeadRt.getMidMoEntryTeamNumber().equals(classById.getClassTeamNumber())) {
                                     // 1.通过班别中的ERP班组来匹配
@@ -165,7 +167,7 @@ public class OrderBackendServiceImpl implements OrderBackendService {
                                         startOrderClass = sysClassC;
                                         break;
                                     }
-                                }
+                                }*/
                             }
                         }
                     }
