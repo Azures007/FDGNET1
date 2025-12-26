@@ -158,6 +158,9 @@ import { HELP_MARKDOWN_COMPONENT_TOKEN, SHARED_MODULE_TOKEN } from '@shared/comp
 import { TbMarkdownComponent } from '@shared/components/markdown.component';
 import { ProtobufContentComponent } from './components/protobuf-content.component';
 import { ToastDialogComponent } from './components/dialog/toast-dialog.component';
+import { LicenceComponent } from '@shared/components/licence/licence.component';
+
+
 
 import { GetMatchStrPipe } from '@app/modules/home/models/myPipe.models';
 import { PaginatorResetDirective } from './directives/paginator-reset.directive';
@@ -279,6 +282,7 @@ export function MarkedOptionsFactory(markedOptionsService: MarkedOptionsService)
     TogglePasswordComponent,
     ProtobufContentComponent,
     ToastDialogComponent,
+    LicenceComponent,
     GetMatchStrPipe,
     PaginatorResetDirective,
     TableBtnStyleResetDirective
@@ -475,6 +479,7 @@ export function MarkedOptionsFactory(markedOptionsService: MarkedOptionsService)
     CopyButtonComponent,
     TogglePasswordComponent,
     ProtobufContentComponent,
+    LicenceComponent,
     GetMatchStrPipe,
     PaginatorResetDirective,
     TableBtnStyleResetDirective

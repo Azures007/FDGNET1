@@ -25,6 +25,7 @@ import { AuthService } from '@core/auth/auth.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangeOrgComponent } from '@app/modules/home/components/account/change-org.component';
+import { LicenceComponent } from '@shared/components/licence/licence.component';
 
 @Component({
   selector: 'tb-user-menu',
@@ -119,6 +120,13 @@ export class UserMenuComponent implements OnInit, OnDestroy {
       height: "auto",
       panelClass: 'custom-modalbox',
       data: this.user
+    })
+  }
+  openLicence() {
+    this.dialog.open(LicenceComponent, {
+      width: "600px",
+      height: "auto",
+      panelClass: 'custom-modalbox',
     })
   }
 }
