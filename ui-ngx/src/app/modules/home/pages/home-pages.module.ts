@@ -57,6 +57,8 @@ import { InventoryMgtModule } from '@home/pages/invetory-mgt/invetory-mgt.module
 import { PdMgtModule } from '@home/pages/pd-mgt/pd-mgt.module';
 import { ContentModule } from '@home/pages/content/content.module';
 import { RecipeModule } from '@home/pages/recipe/recipe.module';
+import { ReportRecordModule } from '@home/pages/report-record/report-record.module';
+
 
 
 @NgModule({
@@ -96,7 +98,8 @@ import { RecipeModule } from '@home/pages/recipe/recipe.module';
     InventoryMgtModule,
     PdMgtModule,
     ContentModule,
-    RecipeModule
+    RecipeModule,
+    ReportRecordModule
   ],
   providers: [
     {
