@@ -123,6 +123,12 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+        <!--   easyexcel报表导出     -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>2.1.2</version>
+        </dependency>
 
 <!--        试验jsonb数据格式用-->
         <!-- https://mvnrepository.com/artifact/io.hypersistence/hypersistence-utils-hibernate-52 -->
