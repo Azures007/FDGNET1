@@ -79,44 +79,19 @@ public class ReportRecordController extends BaseController {
             @RequestParam(value = "current", defaultValue = "0") Integer current,
             @RequestParam(value = "size", defaultValue = "10") Integer size,
             @RequestBody ReportRecordQueryDto queryDto) {
-        
-        // 如果查询开始时间为空，默认为当月月初
-        if (queryDto.getReportTimeStart() == null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.DAY_OF_MONTH, 1);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            queryDto.setReportTimeStart(calendar.getTime());
-        }
-        
-        // 如果查询结束时间为空，默认为当前时间
-        if (queryDto.getReportTimeEnd() == null) {
-            queryDto.setReportTimeEnd(new Date());
-        }
-        
+
+        setQueryTime(queryDto);
+
         Page<ReportRecordVo> reportRecordList = reportRecordService.getReportRecordListVo(current, size, queryDto);
         return ResultUtil.success(reportRecordList);
     }
-    
+
+
+
     @ApiOperation("导出报工记录列表")
     @PostMapping("/export")
     public ResponseEntity<ByteArrayResource> exportReportRecordList(@RequestBody ReportRecordQueryDto queryDto) {
-        // 时间为空，默认当月月初
-        if (queryDto.getReportTimeStart() == null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.DAY_OF_MONTH, 1);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            queryDto.setReportTimeStart(calendar.getTime());
-        }
-        // 如果查询结束时间为空，默认为当前时间
-        if (queryDto.getReportTimeEnd() == null) {
-            queryDto.setReportTimeEnd(new Date());
-        }
+        setQueryTime(queryDto);
         List<ReportRecordVo> reportRecordList = reportRecordService.getReportRecordListForExport(queryDto);
         // 使用EasyExcel生成Excel文件
         try {
@@ -134,6 +109,77 @@ public class ReportRecordController extends BaseController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    private static void setQueryTime(ReportRecordQueryDto queryDto) {
+        // 如果查询开始时间为空，默认为当月月初
+        if (queryDto.getReportTimeStart() == null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            queryDto.setReportTimeStart(calendar.getTime());
+        }
+
+        // 如果查询结束时间为空，默认为当前时间
+        if (queryDto.getReportTimeEnd() == null) {
+            queryDto.setReportTimeEnd(new Date());
+        }
+
+        // 如果开始时间和结束时间是同一天，则设置开始时间为当天00:00:00，结束时间为当天23:59:59
+        if (queryDto.getReportTimeStart() != null && queryDto.getReportTimeEnd() != null) {
+            Calendar startCal = Calendar.getInstance();
+            startCal.setTime(queryDto.getReportTimeStart());
+            Calendar endCal = Calendar.getInstance();
+            endCal.setTime(queryDto.getReportTimeEnd());
+
+            // 检查是否是同一天
+            if (startCal.get(Calendar.YEAR) == endCal.get(Calendar.YEAR)
+                    && startCal.get(Calendar.DAY_OF_YEAR) == endCal.get(Calendar.DAY_OF_YEAR)) {
+                // 设置开始时间为当天的00:00:00
+                startCal.set(Calendar.HOUR_OF_DAY, 0);
+                startCal.set(Calendar.MINUTE, 0);
+                startCal.set(Calendar.SECOND, 0);
+                startCal.set(Calendar.MILLISECOND, 0);
+                queryDto.setReportTimeStart(startCal.getTime());
+
+                // 设置结束时间为当天的23:59:59
+                endCal.set(Calendar.HOUR_OF_DAY, 23);
+                endCal.set(Calendar.MINUTE, 59);
+                endCal.set(Calendar.SECOND, 59);
+                endCal.set(Calendar.MILLISECOND, 999);
+                queryDto.setReportTimeEnd(endCal.getTime());
+            }
+        }
+
+        // 如果开始时间和结束时间是同一天，则设置开始时间为当天00:00:00，结束时间为当天23:59:59
+        if (queryDto.getReportTimeStart() != null && queryDto.getReportTimeEnd() != null) {
+            Calendar startCal = Calendar.getInstance();
+            startCal.setTime(queryDto.getReportTimeStart());
+            Calendar endCal = Calendar.getInstance();
+            endCal.setTime(queryDto.getReportTimeEnd());
+
+            // 检查是否是同一天
+            if (startCal.get(Calendar.YEAR) == endCal.get(Calendar.YEAR)
+                    && startCal.get(Calendar.DAY_OF_YEAR) == endCal.get(Calendar.DAY_OF_YEAR)) {
+                // 设置开始时间为当天的00:00:00
+                startCal.set(Calendar.HOUR_OF_DAY, 0);
+                startCal.set(Calendar.MINUTE, 0);
+                startCal.set(Calendar.SECOND, 0);
+                startCal.set(Calendar.MILLISECOND, 0);
+                queryDto.setReportTimeStart(startCal.getTime());
+
+                // 设置结束时间为当天的23:59:59
+                endCal.set(Calendar.HOUR_OF_DAY, 23);
+                endCal.set(Calendar.MINUTE, 59);
+                endCal.set(Calendar.SECOND, 59);
+                endCal.set(Calendar.MILLISECOND, 999);
+                queryDto.setReportTimeEnd(endCal.getTime());
+            }
         }
     }
 }
