@@ -31,4 +31,10 @@ public class ReportRecordQueryDto {
     
     @ApiModelProperty(value = "物料编码（模糊查询）")
     private String materialNumber;
+    
+    @ApiModelProperty(value = "产品名称（模糊查询）")
+    private String productName;
+    
+    @ApiModelProperty(value = "产品编码（模糊查询）")
+    private String productNumber;
 }

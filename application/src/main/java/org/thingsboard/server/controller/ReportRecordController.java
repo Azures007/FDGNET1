@@ -19,6 +19,7 @@ import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.dto.ReportRecordQueryDto;
 import org.thingsboard.server.dao.mes.report.ReportRecordService;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -101,8 +102,9 @@ public class ReportRecordController extends BaseController {
                     .doWrite(reportRecordList);
             byte[] bytes = outputStream.toByteArray();
             ByteArrayResource resource = new ByteArrayResource(bytes);
+            String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=报工记录" + System.currentTimeMillis() + ".xlsx")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_record_" + timestamp + ".xlsx")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .contentLength(bytes.length)
                     .body(resource);

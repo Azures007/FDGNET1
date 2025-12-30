@@ -66,4 +66,12 @@ public class ReportRecordVo {
     @ExcelProperty(value = "班别名称", index = 10)
     @ApiModelProperty("班别名称")
     private String className;
+    
+    @ExcelProperty(value = "产品名称", index = 11)
+    @ApiModelProperty("产品名称")
+    private String productName;
+    
+    @ExcelProperty(value = "产品编码", index = 12)
+    @ApiModelProperty("产品编码")
+    private String productNumber;
 }

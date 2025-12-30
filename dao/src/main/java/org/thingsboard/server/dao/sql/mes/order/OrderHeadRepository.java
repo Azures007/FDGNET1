@@ -583,5 +583,7 @@ public interface OrderHeadRepository extends JpaRepository<TBusOrderHead,Integer
 
     List<TBusOrderHead> findAllByCpmohidIn(List<String> cpmohids);
 
+    List<TBusOrderHead> findAllByOrderNoIn(List<String> orderNos);
+
     int countByCraftId(TSysCraftInfo craftId);
 }
