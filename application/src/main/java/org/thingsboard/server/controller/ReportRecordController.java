@@ -155,31 +155,5 @@ public class ReportRecordController extends BaseController {
                 queryDto.setReportTimeEnd(endCal.getTime());
             }
         }
-
-        // 如果开始时间和结束时间是同一天，则设置开始时间为当天00:00:00，结束时间为当天23:59:59
-        if (queryDto.getReportTimeStart() != null && queryDto.getReportTimeEnd() != null) {
-            Calendar startCal = Calendar.getInstance();
-            startCal.setTime(queryDto.getReportTimeStart());
-            Calendar endCal = Calendar.getInstance();
-            endCal.setTime(queryDto.getReportTimeEnd());
-
-            // 检查是否是同一天
-            if (startCal.get(Calendar.YEAR) == endCal.get(Calendar.YEAR)
-                    && startCal.get(Calendar.DAY_OF_YEAR) == endCal.get(Calendar.DAY_OF_YEAR)) {
-                // 设置开始时间为当天的00:00:00
-                startCal.set(Calendar.HOUR_OF_DAY, 0);
-                startCal.set(Calendar.MINUTE, 0);
-                startCal.set(Calendar.SECOND, 0);
-                startCal.set(Calendar.MILLISECOND, 0);
-                queryDto.setReportTimeStart(startCal.getTime());
-
-                // 设置结束时间为当天的23:59:59
-                endCal.set(Calendar.HOUR_OF_DAY, 23);
-                endCal.set(Calendar.MINUTE, 59);
-                endCal.set(Calendar.SECOND, 59);
-                endCal.set(Calendar.MILLISECOND, 999);
-                queryDto.setReportTimeEnd(endCal.getTime());
-            }
-        }
     }
 }

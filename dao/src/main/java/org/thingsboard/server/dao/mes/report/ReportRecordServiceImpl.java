@@ -7,12 +7,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.mes.LichengConstants;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
+import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.mes.vo.ReportRecordVo;
 import org.thingsboard.server.dao.mes.dto.ReportRecordQueryDto;
 import org.thingsboard.server.dao.mes.report.ReportRecordService;
+import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 import org.thingsboard.server.dao.sql.mes.report.ReportRecordRepository;
 
 import javax.persistence.criteria.Predicate;
@@ -34,6 +37,9 @@ public class ReportRecordServiceImpl implements ReportRecordService {
 
     @Autowired
     private ReportRecordRepository reportRecordRepository;
+
+    @Autowired
+    private TSysCodeDscService sysCodeDscService;
 
     @Override
     public Page<TBusOrderProcessHistory> getReportRecordList(Integer current, Integer size, ReportRecordQueryDto queryDto) {
@@ -135,13 +141,21 @@ public class ReportRecordServiceImpl implements ReportRecordService {
                 vo.setPersonName(history.getPersonId().getName());
             }
             
-            // 设置报工类型名称
-            if (LichengConstants.REPORTYPE0001.equals(history.getRecordTypeBg())) {
-                vo.setRecordTypeBgName("正常");
-            } else if (LichengConstants.REPORTYPE0002.equals(history.getRecordTypeBg())) {
-                vo.setRecordTypeBgName("尾料");
-            } else {
-                vo.setRecordTypeBgName(history.getRecordTypeBg());
+            // 从字典获取record_type的标签值，并按要求进行特殊处理
+            if (history.getRecordType() != null) {
+                if ("1".equals(history.getRecordType())) {
+                    vo.setRecordTypeBgName("原辅料投入");
+                } else if ("3".equals(history.getRecordType())) {
+                    vo.setRecordTypeBgName("产成品");
+                } else {
+                    // 对于其他值，从字典获取标签值
+                    TSysCodeDsc codeDsc = sysCodeDscService.getCodeByCodeClAndCodeVale("RECORDTYPE0000", history.getRecordType());
+                    if (codeDsc != null && codeDsc.getCodeDsc() != null) {
+                        vo.setRecordTypeBgName(codeDsc.getCodeDsc());
+                    } else {
+                        vo.setRecordTypeBgName(history.getRecordType());
+                    }
+                }
             }
             
             vo.setMaterialName(history.getMaterialName());
@@ -203,13 +217,21 @@ public class ReportRecordServiceImpl implements ReportRecordService {
             if (history.getPersonId() != null) {
                 vo.setPersonName(history.getPersonId().getName());
             }
-            // 设置报工类型名称
-            if (LichengConstants.REPORTYPE0001.equals(history.getRecordTypeBg())) {
-                vo.setRecordTypeBgName("正常");
-            } else if (LichengConstants.REPORTYPE0002.equals(history.getRecordTypeBg())) {
-                vo.setRecordTypeBgName("尾料");
-            } else {
-                vo.setRecordTypeBgName(history.getRecordTypeBg());
+            // 从字典获取record_type的标签值，并按要求进行特殊处理
+            if (history.getRecordType() != null) {
+                if ("1".equals(history.getRecordType())) {
+                    vo.setRecordTypeBgName("原辅料投入");
+                } else if ("3".equals(history.getRecordType())) {
+                    vo.setRecordTypeBgName("产成品");
+                } else {
+                    // 对于其他值，从字典获取标签值
+                    TSysCodeDsc codeDsc = sysCodeDscService.getCodeByCodeClAndCodeVale("RECORDTYPE0000", history.getRecordType());
+                    if (codeDsc != null && codeDsc.getCodeDsc() != null) {
+                        vo.setRecordTypeBgName(codeDsc.getCodeDsc());
+                    } else {
+                        vo.setRecordTypeBgName(history.getRecordType());
+                    }
+                }
             }
             vo.setMaterialName(history.getMaterialName());
             vo.setMaterialNumber(history.getMaterialNumber());
