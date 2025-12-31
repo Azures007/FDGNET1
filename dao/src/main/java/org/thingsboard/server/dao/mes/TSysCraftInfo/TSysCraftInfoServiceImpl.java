@@ -244,6 +244,7 @@ public class TSysCraftInfoServiceImpl implements TSysCraftInfoService {
             return ResultUtil.error("工艺路线已被订单绑定,无法删除!");
         } else {
             tSysCraftProcessRelRepository.deleteByCraftId(craftId);
+            tSysCraftMaterialRelRepository.deleteByCraftId(craftId);
             tSysCraftInfoRepository.deleteById(craftId);
         }
         return ResultUtil.success();
