@@ -92,6 +92,9 @@ public class UserAspect {
     @Before("pointCut()")
     public void before(JoinPoint joinPoint) throws ThingsboardException, IOException, NoSuchMethodException {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if(attributes==null){
+            return;
+        }
         HttpServletRequest request = attributes.getRequest();
         HttpServletResponse response = attributes.getResponse();
         String appKey = request.getHeader("app_key");
@@ -143,12 +146,16 @@ public class UserAspect {
         tSysLog.setWay(targetObjectMethodName);
         //获取请求参数
         String targetMethodParams = Arrays.toString(joinPoint.getArgs());
+        if(name.indexOf("Exception")!=-1){
+            //异常，不记录日志
+            return;
+        }
         Method method = targetCls.getDeclaredMethod(name, ms.getParameterTypes());
         tSysLog.setInParam(targetMethodParams);
         ApiOperation annotation = method.getAnnotation(ApiOperation.class);
         if (annotation != null) {
             tSysLog.setMethods(annotation.value());
-            if(annotation.value().equals("获取未读读消息接口")){
+            if (annotation.value().equals("获取未读读消息接口")) {
                 return;
             }
         } else {
