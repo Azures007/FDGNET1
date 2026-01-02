@@ -126,7 +126,7 @@ public class DictAspect {
                     }
                     items.add(item);
                 }
-                PageImpl newData = new PageImpl(items,data.getPageable(),data.getTotalPages());
+                PageImpl newData = new PageImpl(items,data.getPageable(),data.getTotalElements());
                 rr.setData(newData);
             }
 
