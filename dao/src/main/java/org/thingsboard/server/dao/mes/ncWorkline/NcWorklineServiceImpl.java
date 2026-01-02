@@ -44,6 +44,10 @@ public class NcWorklineServiceImpl implements NcWorklineService {
     public List<NcWorkline> findAllByCwkids(List<String> cwkids) {
         return repository.findByCwkidInAndStatus(cwkids, "生效");
     }
+    @Override
+    public NcWorkline findAllByCwkid(String cwkid) {
+        return repository.getByCwkidAndStatus(cwkid, "生效");
+    }
 
     @Override
     public String getBaseIdByLineId(String cwkid) {

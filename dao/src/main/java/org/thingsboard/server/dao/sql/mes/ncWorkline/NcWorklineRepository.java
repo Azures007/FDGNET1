@@ -20,6 +20,7 @@ public interface NcWorklineRepository extends JpaRepository<NcWorkline, Integer>
 
     List<NcWorkline> findByPkOrgAndStatus(String pkOrg, String status);
     List<NcWorkline> findByCwkidInAndStatus(List<String> cwkid, String status);
+    NcWorkline getByCwkidAndStatus(String cwkid, String status);
 
     List<NcWorkline> findByStatusAndCwkidIn(String status, List<String> cwkids);
 }

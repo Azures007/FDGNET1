@@ -71,14 +71,17 @@ public class YcPdServiceImpl implements YcPdService {
 //            cwkName = workline.stream().map(NcWorkline::getVwkname).collect(Collectors.toList());
 //        }
         String cwkName = null;
-        List<String> cwkids = userService.getUserCurrentCwkid(userId);
-        if (cwkids != null && !cwkids.isEmpty()) {
-            NcWorkline workline = ncWorklineService.findAllByCwkids(cwkids).stream().findFirst().orElse(null);
+        String cwkid = userService.getOneUserCurrentCwkid(userId);
+        if (StringUtils.isNotEmpty(cwkid)) {
+            NcWorkline workline = ncWorklineService.findAllByCwkid(cwkid);
             if (workline != null) {
                 cwkName = workline.getVwkname();
             }
         }
-        
+        if (cwkName == null) {
+            throw new RuntimeException("未获取到用户当前的产线，请检查下");
+        }
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         tSysPdRecord.setPdTime(new Date());
         tSysPdRecord.setNcVwkname(cwkName);
@@ -150,7 +153,7 @@ public class YcPdServiceImpl implements YcPdService {
         if (tSysPdRecord.getPdWorkshopNcId() != null) {
             ncInventories = ncInventoryRepository.findByWarehouseIdAndMaterialCodeAndStatusOrderByLotAsc(
                     tSysPdRecord.getPdWorkshopNcId(),
-                    tSysPdRecord.getMaterialNumber(), 
+                    tSysPdRecord.getMaterialNumber(),
                     "生效");
         }
         if (ncInventories != null && ncInventories.size() > 0) {
@@ -208,11 +211,11 @@ public class YcPdServiceImpl implements YcPdService {
     public PdMaterialsVo pdMaterials(PdMaterialsDto pdMaterialsDto, String userId) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String currentDate = simpleDateFormat.format(new Date());
-        
+
         if (pdMaterialsDto.getPdTimeStr() == null || pdMaterialsDto.getPdTimeStr().isEmpty()) {
             pdMaterialsDto.setPdTimeStr(currentDate);
         }
-        
+
         // 获取当前用户的产线名称
 //        String cwkName = null;
 //        List<String> cwkids = userService.getUserCurrentCwkid(userId);
@@ -223,7 +226,7 @@ public class YcPdServiceImpl implements YcPdService {
 //            }
 //        }
         String cwkName = pdMaterialsDto.getVwkname();
-        
+
         // 根据用户信息查询仓库ID
         String warehouseId = null;
         List<String> cwkids = userService.getUserCurrentCwkid(userId);
@@ -238,7 +241,7 @@ public class YcPdServiceImpl implements YcPdService {
                         break;
                     }
                 }
-                
+
                 // 如果没有找到完全匹配的记录，则使用仅匹配ncPkOrg的记录
                 if (warehouseId == null) {
                     for (TSysUserDetail detail : userDetails) {
@@ -250,22 +253,22 @@ public class YcPdServiceImpl implements YcPdService {
                 }
             }
         }
-        
+
         // 设置仓库ID到查询条件中
         if (warehouseId != null) {
             pdMaterialsDto.setWarehouseCode(warehouseId);
         }
-        
+
         List<Map> ncInventorieMs = ncInventoryRepository.pdMaterials(pdMaterialsDto);
         List<NcInventory> ncInventories = JSON.parseArray(JSON.toJSONString(ncInventorieMs), NcInventory.class);
-        
+
         // 计算统计信息
         long totalCount = ncInventorieMs.size();
         long pagedCount = ncInventorieMs.stream()
                 .mapToLong(m -> ((Number) m.get("by_pd")).longValue())
                 .sum();
         long unpagedCount = totalCount - pagedCount;
-        
+
         // 判断当前物料分类是否已完成盘点
         boolean isMaterialTypeFinished = false;
         if (pdMaterialsDto.getMaterialTypePd() != null && !pdMaterialsDto.getMaterialTypePd().isEmpty()) {
@@ -273,14 +276,14 @@ public class YcPdServiceImpl implements YcPdService {
                     pdMaterialsDto.getPdTimeStr(), cwkName, pdMaterialsDto.getMaterialTypePd());
             isMaterialTypeFinished = (finishedRecord != null);
         }
-        
+
         PdMaterialsVo result = new PdMaterialsVo();
         result.setMaterials(ncInventories);
         result.setTotalMaterials(totalCount);
         result.setPagedCount(pagedCount);
         result.setUnpagedCount(unpagedCount);
         result.setMaterialTypeFinished(isMaterialTypeFinished); // 设置物料分类完成状态
-        
+
         return result;
     }
 
@@ -318,7 +321,7 @@ public class YcPdServiceImpl implements YcPdService {
         List<TSyncMaterial> tSyncMaterials = syncMaterialRepository.listMaterialsBySelctct(selectBy);
         return tSyncMaterials;
     }
-    
+
     @Override
     public PageVo<TSyncMaterial> listMaterial(String selectBy, Integer page, Integer size) {
         if (page == null || size == null) {
@@ -332,7 +335,7 @@ public class YcPdServiceImpl implements YcPdService {
         }
         Pageable pageable = PageRequest.of(page, size);
         Page<TSyncMaterial> materialPage = syncMaterialRepository.findCustomPdMaterials(selectBy, pageable);
-        
+
         PageVo<TSyncMaterial> pageVo = new PageVo<>();
         pageVo.setList(materialPage.getContent());
         pageVo.setTotal((int) materialPage.getTotalElements());
@@ -340,12 +343,12 @@ public class YcPdServiceImpl implements YcPdService {
         pageVo.setSize(materialPage.getSize());
         return pageVo;
     }
-    
+
     @Override
     public TSysPdRecord findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(String pdTimeStr, String ncVwkname, String materialTypePd) {
         return tSysPdRecordRepository.findByPdTimeStrAndNcVwknameAndMaterialTypeFinished(pdTimeStr, ncVwkname, materialTypePd);
     }
-    
+
     @Override
     @Transactional
     public boolean finishPdByMaterialType(String materialTypePd, String userId, String pdTimeStr,String ncVwkname, String workshopNumber) throws Exception {
@@ -358,7 +361,7 @@ public class YcPdServiceImpl implements YcPdService {
 //                cwkName = workline.getVwkname();
 //            }
 //        }
-        
+
         // 创建一条特殊记录标记该物料分类已完成盘点
         TSysPdRecord finishRecord = new TSysPdRecord();
         finishRecord.setPdTime(new Date()); // 设置盘点时间
@@ -376,7 +379,7 @@ public class YcPdServiceImpl implements YcPdService {
 
         // 保存标记记录
         tSysPdRecordRepository.save(finishRecord);
-    
+
         return true;
     }
 }
