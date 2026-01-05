@@ -40,4 +40,11 @@ public interface ReportRecordService {
      * @return 报工记录VO列表
      */
     List<ReportRecordVo> getReportRecordListForExport(ReportRecordQueryDto queryDto);
+    
+    /**
+     * 查询报工记录列表用于导出（优化版，使用分页查询避免内存问题）
+     * @param queryDto 查询条件
+     * @return 报工记录VO列表
+     */
+    List<ReportRecordVo> getReportRecordListForExportOptimized(ReportRecordQueryDto queryDto);
 }

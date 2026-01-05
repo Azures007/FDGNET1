@@ -5,21 +5,23 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
 import org.thingsboard.server.common.data.mes.vo.ReportRecordVo;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.dto.ReportRecordQueryDto;
 import org.thingsboard.server.dao.mes.report.ReportRecordService;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.List;
  * @date 2025/12/29
  * @Description: 报工记录控制器
  */
+
 @Api(value = "报工记录接口", tags = "报工记录接口")
 @RequestMapping("/api/reportRecord")
 @RestController
@@ -39,37 +42,6 @@ public class ReportRecordController extends BaseController {
     @Autowired
     private ReportRecordService reportRecordService;
 
-//    @ApiOperation("查询报工记录列表")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
-//            @ApiImplicitParam(name = "size", value = "数量(默认10条)", readOnly = false)
-//    })
-//    @PostMapping("/list")
-//    public ResponseResult<Page<TBusOrderProcessHistory>> getReportRecordList(
-//            @RequestParam(value = "current", defaultValue = "0") Integer current,
-//            @RequestParam(value = "size", defaultValue = "10") Integer size,
-//            @RequestBody ReportRecordQueryDto queryDto) {
-//
-//        // 如果查询开始时间为空，默认为当月月初
-//        if (queryDto.getReportTimeStart() == null) {
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.set(Calendar.DAY_OF_MONTH, 1);
-//            calendar.set(Calendar.HOUR_OF_DAY, 0);
-//            calendar.set(Calendar.MINUTE, 0);
-//            calendar.set(Calendar.SECOND, 0);
-//            calendar.set(Calendar.MILLISECOND, 0);
-//            queryDto.setReportTimeStart(calendar.getTime());
-//        }
-//
-//        // 如果查询结束时间为空，默认为当前时间
-//        if (queryDto.getReportTimeEnd() == null) {
-//            queryDto.setReportTimeEnd(new Date());
-//        }
-//
-//        Page<TBusOrderProcessHistory> reportRecordList = reportRecordService.getReportRecordList(current, size, queryDto);
-//        return ResultUtil.success(reportRecordList);
-//    }
-    
     @ApiOperation("查询报工记录列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "current", value = "页码(默认第0页,页码从0开始)", readOnly = false),
@@ -91,25 +63,60 @@ public class ReportRecordController extends BaseController {
 
     @ApiOperation("导出报工记录列表")
     @PostMapping("/export")
-    public ResponseEntity<ByteArrayResource> exportReportRecordList(@RequestBody ReportRecordQueryDto queryDto) {
+    public ResponseEntity<InputStreamResource> exportReportRecordList(@RequestBody ReportRecordQueryDto queryDto) {
         setQueryTime(queryDto);
-        List<ReportRecordVo> reportRecordList = reportRecordService.getReportRecordListForExport(queryDto);
-        // 使用EasyExcel生成Excel文件
+        
         try {
-            java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
-            com.alibaba.excel.EasyExcel.write(outputStream, ReportRecordVo.class)
-                    .sheet("报工记录")
-                    .doWrite(reportRecordList);
-            byte[] bytes = outputStream.toByteArray();
-            ByteArrayResource resource = new ByteArrayResource(bytes);
+            // 使用临时文件方式处理大数据量导出，避免内存溢出
+            File tempFile = java.nio.file.Files.createTempFile("report_export_", ".xlsx").toFile();
+            tempFile.deleteOnExit(); // 确保程序退出时删除临时文件
+            
+            // 使用EasyExcel直接写入临时文件，避免将大数据加载到内存
+            List<ReportRecordVo> reportRecordList = reportRecordService.getReportRecordListForExportOptimized(queryDto);
+            if (reportRecordList == null || reportRecordList.isEmpty()) {
+                com.alibaba.excel.EasyExcel.write(tempFile, ReportRecordVo.class)
+                        .sheet("报工记录")
+                        .doWrite(new ArrayList<>());
+            } else {
+                com.alibaba.excel.EasyExcel.write(tempFile, ReportRecordVo.class)
+                        .sheet("报工记录")
+                        .doWrite(reportRecordList);
+            }
+            
+            // 检查文件是否生成成功
+            if (tempFile.length() == 0) {
+                try {
+                    java.lang.reflect.Field logField = BaseController.class.getDeclaredField("log");
+                    logField.setAccessible(true);
+                    org.slf4j.Logger logger = (org.slf4j.Logger) logField.get(this);
+                    logger.error("生成的Excel文件为空");
+                } catch (Exception logE) {
+                    System.err.println("生成的Excel文件为空");
+                }
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+            
+            // 创建输入流资源
+            FileInputStream fileInputStream = new FileInputStream(tempFile);
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            
             String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            String filename = "报工记录_" + timestamp + ".xlsx";
+            
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_record_" + timestamp + ".xlsx")
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .contentLength(bytes.length)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=" + java.net.URLEncoder.encode(filename, "UTF-8"))
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .contentLength(tempFile.length())
                     .body(resource);
         } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                java.lang.reflect.Field logField = BaseController.class.getDeclaredField("log");
+                logField.setAccessible(true);
+                org.slf4j.Logger logger = (org.slf4j.Logger) logField.get(this);
+                logger.error("导出Excel文件时发生异常", e);
+            } catch (Exception logE) {
+                System.err.println("导出Excel文件时发生异常: " + e.getMessage());
+            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
