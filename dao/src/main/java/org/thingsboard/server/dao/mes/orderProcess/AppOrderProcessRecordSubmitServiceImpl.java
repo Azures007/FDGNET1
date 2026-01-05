@@ -278,18 +278,7 @@ public class AppOrderProcessRecordSubmitServiceImpl implements AppOrderProcessRe
         }
         TBusOrderProcess tBusOrderProcess = orderProcessRepository.findById(saveDto.getOrderProcessId()).orElse(null);
         TSysProcessInfo processInfo = tBusOrderProcess.getProcessId();
-        //班组改成操作员班组id
-        TSysClass tSysClass=null;
-        List<TSysClassGroupLeaderRel> classGroupLeaderRel=classGroupLeaderRepository.findByPersonnelId(saveDto.getDevicePersonIds().get(0));
-        if(classGroupLeaderRel.size()>0){
-            tSysClass = tSysClassRepository.getOne(classGroupLeaderRel.get(0).getClassId());
-        }else{
-            List<TSysClassPersonnelRel> classPersonnelRel= classPersonnelRepository.findByPersonnelId(saveDto.getDevicePersonIds().get(0));
-            if (classPersonnelRel.size()>0){
-                tSysClass = tSysClassRepository.getOne(classPersonnelRel.get(0).getClassId());
-            }
-        }
-
+        TSysClass tSysClass = tBusOrderProcess.getClassId();//恢复回去
         TSysPersonnelInfo personnelInfo = tSysPersonnelInfoRepository.findByUserId(userId);
         List<TBusOrderHead> heads = orderHeadRepository.findByOrderNo(saveDto.getOrderNo());
         TBusOrderHead tBusOrderHead = heads.get(0);
