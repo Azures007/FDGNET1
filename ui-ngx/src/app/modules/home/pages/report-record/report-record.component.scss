@@ -175,7 +175,9 @@
     margin: 0 4px;
   }
 }
-
+.page-header .row-block .label {
+  width: 89px !important;
+}
 .page-content {
   .mat-table {
     .mat-header-row {
@@ -196,16 +198,28 @@
       .mat-header-cell {
         width: 8%;
       }
-
       .mat-cell:nth-of-type(1),
       .mat-header-cell:nth-of-type(1) {
-        width: 12%;
+        width: 15%;
+      }
+      .mat-cell:nth-of-type(2),
+      .mat-header-cell:nth-of-type(2) {
+        width: 15%;
       }
 
-      // .mat-cell:nth-of-type(2),
-      // .mat-header-cell:nth-of-type(2) {
-      //   width: 11%;
-      // }
+      .mat-cell:nth-of-type(3),
+      .mat-header-cell:nth-of-type(3) {
+        width: 15%;
+      }
+
+      .mat-cell:nth-of-type(6),
+      .mat-header-cell:nth-of-type(6) {
+        width: 12%;
+      }
+      .mat-cell:nth-of-type(7),
+      .mat-header-cell:nth-of-type(7) {
+        width: 12%;
+      }
 
       // .mat-cell:nth-of-type(3),
       // .mat-header-cell:nth-of-type(3) {

@@ -4,6 +4,7 @@ import { AppState } from '@core/core.state';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ReportRecordService } from '@app/core/http/report-record.service';
 import { Utils } from '../order-management/w-utils';
+import { OrderService } from '@app/core/http/order.service';
 
 
 @Component({
@@ -24,8 +25,11 @@ export class ReportRecordComponent implements OnInit {
     orderNo: "",
     materialName: "",
     materialNumber: "",
+    productName: "",
+    productNumber: "",
+    cwkLine: "",
   });
-
+  cwkList = [];
   //新增角色参数
   roleData = {
     byFactory: "",
@@ -52,7 +56,7 @@ export class ReportRecordComponent implements OnInit {
   // pageEvent: PageEvent;
 
   //table
-  displayedColumns: string[] = ['orderNo', 'processName', 'reportTime', 'personName', 'recordTypeBgName', 'materialName', 'materialNumber', 'potNumber', 'recordQty', 'recordUnit'];
+  displayedColumns: string[] = ['cwkLine', 'orderNo', 'productName', 'productNumber', 'processName', 'reportTime', 'personName', 'recordTypeBgName', 'materialName', 'materialNumber', 'potNumber', 'recordQty', 'recordUnit'];
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -65,10 +69,14 @@ export class ReportRecordComponent implements OnInit {
     public fb: FormBuilder,
     private reportRecordService: ReportRecordService,
     private utils: Utils,
+    private apiOrder: OrderService,
   ) { }
 
   ngOnInit(): void {
     this.getTableData();
+    this.apiOrder.fetchBaseList().subscribe(res => {
+      this.cwkList = res.data;
+    })
   }
   //获取表格数据
   getTableData(): void {
@@ -79,6 +87,9 @@ export class ReportRecordComponent implements OnInit {
         orderNo: this.searchFormGroup.value.orderNo,
         materialName: this.searchFormGroup.value.materialName,
         materialNumber: this.searchFormGroup.value.materialNumber,
+        productName: this.searchFormGroup.value.productName,
+        productNumber: this.searchFormGroup.value.productNumber,
+        cwkLine: this.searchFormGroup.value.cwkLine,
         reportTimeStart: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         reportTimeEnd: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
       }
@@ -97,6 +108,9 @@ export class ReportRecordComponent implements OnInit {
         orderNo: this.searchFormGroup.value.orderNo,
         materialName: this.searchFormGroup.value.materialName,
         materialNumber: this.searchFormGroup.value.materialNumber,
+        productName: this.searchFormGroup.value.productName,
+        productNumber: this.searchFormGroup.value.productNumber,
+        cwkLine: this.searchFormGroup.value.cwkLine,
         reportTimeStart: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         reportTimeEnd: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
       }
@@ -133,6 +147,9 @@ export class ReportRecordComponent implements OnInit {
     this.searchFormGroup.value.orderNo = '';
     this.searchFormGroup.value.materialName = '';
     this.searchFormGroup.value.materialNumber = '';
+    this.searchFormGroup.value.productName = '';
+    this.searchFormGroup.value.productNumber = '';
+    this.searchFormGroup.value.cwkLine = '';
     this.pdRange = new FormGroup({
       start: new FormControl(this.utils.dateFormat(new Date(), 'yyyy-MM-01')),
       end: new FormControl(this.utils.dateFormat(new Date(), 'yyyy-MM-dd')),
