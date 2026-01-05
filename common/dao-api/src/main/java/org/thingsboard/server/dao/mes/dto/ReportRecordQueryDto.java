@@ -22,7 +22,7 @@ public class ReportRecordQueryDto {
     
     @ApiModelProperty(value = "报工时间结束")
     private Date reportTimeEnd;
-    
+
     @ApiModelProperty(value = "订单号（模糊查询）")
     private String orderNo;
     
@@ -37,4 +37,10 @@ public class ReportRecordQueryDto {
     
     @ApiModelProperty(value = "产品编码（模糊查询）")
     private String productNumber;
+    
+    @ApiModelProperty(value = "工序名称（模糊查询）")
+    private String processName;
+    
+    @ApiModelProperty(value = "产线ID")
+    private String cwkid;
 }

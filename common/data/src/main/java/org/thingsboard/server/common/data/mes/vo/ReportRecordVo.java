@@ -74,4 +74,8 @@ public class ReportRecordVo {
     @ExcelProperty(value = "产品编码", index = 12)
     @ApiModelProperty("产品编码")
     private String productNumber;
+    
+    @ExcelProperty(value = "产线", index = 13)
+    @ApiModelProperty("产线")
+    private String cwkLine;
 }

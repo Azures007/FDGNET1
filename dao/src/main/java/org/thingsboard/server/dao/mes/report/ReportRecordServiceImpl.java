@@ -97,6 +97,21 @@ public class ReportRecordServiceImpl implements ReportRecordService {
                         ));
                 predicates.add(criteriaBuilder.exists(subquery));
             }
+            
+            if (queryDto.getProcessName() != null && !queryDto.getProcessName().trim().isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("processName"), "%" + queryDto.getProcessName().trim() + "%"));
+            }
+            
+            if (queryDto.getCwkid() != null && !queryDto.getCwkid().trim().isEmpty()) {
+                Subquery<String> subquery = query.subquery(String.class);
+                Root<TBusOrderHead> orderHeadRoot = subquery.from(TBusOrderHead.class);
+                subquery.select(orderHeadRoot.get("orderNo"))
+                        .where(criteriaBuilder.and(
+                            criteriaBuilder.equal(orderHeadRoot.get("cwkid"), queryDto.getCwkid().trim()),
+                            criteriaBuilder.equal(orderHeadRoot.get("orderNo"), root.get("orderNo"))
+                        ));
+                predicates.add(criteriaBuilder.exists(subquery));
+            }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
         
@@ -144,6 +159,21 @@ public class ReportRecordServiceImpl implements ReportRecordService {
                 subquery.select(orderHeadRoot.get("orderNo"))
                         .where(criteriaBuilder.and(
                             criteriaBuilder.like(orderHeadRoot.get("bodyMaterialNumber"), "%" + queryDto.getProductNumber().trim() + "%"),
+                            criteriaBuilder.equal(orderHeadRoot.get("orderNo"), root.get("orderNo"))
+                        ));
+                predicates.add(criteriaBuilder.exists(subquery));
+            }
+            
+            if (queryDto.getProcessName() != null && !queryDto.getProcessName().trim().isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("processName"), "%" + queryDto.getProcessName().trim() + "%"));
+            }
+            
+            if (queryDto.getCwkid() != null && !queryDto.getCwkid().trim().isEmpty()) {
+                Subquery<String> subquery = query.subquery(String.class);
+                Root<TBusOrderHead> orderHeadRoot = subquery.from(TBusOrderHead.class);
+                subquery.select(orderHeadRoot.get("orderNo"))
+                        .where(criteriaBuilder.and(
+                            criteriaBuilder.equal(orderHeadRoot.get("cwkid"), queryDto.getCwkid().trim()),
                             criteriaBuilder.equal(orderHeadRoot.get("orderNo"), root.get("orderNo"))
                         ));
                 predicates.add(criteriaBuilder.exists(subquery));
@@ -202,6 +232,7 @@ public class ReportRecordServiceImpl implements ReportRecordService {
             if (orderHead != null) {
                 vo.setProductName(orderHead.getBodyMaterialName());
                 vo.setProductNumber(orderHead.getBodyMaterialNumber());
+                vo.setCwkLine(orderHead.getVwkname()); // 设置产线名称
             }
             
             voList.add(vo);
@@ -255,6 +286,21 @@ public class ReportRecordServiceImpl implements ReportRecordService {
                         ));
                 predicates.add(criteriaBuilder.exists(subquery));
             }
+            
+            if (queryDto.getProcessName() != null && !queryDto.getProcessName().trim().isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("processName"), "%" + queryDto.getProcessName().trim() + "%"));
+            }
+            
+            if (queryDto.getCwkid() != null && !queryDto.getCwkid().trim().isEmpty()) {
+                Subquery<String> subquery = query.subquery(String.class);
+                Root<TBusOrderHead> orderHeadRoot = subquery.from(TBusOrderHead.class);
+                subquery.select(orderHeadRoot.get("orderNo"))
+                        .where(criteriaBuilder.and(
+                            criteriaBuilder.equal(orderHeadRoot.get("cwkid"), queryDto.getCwkid().trim()),
+                            criteriaBuilder.equal(orderHeadRoot.get("orderNo"), root.get("orderNo"))
+                        ));
+                predicates.add(criteriaBuilder.exists(subquery));
+            }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -303,6 +349,7 @@ public class ReportRecordServiceImpl implements ReportRecordService {
             if (orderHead != null) {
                 vo.setProductName(orderHead.getBodyMaterialName());
                 vo.setProductNumber(orderHead.getBodyMaterialNumber());
+                vo.setCwkLine(orderHead.getVwkname()); // 设置产线名称
             }
 
             voList.add(vo);
