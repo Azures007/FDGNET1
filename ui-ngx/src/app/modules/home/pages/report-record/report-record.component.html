@@ -34,6 +34,10 @@
       <input class="input" [(ngModel)]="searchFormGroup.value.productNumber" />
     </div>
     <div class="row-block cols4">
+      <label class="label">工序名称</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.processName" />
+    </div>
+    <div class="row-block cols4">
       <label class="label">生产线：</label>
       <select required [(ngModel)]="searchFormGroup.value.cwkLine">
         <option *ngFor="let item of cwkList" [value]="item.cwkid">

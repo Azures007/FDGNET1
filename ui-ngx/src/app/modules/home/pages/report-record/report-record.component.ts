@@ -27,6 +27,7 @@ export class ReportRecordComponent implements OnInit {
     materialNumber: "",
     productName: "",
     productNumber: "",
+    processName: "",
     cwkLine: "",
   });
   cwkList = [];
@@ -89,6 +90,7 @@ export class ReportRecordComponent implements OnInit {
         materialNumber: this.searchFormGroup.value.materialNumber,
         productName: this.searchFormGroup.value.productName,
         productNumber: this.searchFormGroup.value.productNumber,
+        processName: this.searchFormGroup.value.processName,
         cwkLine: this.searchFormGroup.value.cwkLine,
         reportTimeStart: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         reportTimeEnd: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
@@ -110,6 +112,7 @@ export class ReportRecordComponent implements OnInit {
         materialNumber: this.searchFormGroup.value.materialNumber,
         productName: this.searchFormGroup.value.productName,
         productNumber: this.searchFormGroup.value.productNumber,
+        processName: this.searchFormGroup.value.processName,
         cwkLine: this.searchFormGroup.value.cwkLine,
         reportTimeStart: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         reportTimeEnd: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
@@ -149,6 +152,7 @@ export class ReportRecordComponent implements OnInit {
     this.searchFormGroup.value.materialNumber = '';
     this.searchFormGroup.value.productName = '';
     this.searchFormGroup.value.productNumber = '';
+    this.searchFormGroup.value.processName = '';
     this.searchFormGroup.value.cwkLine = '';
     this.pdRange = new FormGroup({
       start: new FormControl(this.utils.dateFormat(new Date(), 'yyyy-MM-01')),
