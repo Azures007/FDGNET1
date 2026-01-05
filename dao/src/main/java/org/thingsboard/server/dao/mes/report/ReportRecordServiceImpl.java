@@ -102,12 +102,12 @@ public class ReportRecordServiceImpl implements ReportRecordService {
                 predicates.add(criteriaBuilder.like(root.get("processName"), "%" + queryDto.getProcessName().trim() + "%"));
             }
             
-            if (queryDto.getCwkid() != null && !queryDto.getCwkid().trim().isEmpty()) {
+            if (queryDto.getCwkLine() != null && !queryDto.getCwkLine().trim().isEmpty()) {
                 Subquery<String> subquery = query.subquery(String.class);
                 Root<TBusOrderHead> orderHeadRoot = subquery.from(TBusOrderHead.class);
                 subquery.select(orderHeadRoot.get("orderNo"))
                         .where(criteriaBuilder.and(
-                            criteriaBuilder.equal(orderHeadRoot.get("cwkid"), queryDto.getCwkid().trim()),
+                            criteriaBuilder.equal(orderHeadRoot.get("cwkid"), queryDto.getCwkLine().trim()),
                             criteriaBuilder.equal(orderHeadRoot.get("orderNo"), root.get("orderNo"))
                         ));
                 predicates.add(criteriaBuilder.exists(subquery));
@@ -168,12 +168,12 @@ public class ReportRecordServiceImpl implements ReportRecordService {
                 predicates.add(criteriaBuilder.like(root.get("processName"), "%" + queryDto.getProcessName().trim() + "%"));
             }
             
-            if (queryDto.getCwkid() != null && !queryDto.getCwkid().trim().isEmpty()) {
+            if (queryDto.getCwkLine() != null && !queryDto.getCwkLine().trim().isEmpty()) {
                 Subquery<String> subquery = query.subquery(String.class);
                 Root<TBusOrderHead> orderHeadRoot = subquery.from(TBusOrderHead.class);
                 subquery.select(orderHeadRoot.get("orderNo"))
                         .where(criteriaBuilder.and(
-                            criteriaBuilder.equal(orderHeadRoot.get("cwkid"), queryDto.getCwkid().trim()),
+                            criteriaBuilder.equal(orderHeadRoot.get("cwkid"), queryDto.getCwkLine().trim()),
                             criteriaBuilder.equal(orderHeadRoot.get("orderNo"), root.get("orderNo"))
                         ));
                 predicates.add(criteriaBuilder.exists(subquery));
@@ -291,12 +291,12 @@ public class ReportRecordServiceImpl implements ReportRecordService {
                 predicates.add(criteriaBuilder.like(root.get("processName"), "%" + queryDto.getProcessName().trim() + "%"));
             }
             
-            if (queryDto.getCwkid() != null && !queryDto.getCwkid().trim().isEmpty()) {
+            if (queryDto.getCwkLine() != null && !queryDto.getCwkLine().trim().isEmpty()) {
                 Subquery<String> subquery = query.subquery(String.class);
                 Root<TBusOrderHead> orderHeadRoot = subquery.from(TBusOrderHead.class);
                 subquery.select(orderHeadRoot.get("orderNo"))
                         .where(criteriaBuilder.and(
-                            criteriaBuilder.equal(orderHeadRoot.get("cwkid"), queryDto.getCwkid().trim()),
+                            criteriaBuilder.equal(orderHeadRoot.get("cwkid"), queryDto.getCwkLine().trim()),
                             criteriaBuilder.equal(orderHeadRoot.get("orderNo"), root.get("orderNo"))
                         ));
                 predicates.add(criteriaBuilder.exists(subquery));

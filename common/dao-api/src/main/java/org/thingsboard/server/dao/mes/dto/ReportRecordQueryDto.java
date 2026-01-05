@@ -41,6 +41,6 @@ public class ReportRecordQueryDto {
     @ApiModelProperty(value = "工序名称（模糊查询）")
     private String processName;
     
-    @ApiModelProperty(value = "产线ID")
-    private String cwkid;
+    @ApiModelProperty(value = "产线")
+    private String cwkLine;
 }
