@@ -12,6 +12,7 @@ import org.thingsboard.common.util.JacksonUtil;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcess;
 import org.thingsboard.server.common.data.mes.ncOrder.NcTBusOrderHead;
+import org.thingsboard.server.common.data.mes.ncOrder.NcTBusOrderPPBom;
 import org.thingsboard.server.common.data.mes.sys.NcSyncLog;
 import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
 import org.thingsboard.server.common.data.mes.sys.TSysProcessClassRel;
@@ -28,9 +29,7 @@ import org.thingsboard.server.dao.sql.mes.order.OrderHeadRepository;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,17 +113,47 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             //entity.setUnit("KG");
             NcTBusOrderHead existingOrder = repository.findByCmoid(cmoid);
             if (existingOrder != null) {
-                // 先删除原有 bomList
+                // 保留原有ID和状态
                 Integer orderId = existingOrder.getOrderId();
-                bomRepository.deleteAllLinkByOrderId(orderId);
-                bomRepository.deleteAllByOrderId(cmoid);
-
-                // 保留原有ID
                 entity.setOrderId(orderId);
-                // 确保cmoid一致
                 entity.setCmoid(cmoid);
                 entity.setOrderStatus(existingOrder.getOrderStatus());
-                entity=repository.save(entity);
+                
+                // 先更新BOM（此时关联关系还在）
+                Set<NcTBusOrderPPBom> bomListToUpdate = entity.getBomList();
+                if (bomListToUpdate != null && !bomListToUpdate.isEmpty()) {
+                    updateBomList(orderId, cmoid, bomListToUpdate);
+                }
+                
+                // 使用原生SQL更新订单基本信息，不触碰BOM关联
+                repository.updateOrderBasicInfo(
+                        entity.getOrderId(),
+                        entity.getOrderNo(),
+                        entity.getBillType(),
+                        entity.getCpmohid(),
+                        entity.getVbillcode(),
+                        entity.getCmoid(),
+                        entity.getSeq(),
+                        entity.getDbilldate(),
+                        entity.getCdeptname(),
+                        entity.getCdeptid(),
+                        entity.getVwkname(),
+                        entity.getCwkid(),
+                        entity.getPkMaterial(),
+                        entity.getCode(),
+                        entity.getName(),
+                        entity.getMaterialspec(),
+                        entity.getNnum(),
+                        entity.getTplanstarttime(),
+                        entity.getTplanendtime(),
+                        entity.getNcReceiveTime(),
+                        entity.getNcNote(),
+                        entity.getUnit(),
+                        entity.getIsDeleted(),
+                        entity.getCreatedTime()
+                );
+                // 重新查询获取完整的实体（包含BOM）
+                entity = repository.findById(orderId).orElse(entity);
             } else {
                 entity.setOrderStatus("0");
                 entity=repository.save(entity);
@@ -183,17 +212,63 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
                 NcTBusOrderHead existingOrder = repository.findByCmoid(entity.getCmoid());
                 if (existingOrder != null) {
                     Integer orderId = existingOrder.getOrderId();
-                    bomRepository.deleteAllLinkByOrderId(orderId);
-                    bomRepository.deleteAllByOrderId(entity.getCmoid());
                     entity.setOrderId(orderId);
                     entity.setCmoid(existingOrder.getCmoid());
                     entity.setOrderStatus(existingOrder.getOrderStatus());
+                    
+                    // 先更新BOM
+                    Set<NcTBusOrderPPBom> bomListToUpdate = entity.getBomList();
+                    if (bomListToUpdate != null && !bomListToUpdate.isEmpty()) {
+                        updateBomList(orderId, entity.getCmoid(), bomListToUpdate);
+                    }
+                    
+                    // 使用原生SQL更新订单基本信息
+                    repository.updateOrderBasicInfo(
+                            entity.getOrderId(),
+                            entity.getOrderNo(),
+                            entity.getBillType(),
+                            entity.getCpmohid(),
+                            entity.getVbillcode(),
+                            entity.getCmoid(),
+                            entity.getSeq(),
+                            entity.getDbilldate(),
+                            entity.getCdeptname(),
+                            entity.getCdeptid(),
+                            entity.getVwkname(),
+                            entity.getCwkid(),
+                            entity.getPkMaterial(),
+                            entity.getCode(),
+                            entity.getName(),
+                            entity.getMaterialspec(),
+                            entity.getNnum(),
+                            entity.getTplanstarttime(),
+                            entity.getTplanendtime(),
+                            entity.getNcReceiveTime(),
+                            entity.getNcNote(),
+                            entity.getUnit(),
+                            entity.getIsDeleted(),
+                            entity.getCreatedTime()
+                    );
                 } else {
                     entity.setOrderStatus("0");
+                    toSave.add(entity);
                 }
-                toSave.add(entity);
             }
-            entitys = repository.saveAll(toSave);
+            
+            // 保存新订单（如果有）
+            if (!toSave.isEmpty()) {
+                repository.saveAll(toSave);
+            }
+            
+            // 重新查询所有订单获取完整数据
+            List<NcTBusOrderHead> allOrders = new ArrayList<>();
+            for (NcTBusOrderHead entity : entitys) {
+                NcTBusOrderHead saved = repository.findByCmoid(entity.getCmoid());
+                if (saved != null) {
+                    allOrders.add(saved);
+                }
+            }
+            entitys = allOrders;
             final List<NcTBusOrderHead> finalEntitys = entitys;
             // 注册事务同步回调
             TransactionSynchronizationManager.registerSynchronization(
@@ -305,6 +380,77 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             ncSyncLogRepository.save(logEntity);
         } catch (Exception e) {
             log.error("保存NC订单同步日志失败", e);
+        }
+    }
+
+    /**
+     * 更新BOM列表：根据材料编码(code)进行智能更新
+     * - 如果材料编码已存在，则更新该BOM记录
+     * - 如果材料编码是新的，则新增BOM记录
+     * - 如果原有的材料编码不在新列表中，则删除该BOM记录
+     */
+    private void updateBomList(Integer orderId, String cmoid, Set<NcTBusOrderPPBom> newBomList) {
+        if (newBomList == null || newBomList.isEmpty()) {
+            // 如果新BOM列表为空，删除所有关联的BOM
+            bomRepository.deleteAllLinkByOrderId(orderId);
+            bomRepository.deleteAllByOrderId(cmoid);
+            return;
+        }
+
+        // 获取现有的BOM列表
+        List<NcTBusOrderPPBom> existingBoms = bomRepository.findAllByOrderId(orderId);
+        
+        // 使用材料编码作为唯一标识，构建现有BOM的Map
+        Map<String, NcTBusOrderPPBom> existingBomMap = new HashMap<>();
+        for (NcTBusOrderPPBom bom : existingBoms) {
+            if (bom.getCode() != null) {
+                existingBomMap.put(bom.getCode(), bom);
+            }
+        }
+
+        // 构建新BOM的材料编码集合
+        Set<String> newBomCodes = new HashSet<>();
+        for (NcTBusOrderPPBom newBom : newBomList) {
+            if (newBom.getCode() != null) {
+                newBomCodes.add(newBom.getCode());
+                
+                NcTBusOrderPPBom existingBom = existingBomMap.get(newBom.getCode());
+                if (existingBom != null) {
+                    // 更新现有BOM记录，保留原有ID
+                    newBom.setOrderPPBomId(existingBom.getOrderPPBomId());
+                }
+                // 确保cmoid一致
+                newBom.setCmoid(cmoid);
+            }
+        }
+
+        // 找出需要删除的BOM（材料编码不在新列表中的）
+        List<Integer> bomIdsToDelete = new ArrayList<>();
+        for (NcTBusOrderPPBom existingBom : existingBoms) {
+            if (existingBom.getCode() != null && !newBomCodes.contains(existingBom.getCode())) {
+                bomIdsToDelete.add(existingBom.getOrderPPBomId());
+            }
+        }
+
+        // 删除不再需要的BOM记录及其关联关系
+        if (!bomIdsToDelete.isEmpty()) {
+            bomRepository.deleteLinkByOrderPPBomIdIn(bomIdsToDelete);
+            bomRepository.deleteByOrderPPBomIdIn(bomIdsToDelete);
+        }
+
+        // 保存或更新BOM记录（JPA会根据ID判断是insert还是update）
+        List<NcTBusOrderPPBom> savedBoms = bomRepository.saveAll(newBomList);
+        
+        // 为新增的BOM创建关联关系
+        for (NcTBusOrderPPBom savedBom : savedBoms) {
+            if (savedBom.getOrderPPBomId() != null) {
+                // 检查关联关系是否已存在
+                int linkCount = bomRepository.countLink(orderId, savedBom.getOrderPPBomId());
+                if (linkCount == 0) {
+                    // 不存在则创建关联关系
+                    bomRepository.insertLink(orderId, savedBom.getOrderPPBomId());
+                }
+            }
         }
     }
 }

@@ -23,4 +23,26 @@ public interface NcTBusOrderPPBomRepository extends JpaRepository<NcTBusOrderPPB
     @Transactional
     @Query(value = "DELETE FROM t_bus_order_ppbom_lk WHERE order_id = ?1", nativeQuery = true)
     void deleteAllLinkByOrderId(Integer orderId);
+
+    // 根据 BOM ID 列表批量删除
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM t_bus_order_ppbom WHERE order_ppbom_id IN (?1)", nativeQuery = true)
+    void deleteByOrderPPBomIdIn(List<Integer> orderPPBomIds);
+
+    // 根据 BOM ID 列表删除关联关系
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM t_bus_order_ppbom_lk WHERE order_ppbom_id IN (?1)", nativeQuery = true)
+    void deleteLinkByOrderPPBomIdIn(List<Integer> orderPPBomIds);
+    
+    // 插入订单和BOM的关联关系
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO t_bus_order_ppbom_lk (order_id, order_ppbom_id) VALUES (?1, ?2)", nativeQuery = true)
+    void insertLink(Integer orderId, Integer orderPPBomId);
+    
+    // 检查关联关系是否存在
+    @Query(value = "SELECT COUNT(*) FROM t_bus_order_ppbom_lk WHERE order_id = ?1 AND order_ppbom_id = ?2", nativeQuery = true)
+    int countLink(Integer orderId, Integer orderPPBomId);
 }
