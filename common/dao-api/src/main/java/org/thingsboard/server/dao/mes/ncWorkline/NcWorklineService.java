@@ -13,4 +13,6 @@ public interface NcWorklineService {
     NcWorkline findAllByCwkid(String cwkid);
 
     String getBaseIdByLineId(String cwkid);
+    
+    List<NcWorkline> findByStatus(String status);
 }

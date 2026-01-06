@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
+import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
+import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
 import org.thingsboard.server.dao.mes.productionBoard.ProductionBoardService;
 import org.thingsboard.server.dao.mes.vo.*;
 
@@ -27,11 +29,14 @@ public class YcProductionBoardController extends BaseController {
 
     @Autowired
     private ProductionBoardService productionBoardService;
+    
+    @Autowired
+    private NcWorklineService ncWorklineService;
 
     @ApiOperation("获取生产统计数据")
     @GetMapping("/statistics")
     public ResponseResult<ProductionStatistics> getProductionStatistics(
-            @ApiParam("生产线") @RequestParam(required = false) String productionLine,
+            @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
             @ApiParam("时间维度(今日/昨日/本周/本月等)") @RequestParam(required = false) String timeDimension,
             @ApiParam("开始日期(yyyy-MM-dd)") @RequestParam(required = false) String startDate,
             @ApiParam("结束日期(yyyy-MM-dd)") @RequestParam(required = false) String endDate) throws ThingsboardException {
@@ -62,7 +67,7 @@ public class YcProductionBoardController extends BaseController {
     @ApiOperation("获取订单计划达成率分析")
     @GetMapping("/orderPlanAnalysis")
     public ResponseResult<List<OrderPlanAnalysis>> getOrderPlanAnalysis(
-            @ApiParam("生产线") @RequestParam(required = false) String productionLine,
+            @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
             @ApiParam("日期类型(日/月)") @RequestParam(required = true) String timeDimension) throws ThingsboardException {
         return ResultUtil.success(productionBoardService.getOrderPlanAnalysis(productionLine, timeDimension));
     }
@@ -70,7 +75,7 @@ public class YcProductionBoardController extends BaseController {
     @ApiOperation("获取订单废料产出分析")
     @GetMapping("/wasteOutputAnalysis")
     public ResponseResult<List<WasteOutputAnalysis>> getWasteOutputAnalysis(
-            @ApiParam("生产线") @RequestParam(required = false) String productionLine,
+            @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
             @ApiParam("日期类型(日/周/月)") @RequestParam(required = true) String timeDimension) throws ThingsboardException {
         return ResultUtil.success(productionBoardService.getWasteOutputAnalysis(productionLine, timeDimension));
     }
@@ -78,7 +83,7 @@ public class YcProductionBoardController extends BaseController {
     @ApiOperation("获取订单进度完成情况")
     @GetMapping("/orderProgress")
     public ResponseResult<OrderProgressPageVo> getOrderProgress(
-            @ApiParam("生产线") @RequestParam(required = false) String productionLine,
+            @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
             @ApiParam("当前页码") @RequestParam(value = "current", defaultValue = "0") Integer current,
             @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size) throws ThingsboardException {
         return ResultUtil.success(productionBoardService.getOrderProgress(productionLine, current, size));
@@ -87,7 +92,7 @@ public class YcProductionBoardController extends BaseController {
     @ApiOperation("获取生产态势监控")
     @GetMapping("/productionBG")
     public ResponseResult<PageVo<ProductionBgVo>> getProductionBG(
-            @ApiParam("生产线") @RequestParam(required = false) String productionLine,
+            @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
             @ApiParam("当前页码") @RequestParam(value = "current", defaultValue = "0") Integer current,
             @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size) throws ThingsboardException {
         return ResultUtil.success(productionBoardService.getProductionBG(productionLine, current, size));
@@ -96,10 +101,23 @@ public class YcProductionBoardController extends BaseController {
     @ApiOperation("获取外包净含量实况")
     @GetMapping("/outsourcingNetContent")
     public ResponseResult<PageVo<OutsourcingNetContent>> getOutsourcingNetContent(
-            @ApiParam("生产线") @RequestParam(required = false) String productionLine,
+            @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
             @ApiParam("当前页码") @RequestParam(value = "current", defaultValue = "0") Integer current,
             @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size) throws ThingsboardException {
         return ResultUtil.success(productionBoardService.getOutsourcingNetContent(productionLine, current, size));
+    }
+
+    @ApiOperation("查询所有生效的生产线")
+    @GetMapping("/worklines")
+    public ResponseResult<List<NcWorkline>> getWorklines(
+            @ApiParam("基地ID（可选）") @RequestParam(required = false) String pkOrg) throws ThingsboardException {
+        if (pkOrg != null && !pkOrg.trim().isEmpty()) {
+            // 如果传了基地ID，查询该基地下的生产线
+            return ResultUtil.success(ncWorklineService.findByPkOrg(pkOrg));
+        } else {
+            // 否则查询所有生效的生产线
+            return ResultUtil.success(ncWorklineService.findByStatus("生效"));
+        }
     }
 
     /*@ApiOperation("获取完整的生产看板数据（一次性获取所有数据）")

@@ -54,4 +54,9 @@ public class NcWorklineServiceImpl implements NcWorklineService {
         NcWorkline w = repository.findByCwkid(cwkid);
         return w != null ? w.getPkOrg() : null;
     }
+    
+    @Override
+    public List<NcWorkline> findByStatus(String status) {
+        return repository.findByStatus(status);
+    }
 }
