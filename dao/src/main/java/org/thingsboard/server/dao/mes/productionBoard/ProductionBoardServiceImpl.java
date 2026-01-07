@@ -1,5 +1,7 @@
 package org.thingsboard.server.dao.mes.productionBoard;
 
+import com.alibaba.fastjson.JSON;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -7,18 +9,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.report.TimeDimensionUtils;
 import org.thingsboard.server.dao.mes.vo.*;
+import org.thingsboard.server.dao.sql.mes.productionBoard.ProductionBoardRepository;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 生产看板服务实现（Mock数据）
  */
 @Service
 public class ProductionBoardServiceImpl implements ProductionBoardService {
+
+    @Autowired
+    private ProductionBoardRepository productionBoardRepository;
 
     @Override
     public ProductionStatistics getProductionStatistics(String productionLine, String timeDimension, 
@@ -34,20 +42,79 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             finalEndDate = timeRange.getEndDate();
         }
         
-        // Mock数据
         ProductionStatistics stats = new ProductionStatistics();
         
-        // 订单数量
-        stats.setOrderCount(8);
-        stats.setOrderCountUnit("个");
+        try {
+            // 将字符串日期转换为Date对象
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDateTime = sdf.parse(finalStartDate);
+            Date endDateTime = sdf.parse(finalEndDate);
+            
+            // 设置时间为当天的开始和结束
+            SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            startDateTime = fullSdf.parse(finalStartDate + " 00:00:00");
+            endDateTime = fullSdf.parse(finalEndDate + " 23:59:59");
+            
+            // 使用合并查询获取订单数量和计划生产数量
+            Object[] result;
+            Double planMaterialWeight;
+            Double packagingWeight;
+            
+            if (productionLine != null && !productionLine.trim().isEmpty()) {
+                // 如果传了生产线，按生产线查询
+                result = productionBoardRepository.getOrderStatisticsByDateRangeAndProductionLine(
+                    startDateTime, endDateTime, productionLine);
+                planMaterialWeight = productionBoardRepository.sumPlanMaterialWeightByDateRangeAndProductionLine(
+                    startDateTime, endDateTime, productionLine);
+                packagingWeight = productionBoardRepository.sumPackagingWeightByDateRangeAndProductionLine(
+                    startDateTime, endDateTime, productionLine);
+            } else {
+                // 否则查询所有
+                result = productionBoardRepository.getOrderStatisticsByDateRange(
+                    startDateTime, endDateTime);
+                planMaterialWeight = productionBoardRepository.sumPlanMaterialWeightByDateRange(
+                    startDateTime, endDateTime);
+                packagingWeight = productionBoardRepository.sumPackagingWeightByDateRange(
+                    startDateTime, endDateTime);
+            }
+            
+            // 解析查询结果
+            Long orderCount = result[0] != null ? ((Number) result[0]).longValue() : 0L;
+            BigDecimal planProductionQuantity = result[1] != null ? (BigDecimal) result[1] : BigDecimal.ZERO;
+            
+            // 订单数量
+            stats.setOrderCount(orderCount.intValue());
+            stats.setOrderCountUnit("个");
+            
+            // 计划生产数量
+            stats.setPlanProductionQuantity(planProductionQuantity);
+            stats.setPlanProductionQuantityUnit("件");
+            
+            // 计划原辅料重量
+            stats.setPlanMaterialWeight(planMaterialWeight != null ? 
+                new BigDecimal(planMaterialWeight.toString()) : BigDecimal.ZERO);
+            stats.setPlanMaterialWeightUnit("kg");
+            
+            // 包材重量
+            stats.setPackagingWeight(packagingWeight != null ? 
+                new BigDecimal(packagingWeight.toString()) : BigDecimal.ZERO);
+            stats.setPackagingWeightUnit("kg");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 查询失败时返回0
+            stats.setOrderCount(0);
+            stats.setOrderCountUnit("个");
+            stats.setPlanProductionQuantity(BigDecimal.ZERO);
+            stats.setPlanProductionQuantityUnit("件");
+            stats.setPlanMaterialWeight(BigDecimal.ZERO);
+            stats.setPlanMaterialWeightUnit("kg");
+            stats.setPackagingWeight(BigDecimal.ZERO);
+            stats.setPackagingWeightUnit("kg");
+        }
         
-        // 计划生产数量
-        stats.setPlanProductionQuantity(new BigDecimal("3000"));
-        stats.setPlanProductionQuantityUnit("件");
-        
-        // 计划原辅料重量
-        stats.setPlanMaterialWeight(new BigDecimal("8000"));
-        stats.setPlanMaterialWeightUnit("kg");
+        // 其他字段暂时使用Mock数据
+        // TODO: 后续根据实际业务需求实现其他字段的查询逻辑
         
         // 原辅料废品占比
         stats.setDefectiveQuantity(new BigDecimal("100"));
@@ -57,16 +124,9 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
         //stats.setDefectiveRatio(new BigDecimal("0.0125")); // 100/8000 = 1.25%
         //stats.setWasteRatio(new BigDecimal("0.01")); // 80/8000 = 1%
         
-        // 包材重量
-        stats.setPackagingWeight(new BigDecimal("1000"));
-        stats.setPackagingWeightUnit("kg");
-        
         // 包材废品重量
         stats.setPackagingBadProductWeight(new BigDecimal("80"));
         stats.setPackagingBadProductWeightUnit("kg");
-        
-        // 可以根据finalStartDate和finalEndDate查询实际数据
-        // TODO: 实际实现时，使用finalStartDate和finalEndDate查询数据库
         
         return stats;
     }
@@ -75,47 +135,80 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
     public List<OrderPlanAnalysis> getOrderPlanAnalysis(String productionLine, String dateType) {
         String finalStartDate;
         String finalEndDate;
+        
+        // 解析时间维度
         if (dateType != null && !dateType.trim().isEmpty()) {
             TimeDimensionUtils.TimeRange timeRange = TimeDimensionUtils.getTimeRange(dateType);
             finalStartDate = timeRange.getStartDate();
             finalEndDate = timeRange.getEndDate();
+        } else {
+            // 默认查询最近30天
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            finalEndDate = sdf.format(new Date());
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.add(java.util.Calendar.DAY_OF_MONTH, -30);
+            finalStartDate = sdf.format(cal.getTime());
         }
-        // TODO: 实际实现时，使用finalStartDate和finalEndDate查询数据库
-        // Mock数据 - 5个月的数据
-        List<OrderPlanAnalysis> list = new ArrayList<>();
-
-
-        list.add(OrderPlanAnalysis.builder()
-                .timeX("1月")
-                .planQuantity(new BigDecimal("100"))
-                .completedQuantity(new BigDecimal("80"))
-                .achievementRate(new BigDecimal("0.80"))
-                .build());
-        list.add(OrderPlanAnalysis.builder()
-                .timeX("2月")
-                .planQuantity(new BigDecimal("150"))
-                .completedQuantity(new BigDecimal("120"))
-                .achievementRate(new BigDecimal("0.80"))
-                .build());
-        list.add(OrderPlanAnalysis.builder()
-                .timeX("3月")
-                .planQuantity(new BigDecimal("220"))
-                .completedQuantity(new BigDecimal("200"))
-                .achievementRate(new BigDecimal("0.91"))
-                .build());
-        list.add(OrderPlanAnalysis.builder()
-                .timeX("4月")
-                .planQuantity(new BigDecimal("180"))
-                .completedQuantity(new BigDecimal("150"))
-                .achievementRate(new BigDecimal("0.83"))
-                .build());
-        list.add(OrderPlanAnalysis.builder()
-                .timeX("5月")
-                .planQuantity(new BigDecimal("160"))
-                .completedQuantity(new BigDecimal("140"))
-                .achievementRate(new BigDecimal("0.88"))
-                .build());
-        return list;
+        
+        try {
+            // 将字符串日期转换为Date对象
+            SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date startDateTime = fullSdf.parse(finalStartDate + " 00:00:00");
+            Date endDateTime = fullSdf.parse(finalEndDate + " 23:59:59");
+            
+            // 判断时间维度：如果是"近5日"或包含"日"，按日分组；否则按月分组
+            boolean groupByDay = dateType != null && (dateType.contains("日") || dateType.equals("TODAY") || dateType.equals("YESTERDAY"));
+            
+            List<Map> results;
+            if (groupByDay) {
+                // 按日分组查询
+                results = productionBoardRepository.findOrderPlanAnalysisByDay(
+                    startDateTime, endDateTime, productionLine);
+            } else {
+                // 按月分组查询
+                results = productionBoardRepository.findOrderPlanAnalysisByMonth(
+                    startDateTime, endDateTime, productionLine);
+            }
+            
+            // 转换为OrderPlanAnalysis对象列表
+            List<OrderPlanAnalysis> list = new ArrayList<>();
+            for (Map row : results) {
+                String timeX = (String) row.get("timex");
+                BigDecimal planQuantity = row.get("planquantity") != null ? 
+                    new BigDecimal(row.get("planquantity").toString()) : BigDecimal.ZERO;
+                BigDecimal completedQuantity = row.get("completedquantity") != null ? 
+                    new BigDecimal(row.get("completedquantity").toString()) : BigDecimal.ZERO;
+                
+                // 计算达成率
+                BigDecimal achievementRate = BigDecimal.ZERO;
+                if (planQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                    achievementRate = completedQuantity.divide(planQuantity, 4, BigDecimal.ROUND_HALF_UP);
+                }
+                
+                // 格式化时间显示
+                String displayTime = timeX;
+                if (!groupByDay && timeX != null && timeX.length() >= 7) {
+                    // 月份格式：2025-01 -> 1月
+                    displayTime = timeX.substring(5) + "月";
+                }
+                
+                OrderPlanAnalysis analysis = OrderPlanAnalysis.builder()
+                    .timeX(displayTime)
+                    .planQuantity(planQuantity)
+                    .completedQuantity(completedQuantity)
+                    .achievementRate(achievementRate)
+                    .build();
+                
+                list.add(analysis);
+            }
+            
+            return list;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 查询失败时返回空列表
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -140,247 +233,138 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
 
     @Override
     public OrderProgressPageVo getOrderProgress(String productionLine, Integer current, Integer size) {
-        // Mock数据 - 订单进度列表（完整数据）
-        List<OrderProgress> allOrders = new ArrayList<>();
+        // 使用当前日期作为查询范围（可以根据需要调整）
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String today = sdf.format(new Date());
         
-
-        allOrders.add(OrderProgress.builder()
-                .orderNo("55A22026010500130220-0.04")
-                .productName("3kg袋装花椒酱")
-                .unit("件")
-                .planQuantity(new BigDecimal("460"))
-                .completedQuantity(new BigDecimal("270"))
-                .progressPercentage(new BigDecimal("59"))
-                .build());
-        allOrders.add(OrderProgress.builder()
-                .orderNo("55A22026010500130220-0.03")
-                .productName("3kg袋装花椒酱")
-                .unit("件")
-                .planQuantity(new BigDecimal("460"))
-                .completedQuantity(new BigDecimal("530"))
-                .progressPercentage(new BigDecimal("115"))
-                .build());
-        allOrders.add(OrderProgress.builder()
-                .orderNo("55A22026010500130220-0.02")
-                .productName("3kg袋装花椒酱")
-                .unit("件")
-                .planQuantity(new BigDecimal("460"))
-                .completedQuantity(new BigDecimal("0"))
-                .progressPercentage(new BigDecimal("0"))
-                .build());
-        allOrders.add(OrderProgress.builder()
-                .orderNo("55A22026010500130220-0.01")
-                .productName("3kg袋装花椒酱")
-                .unit("件")
-                .planQuantity(new BigDecimal("450"))
-                .completedQuantity(new BigDecimal("270"))
-                .progressPercentage(new BigDecimal("60"))
-                .build());
-        allOrders.add(OrderProgress.builder()
-                .orderNo("55A22026010500130220-0.00")
-                .productName("3kg袋装花椒酱")
-                .unit("件")
-                .planQuantity(new BigDecimal("460"))
-                .completedQuantity(new BigDecimal("270"))
-                .progressPercentage(new BigDecimal("59"))
-                .build());
-        allOrders.add(OrderProgress.builder()
-                .orderNo("55A22026010500130220-0.11")
-                .productName("3kg袋装花椒酱")
-                .unit("件")
-                .planQuantity(new BigDecimal("460"))
-                .completedQuantity(new BigDecimal("270"))
-                .progressPercentage(new BigDecimal("59"))
-                .build());
-        allOrders.add(OrderProgress.builder()
-                .orderNo("55A22026010500130220-0.12")
-                .productName("3kg袋装花椒酱")
-                .unit("件")
-                .planQuantity(new BigDecimal("460"))
-                .completedQuantity(new BigDecimal("270"))
-                .progressPercentage(new BigDecimal("59"))
-                .build());
-        allOrders.add(OrderProgress.builder()
-                .orderNo("55A22026010500130220-0.13")
-                .productName("3kg袋装花椒酱")
-                .unit("件")
-                .planQuantity(new BigDecimal("460"))
-                .completedQuantity(new BigDecimal("136"))
-                .progressPercentage(new BigDecimal("30"))
-                .build());
-        
-        // 计算统计信息
-        int orderCount = allOrders.size();
-        long unfinishedCount = 3;
-        
-        // 分页处理
-        Pageable pageable = PageRequest.of(current, size);
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), allOrders.size());
-        
-        List<OrderProgress> pageContent = allOrders.subList(start, end);
-        Page<OrderProgress> page = new PageImpl<>(pageContent, pageable, allOrders.size());
-        
-        // 构建响应
-        OrderProgressPageVo response = new OrderProgressPageVo(page, orderCount, (int) unfinishedCount);
-        
-        return response;
+        try {
+            // 设置查询时间范围（例如：查询最近30天的订单）
+            SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date endDateTime = fullSdf.parse(today + " 23:59:59");
+            
+            // 计算30天前的日期
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTime(endDateTime);
+            cal.add(java.util.Calendar.DAY_OF_MONTH, -30);
+            Date startDateTime = cal.getTime();
+            
+            // 创建分页参数
+            Pageable pageable = PageRequest.of(current, size);
+            
+            // 查询订单进度数据（返回Page<Map>）
+            Page<Map> select = productionBoardRepository.findOrderProgressByDateRangeAndOrg(
+                startDateTime, 
+                endDateTime, 
+                productionLine,
+                pageable
+            );
+            
+            // 使用JSON转换为OrderProgress对象列表
+            List<OrderProgress> castEntity = JSON.parseArray(JSON.toJSONString(select.getContent()), OrderProgress.class);
+            
+            // 计算进度百分比
+            for (OrderProgress order : castEntity) {
+                if (order.getPlanQuantity() != null && order.getPlanQuantity().compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal completedQty = order.getCompletedQuantity() != null ? order.getCompletedQuantity() : BigDecimal.ZERO;
+                    BigDecimal progressPercentage = completedQty.divide(order.getPlanQuantity(), 4, BigDecimal.ROUND_HALF_UP)
+                        .multiply(new BigDecimal("100"))
+                        .setScale(0, BigDecimal.ROUND_HALF_UP);
+                    order.setProgressPercentage(progressPercentage);
+                } else {
+                    order.setProgressPercentage(BigDecimal.ZERO);
+                }
+            }
+            
+            // 获取订单总数
+            int orderCount = (int) select.getTotalElements();
+            
+            // 通过SQL查询未完成订单数（效率更高）
+            Long unfinishedCount = productionBoardRepository.countUnfinishedOrders(
+                startDateTime, 
+                endDateTime, 
+                productionLine
+            );
+            
+            // 构建响应
+            Page<OrderProgress> page = new PageImpl<>(castEntity, pageable, orderCount);
+            return new OrderProgressPageVo(page, orderCount, unfinishedCount != null ? unfinishedCount.intValue() : 0);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 查询失败时返回空数据
+            Page<OrderProgress> emptyPage = new PageImpl<>(new ArrayList<>(), PageRequest.of(current, size), 0);
+            return new OrderProgressPageVo(emptyPage, 0, 0);
+        }
     }
 
     @Override
     public PageVo<ProductionBgVo> getProductionBG(String productionLine, Integer current, Integer size) {
-        // Mock数据 - 生产报工数据列表（完整数据）
-        List<ProductionBgVo> allTasks = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm");
-        
         try {
-            // 第1条：泉州3#3接B线B班 - 配料-面团 - 白砂糖
-            allTasks.add(ProductionBgVo.builder()
-                .productionLine("泉州3#3接B线B班")
-                .process("配料-面团")
-                .materialName("白砂糖")
-                .standard("13.1-13.3")
-                .recordQuantity(new BigDecimal("13.1"))
-                .potStr("第1锅")
-                .recordTime(sdf.parse("2025.12.19 00:00"))
-                .build());
+            // 创建分页参数
+            Pageable pageable = PageRequest.of(current, size);
             
-            // 第2条：泉州3#3接B线B班 - 配料-面团 - 中筋粉01（红色异常数据）
-            allTasks.add(ProductionBgVo.builder()
-                .productionLine("泉州3#3接B线B班")
-                .process("配料-面团")
-                .materialName("中筋粉01")
-                .standard("24.9-25.1")
-                .recordQuantity(new BigDecimal("26"))
-                .potStr("第1锅")
-                .recordTime(sdf.parse("2025.12.19 00:00"))
-                .build());
+            // 查询生产报工数据（返回Page<Map>）
+            Page<Map> select = productionBoardRepository.findProductionBgData(
+                productionLine,
+                pageable
+            );
             
-            // 第3条：泉州3#3接B线B班 - 配料-面团 - 中筋粉02（红色异常数据）
-            allTasks.add(ProductionBgVo.builder()
-                .productionLine("泉州3#3接B线B班")
-                .process("配料-面团")
-                .materialName("中筋粉02")
-                .standard("24.9-25.1")
-                .recordQuantity(new BigDecimal("26"))
-                .potStr("第1锅")
-                .recordTime(sdf.parse("2025.12.19 00:00"))
-                .build());
+            // 使用JSON转换为ProductionBgVo对象列表
+            List<ProductionBgVo> castEntity = JSON.parseArray(JSON.toJSONString(select.getContent()), ProductionBgVo.class);
             
-            // 第4条：泉州3#3接B线B班 - 成型 - 面团
-            allTasks.add(ProductionBgVo.builder()
-                .productionLine("泉州3#3接B线B班")
-                .process("成型")
-                .materialName("面团")
-                .standard("4.49-4.52")
-                .recordQuantity(new BigDecimal("4.501"))
-                .potStr("")
-                .recordTime(sdf.parse("2025.12.19 00:00"))
-                .build());
+            // 获取总数
+            int total = (int) select.getTotalElements();
             
-            // 第5条：泉州3#3接B线B班 - 配料-酥 - 散装大豆油
-            allTasks.add(ProductionBgVo.builder()
-                .productionLine("泉州3#3接B线B班")
-                .process("配料-酥")
-                .materialName("散装大豆油")
-                .standard("26.495-26.51")
-                .recordQuantity(new BigDecimal("26.5"))
-                .potStr("第1锅")
-                .recordTime(sdf.parse("2025.12.19 00:00"))
-                .build());
+            // 构建响应
+            PageVo<ProductionBgVo> pageVo = new PageVo<>(size, current);
+            pageVo.setTotal(total);
+            pageVo.setList(castEntity);
             
-            // 第6条：泉州3#3接B线B班 - 配料-馅料 - 调配油
-            allTasks.add(ProductionBgVo.builder()
-                .productionLine("泉州3#3接B线B班")
-                .process("配料-馅料")
-                .materialName("调配油")
-                .standard("2.49-2.51")
-                .recordQuantity(new BigDecimal("2.5"))
-                .potStr("第2锅")
-                .recordTime(sdf.parse("2025.12.19 00:00"))
-                .build());
+            return pageVo;
             
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            // 查询失败时返回空数据
+            PageVo<ProductionBgVo> emptyPageVo = new PageVo<>(size, current);
+            emptyPageVo.setTotal(0);
+            emptyPageVo.setList(new ArrayList<>());
+            return emptyPageVo;
         }
-        
-        // 分页处理
-        Pageable pageable = PageRequest.of(current, size);
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), allTasks.size());
-        
-        List<ProductionBgVo> pageContent = allTasks.subList(start, end);
-        Page<ProductionBgVo> page = new PageImpl<>(pageContent, pageable, allTasks.size());
-        
-        // 构建响应
-        return new PageVo<>(page);
     }
 
     @Override
     public PageVo<OutsourcingNetContent> getOutsourcingNetContent(String productionLine, Integer current, Integer size) {
-        // Mock数据 - 外包净含量实况（完整数据）
-        List<OutsourcingNetContent> allContents = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm");
-        
         try {
-            // 第1条：泉州3#3接B线B班 - 2.5kg*1 友臣肉松饼(原味)
-            allContents.add(new OutsourcingNetContent(
-                "泉州3#3接B线B班", 
-                "2.5kg*1 友臣肉松饼(原味)", 
-                "2500-2535",
-                new BigDecimal("2535"),
-                new BigDecimal("2500"),
-                new BigDecimal("2532"), 
-                sdf.parse("2025.12.19 00:00")
-            ));
+            // 创建分页参数
+            Pageable pageable = PageRequest.of(current, size);
             
-            // 第2条：泉州3#3接B线B班 - 2.5kg*1 友臣肉松饼(原味)（红色异常数据）
-            allContents.add(new OutsourcingNetContent(
-                "泉州3#3接B线B班", 
-                "2.5kg*1 友臣肉松饼(原味)", 
-                "2500-2535",
-                new BigDecimal("2535"),
-                new BigDecimal("2500"),
-                new BigDecimal("2555"), 
-                sdf.parse("2025.12.19 00:00")
-            ));
+            // 查询外包净含量数据（返回Page<Map>）
+            Page<Map> select = productionBoardRepository.findOutsourcingNetContentData(
+                productionLine,
+                pageable
+            );
             
-            // 第3条：泉州3#3接B线B班 - 2.5kg*1 友臣肉松饼(原味)（红色异常数据）
-            allContents.add(new OutsourcingNetContent(
-                "泉州3#3接B线B班", 
-                "2.5kg*1 友臣肉松饼(原味)", 
-                "2500-2535",
-                new BigDecimal("2535"),
-                new BigDecimal("2500"),
-                new BigDecimal("2550"), 
-                sdf.parse("2025.12.19 00:00")
-            ));
+            // 使用JSON转换为OutsourcingNetContent对象列表
+            List<OutsourcingNetContent> castEntity = JSON.parseArray(JSON.toJSONString(select.getContent()), OutsourcingNetContent.class);
             
-            // 第4条：泉州3#3接B线B班 - 1kg友臣原味肉松饼电商版
-            allContents.add(new OutsourcingNetContent(
-                "泉州3#3接B线B班", 
-                "1kg友臣原味肉松饼电商版", 
-                "1017-1052",
-                new BigDecimal("1052"),
-                new BigDecimal("1017"),
-                new BigDecimal("1050"), 
-                sdf.parse("2025.12.19 00:00")
-            ));
+            // 获取总数
+            int total = (int) select.getTotalElements();
             
-        } catch (ParseException e) {
+            // 构建响应
+            PageVo<OutsourcingNetContent> pageVo = new PageVo<>(size, current);
+            pageVo.setTotal(total);
+            pageVo.setList(castEntity);
+            
+            return pageVo;
+            
+        } catch (Exception e) {
             e.printStackTrace();
+            // 查询失败时返回空数据
+            PageVo<OutsourcingNetContent> emptyPageVo = new PageVo<>(size, current);
+            emptyPageVo.setTotal(0);
+            emptyPageVo.setList(new ArrayList<>());
+            return emptyPageVo;
         }
-        
-        // 分页处理
-        Pageable pageable = PageRequest.of(current, size);
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), allContents.size());
-        
-        List<OutsourcingNetContent> pageContent = allContents.subList(start, end);
-        Page<OutsourcingNetContent> page = new PageImpl<>(pageContent, pageable, allContents.size());
-        
-        // 构建响应
-        return new PageVo<>(page);
     }
 
     @Override
