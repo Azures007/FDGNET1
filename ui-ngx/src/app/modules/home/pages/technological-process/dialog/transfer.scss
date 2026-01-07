@@ -23,3 +23,15 @@
 		}
 	}
 }
+.transfer-warp .transfer-panel .transfer-body .transfer-item .span {
+  width: 50%;
+  &:nth-child(3) {
+    width: 40%;
+  }
+}
+.transfer-warp .transfer-panel {
+  width: 45%;
+}
+.transfer-buttons {
+  width: 10%;
+}

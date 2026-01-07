@@ -221,7 +221,7 @@ export class AddProcessRouteComponent implements OnInit {
           });
         });
         const dialogRef = this.dialog.open(TransferComponent, {
-          width: '700px',
+          width: '900px',
           height: 'auto',
           panelClass: 'custom-modalbox',
           data: this.completeColumns,
