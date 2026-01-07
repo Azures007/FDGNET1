@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.thingsboard.server.common.data.mes.vo.ReportRecordVo;
+import org.thingsboard.server.dao.mes.vo.ReportRecordVo;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.dto.ReportRecordQueryDto;

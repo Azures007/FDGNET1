@@ -2,7 +2,7 @@ package org.thingsboard.server.dao.mes.report;
 
 import org.springframework.data.domain.Page;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
-import org.thingsboard.server.common.data.mes.vo.ReportRecordVo;
+import org.thingsboard.server.dao.mes.vo.ReportRecordVo;
 import org.thingsboard.server.dao.mes.dto.ReportRecordQueryDto;
 
 import java.util.List;

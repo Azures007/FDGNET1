@@ -1,4 +1,4 @@
-package org.thingsboard.server.common.data.mes.vo;
+package org.thingsboard.server.dao.mes.vo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
