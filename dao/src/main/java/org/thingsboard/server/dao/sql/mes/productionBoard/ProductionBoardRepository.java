@@ -222,7 +222,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
-           "AND (:productionLine IS NULL OR h.nc_cwkid = :productionLine) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "GROUP BY h.order_no, h.body_material_name, h.body_plan_prd_qty, h.body_plan_start_date " +
            "ORDER BY h.body_plan_start_date DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
@@ -232,7 +232,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
-           "AND (:productionLine IS NULL OR h.nc_cwkid = :productionLine) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "GROUP BY h.order_no, h.body_material_name, h.body_plan_prd_qty, h.body_plan_start_date" +
            ") as total",
            nativeQuery = true)
@@ -260,7 +260,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
-           "AND (:productionLine IS NULL OR h.nc_cwkid = :productionLine) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "GROUP BY h.order_no, h.body_plan_prd_qty " +
            "HAVING COUNT(r.record_qty) < h.body_plan_prd_qty OR COUNT(r.record_qty) = 0" +
            ") as unfinished",
@@ -293,7 +293,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
-           "AND (:productionLine IS NULL OR h.nc_cwkid = :productionLine) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "GROUP BY TO_CHAR(h.body_plan_start_date, 'MM-DD') " +
            "ORDER BY TO_CHAR(h.body_plan_start_date, 'MM-DD')",
            nativeQuery = true)
@@ -325,7 +325,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
-           "AND (:productionLine IS NULL OR h.nc_cwkid = :productionLine) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "GROUP BY TO_CHAR(h.body_plan_start_date, 'YYYY-MM') " +
            "ORDER BY TO_CHAR(h.body_plan_start_date, 'YYYY-MM')",
            nativeQuery = true)
@@ -355,14 +355,14 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "  AND i.process_number = r.process_number " +
            "  AND (r.group_code = i.semi_finished_product_code OR r.group_code IS NULL) " +
            "WHERE h.is_deleted = '0' and r.process_number<>'GX-011'" +
-           "AND (:productionLine IS NULL OR h.nc_cwkid = :productionLine) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "ORDER BY r.report_time DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +
            "FROM t_bus_order_head h " +
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
            "WHERE h.is_deleted = '0' and r.process_number<>'GX-011'" +
-           "AND (:productionLine IS NULL OR h.nc_cwkid = :productionLine)" +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR))" +
            ") as total",
            nativeQuery = true)
     Page<Map> findProductionBgData(@Param("productionLine") String productionLine,
@@ -387,7 +387,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "LEFT JOIN t_sys_net_content_range b ON b.material_code = h.body_material_number " +
            "WHERE h.is_deleted = '0' " +
            "AND r.process_number = 'GX-011' " +
-           "AND (:productionLine IS NULL OR h.nc_cwkid = :productionLine) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "ORDER BY r.report_time DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +
@@ -395,7 +395,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
            "WHERE h.is_deleted = '0' " +
            "AND r.process_number = 'GX-011' " +
-           "AND (:productionLine IS NULL OR h.nc_cwkid = :productionLine)" +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR))" +
            ") as total",
            nativeQuery = true)
     Page<Map> findOutsourcingNetContentData(@Param("productionLine") String productionLine,
