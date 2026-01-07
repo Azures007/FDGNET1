@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.mes.ncOrder.NcTBusOrderHead;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -82,14 +83,16 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      * 查询指定时间范围内的订单统计数据（订单数量和计划生产数量）
      * @param startDate 开始日期
      * @param endDate 结束日期
-     * @return Object数组 [订单数量, 计划生产数量总和]
+     * @return List<Map> [orderCount: 订单数量, planProductionQuantity: 计划生产数量总和]
      */
-    @Query("SELECT COUNT(o), COALESCE(SUM(o.nnum), 0) FROM NcTBusOrderHead o " +
-           "WHERE o.isDeleted = '0' " +
-           "AND o.billType = '普通流程生产订单' " +
-           "AND o.tplanstarttime >= :startDate " +
-           "AND o.tplanstarttime <= :endDate")
-    Object[] getOrderStatisticsByDateRange(@Param("startDate") Date startDate, 
+    @Query(value = "SELECT COUNT(h.order_id) as orderCount, COALESCE(SUM(h.body_plan_prd_qty), 0) as planProductionQuantity " +
+           "FROM t_bus_order_head h " +
+           "WHERE h.is_deleted = '0' " +
+           "AND h.bill_type = '普通流程生产订单' " +
+           "AND h.body_plan_start_date >= :startDate " +
+           "AND h.body_plan_start_date <= :endDate",
+           nativeQuery = true)
+    List<Map> getOrderStatisticsByDateRange(@Param("startDate") Date startDate, 
                                            @Param("endDate") Date endDate);
 
     /**
@@ -97,15 +100,17 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      * @param startDate 开始日期
      * @param endDate 结束日期
      * @param productionLine 生产线ID
-     * @return Object数组 [订单数量, 计划生产数量总和]
+     * @return List<Map> [orderCount: 订单数量, planProductionQuantity: 计划生产数量总和]
      */
-    @Query("SELECT COUNT(o), COALESCE(SUM(o.nnum), 0) FROM NcTBusOrderHead o " +
-           "WHERE o.isDeleted = '0' " +
-           "AND o.billType = '普通流程生产订单' " +
-           "AND o.tplanstarttime >= :startDate " +
-           "AND o.tplanstarttime <= :endDate " +
-           "AND o.cwkid = :productionLine")
-    Object[] getOrderStatisticsByDateRangeAndProductionLine(@Param("startDate") Date startDate, 
+    @Query(value = "SELECT COUNT(h.order_id) as orderCount, COALESCE(SUM(h.body_plan_prd_qty), 0) as planProductionQuantity " +
+           "FROM t_bus_order_head h " +
+           "WHERE h.is_deleted = '0' " +
+           "AND h.bill_type = '普通流程生产订单' " +
+           "AND h.body_plan_start_date >= :startDate " +
+           "AND h.body_plan_start_date <= :endDate " +
+           "AND h.nc_cwkid = :productionLine",
+           nativeQuery = true)
+    List<Map> getOrderStatisticsByDateRangeAndProductionLine(@Param("startDate") Date startDate, 
                                                             @Param("endDate") Date endDate,
                                                             @Param("productionLine") String productionLine);
 
@@ -128,8 +133,8 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "     OR (m.nc_material_classification <> '外包材料' " +
            "         AND m.nc_material_classification <> '包膜'))", 
            nativeQuery = true)
-    Double sumPlanMaterialWeightByDateRange(@Param("startDate") Date startDate, 
-                                            @Param("endDate") Date endDate);
+    BigDecimal sumPlanMaterialWeightByDateRange(@Param("startDate") Date startDate,
+                                                @Param("endDate") Date endDate);
 
     /**
      * 查询指定时间范围和生产线的计划原辅材重量（排除外包材料和包膜）
@@ -152,7 +157,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "     OR (m.nc_material_classification <> '外包材料' " +
            "         AND m.nc_material_classification <> '包膜'))", 
            nativeQuery = true)
-    Double sumPlanMaterialWeightByDateRangeAndProductionLine(@Param("startDate") Date startDate, 
+    BigDecimal sumPlanMaterialWeightByDateRangeAndProductionLine(@Param("startDate") Date startDate, 
                                                               @Param("endDate") Date endDate,
                                                               @Param("productionLine") String productionLine);
 
@@ -174,7 +179,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND (m.nc_material_classification = '外包材料' " +
            "     OR m.nc_material_classification = '包膜')", 
            nativeQuery = true)
-    Double sumPackagingWeightByDateRange(@Param("startDate") Date startDate, 
+    BigDecimal sumPackagingWeightByDateRange(@Param("startDate") Date startDate, 
                                          @Param("endDate") Date endDate);
 
     /**
@@ -197,7 +202,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND (m.nc_material_classification = '外包材料' " +
            "     OR m.nc_material_classification = '包膜')", 
            nativeQuery = true)
-    Double sumPackagingWeightByDateRangeAndProductionLine(@Param("startDate") Date startDate, 
+    BigDecimal sumPackagingWeightByDateRangeAndProductionLine(@Param("startDate") Date startDate, 
                                                           @Param("endDate") Date endDate,
                                                           @Param("productionLine") String productionLine);
 

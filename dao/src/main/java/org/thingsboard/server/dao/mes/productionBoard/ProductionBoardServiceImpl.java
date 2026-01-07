@@ -56,13 +56,13 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             endDateTime = fullSdf.parse(finalEndDate + " 23:59:59");
             
             // 使用合并查询获取订单数量和计划生产数量
-            Object[] result;
-            Double planMaterialWeight;
-            Double packagingWeight;
+            List<Map> resultList;
+            BigDecimal planMaterialWeight;
+            BigDecimal packagingWeight;
             
             if (productionLine != null && !productionLine.trim().isEmpty()) {
-                // 如果传了生产线，按生产线查询
-                result = productionBoardRepository.getOrderStatisticsByDateRangeAndProductionLine(
+                // 如果传了生产线,按生产线查询
+                resultList = productionBoardRepository.getOrderStatisticsByDateRangeAndProductionLine(
                     startDateTime, endDateTime, productionLine);
                 planMaterialWeight = productionBoardRepository.sumPlanMaterialWeightByDateRangeAndProductionLine(
                     startDateTime, endDateTime, productionLine);
@@ -70,7 +70,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     startDateTime, endDateTime, productionLine);
             } else {
                 // 否则查询所有
-                result = productionBoardRepository.getOrderStatisticsByDateRange(
+                resultList = productionBoardRepository.getOrderStatisticsByDateRange(
                     startDateTime, endDateTime);
                 planMaterialWeight = productionBoardRepository.sumPlanMaterialWeightByDateRange(
                     startDateTime, endDateTime);
@@ -79,8 +79,18 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             }
             
             // 解析查询结果
-            Long orderCount = result[0] != null ? ((Number) result[0]).longValue() : 0L;
-            BigDecimal planProductionQuantity = result[1] != null ? (BigDecimal) result[1] : BigDecimal.ZERO;
+            Long orderCount = 0L;
+            BigDecimal planProductionQuantity = BigDecimal.ZERO;
+            
+            if (resultList != null && !resultList.isEmpty()) {
+                Map row = resultList.get(0);
+                Object orderCountObj = row.get("ordercount");
+                Object planQtyObj = row.get("planproductionquantity");
+                
+                orderCount = orderCountObj != null ? ((Number) orderCountObj).longValue() : 0L;
+                planProductionQuantity = planQtyObj != null ? 
+                    new BigDecimal(planQtyObj.toString()) : BigDecimal.ZERO;
+            }
             
             // 订单数量
             stats.setOrderCount(orderCount.intValue());
@@ -91,13 +101,11 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             stats.setPlanProductionQuantityUnit("件");
             
             // 计划原辅料重量
-            stats.setPlanMaterialWeight(planMaterialWeight != null ? 
-                new BigDecimal(planMaterialWeight.toString()) : BigDecimal.ZERO);
+            stats.setPlanMaterialWeight(planMaterialWeight != null ? planMaterialWeight : BigDecimal.ZERO);
             stats.setPlanMaterialWeightUnit("kg");
             
             // 包材重量
-            stats.setPackagingWeight(packagingWeight != null ? 
-                new BigDecimal(packagingWeight.toString()) : BigDecimal.ZERO);
+            stats.setPackagingWeight(packagingWeight != null ? packagingWeight : BigDecimal.ZERO);
             stats.setPackagingWeightUnit("kg");
             
         } catch (Exception e) {
