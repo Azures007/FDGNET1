@@ -134,7 +134,7 @@ public class OrderHeadExcelServiceImpl implements OrderHeadExcelService {
             //获取字典对象：订单状态
             if (!StringUtils.isEmpty(tBusOrderHead.getOrderStatus())){
                 var codeValue = tBusOrderHead.getOrderStatus();
-                TSysCodeDsc codeDscOS = sysCodeDscService.getCodeByCodeClAndCodeVale("ORDERSTATUS0000", codeValue);
+                TSysCodeDsc codeDscOS = sysCodeDscService.getCodeByCodeClAndCodeVale("PROCESSSTATUS0000", codeValue);
                 vo.setOrderStatus(codeDscOS.getCodeDsc());
             }
             excelVos.add(vo);

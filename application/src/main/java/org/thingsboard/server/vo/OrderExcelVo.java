@@ -5,6 +5,7 @@ import com.alibaba.excel.metadata.BaseRowModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -18,8 +19,8 @@ public class OrderExcelVo extends BaseRowModel {
     @ExcelProperty("序号")
     private Integer index;
 
-    @ExcelProperty("生产订单号")
-    private String billNo;
+    @ExcelProperty("订单号")
+    private String orderNo;
 
     @ExcelProperty("下单日期")
     private String billDate;
@@ -40,7 +41,7 @@ public class OrderExcelVo extends BaseRowModel {
     private String materialspec;
 
     @ExcelProperty("计划产量(件)")
-    private Float nnum;
+    private BigDecimal nnum;
 
     @ExcelProperty("计划开工日期")
     private String tplanstarttime;
