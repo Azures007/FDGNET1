@@ -96,16 +96,18 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             stats.setOrderCount(orderCount.intValue());
             stats.setOrderCountUnit("个");
             
-            // 计划生产数量
-            stats.setPlanProductionQuantity(planProductionQuantity);
+            // 计划生产数量（保留3位小数）
+            stats.setPlanProductionQuantity(planProductionQuantity.setScale(3, BigDecimal.ROUND_HALF_UP));
             stats.setPlanProductionQuantityUnit("件");
             
-            // 计划原辅料重量
-            stats.setPlanMaterialWeight(planMaterialWeight != null ? planMaterialWeight : BigDecimal.ZERO);
+            // 计划原辅料重量（保留3位小数）
+            BigDecimal materialWeight = planMaterialWeight != null ? planMaterialWeight : BigDecimal.ZERO;
+            stats.setPlanMaterialWeight(materialWeight.setScale(3, BigDecimal.ROUND_HALF_UP));
             stats.setPlanMaterialWeightUnit("kg");
             
-            // 包材重量
-            stats.setPackagingWeight(packagingWeight != null ? packagingWeight : BigDecimal.ZERO);
+            // 包材重量（保留3位小数）
+            BigDecimal pkgWeight = packagingWeight != null ? packagingWeight : BigDecimal.ZERO;
+            stats.setPackagingWeight(pkgWeight.setScale(3, BigDecimal.ROUND_HALF_UP));
             stats.setPackagingWeightUnit("kg");
             
         } catch (Exception e) {

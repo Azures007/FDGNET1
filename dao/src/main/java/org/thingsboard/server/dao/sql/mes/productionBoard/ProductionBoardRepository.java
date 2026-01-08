@@ -381,8 +381,8 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      */
     @Query(value = "SELECT h.nc_vwkname as productionLine, " +
            "h.body_material_name as productName, " +
-           "CONCAT(TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST(b.lower_limit AS text))), '-', " +
-           "TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST(b.upper_limit AS text)))) as netContentStandardStr, " +
+           "CONCAT(TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(b.lower_limit AS text))), '-', " +
+           "TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(b.upper_limit AS text)))) as netContentStandardStr, " +
            "b.upper_limit as netContentStandardUpper, " +
            "b.lower_limit as netContentStandardLower, " +
            "r.record_qty * 1000 as actualNetContent, " +
