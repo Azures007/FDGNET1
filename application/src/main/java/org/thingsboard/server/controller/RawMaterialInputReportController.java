@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
@@ -14,12 +15,17 @@ import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.vo.RawMaterialInputReportVo;
 import org.thingsboard.server.service.report.RawMaterialInputReportService;
 
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * 原料投入报表接口
  */
 @Api(value = "原料投入报表接口", tags = "原料投入报表接口")
 @RequestMapping("/api/rawmaterialinput")
 @RestController
+@Slf4j
 public class RawMaterialInputReportController extends BaseController {
 
     @Autowired
@@ -37,4 +43,31 @@ public class RawMaterialInputReportController extends BaseController {
             @RequestBody RawMaterialInputQueryDto queryDto) throws ThingsboardException {
         return ResultUtil.success(rawMaterialInputReportService.queryRawMaterialInputReport(current, size, queryDto));
     }
+
+    @ApiOperation("导出原料投入报表")
+    @PostMapping("/export")
+    public void export(
+            @RequestBody RawMaterialInputQueryDto queryDto,
+            javax.servlet.http.HttpServletResponse response) {
+        try {
+            String fileName = "原料投入报表_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("utf-8");
+            fileName = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
+            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+            
+            rawMaterialInputReportService.exportRawMaterialInputReport(0, 10000, queryDto, response);
+        } catch (Exception e) {
+            try {
+                response.reset();
+                response.setContentType("application/json;charset=utf-8");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
+                response.getWriter().flush();
+            } catch (Exception ex) {
+                log.error("导出报表时发生异常", ex);
+            }
+        }
+    }
+
 }
