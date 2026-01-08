@@ -21,7 +21,7 @@ export class MaterialComponent implements OnInit {
   searchFormGroup = this.fb.group({
     current: 0,
     size: 50,
-    productName: "友臣原味电商版周转肉松饼",
+    productName: "",
   });
   //新增角色参数
   roleData = {
