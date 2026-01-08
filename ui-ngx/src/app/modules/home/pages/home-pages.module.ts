@@ -59,6 +59,7 @@ import { ContentModule } from '@home/pages/content/content.module';
 import { RecipeModule } from '@home/pages/recipe/recipe.module';
 import { ReportRecordModule } from '@home/pages/report-record/report-record.module';
 import { BiModule } from '@home/pages/bi/bi.module';
+import { StatisticsModule } from '@home/pages/statistics/statistics.module';
 
 
 
@@ -101,7 +102,8 @@ import { BiModule } from '@home/pages/bi/bi.module';
     ContentModule,
     RecipeModule,
     ReportRecordModule,
-    BiModule
+    BiModule,
+    StatisticsModule
   ],
   providers: [
     {
