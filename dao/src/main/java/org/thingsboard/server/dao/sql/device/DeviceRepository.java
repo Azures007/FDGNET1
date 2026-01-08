@@ -21,11 +21,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
+import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceTransportType;
 import org.thingsboard.server.dao.model.sql.DeviceEntity;
 import org.thingsboard.server.dao.model.sql.DeviceInfoEntity;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -238,4 +241,58 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
             "INNER JOIN DeviceProfileEntity p ON d.deviceProfileId = p.id " +
             "WHERE p.transportType = :transportType")
     Page<UUID> findIdsByDeviceProfileTransportType(@Param("transportType") DeviceTransportType transportType, Pageable pageable);
+
+    @Query(value = "select name,label from device where name like %?1% order by name asc ",nativeQuery = true)
+    List<Map> findLikeName(String insourcing);
+
+    /**
+     * 统计设备上报数据
+     */
+    @Query(value = "select COALESCE(SUM(COALESCE(a.long_v, a.dbl_v)), 0) from ts_kv a \n" +
+            "join device b on a.entity_id =b.id \n" +
+            "join ts_kv_dictionary c on a.\"key\" =c.key_id \n" +
+            "where c.\"key\" =?2 and b.name=?1 and a.ts between ?3 and ?4 ",nativeQuery = true)
+    BigDecimal sumQtyByMykey(String name, String key,Long dateFront,Long dateLater);
+
+    /**
+     * 取最大设备上报数据
+     */
+    @Query(value = "select COALESCE(MAX(COALESCE(a.long_v, a.dbl_v)), 0) from ts_kv a \n" +
+            "join device b on a.entity_id =b.id \n" +
+            "join ts_kv_dictionary c on a.\"key\" =c.key_id \n" +
+            "where c.\"key\" =?2 and b.name=?1 and a.ts between ?3 and ?4 ",nativeQuery = true)
+    BigDecimal maxQtyByMykey(String name, String key,Long dateFront,Long dateLater);
+
+    /**
+     * 取最小设备上报数据
+     */
+    @Query(value = "select COALESCE(MIN(COALESCE(a.long_v, a.dbl_v)), 0) from ts_kv a \n" +
+            "join device b on a.entity_id =b.id \n" +
+            "join ts_kv_dictionary c on a.\"key\" =c.key_id \n" +
+            "where c.\"key\" =?2 and b.name=?1 and a.ts between ?3 and ?4 ",nativeQuery = true)
+    BigDecimal minQtyByMykey(String name, String key,Long dateFront,Long dateLater);
+
+    /**
+     * 取平均设备上报数据
+     */
+    @Query(value = "select COALESCE(AVG (COALESCE(a.long_v, a.dbl_v)), 0) from ts_kv a \n" +
+            "join device b on a.entity_id =b.id \n" +
+            "join ts_kv_dictionary c on a.\"key\" =c.key_id \n" +
+            "where c.\"key\" =?2 and b.name=?1 and a.ts between ?3 and ?4 ",nativeQuery = true)
+    BigDecimal avgQtyByMykey(String name, String key,Long dateFront,Long dateLater);
+
+    /**
+     * 超标次数
+     * @param name
+     * @param inTepmSize
+     * @param byDateFrontTimes
+     * @param byDateLaterTimes
+     * @return
+     */
+    @Query(value = "select GREATEST( \n" +
+            "    COUNT(COALESCE(a.long_v, a.dbl_v)) - ?3,     0 ) from ts_kv a \n" +
+            "join device b on a.entity_id =b.id \n" +
+            "join ts_kv_dictionary c on a.\"key\" =c.key_id \n" +
+            "where c.\"key\" =?2 and b.name=?1 and a.ts between ?4 and ?5 ",nativeQuery = true)
+    BigDecimal countByQty(String name, String key, BigDecimal inTepmSize, Long byDateFrontTimes, Long byDateLaterTimes);
 }
