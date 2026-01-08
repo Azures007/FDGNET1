@@ -224,6 +224,10 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
     List<TBusOrderProcessHistory> findAllByOrderProcessIdAndMaterialNumberAndPotNumberAndReportStatusAndGroupCodeAndOrderProcessHistoryIdIsNot(Integer orderProcessId,String materialNumber, Integer potNumber, String reportStatus, String groupCode,Integer orderProcessHistoryId);
 
     List<TBusOrderProcessHistory> findByOrderProcessIdAndIsSupplement(Integer orderProcessId, String isSupplement);
+    
+    List<TBusOrderProcessHistory> findByOrderNoAndProcessName(String orderNo, String processName);
+    
+    List<TBusOrderProcessHistory> findAllByOrderProcessIdAndMaterialNumber(Integer orderProcessId, String materialNumber);
     //    @Transactional
 //    @Query(value = "select * from t_bus_order_process_history where bus_type='BG' and order_process_id = ?1 and import_pot_group = ?2 and record_type_bg = ?3 and device_person_group_id = ?4 and report_status = ?5 and import_pot = ?6 " +
 //            " GROUP BY order_process_history_id ", nativeQuery = true)

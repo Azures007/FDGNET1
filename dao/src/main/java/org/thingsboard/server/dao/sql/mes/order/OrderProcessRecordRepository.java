@@ -51,6 +51,8 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
     List<TBusOrderProcessRecord> findAllByOrderProcessIdAndBusTypeAndRecordTypePd(Integer orderProcessId, String busType, String recordTypePd);
 
+    List<TBusOrderProcessRecord> findAllByOrderProcessIdAndRecordType(Integer orderProcessId, String recordType);
+
     List<TBusOrderProcessRecord> findAllByOrderNoAndProcessIdAndClassIdAndBusType(String orderNo, TSysProcessInfo sysProcessInfo, TSysClass sysClass, String busType);
 
     @Query(value = "select record.order_no,record.body_lot,record.material_id,record.material_number,record.material_name, record.record_unit, info.name person_name,tsc.name class_name," +
@@ -365,6 +367,13 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
     List<TBusOrderProcessRecord> findByOrderNoAndProcessIdAndBusType(String orderNo, Integer processId, String bg);
 
+    List<TBusOrderProcessRecord> findAllByOrderNoAndRecordType(@Param("orderNo") String orderNo, @Param("recordType") String recordType);
+
+    @Query(value = "select COALESCE(sum(record_qty), 0) from t_bus_order_process_record where order_no = :orderNo and record_type = :recordType", nativeQuery = true)
+    List<Object[]> findByOrderNoAndRecordType(@Param("orderNo") String orderNo, @Param("recordType") String recordType);
+
+    List<TBusOrderProcessRecord> findAllByOrderNo(String orderNo);
+
 //    TBusOrderProcessRecord findByOrderProcessIdAndBusTypeAndRecordTypeAndMaterialNameAndDeviceIdAndDevicePersonId(Integer orderProcessId, String busType, String recordType, String materialName, String deviceId, String devicePersonId);
 
     TBusOrderProcessRecord findByOrderProcessRecordId(Integer orderProcessRecordId);
@@ -434,6 +443,8 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
 
     List<TBusOrderProcessRecord> findAllByOrderProcessIdAndDevicePersonGroupIdAndRecordType(Integer orderProcessId, String devicePersonGroupId, String recordType);
+
+    List<TBusOrderProcessRecord> findAllByOrderProcessIdAndMaterialNumberAndRecordType(Integer orderProcessId, String materialNumber, String recordType);
 
     List<TBusOrderProcessRecord> findALLByOrderNoAndProcessNumberAndRecordType(String orderNo, String processNumber, String recordType);
 

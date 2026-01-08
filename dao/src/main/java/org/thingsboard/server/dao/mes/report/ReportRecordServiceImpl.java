@@ -12,7 +12,7 @@ import org.thingsboard.server.common.data.mes.LichengConstants;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
 import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
-import org.thingsboard.server.common.data.mes.vo.ReportRecordVo;
+import org.thingsboard.server.dao.mes.vo.ReportRecordVo;
 import org.thingsboard.server.dao.mes.dto.ReportRecordQueryDto;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 import org.thingsboard.server.dao.sql.mes.order.OrderHeadRepository;

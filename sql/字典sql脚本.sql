@@ -856,3 +856,7 @@ where is_group = '1'
 update t_sys_code_dsc set code_cl_dsc = '工序报工类型'
 where is_group = '0'
   and code_cl_id='RECORDTYPE0000';
+
+
+INSERT INTO t_sys_code_dsc (code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group) VALUES('GROUPCODE0000', '字典分类', 'BI0000', '电视看板iframe资源路径', '1', '2026-01-07 16:57:28.637', 'tenant@thingsboard.org', '2026-01-07 16:57:28.637', 'tenant@thingsboard.org', 1);
+INSERT INTO t_sys_code_dsc (code_cl_id, code_cl_dsc, code_value, code_dsc, enabled_st, crt_time, crt_user, update_time, update_user, is_group) VALUES('BI0000', '电视看板iframe资源路径', 'http://116.205.226.5:8000/', '路径', '1', '2026-01-07 16:58:35.844', 'tenant@thingsboard.org', '2026-01-07 16:58:35.844', 'tenant@thingsboard.org', 0);
