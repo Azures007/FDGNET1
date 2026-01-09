@@ -45,13 +45,13 @@ public class YcProductionBoardController extends BaseController {
         boolean hasTimeDimension = timeDimension != null && !timeDimension.trim().isEmpty();
         boolean hasDateRange = (startDate != null && !startDate.trim().isEmpty());
         
-        if (hasTimeDimension && hasDateRange) {
+        /*if (hasTimeDimension && hasDateRange) {
             return ResultUtil.error("时间维度和日期范围只能传其一，不能同时传递");
         }
         
         if (!hasTimeDimension && !hasDateRange) {
             return ResultUtil.error("时间维度或日期范围必须传递其中一个");
-        }
+        }*/
         
         // 如果传了日期范围，验证必须同时传开始和结束日期
         if (hasDateRange) {
@@ -68,8 +68,13 @@ public class YcProductionBoardController extends BaseController {
     @GetMapping("/orderPlanAnalysis")
     public ResponseResult<List<OrderPlanAnalysis>> getOrderPlanAnalysis(
             @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
-            @ApiParam("日期类型(日/月)") @RequestParam(required = true) String timeDimension) throws ThingsboardException {
-        return ResultUtil.success(productionBoardService.getOrderPlanAnalysis(productionLine, timeDimension));
+            @ApiParam("日期类型(日/月)") @RequestParam(required = true) String timeDimension,
+            @ApiParam("开始日期(yyyy-MM-dd)") @RequestParam(required = false) String startDate,
+            @ApiParam("结束日期(yyyy-MM-dd)") @RequestParam(required = false) String endDate) throws ThingsboardException {
+        if (timeDimension == null || timeDimension.trim().isEmpty()) {
+            return ResultUtil.error("日期类型不能为空");
+        }
+        return ResultUtil.success(productionBoardService.getOrderPlanAnalysis(productionLine, timeDimension, startDate, endDate));
     }
 
     @ApiOperation("获取订单废料产出分析")
