@@ -229,6 +229,15 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
 
     List<TBusOrderProcessHistory> findAllByOrderNoInAndProcessName(List<String> orderNos, String processName);
     
+    /**
+     * 根据订单号列表、业务类型、排除特定报工状态查询历史记录
+     * @param orderNos 订单号列表
+     * @param busType 业务类型
+     * @param reportStatus 需要排除的报工状态
+     * @return 历史记录列表
+     */
+    List<TBusOrderProcessHistory> findAllByOrderNoInAndBusTypeAndReportStatusNot(List<String> orderNos, String busType, String reportStatus);
+    
     List<TBusOrderProcessHistory> findAllByOrderProcessIdAndMaterialNumber(Integer orderProcessId, String materialNumber);
     //    @Transactional
 //    @Query(value = "select * from t_bus_order_process_history where bus_type='BG' and order_process_id = ?1 and import_pot_group = ?2 and record_type_bg = ?3 and device_person_group_id = ?4 and report_status = ?5 and import_pot = ?6 " +
