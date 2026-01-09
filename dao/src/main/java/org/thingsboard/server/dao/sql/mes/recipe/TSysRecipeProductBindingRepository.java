@@ -85,4 +85,7 @@ public interface TSysRecipeProductBindingRepository extends JpaRepository<TSysRe
      */
     @Query("SELECT r FROM TSysRecipeProductBinding r JOIN TSysRecipe recipe ON r.recipeId = recipe.recipeId WHERE r.productCode = :productCode AND recipe.status = '1'")
     List<TSysRecipeProductBinding> findByProductCodeAndRecipeStatusEnabled(@Param("productCode") String productCode);
+
+    @Query("SELECT r FROM TSysRecipeProductBinding r JOIN TSysRecipe recipe ON r.recipeId = recipe.recipeId WHERE r.productCode in :productCodes AND recipe.status = '1'")
+    List<TSysRecipeProductBinding> findAllByProductCodeInAndRecipeStatusEnabled(@Param("productCodes") List<String> productCodes);
 }

@@ -21,6 +21,8 @@ public interface OrderPotCountRepository extends JpaRepository<TBusOrderPotCount
 
     List<TBusOrderPotCount> findAllByOrderProcessId(Integer orderProcessId);
 
+    List<TBusOrderPotCount> findAllByOrderProcessIdIn(List<Integer> orderProcessIds);
+
     @Modifying
     @Query("update TBusOrderPotCount t set t.inputCount = t.inputCount + :delta where t.id = :id")
     void incrementInputCount(@Param("id") Integer id, @Param("delta") int delta);

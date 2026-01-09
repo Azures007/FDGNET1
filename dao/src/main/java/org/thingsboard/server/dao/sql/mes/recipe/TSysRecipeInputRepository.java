@@ -24,6 +24,8 @@ public interface TSysRecipeInputRepository extends JpaRepository<TSysRecipeInput
      */
     List<TSysRecipeInput> findByRecipeId(Integer recipeId);
 
+    List<TSysRecipeInput> findAllByRecipeIdIn(List<Integer> recipeIds);
+
     /**
      * 根据配方ID删除投入设置
      * @param recipeId 配方ID

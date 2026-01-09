@@ -125,6 +125,20 @@ public interface OrderHeadRepository extends JpaRepository<TBusOrderHead,Integer
             "and h.is_deleted='0'\n ", nativeQuery = true)
     List<Map> getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(@Param("orderId") Integer orderId);
 
+    @Query(value = "select h.order_id, CASE WHEN (pp.mid_ppbom_entry_bom_number is not null and mm.kd_material_props_id='2') THEN '1' ELSE '0' END AS FLAG," +
+            "pp.order_ppbom_id ,pp.material_id ," +
+            "pp.material_number ,pp.material_name ,pp.material_specification ," +
+            "pp.unit unit,pp.mid_ppbom_entry_material_negative_error,pp.mid_ppbom_entry_material_positive_error," +
+            "pp.mid_ppbom_entry_material_standard,pp.must_qty," +
+            "pp.mid_ppbom_entry_weigh_mes_unit,pp.mid_ppbom_entry_weigh_devept_unit,pp.mid_ppbom_entry_weigh_mes_qty,pp.mid_ppbom_entry_weigh_devept_qty, " +
+            "coalesce(mm.kd_material_is_peel,0) as kd_material_is_peel ,pp.mid_ppbom_entry_replace_group,pp.mid_ppbom_entry_item_type" +
+            " from t_bus_order_head  h left join t_bus_order_ppbom_lk lk on h.order_id=lk.order_id" +
+            " left join t_bus_order_ppbom pp on lk.order_ppbom_id=pp.order_ppbom_id " +
+            " left join mid_material mm on pp.material_id=mm.kd_material_id " +
+            " where h.order_id in :orderIds \n" +
+            "and h.is_deleted='0'\n ", nativeQuery = true)
+    List<Map> findAllOrderPPbomByOrderIds(@Param("orderIds") List<Integer> orderIds);
+
     /**
      * 报工获取拉伸膜的用料清单
      * @param orderId
