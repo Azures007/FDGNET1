@@ -18,7 +18,7 @@ public interface ProductionBoardService {
     /**
      * 获取订单计划达成率分析数据
      */
-    List<OrderPlanAnalysis> getOrderPlanAnalysis(String productionLine, String dateType);
+    List<OrderPlanAnalysis> getOrderPlanAnalysis(String productionLine, String dateType,String startDate, String endDate);
 
     /**
      * 获取订单废料产出分析数据
@@ -43,5 +43,5 @@ public interface ProductionBoardService {
     /**
      * 获取完整的生产看板数据（可选）
      */
-    ProductionBoardData getAllProductionBoardData(String productionLine, String date, String dateType);
+    //ProductionBoardData getAllProductionBoardData(String productionLine, String date, String dateType);
 }

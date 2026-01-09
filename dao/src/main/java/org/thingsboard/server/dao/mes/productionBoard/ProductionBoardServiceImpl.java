@@ -142,7 +142,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
     }
 
     @Override
-    public List<OrderPlanAnalysis> getOrderPlanAnalysis(String productionLine, String dateType) {
+    public List<OrderPlanAnalysis> getOrderPlanAnalysis(String productionLine, String dateType,String startDate, String endDate) {
         String finalStartDate;
         String finalEndDate;
         
@@ -159,7 +159,10 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             cal.add(java.util.Calendar.DAY_OF_MONTH, -30);
             finalStartDate = sdf.format(cal.getTime());
         }
-        
+        if (startDate != null && !startDate.trim().isEmpty()&&endDate != null && !endDate.trim().isEmpty()) {
+            finalStartDate = startDate;
+            finalEndDate = endDate;
+        }
         try {
             // 将字符串日期转换为Date对象
             SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -377,7 +380,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
         }
     }
 
-    @Override
+    /*@Override
     public ProductionBoardData getAllProductionBoardData(String productionLine, String date, String dateType) {
         ProductionBoardData data = new ProductionBoardData();
         data.setStatistics(getProductionStatistics(productionLine, date, null, null));
@@ -387,5 +390,5 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
         data.setProductionLineTasksPage(getProductionBG(productionLine, 0, 10));
         data.setOutsourcingNetContentPage(getOutsourcingNetContent(productionLine, 0, 10));
         return data;
-    }
+    }*/
 }
