@@ -11,54 +11,54 @@ import lombok.Data;
 public class RawMaterialInputReportExcelVo extends BaseRowModel {
 
     // 订单基础信息
-    @ExcelProperty("订单号")
+    @ExcelProperty({"订单基础信息", "订单号"})
     private String orderNo;
 
-    @ExcelProperty("下单时间")
+    @ExcelProperty({"订单基础信息", "下单时间"})
     private String orderTime;
 
-    @ExcelProperty("生产线")
+    @ExcelProperty({"订单基础信息", "生产线"})
     private String productionLine;
 
-    @ExcelProperty("产品名称")
+    @ExcelProperty({"订单基础信息", "产品名称"})
     private String productName;
 
     // 合格品信息
-    @ExcelProperty("计划产量（件）")
+    @ExcelProperty({"合格品信息", "计划产量"})
     private String plannedOutput;
 
-    @ExcelProperty("实际产量（件）")
+    @ExcelProperty({"合格品信息", "实际产量"})
     private String actualOutput;
 
-    // 原料投入信息
-    @ExcelProperty("工序名称")
+    // 工序列表
+    @ExcelProperty({"工序列表", "工序名称"})
     private String processName;
 
-    @ExcelProperty("工序状态")
+    @ExcelProperty({"工序列表", "工序状态"})
     private String processStatus;
 
-    @ExcelProperty("物料编码")
+    @ExcelProperty({"工序列表", "物料编码"})
     private String materialCode;
 
-    @ExcelProperty("物料名称")
+    @ExcelProperty({"工序列表", "物料名称"})
     private String materialName;
 
-    @ExcelProperty("单位")
+    @ExcelProperty({"工序列表", "单位"})
     private String unit;
 
-    @ExcelProperty("计划投入")
+    @ExcelProperty({"工序列表", "计划投入"})
     private String plannedInput;
 
-    @ExcelProperty("实际投入")
+    @ExcelProperty({"工序列表", "实际投入"})
     private String actualInput;
 
-    @ExcelProperty("计划锅数")
+    @ExcelProperty({"工序列表", "计划锅数"})
     private String plannedPotCount;
 
-    @ExcelProperty("实际累计锅数")
+    @ExcelProperty({"工序列表", "实际累计锅数"})
     private String actualAccumulatedPotCount;
 
-    @ExcelProperty("残次品重量（kg）")
+    @ExcelProperty({"工序列表", "残次品重量"})
     private String defectiveWeight;
 
 }

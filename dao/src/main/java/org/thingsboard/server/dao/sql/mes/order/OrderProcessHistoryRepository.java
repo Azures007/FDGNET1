@@ -226,6 +226,8 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
     List<TBusOrderProcessHistory> findByOrderProcessIdAndIsSupplement(Integer orderProcessId, String isSupplement);
     
     List<TBusOrderProcessHistory> findByOrderNoAndProcessName(String orderNo, String processName);
+
+    List<TBusOrderProcessHistory> findAllByOrderNoInAndProcessName(List<String> orderNos, String processName);
     
     List<TBusOrderProcessHistory> findAllByOrderProcessIdAndMaterialNumber(Integer orderProcessId, String materialNumber);
     //    @Transactional

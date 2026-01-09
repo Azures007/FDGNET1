@@ -18,6 +18,8 @@ public interface OrderProcessRepository extends JpaRepository<TBusOrderProcess,I
 
     List<TBusOrderProcess> findByOrderNoAndProcessId(String orderNo, TSysProcessInfo processId);
 
+    List<TBusOrderProcess> findAllByOrderNoIn(List<String> orderNos);
+
     TBusOrderProcess getByProcessId(Integer personId);
 
     // 根据工序查询汇总数量

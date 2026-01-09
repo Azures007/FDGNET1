@@ -374,6 +374,8 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
 
     List<TBusOrderProcessRecord> findAllByOrderNo(String orderNo);
 
+    List<TBusOrderProcessRecord> findAllByOrderNoIn(List<String> orderNos);
+
 //    TBusOrderProcessRecord findByOrderProcessIdAndBusTypeAndRecordTypeAndMaterialNameAndDeviceIdAndDevicePersonId(Integer orderProcessId, String busType, String recordType, String materialName, String deviceId, String devicePersonId);
 
     TBusOrderProcessRecord findByOrderProcessRecordId(Integer orderProcessRecordId);
