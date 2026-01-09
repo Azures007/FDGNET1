@@ -4,6 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { Authority } from '@shared/models/authority.enum';
 import { MaterialComponent } from './material.component';
+import { DeviceComponent } from './device.component';
+
 
 
 const routes: Routes = [
@@ -30,6 +32,17 @@ const routes: Routes = [
           title: '原料投入报表',
           breadcrumb: {
             label: '原料投入报表',
+            icon: 'bookmarks'
+          }
+        }
+      },
+      {
+        path: 'device',
+        component: DeviceComponent,
+        data: {
+          title: '设备运行报表',
+          breadcrumb: {
+            label: '设备运行报表',
             icon: 'bookmarks'
           }
         }
