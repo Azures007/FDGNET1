@@ -248,13 +248,74 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
         }
         
         // TODO: 实际实现时，使用finalStartDate和finalEndDate查询数据库
-        // Mock数据 - 5个月的废料数据
+        // 根据dateType返回不同维度的Mock数据
         List<WasteOutputAnalysis> list = new ArrayList<>();
-        list.add(new WasteOutputAnalysis("1月", new BigDecimal("100"), new BigDecimal("80"), new BigDecimal("50"), new BigDecimal("0.15")));
-        list.add(new WasteOutputAnalysis("2月", new BigDecimal("120"), new BigDecimal("90"), new BigDecimal("60"), new BigDecimal("0.18")));
-        list.add(new WasteOutputAnalysis("3月", new BigDecimal("150"), new BigDecimal("120"), new BigDecimal("80"), new BigDecimal("0.20")));
-        list.add(new WasteOutputAnalysis("4月", new BigDecimal("180"), new BigDecimal("150"), new BigDecimal("100"), new BigDecimal("0.22")));
-        list.add(new WasteOutputAnalysis("5月", new BigDecimal("200"), new BigDecimal("160"), new BigDecimal("120"), new BigDecimal("0.25")));
+        
+        // 判断时间维度
+        boolean isDay = dateType != null && (dateType.contains("日") || dateType.equals("TODAY") || dateType.equals("YESTERDAY"));
+        boolean isWeek = dateType != null && dateType.contains("周");
+        
+        if (isDay) {
+            // 按日维度 - 返回最近5天的数据
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            for (int i = 4; i >= 0; i--) {
+                cal.setTime(new Date());
+                cal.add(java.util.Calendar.DAY_OF_MONTH, -i);
+                String dayLabel = sdf.format(cal.getTime());
+                
+                // 生成模拟数据（每天数据有波动）
+                BigDecimal base = new BigDecimal(15 + i * 2);
+                list.add(new WasteOutputAnalysis(
+                    dayLabel,
+                    base.add(new BigDecimal("5")),  // 次品重量
+                    base.add(new BigDecimal("3")),  // 废料重量
+                    base,                            // 包材废品重量
+                    new BigDecimal("0.12").add(new BigDecimal(i * 0.01))  // 废料率
+                ));
+            }
+        } else if (isWeek) {
+            // 按周维度 - 返回最近5周的数据
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            for (int i = 4; i >= 0; i--) {
+                cal.setTime(new Date());
+                cal.add(java.util.Calendar.WEEK_OF_YEAR, -i);
+                
+                // 获取该周的周数
+                int weekOfYear = cal.get(java.util.Calendar.WEEK_OF_YEAR);
+                String weekLabel = "第" + weekOfYear + "周";
+                
+                // 生成模拟数据（每周数据有波动）
+                BigDecimal base = new BigDecimal(80 + i * 10);
+                list.add(new WasteOutputAnalysis(
+                    weekLabel,
+                    base.add(new BigDecimal("20")),  // 次品重量
+                    base.add(new BigDecimal("15")),  // 废料重量
+                    base,                             // 包材废品重量
+                    new BigDecimal("0.15").add(new BigDecimal(i * 0.01))  // 废料率
+                ));
+            }
+        } else {
+            // 按月维度 - 返回最近5个月的数据（默认）
+            SimpleDateFormat sdf = new SimpleDateFormat("M");
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            for (int i = 4; i >= 0; i--) {
+                cal.setTime(new Date());
+                cal.add(java.util.Calendar.MONTH, -i);
+                String monthLabel = sdf.format(cal.getTime()) + "月";
+                
+                // 生成模拟数据（每月数据递增）
+                BigDecimal base = new BigDecimal(100 + (4 - i) * 20);
+                list.add(new WasteOutputAnalysis(
+                    monthLabel,
+                    base.add(new BigDecimal("30")),  // 次品重量
+                    base.add(new BigDecimal("20")),  // 废料重量
+                    base,                             // 包材废品重量
+                    new BigDecimal("0.15").add(new BigDecimal((4 - i) * 0.02))  // 废料率
+                ));
+            }
+        }
+        
         return list;
     }
 

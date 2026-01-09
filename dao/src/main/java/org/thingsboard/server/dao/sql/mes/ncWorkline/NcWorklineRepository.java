@@ -16,9 +16,9 @@ public interface NcWorklineRepository extends JpaRepository<NcWorkline, Integer>
     @Query("SELECT w FROM NcWorkline w WHERE w.vwkcode LIKE %:keyword% OR w.vwkname LIKE %:keyword% AND w.status='生效'")
     List<NcWorkline> findByVwkcodeOrVwknameLike(@Param("keyword") String keyword);
 
-    List<NcWorkline> findByStatus(String status);
+    List<NcWorkline> findByStatusOrderByVwknameAsc(String status);
 
-    List<NcWorkline> findByPkOrgAndStatus(String pkOrg, String status);
+    List<NcWorkline> findByPkOrgAndStatusOrderByVwknameAsc(String pkOrg, String status);
     List<NcWorkline> findByCwkidInAndStatus(List<String> cwkid, String status);
     NcWorkline getByCwkidAndStatus(String cwkid, String status);
 
