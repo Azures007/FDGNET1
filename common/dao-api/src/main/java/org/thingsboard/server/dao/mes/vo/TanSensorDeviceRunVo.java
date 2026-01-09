@@ -28,7 +28,7 @@ public class TanSensorDeviceRunVo {
     private BigDecimal avgTemp;
     @ApiModelProperty("温度达标率")
     private BigDecimal tempSuccess;
-    @ApiModelProperty("温度达标次数")
+    @ApiModelProperty("温度超标次数")
     private BigDecimal tempSize;
     @ApiModelProperty("最高湿度")
     private BigDecimal maxHump;
@@ -38,7 +38,7 @@ public class TanSensorDeviceRunVo {
     private BigDecimal avgHemp;
     @ApiModelProperty("湿度达标率")
     private BigDecimal hempSuccess;
-    @ApiModelProperty("湿度达标次数")
+    @ApiModelProperty("湿度超标次数")
     private BigDecimal hempSize;
 
 
