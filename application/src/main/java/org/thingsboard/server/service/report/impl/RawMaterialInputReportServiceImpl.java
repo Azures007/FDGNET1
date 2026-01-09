@@ -598,25 +598,32 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (RawMaterialInputReportVo reportVo : allDataList) {
-            if (reportVo.getProcessGroupInfoList() != null) {
-                for (ProcessGroupInfoVo processGroup : reportVo.getProcessGroupInfoList()) {
-                    if (processGroup.getMaterialInfoList() != null) {
-                        for (ProcessMaterialInfoVo materialInfo : processGroup.getMaterialInfoList()) {
+            List<ProcessGroupInfoVo> processGroups = reportVo.getProcessGroupInfoList();
+            if (processGroups == null || processGroups.isEmpty()) {
+                // 如果没有工序信息，至少导出订单基础信息
+                RawMaterialInputReportExcelVo excelVo = new RawMaterialInputReportExcelVo();
+                fillBaseOrderInfo(excelVo, reportVo, sdf);
+                excelDataList.add(excelVo);
+            } else {
+                for (ProcessGroupInfoVo processGroup : processGroups) {
+                    List<ProcessMaterialInfoVo> materialInfos = processGroup.getMaterialInfoList();
+                    if (materialInfos == null || materialInfos.isEmpty()) {
+                        // 如果有工序但没有物料信息，导出订单+工序信息
+                        RawMaterialInputReportExcelVo excelVo = new RawMaterialInputReportExcelVo();
+                        fillBaseOrderInfo(excelVo, reportVo, sdf);
+                        excelVo.setProcessName(processGroup.getProcessName());
+                        excelVo.setProcessStatus(processGroup.getProcessStatus());
+                        excelDataList.add(excelVo);
+                    } else {
+                        for (ProcessMaterialInfoVo materialInfo : materialInfos) {
                             RawMaterialInputReportExcelVo excelVo = new RawMaterialInputReportExcelVo();
-
-                            // 设置订单基础信息
-                            excelVo.setOrderNo(reportVo.getOrderNo());
-                            excelVo.setOrderTime(reportVo.getOrderTime() != null ? sdf.format(reportVo.getOrderTime()) : "");
-                            excelVo.setProductionLine(reportVo.getProductionLine());
-                            excelVo.setProductName(reportVo.getProductName());
-
-                            // 设置合格品信息
-                            excelVo.setPlannedOutput(reportVo.getPlannedOutput() != null ? reportVo.getPlannedOutput().toString() : "0");
-                            excelVo.setActualOutput(reportVo.getActualOutput() != null ? reportVo.getActualOutput().toString() : "0");
-
-                            // 设置原料投入信息
+                            fillBaseOrderInfo(excelVo, reportVo, sdf);
+                            
+                            // 设置工序信息
                             excelVo.setProcessName(processGroup.getProcessName());
                             excelVo.setProcessStatus(processGroup.getProcessStatus());
+                            
+                            // 设置物料信息
                             excelVo.setMaterialCode(materialInfo.getMaterialCode());
                             excelVo.setMaterialName(materialInfo.getMaterialName());
                             excelVo.setUnit(materialInfo.getUnit());
@@ -625,7 +632,7 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                             excelVo.setPlannedPotCount(materialInfo.getPlannedPotCount() != null ? materialInfo.getPlannedPotCount().toString() : "0");
                             excelVo.setActualAccumulatedPotCount(materialInfo.getActualAccumulatedPotCount() != null ? materialInfo.getActualAccumulatedPotCount().toString() : "0");
                             excelVo.setDefectiveWeight(materialInfo.getDefectiveWeight() != null ? materialInfo.getDefectiveWeight().toString() : "0");
-
+                            
                             excelDataList.add(excelVo);
                         }
                     }
@@ -633,6 +640,15 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
             }
         }
         return excelDataList;
+    }
+
+    private void fillBaseOrderInfo(RawMaterialInputReportExcelVo excelVo, RawMaterialInputReportVo reportVo, SimpleDateFormat sdf) {
+        excelVo.setOrderNo(reportVo.getOrderNo());
+        excelVo.setOrderTime(reportVo.getOrderTime() != null ? sdf.format(reportVo.getOrderTime()) : "");
+        excelVo.setProductionLine(reportVo.getProductionLine());
+        excelVo.setProductName(reportVo.getProductName());
+        excelVo.setPlannedOutput(reportVo.getPlannedOutput() != null ? reportVo.getPlannedOutput().toString() : "0");
+        excelVo.setActualOutput(reportVo.getActualOutput() != null ? reportVo.getActualOutput().toString() : "0");
     }
     
     /**
