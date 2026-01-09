@@ -8,6 +8,8 @@ import { HomeComponentsModule } from '@modules/home/components/home-components.m
 import { StatisticsComponent } from './statistics.component';
 import { MaterialComponent } from './material.component';
 import { StatisticsRoutingModule } from './statistics-routing.module';
+import { DeviceComponent } from './device.component';
+
 
 
 
@@ -29,7 +31,7 @@ const COMMISSION_DATE_FORMATS = {
 };
 
 @NgModule({
-  declarations: [StatisticsComponent, MaterialComponent],
+  declarations: [StatisticsComponent, MaterialComponent, DeviceComponent],
   imports: [
     CommonModule,
     SharedModule,

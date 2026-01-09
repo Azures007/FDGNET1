@@ -24,4 +24,18 @@ export class StatisticsService {
     })
   }
 
+  // 获取设备运行报表列表
+  public fetchGetDeviceRunTableList(data): Observable<any> {
+    return this.http.post(`/api/board/deviceRunBoard?current=${data.current}&size=${data.size}`, data.body);
+  }
+
+  // 导出设备运行报表列表
+  public exportDeviceRunTableList(data): Observable<any> {
+    let url = `/api/board/exportDeviceRunBoard?current=${data.current}&size=${data.size}`
+    return this.http.post(url, data.body, {
+      responseType: "blob",//指定响应中包含的数据类型,指定response 是一个包含二进制数据的 Blob 对象
+      observe: 'response',//要获取到完全的response,在 发起请求时 在option中添加 observe: ‘response’;
+    })
+  }
+
 }
