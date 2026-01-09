@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.Device;
+import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.mes.dto.DeviceRunBoardDto;
 import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.dao.sql.device.DeviceRepository;
@@ -179,7 +180,7 @@ public class BoardServiceImpl implements BoardService {
                 insourcingDeviceRunVo.setMinSpeed(deviceRepository.minQtyByMykey(device.getName(),
                         "速度",byDateFrontTimes,byDateLaterTimes));
                 insourcingDeviceRunVo.setAvgSpeed(deviceRepository.avgQtyByMykey(device.getName(),
-                        "速度",byDateFrontTimes,byDateLaterTimes));
+                        "速度",byDateFrontTimes,byDateLaterTimes).setScale(3,RoundingMode.HALF_UP));
                 insourcingDeviceRunVo.setPieceQty(deviceRepository.maxQtyByMykey(device.getName(),
                         "包装件数",byDateFrontTimes,byDateLaterTimes));
                 insourcingDeviceRunVo.setOverSize(0);
@@ -204,7 +205,7 @@ public class BoardServiceImpl implements BoardService {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DeviceRunBoardTypeVo deviceRunBoardVo = new DeviceRunBoardTypeVo();
         deviceRunBoardVo.setDeviceType("温湿度监测");
-        List<Map> deviceMaps = deviceRepository.findLikeName("Insourcing");
+        List<Map> deviceMaps = deviceRepository.findLikeName("TANSensor");
         if (deviceMaps !=null && deviceMaps.size() > 0) {
             List<Device> devices= JSON.parseArray(JSON.toJSONString(deviceMaps),Device.class);
             List<TanSensorDeviceRunVo> tanSensorDeviceRunVos=new ArrayList<>();
@@ -227,10 +228,12 @@ public class BoardServiceImpl implements BoardService {
                 //平均温度
                 BigDecimal avgTemp=deviceRepository.avgQtyByMykey(device.getName(),
                         "温度",byDateFrontTimes,byDateLaterTimes);
-                tanSensorDeviceRunVo.setAvgTemp(avgTemp);
+                tanSensorDeviceRunVo.setAvgTemp(avgTemp.setScale(3,RoundingMode.HALF_UP));
 
                 //总温度数据数量
                 BigDecimal inTepmSize=new BigDecimal("10");
+                String iotTemp = GlobalConstant.getCodeDscName("iot_temp", device.getName());
+                inTepmSize= new BigDecimal(iotTemp);
 
                 BigDecimal tempSuccess=deviceRepository.countByQty(device.getName(),"温度",inTepmSize,byDateFrontTimes,byDateLaterTimes);
                 tanSensorDeviceRunVo.setHempSize(tempSuccess);
@@ -248,10 +251,11 @@ public class BoardServiceImpl implements BoardService {
                 //平均湿度
                 BigDecimal avgHemp=deviceRepository.avgQtyByMykey(device.getName(),
                         "湿度",byDateFrontTimes,byDateLaterTimes);
-                tanSensorDeviceRunVo.setAvgHemp(avgHemp);
+                tanSensorDeviceRunVo.setAvgHemp(avgHemp.setScale(3,RoundingMode.HALF_UP));
 
                 //总湿度度数据数量
                 BigDecimal inHepmSize=new BigDecimal("10");
+                inHepmSize= new BigDecimal(GlobalConstant.getCodeDscName("iot_hemp",device.getName()));
 
                 BigDecimal hempSuccess=deviceRepository.countByQty(device.getName(),"湿度",inHepmSize,byDateFrontTimes,byDateLaterTimes);
                 tanSensorDeviceRunVo.setHempSuccess(hempSuccess);
