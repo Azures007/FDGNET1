@@ -23,22 +23,22 @@ public interface ProductionBoardService {
     /**
      * 获取订单废料产出分析数据
      */
-    List<WasteOutputAnalysis> getWasteOutputAnalysis(String productionLine, String dateType);
+    List<WasteOutputAnalysis> getWasteOutputAnalysis(String productionLine, String dateType, String startDate, String endDate);
 
     /**
      * 获取订单进度完成情况
      */
-    OrderProgressPageVo getOrderProgress(String productionLine, Integer current, Integer size);
+    OrderProgressPageVo getOrderProgress(String productionLine, Integer current, Integer size, String startDate, String endDate);
 
     /**
      * 获取报工列表
      */
-    PageVo<ProductionBgVo> getProductionBG(String productionLine, Integer current, Integer size);
+    PageVo<ProductionBgVo> getProductionBG(String productionLine, Integer current, Integer size, String startDate, String endDate);
 
     /**
      * 获取外包净含量实况
      */
-    PageVo<OutsourcingNetContent> getOutsourcingNetContent(String productionLine, Integer current, Integer size);
+    PageVo<OutsourcingNetContent> getOutsourcingNetContent(String productionLine, Integer current, Integer size, String startDate, String endDate);
 
     /**
      * 获取完整的生产看板数据（可选）

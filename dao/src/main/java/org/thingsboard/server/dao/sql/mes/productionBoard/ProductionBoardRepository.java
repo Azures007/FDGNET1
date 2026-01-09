@@ -374,6 +374,49 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
                                    Pageable pageable);
 
     /**
+     * 查询生产报工数据（生产态势监察）- 带日期范围 - 返回分页Map
+     * @param productionLine 生产线ID（可选）
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param pageable 分页参数
+     * @return Page<Map> 分页结果
+     */
+    @Query(value = "SELECT h.nc_vwkname as productionLine, r.process_name as process, " +
+           "r.material_name as materialName, " +
+           "CONCAT(TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))), '-', " +
+           "TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))) as standard, " +
+           "r.record_qty as recordQuantity, " +
+           "CASE WHEN r.pot_number IS NOT NULL " +
+           "THEN CONCAT('第', r.pot_number, '锅') ELSE '' END as potStr, " +
+           "r.report_time as recordTime " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
+           "LEFT JOIN t_sys_recipe_product_binding b ON b.product_code = h.body_material_number " +
+           "LEFT JOIN t_sys_recipe_input i ON i.recipe_id = b.recipe_id " +
+           "  AND i.material_code = r.material_number " +
+           "  AND i.process_number = r.process_number " +
+           "  AND (r.group_code = i.semi_finished_product_code OR r.group_code IS NULL) " +
+           "WHERE h.is_deleted = '0' and r.process_number<>'GX-011'" +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
+           "ORDER BY r.report_time DESC",
+           countQuery = "SELECT COUNT(*) FROM (" +
+           "SELECT h.order_no " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
+           "WHERE h.is_deleted = '0' and r.process_number<>'GX-011'" +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR))" +
+           ") as total",
+           nativeQuery = true)
+    Page<Map> findProductionBgDataByDateRange(@Param("productionLine") String productionLine,
+                                              @Param("startDate") Date startDate,
+                                              @Param("endDate") Date endDate,
+                                              Pageable pageable);
+
+    /**
      * 查询外包净含量实况数据 - 返回分页Map
      * @param productionLine 生产线ID（可选）
      * @param pageable 分页参数
@@ -405,4 +448,45 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            nativeQuery = true)
     Page<Map> findOutsourcingNetContentData(@Param("productionLine") String productionLine,
                                             Pageable pageable);
+
+    /**
+     * 查询外包净含量实况数据 - 带日期范围 - 返回分页Map
+     * @param productionLine 生产线ID（可选）
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param pageable 分页参数
+     * @return Page<Map> 分页结果
+     */
+    @Query(value = "SELECT h.nc_vwkname as productionLine, " +
+           "h.body_material_name as productName, " +
+           "CONCAT(TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(b.lower_limit AS text))), '-', " +
+           "TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(b.upper_limit AS text)))) as netContentStandardStr, " +
+           "b.upper_limit as netContentStandardUpper, " +
+           "b.lower_limit as netContentStandardLower, " +
+           "r.record_qty * 1000 as actualNetContent, " +
+           "r.report_time as recordTime " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
+           "LEFT JOIN t_sys_net_content_range b ON b.material_code = h.body_material_number " +
+           "WHERE h.is_deleted = '0' " +
+           "AND r.process_number = 'GX-011' " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
+           "ORDER BY r.report_time DESC",
+           countQuery = "SELECT COUNT(*) FROM (" +
+           "SELECT h.order_no " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
+           "WHERE h.is_deleted = '0' " +
+           "AND r.process_number = 'GX-011' " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR))" +
+           ") as total",
+           nativeQuery = true)
+    Page<Map> findOutsourcingNetContentDataByDateRange(@Param("productionLine") String productionLine,
+                                                       @Param("startDate") Date startDate,
+                                                       @Param("endDate") Date endDate,
+                                                       Pageable pageable);
 }

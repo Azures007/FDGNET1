@@ -81,8 +81,10 @@ public class YcProductionBoardController extends BaseController {
     @GetMapping("/wasteOutputAnalysis")
     public ResponseResult<List<WasteOutputAnalysis>> getWasteOutputAnalysis(
             @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
-            @ApiParam("日期类型(日/周/月)") @RequestParam(required = true) String timeDimension) throws ThingsboardException {
-        return ResultUtil.success(productionBoardService.getWasteOutputAnalysis(productionLine, timeDimension));
+            @ApiParam("日期类型(日/周/月)") @RequestParam(required = true) String timeDimension,
+            @ApiParam("开始日期(yyyy-MM-dd)") @RequestParam(required = false) String startDate,
+            @ApiParam("结束日期(yyyy-MM-dd)") @RequestParam(required = false) String endDate) throws ThingsboardException {
+        return ResultUtil.success(productionBoardService.getWasteOutputAnalysis(productionLine, timeDimension, startDate, endDate));
     }
 
     @ApiOperation("获取订单进度完成情况")
@@ -90,8 +92,10 @@ public class YcProductionBoardController extends BaseController {
     public ResponseResult<OrderProgressPageVo> getOrderProgress(
             @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
             @ApiParam("当前页码") @RequestParam(value = "current", defaultValue = "0") Integer current,
-            @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size) throws ThingsboardException {
-        return ResultUtil.success(productionBoardService.getOrderProgress(productionLine, current, size));
+            @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @ApiParam("开始日期(yyyy-MM-dd)") @RequestParam(required = false) String startDate,
+            @ApiParam("结束日期(yyyy-MM-dd)") @RequestParam(required = false) String endDate) throws ThingsboardException {
+        return ResultUtil.success(productionBoardService.getOrderProgress(productionLine, current, size, startDate, endDate));
     }
 
     @ApiOperation("获取生产态势监控")
@@ -99,8 +103,10 @@ public class YcProductionBoardController extends BaseController {
     public ResponseResult<PageVo<ProductionBgVo>> getProductionBG(
             @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
             @ApiParam("当前页码") @RequestParam(value = "current", defaultValue = "0") Integer current,
-            @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size) throws ThingsboardException {
-        return ResultUtil.success(productionBoardService.getProductionBG(productionLine, current, size));
+            @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @ApiParam("开始日期(yyyy-MM-dd)") @RequestParam(required = false) String startDate,
+            @ApiParam("结束日期(yyyy-MM-dd)") @RequestParam(required = false) String endDate) throws ThingsboardException {
+        return ResultUtil.success(productionBoardService.getProductionBG(productionLine, current, size, startDate, endDate));
     }
 
     @ApiOperation("获取外包净含量实况")
@@ -108,8 +114,10 @@ public class YcProductionBoardController extends BaseController {
     public ResponseResult<PageVo<OutsourcingNetContent>> getOutsourcingNetContent(
             @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
             @ApiParam("当前页码") @RequestParam(value = "current", defaultValue = "0") Integer current,
-            @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size) throws ThingsboardException {
-        return ResultUtil.success(productionBoardService.getOutsourcingNetContent(productionLine, current, size));
+            @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @ApiParam("开始日期(yyyy-MM-dd)") @RequestParam(required = false) String startDate,
+            @ApiParam("结束日期(yyyy-MM-dd)") @RequestParam(required = false) String endDate) throws ThingsboardException {
+        return ResultUtil.success(productionBoardService.getOutsourcingNetContent(productionLine, current, size, startDate, endDate));
     }
 
     @ApiOperation("查询所有生效的生产线")

@@ -225,14 +225,28 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
     }
 
     @Override
-    public List<WasteOutputAnalysis> getWasteOutputAnalysis(String productionLine, String dateType) {
+    public List<WasteOutputAnalysis> getWasteOutputAnalysis(String productionLine, String dateType, String startDate, String endDate) {
         String finalStartDate;
         String finalEndDate;
-        if (dateType != null && !dateType.trim().isEmpty()) {
+        
+        // 优先使用传入的日期范围
+        if (startDate != null && !startDate.trim().isEmpty() && endDate != null && !endDate.trim().isEmpty()) {
+            finalStartDate = startDate;
+            finalEndDate = endDate;
+        } else if (dateType != null && !dateType.trim().isEmpty()) {
+            // 否则使用时间维度
             TimeDimensionUtils.TimeRange timeRange = TimeDimensionUtils.getTimeRange(dateType);
             finalStartDate = timeRange.getStartDate();
             finalEndDate = timeRange.getEndDate();
+        } else {
+            // 默认查询最近30天
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            finalEndDate = sdf.format(new Date());
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.add(java.util.Calendar.DAY_OF_MONTH, -30);
+            finalStartDate = sdf.format(cal.getTime());
         }
+        
         // TODO: 实际实现时，使用finalStartDate和finalEndDate查询数据库
         // Mock数据 - 5个月的废料数据
         List<WasteOutputAnalysis> list = new ArrayList<>();
@@ -245,21 +259,28 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
     }
 
     @Override
-    public OrderProgressPageVo getOrderProgress(String productionLine, Integer current, Integer size) {
-        // 使用当前日期作为查询范围（可以根据需要调整）
+    public OrderProgressPageVo getOrderProgress(String productionLine, Integer current, Integer size, String startDate, String endDate) {
+        // 使用传入的日期范围，如果没有传则使用默认范围
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String today = sdf.format(new Date());
+        String finalStartDate;
+        String finalEndDate;
+        
+        if (startDate != null && !startDate.trim().isEmpty() && endDate != null && !endDate.trim().isEmpty()) {
+            finalStartDate = startDate;
+            finalEndDate = endDate;
+        } else {
+            // 默认查询最近30天
+            finalEndDate = sdf.format(new Date());
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.add(java.util.Calendar.DAY_OF_MONTH, -30);
+            finalStartDate = sdf.format(cal.getTime());
+        }
         
         try {
-            // 设置查询时间范围（例如：查询最近30天的订单）
+            // 设置查询时间范围
             SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date endDateTime = fullSdf.parse(today + " 23:59:59");
-            
-            // 计算30天前的日期
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            cal.setTime(endDateTime);
-            cal.add(java.util.Calendar.DAY_OF_MONTH, -30);
-            Date startDateTime = cal.getTime();
+            Date startDateTime = fullSdf.parse(finalStartDate + " 00:00:00");
+            Date endDateTime = fullSdf.parse(finalEndDate + " 23:59:59");
             
             // 创建分页参数
             Pageable pageable = PageRequest.of(current, size);
@@ -311,16 +332,36 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
     }
 
     @Override
-    public PageVo<ProductionBgVo> getProductionBG(String productionLine, Integer current, Integer size) {
+    public PageVo<ProductionBgVo> getProductionBG(String productionLine, Integer current, Integer size, String startDate, String endDate) {
         try {
+            // 处理日期范围
+            Date startDateTime = null;
+            Date endDateTime = null;
+            
+            if (startDate != null && !startDate.trim().isEmpty() && endDate != null && !endDate.trim().isEmpty()) {
+                SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                startDateTime = fullSdf.parse(startDate + " 00:00:00");
+                endDateTime = fullSdf.parse(endDate + " 23:59:59");
+            }
+            
             // 创建分页参数
             Pageable pageable = PageRequest.of(current, size);
             
             // 查询生产报工数据（返回Page<Map>）
-            Page<Map> select = productionBoardRepository.findProductionBgData(
-                productionLine,
-                pageable
-            );
+            Page<Map> select;
+            if (startDateTime != null && endDateTime != null) {
+                select = productionBoardRepository.findProductionBgDataByDateRange(
+                    productionLine,
+                    startDateTime,
+                    endDateTime,
+                    pageable
+                );
+            } else {
+                select = productionBoardRepository.findProductionBgData(
+                    productionLine,
+                    pageable
+                );
+            }
             
             // 使用JSON转换为ProductionBgVo对象列表
             List<ProductionBgVo> castEntity = JSON.parseArray(JSON.toJSONString(select.getContent()), ProductionBgVo.class);
@@ -346,16 +387,36 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
     }
 
     @Override
-    public PageVo<OutsourcingNetContent> getOutsourcingNetContent(String productionLine, Integer current, Integer size) {
+    public PageVo<OutsourcingNetContent> getOutsourcingNetContent(String productionLine, Integer current, Integer size, String startDate, String endDate) {
         try {
+            // 处理日期范围
+            Date startDateTime = null;
+            Date endDateTime = null;
+            
+            if (startDate != null && !startDate.trim().isEmpty() && endDate != null && !endDate.trim().isEmpty()) {
+                SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                startDateTime = fullSdf.parse(startDate + " 00:00:00");
+                endDateTime = fullSdf.parse(endDate + " 23:59:59");
+            }
+            
             // 创建分页参数
             Pageable pageable = PageRequest.of(current, size);
             
             // 查询外包净含量数据（返回Page<Map>）
-            Page<Map> select = productionBoardRepository.findOutsourcingNetContentData(
-                productionLine,
-                pageable
-            );
+            Page<Map> select;
+            if (startDateTime != null && endDateTime != null) {
+                select = productionBoardRepository.findOutsourcingNetContentDataByDateRange(
+                    productionLine,
+                    startDateTime,
+                    endDateTime,
+                    pageable
+                );
+            } else {
+                select = productionBoardRepository.findOutsourcingNetContentData(
+                    productionLine,
+                    pageable
+                );
+            }
             
             // 使用JSON转换为OutsourcingNetContent对象列表
             List<OutsourcingNetContent> castEntity = JSON.parseArray(JSON.toJSONString(select.getContent()), OutsourcingNetContent.class);
