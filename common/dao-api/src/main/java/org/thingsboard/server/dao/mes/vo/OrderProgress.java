@@ -19,6 +19,9 @@ import java.math.BigDecimal;
 @ApiModel("订单进度完成情况")
 public class OrderProgress {
 
+    @ApiModelProperty("产线")
+    private String productionLine;
+
     @ApiModelProperty("订单编号")
     private String orderNo;
 
