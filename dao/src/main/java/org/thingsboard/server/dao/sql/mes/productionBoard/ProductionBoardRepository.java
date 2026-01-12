@@ -220,7 +220,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      * @param pageable 分页参数
      * @return Page<Map> 分页结果
      */
-    @Query(value = "SELECT h.order_no as orderNo, h.body_material_name as productName, " +
+    @Query(value = "SELECT h.nc_vwkname as productionLine, h.order_no as orderNo, h.body_material_name as productName, " +
            "h.body_plan_prd_qty as planQuantity, '件' as unit, " +
            "CASE WHEN h.qty_per_jian > 0 " +
            "THEN FLOOR(COUNT(r.record_qty) / h.qty_per_jian) " +
