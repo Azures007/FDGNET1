@@ -248,7 +248,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.body_plan_start_date <= :endDate " +
            "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
-           "GROUP BY h.h.nc_vwkname,h.order_no, h.body_material_name, h.body_plan_prd_qty, h.body_plan_start_date" +
+           "GROUP BY h.nc_vwkname,h.order_no, h.body_material_name, h.body_plan_prd_qty, h.body_plan_start_date" +
            ") as total",
            nativeQuery = true)
     Page<Map> findOrderProgressByDateRangeAndOrg(@Param("startDate") Date startDate,
