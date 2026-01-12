@@ -1,6 +1,7 @@
 package org.thingsboard.server.dao.mes.board;
 
 import com.alibaba.fastjson.JSON;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.Device;
@@ -24,6 +25,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     DeviceRepository deviceRepository;
+
 
     @Override
     public List<BoardDevice> lineSellp(String byDate) {
@@ -60,11 +62,11 @@ public class BoardServiceImpl implements BoardService {
 
                 }
                 break;
-                case "内包机":{
+                case "内包机": {
                     deviceRunBoardTypeVos.add(createdInsourcingDeviceRunBoardVo(toByDateFront, toByDateLater));
                 }
                 break;
-                case "温湿度仪":{
+                case "温湿度仪": {
                     deviceRunBoardTypeVos.add(createdTANSensorDeviceRunBoardVo(toByDateFront, toByDateLater));
                 }
                 break;
@@ -85,6 +87,7 @@ public class BoardServiceImpl implements BoardService {
 
     /**
      * 烤箱设备运行报表
+     *
      * @param byDateFront
      * @param byDateLater
      * @return
@@ -95,8 +98,8 @@ public class BoardServiceImpl implements BoardService {
         DeviceRunBoardTypeVo deviceRunBoardVo = new DeviceRunBoardTypeVo();
         deviceRunBoardVo.setDeviceType("烤炉");
         List<Map> deviceMaps = deviceRepository.findLikeName("Insourcing");
-        if (deviceMaps !=null && deviceMaps.size() > 0) {
-            List<Device> devices= JSON.parseArray(JSON.toJSONString(deviceMaps),Device.class);
+        if (deviceMaps != null && deviceMaps.size() > 0) {
+            List<Device> devices = JSON.parseArray(JSON.toJSONString(deviceMaps), Device.class);
 //            List<OvenDeviceRunVo> ovenDeviceRunVos=new ArrayList<>();
             for (Device device : devices) {
 //                OvenDeviceRunVo ovenDeviceRunVo=new OvenDeviceRunVo();
@@ -131,7 +134,7 @@ public class BoardServiceImpl implements BoardService {
 //                insourcingDeviceRunVos.add(insourcingDeviceRunVo);
             }
 //            deviceRunBoardVo.setInsourcingDeviceRunVoList(insourcingDeviceRunVos);
-        }else {
+        } else {
             return null;
         }
         return deviceRunBoardVo;
@@ -146,49 +149,51 @@ public class BoardServiceImpl implements BoardService {
      */
     private DeviceRunBoardTypeVo createdInsourcingDeviceRunBoardVo(String byDateFront, String byDateLater) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         DeviceRunBoardTypeVo deviceRunBoardVo = new DeviceRunBoardTypeVo();
         deviceRunBoardVo.setDeviceType("内包机");
         List<Map> deviceMaps = deviceRepository.findLikeName("Insourcing");
-        if (deviceMaps !=null && deviceMaps.size() > 0) {
-            List<Device> devices= JSON.parseArray(JSON.toJSONString(deviceMaps),Device.class);
-            List<InsourcingDeviceRunVo> insourcingDeviceRunVos=new ArrayList<>();
+        if (deviceMaps != null && deviceMaps.size() > 0) {
+            List<Device> devices = JSON.parseArray(JSON.toJSONString(deviceMaps), Device.class);
+            List<InsourcingDeviceRunVo> insourcingDeviceRunVos = new ArrayList<>();
             for (Device device : devices) {
-                InsourcingDeviceRunVo insourcingDeviceRunVo=new InsourcingDeviceRunVo();
-                Long byDateFrontTimes=simpleDateFormat.parse(byDateFront).getTime();
-                Long byDateLaterTimes=simpleDateFormat.parse(byDateLater).getTime();
+                InsourcingDeviceRunVo insourcingDeviceRunVo = new InsourcingDeviceRunVo();
+                Long byDateFrontTimes = simpleDateFormat.parse(byDateFront).getTime();
+                Long byDateLaterTimes = simpleDateFormat.parse(byDateLater).getTime();
+                insourcingDeviceRunVo.setRunDate(format.format(simpleDateFormat.parse(byDateFront)));
                 insourcingDeviceRunVo.setDeviceCode(device.getName());
                 insourcingDeviceRunVo.setDeviceName(device.getName());
                 //总运行时长
-                BigDecimal maxRunSeund=deviceRepository.maxQtyByMykey(device.getName(),
-                        "开机时间",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal minRunSeund=deviceRepository.minQtyByMykey(device.getName(),
-                        "开机时间",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal runSeund=maxRunSeund.subtract(minRunSeund);
+                BigDecimal maxRunSeund = deviceRepository.maxQtyByMykey(device.getName(),
+                        "开机时间", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal minRunSeund = deviceRepository.minQtyByMykey(device.getName(),
+                        "开机时间", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal runSeund = maxRunSeund.subtract(minRunSeund);
                 insourcingDeviceRunVo.setRunSeund(runSeund.abs().longValue());
                 //最高温度
-                BigDecimal maxTemp=new BigDecimal("0");
+                BigDecimal maxTemp = new BigDecimal("0");
                 insourcingDeviceRunVo.setMaxTemp(maxTemp);
                 //最低温度
-                BigDecimal minTemp=new BigDecimal("0");
+                BigDecimal minTemp = new BigDecimal("0");
                 insourcingDeviceRunVo.setMinTemp(minTemp);
                 //平均温度
-                BigDecimal avgTemp=new BigDecimal("0");
+                BigDecimal avgTemp = new BigDecimal("0");
                 insourcingDeviceRunVo.setAvgTemp(avgTemp);
                 //最高速度
                 insourcingDeviceRunVo.setMaxSpeed(deviceRepository.maxQtyByMykey(device.getName(),
-                        "速度",byDateFrontTimes,byDateLaterTimes));
+                        "速度", byDateFrontTimes, byDateLaterTimes));
                 insourcingDeviceRunVo.setMinSpeed(deviceRepository.minQtyByMykey(device.getName(),
-                        "速度",byDateFrontTimes,byDateLaterTimes));
+                        "速度", byDateFrontTimes, byDateLaterTimes));
                 insourcingDeviceRunVo.setAvgSpeed(deviceRepository.avgQtyByMykey(device.getName(),
-                        "速度",byDateFrontTimes,byDateLaterTimes).setScale(3,RoundingMode.HALF_UP));
+                        "速度", byDateFrontTimes, byDateLaterTimes).setScale(3, RoundingMode.HALF_UP));
                 insourcingDeviceRunVo.setPieceQty(deviceRepository.maxQtyByMykey(device.getName(),
-                        "包装件数",byDateFrontTimes,byDateLaterTimes));
+                        "包装件数", byDateFrontTimes, byDateLaterTimes));
                 insourcingDeviceRunVo.setOverSize(0);
                 insourcingDeviceRunVo.setTempSuccess(new BigDecimal("0"));
                 insourcingDeviceRunVos.add(insourcingDeviceRunVo);
             }
             deviceRunBoardVo.setInsourcingDeviceRunVoList(insourcingDeviceRunVos);
-        }else {
+        } else {
             return null;
         }
         return deviceRunBoardVo;
@@ -204,68 +209,70 @@ public class BoardServiceImpl implements BoardService {
     private DeviceRunBoardTypeVo createdTANSensorDeviceRunBoardVo(String byDateFront, String byDateLater) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DeviceRunBoardTypeVo deviceRunBoardVo = new DeviceRunBoardTypeVo();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         deviceRunBoardVo.setDeviceType("温湿度监测");
         List<Map> deviceMaps = deviceRepository.findLikeName("TANSensor");
-        if (deviceMaps !=null && deviceMaps.size() > 0) {
-            List<Device> devices= JSON.parseArray(JSON.toJSONString(deviceMaps),Device.class);
-            List<TanSensorDeviceRunVo> tanSensorDeviceRunVos=new ArrayList<>();
+        if (deviceMaps != null && deviceMaps.size() > 0) {
+            List<Device> devices = JSON.parseArray(JSON.toJSONString(deviceMaps), Device.class);
+            List<TanSensorDeviceRunVo> tanSensorDeviceRunVos = new ArrayList<>();
             for (Device device : devices) {
-                TanSensorDeviceRunVo tanSensorDeviceRunVo=new TanSensorDeviceRunVo();
-                Long byDateFrontTimes=simpleDateFormat.parse(byDateFront).getTime();
-                Long byDateLaterTimes=simpleDateFormat.parse(byDateLater).getTime();
+                TanSensorDeviceRunVo tanSensorDeviceRunVo = new TanSensorDeviceRunVo();
+                Long byDateFrontTimes = simpleDateFormat.parse(byDateFront).getTime();
+                Long byDateLaterTimes = simpleDateFormat.parse(byDateLater).getTime();
+                tanSensorDeviceRunVo.setRunDate(format.format(simpleDateFormat.parse(byDateFront)));
                 tanSensorDeviceRunVo.setDeviceCode(device.getName());
                 tanSensorDeviceRunVo.setDeviceName(device.getName());
                 //总运行时长
                 tanSensorDeviceRunVo.setRunSeund(86400L);
                 //最高温度
-                BigDecimal maxTemp=deviceRepository.maxQtyByMykey(device.getName(),
-                        "温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal maxTemp = deviceRepository.maxQtyByMykey(device.getName(),
+                        "温度", byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setMaxTemp(maxTemp);
                 //最低温度
-                BigDecimal minTemp=deviceRepository.minQtyByMykey(device.getName(),
-                        "温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal minTemp = deviceRepository.minQtyByMykey(device.getName(),
+                        "温度", byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setMinTemp(minTemp);
                 //平均温度
-                BigDecimal avgTemp=deviceRepository.avgQtyByMykey(device.getName(),
-                        "温度",byDateFrontTimes,byDateLaterTimes);
-                tanSensorDeviceRunVo.setAvgTemp(avgTemp.setScale(3,RoundingMode.HALF_UP));
+                BigDecimal avgTemp = deviceRepository.avgQtyByMykey(device.getName(),
+                        "温度", byDateFrontTimes, byDateLaterTimes);
+                tanSensorDeviceRunVo.setAvgTemp(avgTemp.setScale(3, RoundingMode.HALF_UP));
 
                 //总温度数据数量
-                BigDecimal inTepmSize=new BigDecimal("10");
+                BigDecimal inTepmSize = new BigDecimal("10");
                 String iotTemp = GlobalConstant.getCodeDscName("iot_temp", device.getName());
-                inTepmSize= new BigDecimal(iotTemp);
+                inTepmSize = new BigDecimal(iotTemp);
 
-                BigDecimal tempSuccess=deviceRepository.countByQty(device.getName(),"温度",inTepmSize,byDateFrontTimes,byDateLaterTimes);
+                BigDecimal tempSuccess = deviceRepository.countByQty(device.getName(), "温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setHempSize(tempSuccess);
-                BigDecimal tempSize=(inTepmSize.subtract(tempSuccess)).divide(inTepmSize,3, RoundingMode.HALF_UP);
+                BigDecimal tempSize = (inTepmSize.subtract(tempSuccess)).divide(inTepmSize, 3, RoundingMode.HALF_UP);
                 tanSensorDeviceRunVo.setTempSize(tempSize);
 
                 //最高湿度
-                BigDecimal maxhemp=deviceRepository.maxQtyByMykey(device.getName(),
-                        "湿度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal maxhemp = deviceRepository.maxQtyByMykey(device.getName(),
+                        "湿度", byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setMaxHump(maxhemp);
                 //最低湿度
-                BigDecimal minHemp=deviceRepository.minQtyByMykey(device.getName(),
-                        "湿度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal minHemp = deviceRepository.minQtyByMykey(device.getName(),
+                        "湿度", byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setMinHemp(minHemp);
                 //平均湿度
-                BigDecimal avgHemp=deviceRepository.avgQtyByMykey(device.getName(),
-                        "湿度",byDateFrontTimes,byDateLaterTimes);
-                tanSensorDeviceRunVo.setAvgHemp(avgHemp.setScale(3,RoundingMode.HALF_UP));
+                BigDecimal avgHemp = deviceRepository.avgQtyByMykey(device.getName(),
+                        "湿度", byDateFrontTimes, byDateLaterTimes);
+                tanSensorDeviceRunVo.setAvgHemp(avgHemp.setScale(3, RoundingMode.HALF_UP));
 
                 //总湿度度数据数量
-                BigDecimal inHepmSize=new BigDecimal("10");
-                inHepmSize= new BigDecimal(GlobalConstant.getCodeDscName("iot_hemp",device.getName()));
+                BigDecimal inHepmSize = new BigDecimal("10");
+                inHepmSize = new BigDecimal(GlobalConstant.getCodeDscName("iot_hemp", device.getName()));
 
-                BigDecimal hempSuccess=deviceRepository.countByQty(device.getName(),"湿度",inHepmSize,byDateFrontTimes,byDateLaterTimes);
+                BigDecimal hempSuccess = deviceRepository.countByQty(device.getName(), "湿度", inHepmSize, byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setHempSuccess(hempSuccess);
-                BigDecimal hempSize=(inHepmSize.subtract(hempSuccess)).divide(inHepmSize,3, RoundingMode.HALF_UP);
+                BigDecimal hempSize = (inHepmSize.subtract(hempSuccess)).divide(inHepmSize, 3, RoundingMode.HALF_UP);
                 tanSensorDeviceRunVo.setHempSize(hempSize);
 
                 tanSensorDeviceRunVos.add(tanSensorDeviceRunVo);
             }
             deviceRunBoardVo.setTanSensorDeviceRunVos(tanSensorDeviceRunVos);
-        }else {
+        } else {
             return null;
         }
         return deviceRunBoardVo;

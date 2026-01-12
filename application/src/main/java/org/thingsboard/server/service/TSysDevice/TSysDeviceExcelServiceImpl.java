@@ -12,6 +12,9 @@ import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.TSysDevice.TSysDeviceService;
 import org.thingsboard.server.dao.mes.dto.TSysDeviceDto;
+import org.thingsboard.server.dao.mes.vo.InsourcingDeviceRunVo;
+import org.thingsboard.server.dao.mes.vo.OvenDeviceRunVo;
+import org.thingsboard.server.dao.mes.vo.TanSensorDeviceRunVo;
 import org.thingsboard.server.dao.sql.mes.ncOrg.NcOrganizationRepository;
 import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.utils.ExcelUtil;
@@ -107,5 +110,28 @@ public class TSysDeviceExcelServiceImpl implements TSysDeviceExcelService {
     public void downTemplate(HttpServletResponse response) {
         List<DeviceExcelVo> excelVos = new ArrayList<>();
         ExcelUtil.writeExcel(response, excelVos, System.currentTimeMillis() + "", "sheet1", new DeviceExcelVo());
+    }
+
+    @Override
+    public void exportDeviceRunBoard(HttpServletResponse response, List<InsourcingDeviceRunVo> insourcingDeviceRunVoList,
+                                     List<TanSensorDeviceRunVo> tanSensorDeviceRunVos, List<OvenDeviceRunVo> ovenDeviceRunVos) {
+        List<ExcelUtil.ExcelSheetData> excelSheetDataList=new ArrayList<>();
+        if(insourcingDeviceRunVoList!=null&&insourcingDeviceRunVoList.size()>0){
+            ExcelUtil.ExcelSheetData excelSheetData = new ExcelUtil.ExcelSheetData("内包机",
+                    insourcingDeviceRunVoList,InsourcingDeviceRunVo.class);
+            excelSheetDataList.add(excelSheetData);
+        }
+        if(tanSensorDeviceRunVos!=null&&tanSensorDeviceRunVos.size()>0){
+            ExcelUtil.ExcelSheetData excelSheetData = new ExcelUtil.ExcelSheetData("温湿度仪",
+                    tanSensorDeviceRunVos,TanSensorDeviceRunVo.class);
+            excelSheetDataList.add(excelSheetData);
+        }
+        if(ovenDeviceRunVos!=null&&ovenDeviceRunVos.size()>0){
+            ExcelUtil.ExcelSheetData excelSheetData = new ExcelUtil.ExcelSheetData("烤炉",
+                    ovenDeviceRunVos,OvenDeviceRunVo.class);
+            excelSheetDataList.add(excelSheetData);
+        }
+        ExcelUtil.writeExcelWithMultiSheet(response, "设备运行报表", excelSheetDataList);
+
     }
 }
