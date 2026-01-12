@@ -183,36 +183,94 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     startDateTime, endDateTime, productionLine);
             }
             
-            // 转换为OrderPlanAnalysis对象列表
+            // 将查询结果转换为Map，key为时间，value为数据
+            java.util.Map<String, OrderPlanAnalysis> dataMap = new java.util.HashMap<>();
+            if (results != null && !results.isEmpty()) {
+                for (Map row : results) {
+                    String timeX = (String) row.get("timex");
+                    BigDecimal planQuantity = row.get("planquantity") != null ? 
+                        new BigDecimal(row.get("planquantity").toString()) : BigDecimal.ZERO;
+                    BigDecimal completedQuantity = row.get("completedquantity") != null ? 
+                        new BigDecimal(row.get("completedquantity").toString()) : BigDecimal.ZERO;
+                    
+                    // 计算达成率
+                    BigDecimal achievementRate = BigDecimal.ZERO;
+                    if (planQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                        achievementRate = completedQuantity.divide(planQuantity, 4, BigDecimal.ROUND_HALF_UP);
+                    }
+                    
+                    OrderPlanAnalysis analysis = OrderPlanAnalysis.builder()
+                        .timeX(timeX)
+                        .planQuantity(planQuantity)
+                        .completedQuantity(completedQuantity)
+                        .achievementRate(achievementRate)
+                        .build();
+                    
+                    dataMap.put(timeX, analysis);
+                }
+            }
+            
+            // 生成完整的时间轴数据
             List<OrderPlanAnalysis> list = new ArrayList<>();
-            for (Map row : results) {
-                String timeX = (String) row.get("timex");
-                BigDecimal planQuantity = row.get("planquantity") != null ? 
-                    new BigDecimal(row.get("planquantity").toString()) : BigDecimal.ZERO;
-                BigDecimal completedQuantity = row.get("completedquantity") != null ? 
-                    new BigDecimal(row.get("completedquantity").toString()) : BigDecimal.ZERO;
+            
+            if (groupByDay) {
+                // 按日生成时间轴
+                SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTime(startDateTime);
                 
-                // 计算达成率
-                BigDecimal achievementRate = BigDecimal.ZERO;
-                if (planQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                    achievementRate = completedQuantity.divide(planQuantity, 4, BigDecimal.ROUND_HALF_UP);
+                while (!cal.getTime().after(endDateTime)) {
+                    String timeKey = sdf.format(cal.getTime());
+                    
+                    // 如果有数据则使用查询到的数据，否则使用0
+                    OrderPlanAnalysis analysis = dataMap.get(timeKey);
+                    if (analysis != null) {
+                        // 格式化时间显示
+                        analysis.setTimeX(timeKey);
+                        list.add(analysis);
+                    } else {
+                        // 没有数据，返回0
+                        analysis = OrderPlanAnalysis.builder()
+                            .timeX(timeKey)
+                            .planQuantity(BigDecimal.ZERO)
+                            .completedQuantity(BigDecimal.ZERO)
+                            .achievementRate(BigDecimal.ZERO)
+                            .build();
+                        list.add(analysis);
+                    }
+                    
+                    cal.add(java.util.Calendar.DAY_OF_MONTH, 1);
                 }
+            } else {
+                // 按月生成时间轴
+                SimpleDateFormat keyFormat = new SimpleDateFormat("yyyy-MM");
+                SimpleDateFormat displayFormat = new SimpleDateFormat("M");
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTime(startDateTime);
                 
-                // 格式化时间显示
-                String displayTime = timeX;
-                if (!groupByDay && timeX != null && timeX.length() >= 7) {
-                    // 月份格式：2025-01 -> 1月
-                    displayTime = timeX.substring(5) + "月";
+                while (!cal.getTime().after(endDateTime)) {
+                    String timeKey = keyFormat.format(cal.getTime());
+                    String displayTime = displayFormat.format(cal.getTime()) + "月";
+                    
+                    // 如果有数据则使用查询到的数据，否则使用0
+                    OrderPlanAnalysis analysis = dataMap.get(timeKey);
+                    if (analysis != null) {
+                        // 格式化时间显示
+                        analysis.setTimeX(displayTime);
+                        list.add(analysis);
+                    } else {
+                        // 没有数据，返回0
+                        analysis = OrderPlanAnalysis.builder()
+                            .timeX(displayTime)
+                            .planQuantity(BigDecimal.ZERO)
+                            .completedQuantity(BigDecimal.ZERO)
+                            .achievementRate(BigDecimal.ZERO)
+                            .build();
+                        list.add(analysis);
+                    }
+                    
+                    cal.add(java.util.Calendar.MONTH, 1);
                 }
-                
-                OrderPlanAnalysis analysis = OrderPlanAnalysis.builder()
-                    .timeX(displayTime)
-                    .planQuantity(planQuantity)
-                    .completedQuantity(completedQuantity)
-                    .achievementRate(achievementRate)
-                    .build();
-                
-                list.add(analysis);
             }
             
             return list;
