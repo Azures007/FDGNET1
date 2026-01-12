@@ -111,6 +111,69 @@ public class ExcelUtil {
         writer.finish();
     }
 
+    /**
+     * 【多Sheet导出】核心方法 - 带表头，每个Sheet可自定义数据和映射实体
+     *
+     * @param response      HttpServletResponse 响应对象
+     * @param fileName      导出的文件名（例如：用户数据报表）
+     * @param sheetDataList 多个sheet的数据集集合
+     */
+    public static void writeExcelWithMultiSheet(HttpServletResponse response, String fileName,
+                                                List<ExcelSheetData> sheetDataList) {
+        ExcelWriter writer = new ExcelWriter(getOutputStream(fileName, response), ExcelTypeEnum.XLSX);
+        // 复用你原有的表格样式，全局通用，如需单独改某个sheet样式可在循环内重写
+        TableStyle tableStyle = new TableStyle();
+        tableStyle.setTableContentBackGroundColor(IndexedColors.WHITE);
+        Font font = new Font();
+        font.setFontHeightInPoints((short) 9);
+        tableStyle.setTableHeadFont(font);
+        tableStyle.setTableContentFont(font);
+
+        // 遍历所有sheet数据，逐个写入，sheet序号从1开始自增
+        int sheetNo = 1;
+        for (ExcelSheetData sheetData : sheetDataList) {
+            // 每个sheet创建独立的Sheet对象，核心：sheetNo自增，不能重复
+            Sheet sheet = new Sheet(sheetNo, 0, sheetData.getModelClass());
+            sheet.setSheetName(sheetData.getSheetName());
+            sheet.setTableStyle(tableStyle);
+            // 写入当前sheet的数据
+            writer.write(sheetData.getDataList(), sheet);
+            sheetNo++;
+        }
+        // 必须最后执行finish，刷新流+关闭资源，否则Excel文件损坏
+        writer.finish();
+    }
+
+    /**
+     * 辅助内部类：封装「单个Sheet的所有信息」
+     * 承载：当前sheet的名称、数据列表、Excel映射实体类class
+     */
+    public static class ExcelSheetData {
+        // 当前sheet的名称
+        private String sheetName;
+        // 当前sheet的数据集合
+        private List<? extends BaseRowModel> dataList;
+        // 当前sheet对应的Excel映射实体类
+        private Class<? extends BaseRowModel> modelClass;
+
+        // 全参构造器，方便快速创建对象
+        public ExcelSheetData(String sheetName, List<? extends BaseRowModel> dataList,
+                              Class<? extends BaseRowModel> modelClass) {
+            this.sheetName = sheetName;
+            this.dataList = dataList;
+            this.modelClass = modelClass;
+        }
+
+        // getter/setter 必须有
+        public String getSheetName() { return sheetName; }
+        public void setSheetName(String sheetName) { this.sheetName = sheetName; }
+        public List<? extends BaseRowModel> getDataList() { return dataList; }
+        public void setDataList(List<? extends BaseRowModel> dataList) { this.dataList = dataList; }
+        public Class<? extends BaseRowModel> getModelClass() { return modelClass; }
+        public void setModelClass(Class<? extends BaseRowModel> modelClass) { this.modelClass = modelClass; }
+    }
+
+
     public static void writeExcel(HttpServletResponse response, List<? extends BaseRowModel> list, List<? extends BaseRowModel> list2, String fileName,
                                   String sheetName, String sheetName2, BaseRowModel object, BaseRowModel object2) {
 

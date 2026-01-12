@@ -21,4 +21,5 @@ public interface BoardService {
      * @return
      */
     List<DeviceRunBoardVo> deviceRunBoard(DeviceRunBoardDto deviceRunBoardDto) throws ParseException;
+
 }
