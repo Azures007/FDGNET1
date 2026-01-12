@@ -124,13 +124,31 @@ public class YcProductionBoardController extends BaseController {
     @GetMapping("/worklines")
     public ResponseResult<List<NcWorkline>> getWorklines(
             @ApiParam("基地ID（可选）") @RequestParam(required = false) String pkOrg) throws ThingsboardException {
+        // 指定的产线ID列表
+        List<String> allowedWorklineIds = java.util.Arrays.asList(
+            "1001A81000000026N113",
+            "1001A81000000026N13B",
+            "1001A810000000C3R8X6",
+            "1001A81000000026N15I",
+            "1001A810000000C3R8XU",
+            "1001A81000000026N16E"
+        );
+        
+        List<NcWorkline> allWorklines;
         if (pkOrg != null && !pkOrg.trim().isEmpty()) {
             // 如果传了基地ID，查询该基地下的生产线
-            return ResultUtil.success(ncWorklineService.findByPkOrg(pkOrg));
+            allWorklines = ncWorklineService.findByPkOrg(pkOrg);
         } else {
             // 否则查询所有生效的生产线
-            return ResultUtil.success(ncWorklineService.findByStatus("生效"));
+            allWorklines = ncWorklineService.findByStatus("生效");
         }
+        
+        // 过滤只返回指定的产线
+        List<NcWorkline> filteredWorklines = allWorklines.stream()
+            .filter(workline -> allowedWorklineIds.contains(workline.getCwkid()))
+            .collect(java.util.stream.Collectors.toList());
+        
+        return ResultUtil.success(filteredWorklines);
     }
 
     /*@ApiOperation("获取完整的生产看板数据（一次性获取所有数据）")
