@@ -224,7 +224,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "h.body_plan_prd_qty as planQuantity, '件' as unit, " +
            "CASE WHEN h.qty_per_jian > 0 " +
            "THEN FLOOR(COUNT(r.record_qty) / h.qty_per_jian) " +
-           "ELSE COUNT(r.record_qty) END as completedQuantity " +
+           "ELSE COUNT(r.record_qty) END as completedQuantity ,(CASE h.order_status WHEN '0'  then '未开工' when '1' then '已开工' else '已完工' end) orderStatus " +
            "FROM t_bus_order_head h " +
            "LEFT JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
            "  AND r.process_number = 'GX-011' " +
@@ -237,7 +237,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.body_plan_start_date <= :endDate " +
            "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
-           "GROUP BY h.nc_vwkname,h.order_no, h.body_material_name, h.body_plan_prd_qty, h.qty_per_jian, h.body_plan_start_date " +
+           "GROUP BY h.order_status,h.nc_vwkname,h.order_no, h.body_material_name, h.body_plan_prd_qty, h.qty_per_jian, h.body_plan_start_date " +
            "ORDER BY h.body_plan_start_date DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +

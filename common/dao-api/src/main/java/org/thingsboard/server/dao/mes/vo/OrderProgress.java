@@ -39,4 +39,7 @@ public class OrderProgress {
 
     @ApiModelProperty("进度(%)")
     private BigDecimal progressPercentage;
+
+    @ApiModelProperty("订单状态")
+    private String orderStatus;
 }
