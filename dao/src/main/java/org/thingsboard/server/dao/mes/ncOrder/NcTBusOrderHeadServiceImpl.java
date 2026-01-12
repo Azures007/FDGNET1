@@ -26,10 +26,13 @@ import org.thingsboard.server.dao.sql.mes.ncOrder.NcTBusOrderPPBomRepository;
 import org.thingsboard.server.dao.sql.mes.order.NcSyncLogRepository;
 import org.thingsboard.server.dao.sql.mes.order.OrderHeadRepository;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -111,6 +114,17 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             //entity.setCreatedName("system");
             entity.setCreatedTime(new java.util.Date());
             //entity.setUnit("KG");
+            String spec=entity.getMaterialspec();
+            Pattern pattern = Pattern.compile("\\*(\\d+(\\.\\d+)?)/");
+            Matcher matcher = pattern.matcher(spec);
+            BigDecimal qtyPerJian=new BigDecimal(0);
+            if (matcher.find()) {
+                String value = matcher.group(1);
+                qtyPerJian=value.matches("\\d+(\\.\\d+)?") ? new BigDecimal(value) : new BigDecimal(0);
+                entity.setQtyPerJian(qtyPerJian);
+            } else {
+                //System.out.printf("规格: %-20s -> 未匹配%n", "\"" + spec + "\"");
+            }
             NcTBusOrderHead existingOrder = repository.findByCmoid(cmoid);
             if (existingOrder != null) {
                 // 保留原有ID和状态
@@ -118,7 +132,7 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
                 entity.setOrderId(orderId);
                 entity.setCmoid(cmoid);
                 entity.setOrderStatus(existingOrder.getOrderStatus());
-                
+                entity.setQtyPerJian(qtyPerJian);
                 // 先更新BOM（此时关联关系还在）
                 Set<NcTBusOrderPPBom> bomListToUpdate = entity.getBomList();
                 if (bomListToUpdate != null && !bomListToUpdate.isEmpty()) {
@@ -150,7 +164,8 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
                         entity.getNcNote(),
                         entity.getUnit(),
                         entity.getIsDeleted(),
-                        entity.getCreatedTime()
+                        entity.getCreatedTime(),
+                        entity.getQtyPerJian()
                 );
                 // 重新查询获取完整的实体（包含BOM）
                 entity = repository.findById(orderId).orElse(entity);
@@ -209,6 +224,17 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
                 //entity.setCreatedName("system");
                 entity.setCreatedTime(new java.util.Date());
                 //entity.setUnit("KG");
+                String spec=entity.getMaterialspec();
+                Pattern pattern = Pattern.compile("\\*(\\d+(\\.\\d+)?)/");
+                Matcher matcher = pattern.matcher(spec);
+                BigDecimal qtyPerJian=new BigDecimal(0);
+                if (matcher.find()) {
+                    String value = matcher.group(1);
+                    qtyPerJian=value.matches("\\d+(\\.\\d+)?") ? new BigDecimal(value) : new BigDecimal(0);
+                    entity.setQtyPerJian(qtyPerJian);
+                } else {
+                    //System.out.printf("规格: %-20s -> 未匹配%n", "\"" + spec + "\"");
+                }
                 NcTBusOrderHead existingOrder = repository.findByCmoid(entity.getCmoid());
                 if (existingOrder != null) {
                     Integer orderId = existingOrder.getOrderId();
@@ -247,7 +273,8 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
                             entity.getNcNote(),
                             entity.getUnit(),
                             entity.getIsDeleted(),
-                            entity.getCreatedTime()
+                            entity.getCreatedTime(),
+                            entity.getQtyPerJian()
                     );
                 } else {
                     entity.setOrderStatus("0");

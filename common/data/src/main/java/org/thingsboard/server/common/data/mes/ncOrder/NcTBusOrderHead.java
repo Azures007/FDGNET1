@@ -148,4 +148,8 @@ public class NcTBusOrderHead {
     @ApiModelProperty("单位")
     @Column(name = "body_unit")
     private String unit;
+
+    @ApiModelProperty("每件数量")
+    @Column(name = "qty_per_jian")
+    private BigDecimal qtyPerJian;
 }

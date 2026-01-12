@@ -169,10 +169,15 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
             }
         }));
         
-        // 并行查询报工记录
+        // 并行查询报工历史记录（改为从history表查询，与报工记录列表保持一致）
         futures.add(CompletableFuture.runAsync(() -> {
-            List<TBusOrderProcessRecord> processRecords = orderProcessRecordRepository.findAllByOrderNoIn(orderNos);
-            context.put("processRecords", processRecords.stream().collect(Collectors.groupingBy(TBusOrderProcessRecord::getOrderNo)));
+            List<TBusOrderProcessHistory> historyRecords = orderProcessHistoryRepository.findAllByOrderNoInAndBusTypeAndReportStatusNot(
+                orderNos, 
+                org.thingsboard.server.common.data.mes.LichengConstants.ORDER_BUS_TYPE_BG,
+                org.thingsboard.server.common.data.mes.LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1
+            );
+            // 将历史记录转换为按orderNo分组的Map
+            context.put("historyRecords", historyRecords.stream().collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderNo)));
         }));
         
         // 并行查询用料清单
@@ -219,11 +224,12 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
     }
 
     private List<ProcessGroupInfoVo> getProcessGroupInfoListWithContext(String orderNo, Map<String, Object> context) {
-        Map<String, List<TBusOrderProcessRecord>> processRecordMap = (Map<String, List<TBusOrderProcessRecord>>) context.get("processRecords");
-        List<TBusOrderProcessRecord> processRecords = processRecordMap.getOrDefault(orderNo, new ArrayList<>());
+        // 修改为从历史记录表查询数据
+        Map<String, List<TBusOrderProcessHistory>> historyRecordMap = (Map<String, List<TBusOrderProcessHistory>>) context.get("historyRecords");
+        List<TBusOrderProcessHistory> historyRecords = historyRecordMap.getOrDefault(orderNo, new ArrayList<>());
         
-        Map<Integer, List<TBusOrderProcessRecord>> groupedRecords = processRecords.stream()
-            .collect(Collectors.groupingBy(TBusOrderProcessRecord::getOrderProcessId));
+        Map<Integer, List<TBusOrderProcessHistory>> groupedRecords = historyRecords.stream()
+            .collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderProcessId));
             
         Map<String, List<ProcessMaterialInfoVo>> processMaterialGroupMap = new LinkedHashMap<>();
         Map<Integer, TBusOrderProcess> orderProcessByIdMap = (Map<Integer, TBusOrderProcess>) context.get("orderProcessesById");
@@ -238,9 +244,9 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         Map<String, List<Map>> orderPpbomMap = (Map<String, List<Map>>) context.get("orderPpboms");
         List<Map> orderPpbomList = orderPpbomMap.getOrDefault(String.valueOf(orderId), new ArrayList<>());
 
-        for (Map.Entry<Integer, List<TBusOrderProcessRecord>> entry : groupedRecords.entrySet()) {
+        for (Map.Entry<Integer, List<TBusOrderProcessHistory>> entry : groupedRecords.entrySet()) {
             Integer orderProcessId = entry.getKey();
-            List<TBusOrderProcessRecord> records = entry.getValue();
+            List<TBusOrderProcessHistory> records = entry.getValue();
             
             TBusOrderProcess orderProcess = orderProcessByIdMap.get(orderProcessId);
             if (orderProcess != null) {
@@ -292,39 +298,38 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                     calculatedPlanPotCount = orderHead.getBodyPotQty() != null ? orderHead.getBodyPotQty() : 0;
                 }
 
-                // 预计算实际累计锅数
-                int actualAccumulatedPotCount = 0;
-                Map<Integer, List<TBusOrderPotCount>> potCountMap = (Map<Integer, List<TBusOrderPotCount>>) context.get("potCounts");
-                List<TBusOrderPotCount> potCounts = potCountMap != null ? potCountMap.getOrDefault(orderProcessId, new ArrayList<>()) : new ArrayList<>();
-                List<String> groupMaterialCodes = records.stream().filter(r -> "1".equals(r.getRecordType())).map(TBusOrderProcessRecord::getMaterialNumber).distinct().collect(Collectors.toList());
-                if (!groupMaterialCodes.isEmpty()) {
-                    int minCount = Integer.MAX_VALUE;
-                    boolean hasUnused = false;
-                    for (String code : groupMaterialCodes) {
-                        int count = potCounts.stream().filter(p -> Objects.equals(code, p.getMaterialNumber())).mapToInt(TBusOrderPotCount::getInputCount).sum();
-                        if (count == 0) { hasUnused = true; break; }
-                        if (count < minCount) minCount = count;
-                    }
-                    actualAccumulatedPotCount = hasUnused ? 0 : (minCount == Integer.MAX_VALUE ? 0 : minCount);
-                }
+                // 按工序和物料编码分组，合并相同物料的记录
+                Map<String, List<TBusOrderProcessHistory>> materialGroupMap = records.stream()
+                    .collect(Collectors.groupingBy(TBusOrderProcessHistory::getMaterialNumber));
 
-                for (TBusOrderProcessRecord record : records) {
+                for (Map.Entry<String, List<TBusOrderProcessHistory>> materialEntry : materialGroupMap.entrySet()) {
+                    String materialNumber = materialEntry.getKey();
+                    List<TBusOrderProcessHistory> materialRecords = materialEntry.getValue();
+                    
+                    // 取第一条记录作为模板
+                    TBusOrderProcessHistory firstRecord = materialRecords.get(0);
+                    
                     ProcessMaterialInfoVo materialInfo = new ProcessMaterialInfoVo();
-                    materialInfo.setMaterialCode(record.getMaterialNumber());
-                    materialInfo.setMaterialName(record.getMaterialName());
-                    materialInfo.setUnit(record.getRecordUnit());
+                    materialInfo.setMaterialCode(materialNumber);
+                    materialInfo.setMaterialName(firstRecord.getMaterialName());
+                    materialInfo.setUnit(firstRecord.getRecordUnit());
                     materialInfo.setPlannedPotCount(calculatedPlanPotCount);
+                    
+                    // 实际累计锅数 = 该物料的报工记录条数（recordType='1'）
+                    int actualAccumulatedPotCount = (int) materialRecords.stream()
+                            .filter(r -> "1".equals(r.getRecordType()))
+                            .count();
                     materialInfo.setActualAccumulatedPotCount(actualAccumulatedPotCount);
                     
                     // 设置计划投入
                     BigDecimal plannedInput = BigDecimal.ZERO;
                     for (Map ppbom : orderPpbomList) {
-                        if (record.getMaterialNumber() != null && record.getMaterialNumber().equals(ppbom.get("material_number"))) {
+                        if (materialNumber != null && materialNumber.equals(ppbom.get("material_number"))) {
                             Object mustQtyObj = ppbom.get("must_qty");
-                            TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + record.getMaterialNumber());
-                            if (recipeInput == null) recipeInput = recipeMaterialMap.get("_" + record.getMaterialNumber());
+                            TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + materialNumber);
+                            if (recipeInput == null) recipeInput = recipeMaterialMap.get("_" + materialNumber);
                             if (recipeInput == null) {
-                                recipeInput = recipeMaterialMap.values().stream().filter(input -> input != null && record.getMaterialNumber().equals(input.getMaterialCode())).findFirst().orElse(null);
+                                recipeInput = recipeMaterialMap.values().stream().filter(input -> input != null && materialNumber.equals(input.getMaterialCode())).findFirst().orElse(null);
                             }
                             Object ratioObj = (recipeInput != null && recipeInput.getPlanInputRatio() != null) ? recipeInput.getPlanInputRatio() : ppbom.get("plan_input_ratio");
                             if (mustQtyObj != null) {
@@ -336,21 +341,21 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                     }
                     materialInfo.setPlannedInput(plannedInput);
 
-                    // 设置实际投入
-                    BigDecimal actualInput = records.stream()
-                            .filter(r -> Objects.equals(record.getMaterialNumber(), r.getMaterialNumber()) && "1".equals(r.getRecordType()))
+                    // 设置实际投入 - 对所有相同物料编码的记录求和
+                    BigDecimal actualInput = materialRecords.stream()
+                            .filter(r -> "1".equals(r.getRecordType()))
                             .map(r -> r.getRecordQty() != null ? r.getRecordQty() : BigDecimal.ZERO)
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
                     materialInfo.setActualInput(actualInput);
 
-                    // 设置残次品重量 (recordType = '2')
-                    BigDecimal defectiveWeight = records.stream()
-                            .filter(r -> Objects.equals(record.getMaterialNumber(), r.getMaterialNumber()) && "2".equals(r.getRecordType()))
+                    // 设置残次品重量 (recordType = '2') - 对所有相同物料编码的记录求和
+                    BigDecimal defectiveWeight = materialRecords.stream()
+                            .filter(r -> "2".equals(r.getRecordType()))
                             .map(r -> r.getRecordQty() != null ? r.getRecordQty() : BigDecimal.ZERO)
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
                     materialInfo.setDefectiveWeight(defectiveWeight);
 
-                    String groupKey = record.getProcessName() + "|" + processStatus;
+                    String groupKey = firstRecord.getProcessName() + "|" + processStatus;
                     processMaterialGroupMap.computeIfAbsent(groupKey, k -> new ArrayList<>()).add(materialInfo);
                 }
             }

@@ -51,7 +51,8 @@ public interface NcTBusOrderHeadRepository extends JpaRepository<NcTBusOrderHead
             "o.ncNote = :ncNote, " +
             "o.unit = :unit, " +
             "o.isDeleted = :isDeleted, " +
-            "o.createdTime = :createdTime " +
+            "o.createdTime = :createdTime, " +
+            "o.qtyPerJian = :qtyPerJian " +
             "WHERE o.orderId = :orderId")
     void updateOrderBasicInfo(
             @Param("orderId") Integer orderId,
@@ -77,6 +78,7 @@ public interface NcTBusOrderHeadRepository extends JpaRepository<NcTBusOrderHead
             @Param("ncNote") String ncNote,
             @Param("unit") String unit,
             @Param("isDeleted") String isDeleted,
-            @Param("createdTime") java.util.Date createdTime
+            @Param("createdTime") java.util.Date createdTime,
+            @Param("qtyPerJian") java.math.BigDecimal qtyPerJian
     );
 }

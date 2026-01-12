@@ -371,4 +371,8 @@ public class TBusOrderHead  {
     @Column(name = "nc_note")
     @ApiModelProperty("备注")
     private String ncNote;
+
+    @ApiModelProperty("每件数量")
+    @Column(name = "qty_per_jian")
+    private BigDecimal qtyPerJian;
 }

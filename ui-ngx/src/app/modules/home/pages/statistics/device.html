@@ -1,0 +1,153 @@
+<div class="page-container flex-column">
+  <div class="page-header">
+
+    <div class="row-block cols4">
+      <label class="label">运行日期</label>
+      <mat-form-field appearance="fill" class="dateRange">
+        <mat-date-range-input [formGroup]="pdRange" [rangePicker]="picker">
+          <input readonly formControlName="start" matStartDate placeholder="开始日期">
+          <input readonly formControlName="end" matEndDate placeholder="结束日期">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker fontSize="12" #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+    <div class="row-block cols4">
+      <label class="label">设备类型</label>
+      <select [(ngModel)]="searchFormGroup.value.deviceType">
+        <option *ngFor="let deviceType of deviceTypeList" [value]="deviceType.codeValue">
+          {{deviceType.codeDsc}}
+        </option>
+      </select>
+    </div>
+
+    <div class="row-block cols4">
+      <label class="label"></label>
+      <div class="btn-group">
+        <button class="search_btn" (click)="getTableData()">
+          <mat-icon>search</mat-icon>查询
+        </button>
+        <button class="search_btn" (click)="reset()">
+          <mat-icon>refresh</mat-icon>重置
+        </button>
+        <button class="search_btn" (click)="export()">
+          <mat-icon>vertical_align_bottom</mat-icon>导出
+        </button>
+      </div>
+
+    </div>
+
+
+  </div>
+  <div class="page-content">
+   <!-- 原生table渲染 -->
+    <ng-container *ngFor="let firstItem of dataSource">
+      <table class="table" align="center">
+        <thead>
+          <tr>
+            <th>{{firstItem.byDateTime | date:'yyyy年MM月dd日'}}</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <ng-container *ngFor="let secondItem of firstItem.deviceRunBoardTypeVoList">
+        <table class="table" align="center">
+          <thead>
+            <tr>
+              <th>设备类型：{{secondItem.deviceType}}</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <table class="table" align="center" *ngIf="secondItem.deviceType == '内包机'">
+          <thead>
+            <tr>
+              <th>运行日期</th>
+              <th>设备编号</th>
+              <th>设备名称</th>
+              <th>运行时间</th>
+              <th>最高速度</th>
+              <th>最低速度</th>
+              <th>平均速度</th>
+              <th>包装件数</th>
+              <th>超标次数</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let thirdItem of secondItem.insourcingDeviceRunVoList">
+              <td>{{firstItem.byDateTime | date:'yyyy-MM-dd'}}</td>
+              <td>{{thirdItem.deviceCode}}</td>
+              <td>{{thirdItem.deviceName}}</td>
+              <td>{{thirdItem.runSeund}}</td>
+              <td>{{thirdItem.maxSpeed}}</td>
+              <td>{{thirdItem.minSpeed}}</td>
+              <td>{{thirdItem.avgSpeed}}</td>
+              <td>{{thirdItem.pieceQty}}</td>
+              <td>{{thirdItem.overSize}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="table" align="center" *ngIf="secondItem.deviceType == '温湿度监测'">
+          <thead>
+            <tr>
+              <th>运行日期</th>
+              <th>设备编号</th>
+              <th>设备名称</th>
+              <th>运行时间</th>
+              <th>最高温度</th>
+              <th>最低温度</th>
+              <th>平均温度</th>
+              <th>温度超标次数</th>
+              <th>温度达标率</th>
+              <th>最高湿度</th>
+              <th>最低湿度</th>
+              <th>平均湿度</th>
+              <th>湿度超标次数</th>
+              <th>湿度达标率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let thirdItem of secondItem.tanSensorDeviceRunVos">
+              <td>{{firstItem.byDateTime | date:'yyyy-MM-dd'}}</td>
+              <td>{{thirdItem.deviceCode}}</td>
+              <td>{{thirdItem.deviceName}}</td>
+              <td>{{thirdItem.runSeund}}</td>
+              <td>{{thirdItem.maxTemp}}</td>
+              <td>{{thirdItem.minTemp}}</td>
+              <td>{{thirdItem.avgTemp}}</td>
+              <td>{{thirdItem.tempSize}}</td>
+              <td>{{thirdItem.tempSuccess}}</td>
+              <td>{{thirdItem.maxHump}}</td>
+              <td>{{thirdItem.minHemp}}</td>
+              <td>{{thirdItem.avgHemp}}</td>
+              <td>{{thirdItem.hempSize}}</td>
+              <td>{{thirdItem.hempSuccess}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+    </ng-container>
+    <table class="table" align="center" *ngIf="false">
+      <thead>
+        <tr>
+          <th colspan="4">订单基础信息</th>
+          <th colspan="2">合格品信息</th>
+          <th colspan="10">原料投入信息</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+            <td></td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- <div class="page-footer">
+    <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
+      aria-label="选择要跳转的页面" (page)="getNotices($event)">
+    </mat-paginator>
+  </div> -->
+</div>

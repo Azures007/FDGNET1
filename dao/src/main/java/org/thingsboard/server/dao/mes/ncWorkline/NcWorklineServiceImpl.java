@@ -33,7 +33,7 @@ public class NcWorklineServiceImpl implements NcWorklineService {
 
     @Override
     public List<NcWorkline> findByPkOrg(String pkOrg) {
-        return repository.findByPkOrgAndStatus(pkOrg, "生效");
+        return repository.findByPkOrgAndStatusOrderByVwknameAsc(pkOrg, "生效");
     }
 
     @Override
@@ -57,6 +57,6 @@ public class NcWorklineServiceImpl implements NcWorklineService {
     
     @Override
     public List<NcWorkline> findByStatus(String status) {
-        return repository.findByStatus(status);
+        return repository.findByStatusOrderByVwknameAsc(status);
     }
 }

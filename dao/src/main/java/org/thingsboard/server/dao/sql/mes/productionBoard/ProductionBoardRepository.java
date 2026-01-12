@@ -90,7 +90,8 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
-           "AND h.body_plan_start_date <= :endDate",
+           "AND h.body_plan_start_date <= :endDate " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E')",
            nativeQuery = true)
     List<Map> getOrderStatisticsByDateRange(@Param("startDate") Date startDate, 
                                            @Param("endDate") Date endDate);
@@ -108,7 +109,8 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
-           "AND h.nc_cwkid = :productionLine",
+           "AND h.nc_cwkid = :productionLine " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E')",
            nativeQuery = true)
     List<Map> getOrderStatisticsByDateRangeAndProductionLine(@Param("startDate") Date startDate, 
                                                             @Param("endDate") Date endDate,
@@ -129,6 +131,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (m.nc_material_classification IS NULL " +
            "     OR (m.nc_material_classification <> '外包材料' " +
            "         AND m.nc_material_classification <> '包膜'))", 
@@ -153,6 +156,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
            "AND h.nc_cwkid = :productionLine " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (m.nc_material_classification IS NULL " +
            "     OR (m.nc_material_classification <> '外包材料' " +
            "         AND m.nc_material_classification <> '包膜'))", 
@@ -176,6 +180,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (m.nc_material_classification = '外包材料' " +
            "     OR m.nc_material_classification = '包膜')", 
            nativeQuery = true)
@@ -199,6 +204,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
            "AND h.nc_cwkid = :productionLine " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (m.nc_material_classification = '外包材料' " +
            "     OR m.nc_material_classification = '包膜')", 
            nativeQuery = true)
@@ -216,7 +222,9 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      */
     @Query(value = "SELECT h.order_no as orderNo, h.body_material_name as productName, " +
            "h.body_plan_prd_qty as planQuantity, '件' as unit, " +
-           "COUNT(r.record_qty) as completedQuantity " +
+           "CASE WHEN h.qty_per_jian > 0 " +
+           "THEN FLOOR(COUNT(r.record_qty) / h.qty_per_jian) " +
+           "ELSE COUNT(r.record_qty) END as completedQuantity " +
            "FROM t_bus_order_head h " +
            "LEFT JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
            "  AND r.process_number = 'GX-011' " +
@@ -227,8 +235,9 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
-           "GROUP BY h.order_no, h.body_material_name, h.body_plan_prd_qty, h.body_plan_start_date " +
+           "GROUP BY h.order_no, h.body_material_name, h.body_plan_prd_qty, h.qty_per_jian, h.body_plan_start_date " +
            "ORDER BY h.body_plan_start_date DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +
@@ -237,6 +246,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "GROUP BY h.order_no, h.body_material_name, h.body_plan_prd_qty, h.body_plan_start_date" +
            ") as total",
@@ -265,6 +275,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "GROUP BY h.order_no, h.body_plan_prd_qty " +
            "HAVING COUNT(r.record_qty) < h.body_plan_prd_qty OR COUNT(r.record_qty) = 0" +
@@ -283,7 +294,9 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      */
     @Query(value = "SELECT TO_CHAR(h.body_plan_start_date, 'MM-DD') as timeX, " +
            "COALESCE(SUM(h.body_plan_prd_qty), 0) as planQuantity, " +
-           "COALESCE(SUM(completed.completed_qty), 0) as completedQuantity " +
+           "COALESCE(SUM(CASE WHEN h.qty_per_jian > 0 " +
+           "THEN FLOOR(completed.completed_qty / h.qty_per_jian) " +
+           "ELSE completed.completed_qty END), 0) as completedQuantity " +
            "FROM t_bus_order_head h " +
            "LEFT JOIN (" +
            "  SELECT r.order_no, COUNT(r.record_qty) as completed_qty " +
@@ -298,6 +311,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "GROUP BY TO_CHAR(h.body_plan_start_date, 'MM-DD') " +
            "ORDER BY TO_CHAR(h.body_plan_start_date, 'MM-DD')",
@@ -315,7 +329,9 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      */
     @Query(value = "SELECT TO_CHAR(h.body_plan_start_date, 'YYYY-MM') as timeX, " +
            "COALESCE(SUM(h.body_plan_prd_qty), 0) as planQuantity, " +
-           "COALESCE(SUM(completed.completed_qty), 0) as completedQuantity " +
+           "COALESCE(SUM(CASE WHEN h.qty_per_jian > 0 " +
+           "THEN FLOOR(completed.completed_qty / h.qty_per_jian) " +
+           "ELSE completed.completed_qty END), 0) as completedQuantity " +
            "FROM t_bus_order_head h " +
            "LEFT JOIN (" +
            "  SELECT r.order_no, COUNT(r.record_qty) as completed_qty " +
@@ -330,6 +346,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
            "AND h.body_plan_start_date <= :endDate " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "GROUP BY TO_CHAR(h.body_plan_start_date, 'YYYY-MM') " +
            "ORDER BY TO_CHAR(h.body_plan_start_date, 'YYYY-MM')",
@@ -359,19 +376,66 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "  AND i.material_code = r.material_number " +
            "  AND i.process_number = r.process_number " +
            "  AND (r.group_code = i.semi_finished_product_code OR r.group_code IS NULL) " +
-           "WHERE h.is_deleted = '0' and r.process_number<>'GX-011'" +
+           "WHERE h.is_deleted = '0' and r.process_number<>'GX-011' " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "ORDER BY r.report_time DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +
            "FROM t_bus_order_head h " +
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
-           "WHERE h.is_deleted = '0' and r.process_number<>'GX-011'" +
+           "WHERE h.is_deleted = '0' and r.process_number<>'GX-011' " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR))" +
            ") as total",
            nativeQuery = true)
     Page<Map> findProductionBgData(@Param("productionLine") String productionLine,
                                    Pageable pageable);
+
+    /**
+     * 查询生产报工数据（生产态势监察）- 带日期范围 - 返回分页Map
+     * @param productionLine 生产线ID（可选）
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param pageable 分页参数
+     * @return Page<Map> 分页结果
+     */
+    @Query(value = "SELECT h.nc_vwkname as productionLine, r.process_name as process, " +
+           "r.material_name as materialName, " +
+           "CONCAT(TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))), '-', " +
+           "TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))) as standard, " +
+           "r.record_qty as recordQuantity, " +
+           "CASE WHEN r.pot_number IS NOT NULL " +
+           "THEN CONCAT('第', r.pot_number, '锅') ELSE '' END as potStr, " +
+           "r.report_time as recordTime " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
+           "LEFT JOIN t_sys_recipe_product_binding b ON b.product_code = h.body_material_number " +
+           "LEFT JOIN t_sys_recipe_input i ON i.recipe_id = b.recipe_id " +
+           "  AND i.material_code = r.material_number " +
+           "  AND i.process_number = r.process_number " +
+           "  AND (r.group_code = i.semi_finished_product_code OR r.group_code IS NULL) " +
+           "WHERE h.is_deleted = '0' and r.process_number<>'GX-011' " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
+           "ORDER BY r.report_time DESC",
+           countQuery = "SELECT COUNT(*) FROM (" +
+           "SELECT h.order_no " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
+           "WHERE h.is_deleted = '0' and r.process_number<>'GX-011' " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR))" +
+           ") as total",
+           nativeQuery = true)
+    Page<Map> findProductionBgDataByDateRange(@Param("productionLine") String productionLine,
+                                              @Param("startDate") Date startDate,
+                                              @Param("endDate") Date endDate,
+                                              Pageable pageable);
 
     /**
      * 查询外包净含量实况数据 - 返回分页Map
@@ -392,6 +456,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "LEFT JOIN t_sys_net_content_range b ON b.material_code = h.body_material_number " +
            "WHERE h.is_deleted = '0' " +
            "AND r.process_number = 'GX-011' " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
            "ORDER BY r.report_time DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
@@ -400,9 +465,53 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
            "WHERE h.is_deleted = '0' " +
            "AND r.process_number = 'GX-011' " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR))" +
            ") as total",
            nativeQuery = true)
     Page<Map> findOutsourcingNetContentData(@Param("productionLine") String productionLine,
                                             Pageable pageable);
+
+    /**
+     * 查询外包净含量实况数据 - 带日期范围 - 返回分页Map
+     * @param productionLine 生产线ID（可选）
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param pageable 分页参数
+     * @return Page<Map> 分页结果
+     */
+    @Query(value = "SELECT h.nc_vwkname as productionLine, " +
+           "h.body_material_name as productName, " +
+           "CONCAT(TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(b.lower_limit AS text))), '-', " +
+           "TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(b.upper_limit AS text)))) as netContentStandardStr, " +
+           "b.upper_limit as netContentStandardUpper, " +
+           "b.lower_limit as netContentStandardLower, " +
+           "r.record_qty * 1000 as actualNetContent, " +
+           "r.report_time as recordTime " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
+           "LEFT JOIN t_sys_net_content_range b ON b.material_code = h.body_material_number " +
+           "WHERE h.is_deleted = '0' " +
+           "AND r.process_number = 'GX-011' " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
+           "ORDER BY r.report_time DESC",
+           countQuery = "SELECT COUNT(*) FROM (" +
+           "SELECT h.order_no " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
+           "WHERE h.is_deleted = '0' " +
+           "AND r.process_number = 'GX-011' " +
+           "AND h.nc_cwkid IN ('1001A81000000026N113', '1001A81000000026N13B', '1001A810000000C3R8X6', '1001A81000000026N15I', '1001A810000000C3R8XU', '1001A81000000026N16E') " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR))" +
+           ") as total",
+           nativeQuery = true)
+    Page<Map> findOutsourcingNetContentDataByDateRange(@Param("productionLine") String productionLine,
+                                                       @Param("startDate") Date startDate,
+                                                       @Param("endDate") Date endDate,
+                                                       Pageable pageable);
 }
