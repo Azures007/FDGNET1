@@ -1857,3 +1857,7 @@ COMMENT ON COLUMN t_bus_nc_sync_log.error_message IS '错误信息';
 CREATE INDEX idx_nc_sync_log_sync_type ON t_bus_nc_sync_log(sync_type);
 CREATE INDEX idx_nc_sync_log_sync_time ON t_bus_nc_sync_log(sync_time);
 CREATE INDEX idx_nc_sync_log_sync_status ON t_bus_nc_sync_log(sync_status);
+
+ALTER TABLE t_bus_order_head
+    ADD COLUMN qty_per_jian DECIMAL(19, 4);
+COMMENT ON COLUMN t_bus_order_head.qty_per_jian IS '每件数量';
