@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { Authority } from '@shared/models/authority.enum';
 import { MaterialComponent } from './material.component';
 import { DeviceComponent } from './device.component';
+import { RatioComponent } from './ratio.component';
 
 
 
@@ -43,6 +44,17 @@ const routes: Routes = [
           title: '设备运行报表',
           breadcrumb: {
             label: '设备运行报表',
+            icon: 'bookmarks'
+          }
+        }
+      },
+      {
+        path: 'ratio',
+        component: RatioComponent,
+        data: {
+          title: '投入产出比报表',
+          breadcrumb: {
+            label: '投入产出比报表',
             icon: 'bookmarks'
           }
         }

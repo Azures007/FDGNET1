@@ -9,9 +9,7 @@ import { StatisticsComponent } from './statistics.component';
 import { MaterialComponent } from './material.component';
 import { StatisticsRoutingModule } from './statistics-routing.module';
 import { DeviceComponent } from './device.component';
-
-
-
+import { RatioComponent } from './ratio.component';
 
 
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
@@ -31,7 +29,7 @@ const COMMISSION_DATE_FORMATS = {
 };
 
 @NgModule({
-  declarations: [StatisticsComponent, MaterialComponent, DeviceComponent],
+  declarations: [StatisticsComponent, MaterialComponent, DeviceComponent, RatioComponent],
   imports: [
     CommonModule,
     SharedModule,

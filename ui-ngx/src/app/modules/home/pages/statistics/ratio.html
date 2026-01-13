@@ -1,0 +1,95 @@
+<div class="page-container flex-column">
+  <div class="page-header">
+
+    <div class="row-block cols4">
+      <label class="label">下单日期</label>
+      <mat-form-field appearance="fill" class="dateRange">
+        <mat-date-range-input [formGroup]="pdRange" [rangePicker]="picker">
+          <input readonly formControlName="start" matStartDate placeholder="开始日期">
+          <input readonly formControlName="end" matEndDate placeholder="结束日期">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker fontSize="12" #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+    <div class="row-block cols4">
+      <label class="label"></label>
+      <div class="btn-group">
+        <button class="search_btn" (click)="getTableData()">
+          <mat-icon>search</mat-icon>查询
+        </button>
+        <button class="search_btn" (click)="reset()">
+          <mat-icon>refresh</mat-icon>重置
+        </button>
+        <button class="search_btn" (click)="export()">
+          <mat-icon>vertical_align_bottom</mat-icon>导出
+        </button>
+      </div>
+
+    </div>
+
+
+  </div>
+  <div class="page-content">
+   <!-- 原生table渲染 -->
+    <table class="table" align="center">
+      <thead>
+        <tr>
+          <th colspan="2">基础信息</th>
+          <th colspan="6">投入信息</th>
+          <th colspan="2">损耗信息</th>
+          <th colspan="3">产出信息</th>
+          <th colspan="3">投入产出比</th>
+        </tr>
+        <tr>
+          <th width="100px">日期</th>
+          <th width="100px">产线</th>
+          <th width="100px">物料编码</th>
+          <th width="100px">物料名称</th>
+          <th width="100px">材料类型</th>
+          <th width="100px">单位</th>
+          <th width="100px">计划投入</th>
+          <th width="100px">实际投入</th>
+          <th width="100px">包膜废品重量</th>
+          <th width="100px">废次品重量</th>
+          <th width="100px">计划产量(件)</th>
+          <th width="100px">实际产量(件)</th>
+          <th width="100px">净含量重量</th>
+          <th width="100px">投入产出比</th>
+          <th width="100px">单箱原辅料消耗(kg/件)</th>
+          <th width="100px">废次品比率</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let firstItem of dataSource;let firstIndex = index">
+          <ng-container *ngFor="let secondItem of firstItem.inputMaterialItems;let secondIndex = index">
+            <tr>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.date}}</td>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.productionLine}}</td>
+              <td>{{secondItem.materialNumber}}</td>
+              <td>{{secondItem.materialName}}</td>
+              <td>{{secondItem.recordType}}</td>
+              <td>{{secondItem.recordUnit}}</td>
+              <td>{{secondItem.plannedInput}}</td>
+              <td>{{secondItem.actualInput}}</td>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.packagingWasteWeight}}</td>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.defectiveWeight}}</td>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.plannedOutput}}</td>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.actualOutput}}</td>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.netContentWeight}}</td>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.inputOutputRatio}}</td>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.materialConsumptionPerBox}}</td>
+              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.defectiveRate}}</td>
+            </tr>
+          </ng-container>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
+      aria-label="选择要跳转的页面" (page)="getNotices($event)">
+    </mat-paginator>
+  </div>
+</div>
