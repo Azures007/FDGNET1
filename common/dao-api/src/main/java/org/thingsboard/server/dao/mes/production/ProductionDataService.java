@@ -7,6 +7,8 @@ import org.thingsboard.server.dao.mes.vo.PageVo;
 /**
  * 投入产出比报表数据服务接口
  */
+import javax.servlet.http.HttpServletResponse;
+
 public interface ProductionDataService {
 
     /**
@@ -18,4 +20,12 @@ public interface ProductionDataService {
      * @return 分页结果
      */
     PageVo<ProductionData> queryProductionData(int current, int size, ProductionDataQueryDto queryDto);
+
+    /**
+     * 导出投入产出比报表
+     *
+     * @param queryDto 查询条件
+     * @param response 响应对象
+     */
+    void exportProductionData(ProductionDataQueryDto queryDto, HttpServletResponse response);
 }
