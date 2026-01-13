@@ -1,17 +1,15 @@
 package org.thingsboard.server.controller;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.mes.vo.ProductionData;
+import org.thingsboard.server.common.data.web.ResponseResult;
+import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.dto.ProductionDataQueryDto;
 import org.thingsboard.server.dao.mes.production.ProductionDataService;
 import org.thingsboard.server.dao.mes.vo.PageVo;
@@ -21,16 +19,13 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.thingsboard.server.common.data.web.ResultUtil;
-import org.thingsboard.server.common.data.web.ResponseResult;
-
 /**
  * 投入产出比报表控制器
  */
 @Slf4j
 @Api(tags = "投入产出比报表")
 @RestController
-@RequestMapping("/api/production-data")
+@RequestMapping("/api/inputoutputratio")
 public class ProductionDataController {
 
     @Autowired

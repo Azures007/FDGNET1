@@ -27,6 +27,8 @@ import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -73,19 +75,19 @@ public class ProductionDataServiceImpl implements ProductionDataService {
     }
 
     private List<ProductionDataExcelVo> convertToExcelData(List<ProductionData> list) {
-        List<ProductionDataExcelVo> excelDataList = new ArrayList<>();
         if (list == null || list.isEmpty()) {
-            return excelDataList;
+            return new ArrayList<>();
         }
 
-        for (ProductionData data : list) {
+        return list.parallelStream().flatMap(data -> {
             String groupKey = data.getProductionLine() + "_" + data.getDate();
             List<InputMaterialItem> materialItems = data.getInputMaterialItems();
+            List<ProductionDataExcelVo> voList = new ArrayList<>();
 
             if (materialItems == null || materialItems.isEmpty()) {
                 ProductionDataExcelVo vo = new ProductionDataExcelVo();
                 fillBaseInfo(vo, data, groupKey);
-                excelDataList.add(vo);
+                voList.add(vo);
             } else {
                 for (InputMaterialItem materialItem : materialItems) {
                     ProductionDataExcelVo vo = new ProductionDataExcelVo();
@@ -99,11 +101,11 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                     vo.setPlannedInput(materialItem.getPlannedInput() != null ? materialItem.getPlannedInput().toString() : "0");
                     vo.setActualInput(materialItem.getActualInput() != null ? materialItem.getActualInput().toString() : "0");
                     
-                    excelDataList.add(vo);
+                    voList.add(vo);
                 }
             }
-        }
-        return excelDataList;
+            return voList.stream();
+        }).collect(Collectors.toList());
     }
 
     private void fillBaseInfo(ProductionDataExcelVo vo, ProductionData data, String groupKey) {
@@ -205,10 +207,8 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                 .collect(Collectors.toList());
 
         // 批量查询所有相关的历史记录并按订单号分组缓存
-        Map<String, List<TBusOrderProcessHistory>> allPackagingHistoriesMap = productionDataRepository.findPackagingProcesses(allOrderNos).stream()
-                .collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderNo));
-        
-        Map<String, List<TBusOrderProcessHistory>> allInputMaterialHistoriesMap = productionDataRepository.findInputMaterials(allOrderNos).stream()
+        List<TBusOrderProcessHistory> allHistories = productionDataRepository.findAllHistories(allOrderNos);
+        Map<String, List<TBusOrderProcessHistory>> allHistoriesMap = allHistories.stream()
                 .collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderNo));
 
         // 预加载字典数据以提高效率
@@ -216,8 +216,26 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         Map<String, String> dictMap = dictList.stream()
                 .collect(Collectors.toMap(TSysCodeDsc::getCodeValue, TSysCodeDsc::getCodeDsc, (v1, v2) -> v1));
 
+        // 预聚合所有订单的BOM信息和物料基本信息以提升并行计算效率
+        Map<String, Map<String, BigDecimal>> orderPlannedInputMap = new HashMap<>();
+        Map<String, TBusOrderPPBom> allMaterialInfoMap = new HashMap<>();
+        for (TBusOrderHead order : orderHeads) {
+            Map<String, BigDecimal> bomMap = new HashMap<>();
+            if (order.getTBusOrderPPBomSet() != null) {
+                for (TBusOrderPPBom bom : order.getTBusOrderPPBomSet()) {
+                    String materialNumber = bom.getMaterialNumber();
+                    if (materialNumber != null) {
+                        BigDecimal qty = bom.getMustQty() != null ? bom.getMustQty() : BigDecimal.ZERO;
+                        bomMap.merge(materialNumber, qty, BigDecimal::add);
+                        allMaterialInfoMap.putIfAbsent(materialNumber, bom);
+                    }
+                }
+            }
+            orderPlannedInputMap.put(order.getOrderNo(), bomMap);
+        }
+
         // 按产线和日期分组
-        final SimpleDateFormat dateDaySdf = new SimpleDateFormat("yyyy-MM-dd");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Map<String, Map<String, List<TBusOrderHead>>> groupedByProductionLineAndDate = orderHeads.stream()
                 .filter(head -> head.getVwkname() != null) // 确保产线不为空
                 .collect(Collectors.groupingBy(
@@ -225,7 +243,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                         Collectors.groupingBy(head -> {
                             // 提取日期部分，格式化为yyyy-MM-dd
                             if (head.getBillDate() != null) {
-                                return dateDaySdf.format(head.getBillDate());
+                                return head.getBillDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate().format(dateFormatter);
                             } else {
                                 return "未知日期";
                             }
@@ -248,12 +266,17 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                                 .filter(Objects::nonNull)
                                 .collect(Collectors.toList());
 
-                        // 从缓存中获取外包装工序历史记录
-                        List<TBusOrderProcessHistory> packagingHistories = new ArrayList<>();
+                        // 从缓存中获取该组订单的所有历史记录
+                        List<TBusOrderProcessHistory> groupAllHistories = new ArrayList<>();
                         groupOrderNos.forEach(no -> {
-                            List<TBusOrderProcessHistory> histories = allPackagingHistoriesMap.get(no);
-                            if (histories != null) packagingHistories.addAll(histories);
+                            List<TBusOrderProcessHistory> histories = allHistoriesMap.get(no);
+                            if (histories != null) groupAllHistories.addAll(histories);
                         });
+
+                        // 过滤外包装工序历史记录 (GX-011)
+                        List<TBusOrderProcessHistory> packagingHistories = groupAllHistories.stream()
+                                .filter(h -> "GX-011".equals(h.getProcessNumber()))
+                                .collect(Collectors.toList());
 
                         // 计算实际产量：外包装工序记录的条数总和
                         BigDecimal actualOutput = new BigDecimal(packagingHistories.size());
@@ -263,31 +286,20 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                                 .map(history -> history.getRecordQty() != null ? history.getRecordQty() : BigDecimal.ZERO)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                        // 从缓存中获取投入物料信息
-                        List<TBusOrderProcessHistory> inputMaterialHistories = new ArrayList<>();
-                        groupOrderNos.forEach(no -> {
-                            List<TBusOrderProcessHistory> histories = allInputMaterialHistoriesMap.get(no);
-                            if (histories != null) inputMaterialHistories.addAll(histories);
-                        });
+                        // 投入物料历史记录（即该组所有的历史记录）
+                        List<TBusOrderProcessHistory> inputMaterialHistories = groupAllHistories;
 
                         // 计算计划产量：同一产线同一天的body_plan_prd_qty之和
                         BigDecimal plannedOutput = ordersInLineAndDate.stream()
                                 .map(order -> order.getBodyPlanPrdQty() != null ? order.getBodyPlanPrdQty() : BigDecimal.ZERO)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                        // 计算计划投入：从订单的BOM中获取并按物料编码聚合
+                        // 计算计划投入：从预加载的缓存中直接获取
                         Map<String, BigDecimal> materialPlannedInputMap = new HashMap<>();
-                        Map<String, TBusOrderPPBom> materialInfoMap = new HashMap<>();
                         for (TBusOrderHead order : ordersInLineAndDate) {
-                            if (order.getTBusOrderPPBomSet() != null) {
-                                for (TBusOrderPPBom bom : order.getTBusOrderPPBomSet()) {
-                                    String materialNumber = bom.getMaterialNumber();
-                                    if (materialNumber != null) {
-                                        BigDecimal qty = bom.getMustQty() != null ? bom.getMustQty() : BigDecimal.ZERO;
-                                        materialPlannedInputMap.put(materialNumber, materialPlannedInputMap.getOrDefault(materialNumber, BigDecimal.ZERO).add(qty));
-                                        materialInfoMap.putIfAbsent(materialNumber, bom);
-                                    }
-                                }
+                            Map<String, BigDecimal> orderBoms = orderPlannedInputMap.get(order.getOrderNo());
+                            if (orderBoms != null) {
+                                orderBoms.forEach((num, qty) -> materialPlannedInputMap.merge(num, qty, BigDecimal::add));
                             }
                         }
 
@@ -326,7 +338,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                                 item.setActualInput(totalActualInput);
                             } else {
                                 // 只有BOM信息的情况
-                                TBusOrderPPBom bom = materialInfoMap.get(materialNumber);
+                                TBusOrderPPBom bom = allMaterialInfoMap.get(materialNumber);
                                 item.setMaterialName(bom != null ? bom.getMaterialName() : "");
                                 item.setRecordUnit(bom != null ? bom.getUnit() : "");
                                 item.setRecordType("-");
