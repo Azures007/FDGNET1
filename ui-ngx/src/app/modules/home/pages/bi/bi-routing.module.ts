@@ -34,6 +34,28 @@ const routes: Routes = [
           }
         }
       },
+      {
+        path: 'package',
+        component: ManageComponent,
+        data: {
+          title: '内包机设备看板',
+          breadcrumb: {
+            label: '内包机设备看板',
+            icon: 'bookmarks'
+          }
+        }
+      },
+      {
+        path: 'oven',
+        component: ManageComponent,
+        data: {
+          title: '烤炉设备看板',
+          breadcrumb: {
+            label: '烤炉设备看板',
+            icon: 'bookmarks'
+          }
+        }
+      },
     ]
   }
 ];
