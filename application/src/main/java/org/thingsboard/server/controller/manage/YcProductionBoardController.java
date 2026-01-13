@@ -32,6 +32,9 @@ public class YcProductionBoardController extends BaseController {
     
     @Autowired
     private NcWorklineService ncWorklineService;
+    
+    @Autowired
+    private org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository tSysCodeDscRepository;
 
     @ApiOperation("获取生产统计数据")
     @GetMapping("/statistics")
@@ -124,15 +127,18 @@ public class YcProductionBoardController extends BaseController {
     @GetMapping("/worklines")
     public ResponseResult<List<NcWorkline>> getWorklines(
             @ApiParam("基地ID（可选）") @RequestParam(required = false) String pkOrg) throws ThingsboardException {
-        // 指定的产线ID列表
-        List<String> allowedWorklineIds = java.util.Arrays.asList(
-            "1001A81000000026N113",
-            "1001A81000000026N13B",
-            "1001A810000000C3R8X6",
-            "1001A81000000026N15I",
-            "1001A810000000C3R8XU",
-            "1001A81000000026N16E"
-        );
+        // 从字典获取产线ID列表
+        List<org.thingsboard.server.common.data.mes.sys.TSysCodeDsc> tSysCodeDscList = 
+            tSysCodeDscRepository.findByCodeClIdAndEnabledSt("production_board_line", org.thingsboard.server.dao.constant.GlobalConstant.enableTrue);
+        
+        List<String> allowedWorklineIds = tSysCodeDscList.stream()
+            .map(org.thingsboard.server.common.data.mes.sys.TSysCodeDsc::getCodeValue)
+            .collect(java.util.stream.Collectors.toList());
+        
+        // 如果字典中没有配置，返回空列表
+        if (allowedWorklineIds.isEmpty()) {
+            return ResultUtil.success(new java.util.ArrayList<>());
+        }
         
         List<NcWorkline> allWorklines;
         if (pkOrg != null && !pkOrg.trim().isEmpty()) {

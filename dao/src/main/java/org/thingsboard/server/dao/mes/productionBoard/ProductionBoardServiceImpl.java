@@ -7,9 +7,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.report.TimeDimensionUtils;
+import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.dao.sql.mes.productionBoard.ProductionBoardRepository;
+import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 生产看板服务实现（Mock数据）
@@ -27,10 +31,32 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
 
     @Autowired
     private ProductionBoardRepository productionBoardRepository;
+    
+    @Autowired
+    private TSysCodeDscRepository tSysCodeDscRepository;
+    
+    /**
+     * 从字典获取允许的生产线ID列表
+     * @return 生产线ID列表
+     */
+    private List<String> getAllowedWorklineIds() {
+        List<TSysCodeDsc> tSysCodeDscList = tSysCodeDscRepository.findByCodeClIdAndEnabledSt(
+            "production_board_line", GlobalConstant.enableTrue);
+        return tSysCodeDscList.stream()
+            .map(TSysCodeDsc::getCodeValue)
+            .collect(Collectors.toList());
+    }
 
     @Override
     public ProductionStatistics getProductionStatistics(String productionLine, String timeDimension, 
                                                        String startDate, String endDate) {
+        // 获取允许的生产线ID列表
+        List<String> worklineIds = getAllowedWorklineIds();
+        if (worklineIds.isEmpty()) {
+            // 如果没有配置生产线，返回空数据
+            return createEmptyStatistics();
+        }
+        
         // 处理时间范围
         String finalStartDate = startDate;
         String finalEndDate = endDate;
@@ -63,19 +89,19 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             if (productionLine != null && !productionLine.trim().isEmpty()) {
                 // 如果传了生产线,按生产线查询
                 resultList = productionBoardRepository.getOrderStatisticsByDateRangeAndProductionLine(
-                    startDateTime, endDateTime, productionLine);
+                    startDateTime, endDateTime, productionLine, worklineIds);
                 planMaterialWeight = productionBoardRepository.sumPlanMaterialWeightByDateRangeAndProductionLine(
-                    startDateTime, endDateTime, productionLine);
+                    startDateTime, endDateTime, productionLine, worklineIds);
                 packagingWeight = productionBoardRepository.sumPackagingWeightByDateRangeAndProductionLine(
-                    startDateTime, endDateTime, productionLine);
+                    startDateTime, endDateTime, productionLine, worklineIds);
             } else {
                 // 否则查询所有
                 resultList = productionBoardRepository.getOrderStatisticsByDateRange(
-                    startDateTime, endDateTime);
+                    startDateTime, endDateTime, worklineIds);
                 planMaterialWeight = productionBoardRepository.sumPlanMaterialWeightByDateRange(
-                    startDateTime, endDateTime);
+                    startDateTime, endDateTime, worklineIds);
                 packagingWeight = productionBoardRepository.sumPackagingWeightByDateRange(
-                    startDateTime, endDateTime);
+                    startDateTime, endDateTime, worklineIds);
             }
             
             // 解析查询结果
@@ -113,14 +139,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
         } catch (Exception e) {
             e.printStackTrace();
             // 查询失败时返回0
-            stats.setOrderCount(0);
-            stats.setOrderCountUnit("个");
-            stats.setPlanProductionQuantity(BigDecimal.ZERO);
-            stats.setPlanProductionQuantityUnit("件");
-            stats.setPlanMaterialWeight(BigDecimal.ZERO);
-            stats.setPlanMaterialWeightUnit("kg");
-            stats.setPackagingWeight(BigDecimal.ZERO);
-            stats.setPackagingWeightUnit("kg");
+            return createEmptyStatistics();
         }
         
         // 其他字段暂时使用Mock数据
@@ -140,9 +159,37 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
         
         return stats;
     }
+    
+    /**
+     * 创建空的统计数据
+     */
+    private ProductionStatistics createEmptyStatistics() {
+        ProductionStatistics stats = new ProductionStatistics();
+        stats.setOrderCount(0);
+        stats.setOrderCountUnit("个");
+        stats.setPlanProductionQuantity(BigDecimal.ZERO);
+        stats.setPlanProductionQuantityUnit("件");
+        stats.setPlanMaterialWeight(BigDecimal.ZERO);
+        stats.setPlanMaterialWeightUnit("kg");
+        stats.setPackagingWeight(BigDecimal.ZERO);
+        stats.setPackagingWeightUnit("kg");
+        stats.setDefectiveQuantity(BigDecimal.ZERO);
+        stats.setDefectiveQuantityUnit("kg");
+        stats.setWasteQuantity(BigDecimal.ZERO);
+        stats.setWasteQuantityUnit("kg");
+        stats.setPackagingBadProductWeight(BigDecimal.ZERO);
+        stats.setPackagingBadProductWeightUnit("kg");
+        return stats;
+    }
 
     @Override
     public List<OrderPlanAnalysis> getOrderPlanAnalysis(String productionLine, String dateType,String startDate, String endDate) {
+        // 获取允许的生产线ID列表
+        List<String> worklineIds = getAllowedWorklineIds();
+        if (worklineIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
         String finalStartDate;
         String finalEndDate;
         
@@ -176,11 +223,11 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             if (groupByDay) {
                 // 按日分组查询
                 results = productionBoardRepository.findOrderPlanAnalysisByDay(
-                    startDateTime, endDateTime, productionLine);
+                    startDateTime, endDateTime, productionLine, worklineIds);
             } else {
                 // 按月分组查询
                 results = productionBoardRepository.findOrderPlanAnalysisByMonth(
-                    startDateTime, endDateTime, productionLine);
+                    startDateTime, endDateTime, productionLine, worklineIds);
             }
             
             // 将查询结果转换为Map，key为时间，value为数据
@@ -379,6 +426,13 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
 
     @Override
     public OrderProgressPageVo getOrderProgress(String productionLine, Integer current, Integer size, String startDate, String endDate) {
+        // 获取允许的生产线ID列表
+        List<String> worklineIds = getAllowedWorklineIds();
+        if (worklineIds.isEmpty()) {
+            Page<OrderProgress> emptyPage = new PageImpl<>(new ArrayList<>(), PageRequest.of(current, size), 0);
+            return new OrderProgressPageVo(emptyPage, 0, 0);
+        }
+        
         // 使用传入的日期范围，如果没有传则使用默认范围
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String finalStartDate;
@@ -409,6 +463,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                 startDateTime, 
                 endDateTime, 
                 productionLine,
+                worklineIds,
                 pageable
             );
             
@@ -435,7 +490,8 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             Long unfinishedCount = productionBoardRepository.countUnfinishedOrders(
                 startDateTime, 
                 endDateTime, 
-                productionLine
+                productionLine,
+                worklineIds
             );
             
             // 构建响应
@@ -452,6 +508,15 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
 
     @Override
     public PageVo<ProductionBgVo> getProductionBG(String productionLine, Integer current, Integer size, String startDate, String endDate) {
+        // 获取允许的生产线ID列表
+        List<String> worklineIds = getAllowedWorklineIds();
+        if (worklineIds.isEmpty()) {
+            PageVo<ProductionBgVo> emptyPageVo = new PageVo<>(size, current);
+            emptyPageVo.setTotal(0);
+            emptyPageVo.setList(new ArrayList<>());
+            return emptyPageVo;
+        }
+        
         try {
             // 处理日期范围
             Date startDateTime = null;
@@ -473,11 +538,13 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     productionLine,
                     startDateTime,
                     endDateTime,
+                    worklineIds,
                     pageable
                 );
             } else {
                 select = productionBoardRepository.findProductionBgData(
                     productionLine,
+                    worklineIds,
                     pageable
                 );
             }
@@ -507,6 +574,15 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
 
     @Override
     public PageVo<OutsourcingNetContent> getOutsourcingNetContent(String productionLine, Integer current, Integer size, String startDate, String endDate) {
+        // 获取允许的生产线ID列表
+        List<String> worklineIds = getAllowedWorklineIds();
+        if (worklineIds.isEmpty()) {
+            PageVo<OutsourcingNetContent> emptyPageVo = new PageVo<>(size, current);
+            emptyPageVo.setTotal(0);
+            emptyPageVo.setList(new ArrayList<>());
+            return emptyPageVo;
+        }
+        
         try {
             // 处理日期范围
             Date startDateTime = null;
@@ -528,11 +604,13 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     productionLine,
                     startDateTime,
                     endDateTime,
+                    worklineIds,
                     pageable
                 );
             } else {
                 select = productionBoardRepository.findOutsourcingNetContentData(
                     productionLine,
+                    worklineIds,
                     pageable
                 );
             }
