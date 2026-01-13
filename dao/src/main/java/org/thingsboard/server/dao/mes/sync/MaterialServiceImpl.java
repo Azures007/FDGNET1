@@ -8,7 +8,9 @@ import org.hibernate.transform.Transformers;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +21,14 @@ import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.mes.dto.ListMaterialDto;
 import org.thingsboard.server.dao.mes.dto.TSyncMaterialSaveDto;
 import org.thingsboard.server.dao.mes.dto.TSysNetContentRangeDto;
-import org.thingsboard.server.dao.sql.mes.licheng.MidMaterialRepository;
-import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialBomRepository;
-import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
-import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
 import org.thingsboard.server.dao.mes.vo.ListMaterialFiterVo;
 import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.mes.vo.TSyncMaterialVo;
+import org.thingsboard.server.dao.sql.mes.licheng.MidMaterialRepository;
+import org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeInputRepository;
+import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialBomRepository;
+import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
+import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -62,6 +65,9 @@ public class MaterialServiceImpl implements MaterialService {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private TSysRecipeInputRepository recipeInputRepository;
 
     @Override
     public PageVo<TSyncMaterialVo> listMaterial(Integer current, Integer size, ListMaterialDto listMaterialDto) {
@@ -185,6 +191,18 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     @Transactional
     public void delete(Integer id) {
+        // 根据ID查询物料信息
+        TSyncMaterial material = materialRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("物料未找到，ID: " + id));
+        
+        // 获取物料编码
+        String materialCode = material.getMaterialCode();
+        
+        // 根据物料编码删除t_sys_recipe_input表中的相关数据
+        if (materialCode != null && !materialCode.isEmpty()) {
+            recipeInputRepository.deleteByMaterialCode(materialCode);
+        }
+        
         //删除所有bom
         tSyncMaterialBomRepository.deleteByParentId(id);
         //删除物料

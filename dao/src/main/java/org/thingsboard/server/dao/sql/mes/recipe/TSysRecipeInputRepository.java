@@ -72,4 +72,13 @@ public interface TSysRecipeInputRepository extends JpaRepository<TSysRecipeInput
      * @return 数量
      */
     long countByRecipeId(Integer recipeId);
+
+    /**
+     * 根据物料编码删除投入设置
+     * @param materialCode 物料编码
+     */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM TSysRecipeInput r WHERE r.materialCode = :materialCode")
+    void deleteByMaterialCode(@Param("materialCode") String materialCode);
 }

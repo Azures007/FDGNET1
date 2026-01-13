@@ -3,6 +3,8 @@ package org.thingsboard.server.dao.mes.TSysPdRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.thingsboard.server.dao.sql.mes.ncWorkline.NcWorklineRepository;
+import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
@@ -61,6 +63,9 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
     @Autowired
     private SyncMaterialRepository syncMaterialRepository;
 
+    @Autowired
+    private NcWorklineRepository ncWorklineRepository;
+
     @Value("${nc.base-url:http://172.88.0.150:8077}")
     private String inventoryBaseUrl;
 
@@ -118,6 +123,14 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             }
             if (tSysPdRecordDto.getMaterialName() != null && !tSysPdRecordDto.getMaterialName().isEmpty()) {
                 predicates.add(cb.like(root.get("materialName"), "%" + tSysPdRecordDto.getMaterialName() + "%"));
+            }
+            if (tSysPdRecordDto.getCwkid() != null && !tSysPdRecordDto.getCwkid().isEmpty()) {
+                NcWorkline workline = ncWorklineRepository.findByCwkid(tSysPdRecordDto.getCwkid());
+                if (workline != null) {
+                    predicates.add(cb.equal(root.get("ncVwkname"), workline.getVwkname()));
+                } else {
+                    predicates.add(cb.equal(root.get("ncVwkname"), "___invalid_cwkid___"));
+                }
             }
             if(ncWarehouses!=null && !ncWarehouses.isEmpty()){
                 List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());
@@ -185,6 +198,14 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             }
             if (tSysPdRecordDto.getPdWorkshopName() != null && !tSysPdRecordDto.getPdWorkshopName().isEmpty()) {
                 predicates.add(cb.like(root.get("pdWorkshopName"), "%" + tSysPdRecordDto.getPdWorkshopName() + "%"));
+            }
+            if (tSysPdRecordDto.getCwkid() != null && !tSysPdRecordDto.getCwkid().isEmpty()) {
+                NcWorkline workline = ncWorklineRepository.findByCwkid(tSysPdRecordDto.getCwkid());
+                if (workline != null) {
+                    predicates.add(cb.equal(root.get("ncVwkname"), workline.getVwkname()));
+                } else {
+                    predicates.add(cb.equal(root.get("ncVwkname"), "___invalid_cwkid___"));
+                }
             }
             if (ncWarehouses != null && !ncWarehouses.isEmpty()) {
                 List<String> warehouseIds = ncWarehouses.stream().map(NcWarehouse::getPkStordoc).distinct().collect(Collectors.toList());

@@ -17,6 +17,9 @@ import java.util.Date;
 @ApiModel("盘点记录列表条件模型")
 public class TSysPdRecordDto {
 
+    @ApiModelProperty("产线id")
+    private String cwkid;
+
     @ApiModelProperty("开始时间")
     private Date startTime;
 
