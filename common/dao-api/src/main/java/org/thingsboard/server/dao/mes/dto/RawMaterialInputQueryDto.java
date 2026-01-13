@@ -22,4 +22,8 @@ public class RawMaterialInputQueryDto {
     @ApiModelProperty("产品名称（支持模糊查询）")
     private String productName = "";
 
+    @ApiModelProperty("订单号（支持模糊查询）")
+    private String orderNo = "";
+
 }
+

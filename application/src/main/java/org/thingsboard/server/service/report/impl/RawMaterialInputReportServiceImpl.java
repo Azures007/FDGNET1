@@ -32,6 +32,11 @@ import org.thingsboard.server.dao.sql.mes.order.OrderProcessRecordRepository;
 import org.thingsboard.server.dao.sql.mes.order.OrderProcessRepository;
 import org.thingsboard.server.service.report.RawMaterialInputReportService;
 import org.thingsboard.server.vo.RawMaterialInputReportExcelVo;
+import org.thingsboard.server.dao.user.UserService;
+import org.thingsboard.server.common.data.id.UserId;
+import org.thingsboard.server.service.security.model.SecurityUser;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 
 import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletResponse;
@@ -70,9 +75,30 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
     @Autowired
     private org.thingsboard.server.dao.sql.mes.recipe.TSysRecipeInputRepository recipeInputRepository;
 
+    @Autowired
+    private UserService userService;
+    
+    /**
+     * 获取当前登录用户ID
+     */
+    private String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUser) {
+            SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+            return securityUser.getId().getId().toString();
+        } else {
+            throw new RuntimeException("无法获取当前登录用户信息");
+        }
+    }
+
     @Override
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public PageVo<RawMaterialInputReportVo> queryRawMaterialInputReport(Integer current, Integer size, RawMaterialInputQueryDto queryDto) {
+        // 获取当前登录用户ID
+        String currentUserId = getCurrentUserId();
+        // 获取用户绑定的产线ID列表
+        List<String> userCwkids = userService.getUserCurrentCwkid(currentUserId);
+        
         // 创建排序规则：按下单日期降序
         List<Sort.Order> orders = new ArrayList<>();
         orders.add(new Sort.Order(Sort.Direction.DESC, "billDate"));
@@ -90,6 +116,11 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                 predicates.add(criteriaBuilder.like(root.get("bodyMaterialName"), "%" + queryDto.getProductName() + "%"));
             }
             
+            // 订单号（模糊查询）
+            if (!StringUtils.isEmpty(queryDto.getOrderNo())) {
+                predicates.add(criteriaBuilder.like(root.get("orderNo"), "%" + queryDto.getOrderNo() + "%"));
+            }
+            
             // 下单日期-开始时间
             if (queryDto.getOrderDateStart() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("billDate"), queryDto.getOrderDateStart()));
@@ -100,6 +131,11 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("billDate"), queryDto.getOrderDateEnd()));
             }
             
+            // 根据用户绑定的产线ID过滤
+            if (userCwkids != null && !userCwkids.isEmpty()) {
+                predicates.add(root.get("cwkid").in(userCwkids));
+            }
+            
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
         
@@ -107,32 +143,26 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         PageVo<RawMaterialInputReportVo> result = new PageVo<>();
         result.setTotal((int) orderHeadPage.getTotalElements());
         
-        List<RawMaterialInputReportVo> list = new ArrayList<>();
         if (orderHeadPage.hasContent()) {
             List<TBusOrderHead> orderHeads = orderHeadPage.getContent();
             // 预取所有需要的数据，解决N+1问题
             Map<String, Object> prefetchContext = prefetchData(orderHeads);
             
-            // 并行处理每个订单的数据组装
-            List<CompletableFuture<RawMaterialInputReportVo>> voFutures = orderHeads.stream()
-                .map(order -> CompletableFuture.supplyAsync(() -> {
-                    RawMaterialInputReportVo vo = new RawMaterialInputReportVo();
-                    vo.setOrderNo(order.getOrderNo());
-                    vo.setOrderTime(order.getBillDate());
-                    vo.setProductName(order.getBodyMaterialName());
-                    vo.setProductionLine(order.getVwkname());
-                    calculateOutputDataWithContext(vo, order.getOrderNo(), prefetchContext);
-                    vo.setProcessGroupInfoList(getProcessGroupInfoListWithContext(order.getOrderNo(), prefetchContext));
-                    return vo;
-                }))
-                .collect(Collectors.toList());
-            
-            list = voFutures.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
+            // 使用并行流显著提升数据组装速度
+            List<RawMaterialInputReportVo> list = orderHeads.parallelStream().map(order -> {
+                RawMaterialInputReportVo vo = new RawMaterialInputReportVo();
+                vo.setOrderNo(order.getOrderNo());
+                vo.setOrderTime(order.getBillDate());
+                vo.setProductName(order.getBodyMaterialName());
+                vo.setProductionLine(order.getVwkname());
+                calculateOutputDataWithContext(vo, order.getOrderNo(), prefetchContext);
+                vo.setProcessGroupInfoList(getProcessGroupInfoListWithContext(order.getOrderNo(), prefetchContext));
+                return vo;
+            }).collect(Collectors.toList());
+            result.setList(list);
+        } else {
+            result.setList(new ArrayList<>());
         }
-        
-        result.setList(list);
         return result;
     }
 
@@ -145,64 +175,75 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         List<String> productCodes = orderHeads.stream().map(TBusOrderHead::getBodyMaterialNumber)
                 .filter(StringUtils::isNotEmpty).distinct().collect(Collectors.toList());
         
-        // 1. 批量查询订单头 (用于按orderNo索引)
         context.put("orderHeads", orderHeads.stream().collect(Collectors.groupingBy(TBusOrderHead::getOrderNo)));
         
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        // 将数据库查询改为顺序执行，以避免异步线程导致的 Transaction/Session 丢失问题
+        // 对于 10-50 条数据的预取，顺序执行的性能损耗在毫秒级，安全且稳定
         
-        // 并行查询实际产量记录
-        futures.add(CompletableFuture.runAsync(() -> {
-            List<TBusOrderProcessHistory> actualOutputRecords = orderProcessHistoryRepository.findAllByOrderNoInAndProcessName(orderNos, "外包装");
-            context.put("actualOutputRecords", actualOutputRecords.stream().collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderNo)));
-        }));
+        // 1. 查询实际产量记录
+        List<TBusOrderProcessHistory> actualOutputRecords = orderProcessHistoryRepository.findAllByOrderNoInAndProcessName(orderNos, "外包装");
+        context.put("actualOutputRecords", actualOutputRecords.stream().collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderNo)));
+
+        // 2. 查询订单工序和锅数记录
+        List<TBusOrderProcess> orderProcesses = orderProcessRepository.findAllByOrderNoIn(orderNos);
+        context.put("orderProcesses", orderProcesses.stream().collect(Collectors.groupingBy(TBusOrderProcess::getOrderNo)));
+        context.put("orderProcessesById", orderProcesses.stream().collect(Collectors.toMap(TBusOrderProcess::getOrderProcessId, p -> p, (a, b) -> a)));
         
-        // 并行查询订单工序和锅数记录
-        futures.add(CompletableFuture.runAsync(() -> {
-            List<TBusOrderProcess> orderProcesses = orderProcessRepository.findAllByOrderNoIn(orderNos);
-            context.put("orderProcesses", orderProcesses.stream().collect(Collectors.groupingBy(TBusOrderProcess::getOrderNo)));
-            context.put("orderProcessesById", orderProcesses.stream().collect(Collectors.toMap(TBusOrderProcess::getOrderProcessId, p -> p, (a, b) -> a)));
-            
-            List<Integer> orderProcessIds = orderProcesses.stream().map(TBusOrderProcess::getOrderProcessId).collect(Collectors.toList());
-            if (!orderProcessIds.isEmpty()) {
-                List<TBusOrderPotCount> potCounts = orderPotCountRepository.findAllByOrderProcessIdIn(orderProcessIds);
-                context.put("potCounts", potCounts.stream().collect(Collectors.groupingBy(TBusOrderPotCount::getOrderProcessId)));
-            }
-        }));
+        List<Integer> orderProcessIds = orderProcesses.stream().map(TBusOrderProcess::getOrderProcessId).collect(Collectors.toList());
+        if (!orderProcessIds.isEmpty()) {
+            List<TBusOrderPotCount> potCounts = orderPotCountRepository.findAllByOrderProcessIdIn(orderProcessIds);
+            context.put("potCounts", potCounts.stream().collect(Collectors.groupingBy(TBusOrderPotCount::getOrderProcessId)));
+        }
+
+        // 3. 查询报工历史记录
+        List<TBusOrderProcessHistory> historyRecords = orderProcessHistoryRepository.findAllByOrderNoInAndBusTypeAndReportStatusNot(
+            orderNos, 
+            org.thingsboard.server.common.data.mes.LichengConstants.ORDER_BUS_TYPE_BG,
+            org.thingsboard.server.common.data.mes.LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1
+        );
+        context.put("historyRecords", historyRecords.stream().collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderNo)));
+
+        // 4. 查询用料清单并构建物料编码索引
+        List<Map> allPpboms = orderHeadRepository.findAllOrderPPbomByOrderIds(orderIds);
+        Map<String, List<Map>> orderPpbomMap = allPpboms.stream().collect(Collectors.groupingBy(m -> String.valueOf(m.get("order_id"))));
+        context.put("orderPpboms", orderPpbomMap);
         
-        // 并行查询报工历史记录（改为从history表查询，与报工记录列表保持一致）
-        futures.add(CompletableFuture.runAsync(() -> {
-            List<TBusOrderProcessHistory> historyRecords = orderProcessHistoryRepository.findAllByOrderNoInAndBusTypeAndReportStatusNot(
-                orderNos, 
-                org.thingsboard.server.common.data.mes.LichengConstants.ORDER_BUS_TYPE_BG,
-                org.thingsboard.server.common.data.mes.LichengConstants.ORDER_PROCESS_HISTORY_STATUS_1
-            );
-            // 将历史记录转换为按orderNo分组的Map
-            context.put("historyRecords", historyRecords.stream().collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderNo)));
-        }));
-        
-        // 并行查询用料清单
-        futures.add(CompletableFuture.runAsync(() -> {
-            List<Map> allPpboms = orderHeadRepository.findAllOrderPPbomByOrderIds(orderIds);
-            context.put("orderPpboms", allPpboms.stream().collect(Collectors.groupingBy(m -> String.valueOf(m.get("order_id")))));
-        }));
-        
-        // 并行查询配方绑定
-        futures.add(CompletableFuture.runAsync(() -> {
-            if (!productCodes.isEmpty()) {
-                List<TSysRecipeProductBinding> bindings = recipeProductBindingRepository.findAllByProductCodeInAndRecipeStatusEnabled(productCodes);
-                context.put("recipeBindings", bindings.stream().collect(Collectors.groupingBy(TSysRecipeProductBinding::getProductCode)));
+        Map<String, Map<String, Map>> orderPpbomsByMaterial = new HashMap<>();
+        orderPpbomMap.forEach((orderId, list) -> {
+            Map<String, Map> materialMap = list.stream()
+                    .filter(m -> m.get("material_number") != null)
+                    .collect(Collectors.toMap(m -> String.valueOf(m.get("material_number")), m -> m, (a, b) -> a));
+            orderPpbomsByMaterial.put(orderId, materialMap);
+        });
+        context.put("orderPpbomsByMaterial", orderPpbomsByMaterial);
+
+        // 5. 查询配方绑定并构建高效嵌套索引
+        if (!productCodes.isEmpty()) {
+            List<TSysRecipeProductBinding> bindings = recipeProductBindingRepository.findAllByProductCodeInAndRecipeStatusEnabled(productCodes);
+            List<Integer> recipeIds = bindings.stream().map(TSysRecipeProductBinding::getRecipeId).distinct().collect(Collectors.toList());
+            if (!recipeIds.isEmpty()) {
+                List<TSysRecipeInput> recipeInputs = recipeInputRepository.findAllByRecipeIdIn(recipeIds);
                 
-                List<Integer> recipeIds = bindings.stream().map(TSysRecipeProductBinding::getRecipeId).distinct().collect(Collectors.toList());
-                if (!recipeIds.isEmpty()) {
-                    List<TSysRecipeInput> recipeInputs = recipeInputRepository.findAllByRecipeIdIn(recipeIds);
-                    context.put("recipeInputs", recipeInputs.stream().collect(Collectors.groupingBy(TSysRecipeInput::getRecipeId)));
-                }
+                Map<String, Map<String, Map<String, TSysRecipeInput>>> productRecipeProcessMap = new HashMap<>();
+                Map<Integer, List<TSysRecipeInput>> recipeInputMap = recipeInputs.stream().collect(Collectors.groupingBy(TSysRecipeInput::getRecipeId));
+                
+                bindings.forEach(binding -> {
+                    String productCode = binding.getProductCode();
+                    List<TSysRecipeInput> inputs = recipeInputMap.getOrDefault(binding.getRecipeId(), Collections.emptyList());
+                    Map<String, Map<String, TSysRecipeInput>> processMap = productRecipeProcessMap.computeIfAbsent(productCode, k -> new HashMap<>());
+                    for (TSysRecipeInput input : inputs) {
+                        String processNumber = input.getProcessNumber();
+                        if (processNumber != null) {
+                            Map<String, TSysRecipeInput> materialMap = processMap.computeIfAbsent(processNumber, k -> new HashMap<>());
+                            materialMap.put(input.getSemiFinishedProductCode() + "_" + input.getMaterialCode(), input);
+                        }
+                    }
+                });
+                context.put("productRecipeProcessMap", productRecipeProcessMap);
             }
-        }));
+        }
         
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        
-        log.info("并行预取 {} 条订单数据耗时 {} ms", orderHeads.size(), System.currentTimeMillis() - startTime);
+        log.info("预取 {} 条订单数据耗时 {} ms", orderHeads.size(), System.currentTimeMillis() - startTime);
         return context;
     }
 
@@ -227,7 +268,8 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         // 修改为从历史记录表查询数据
         Map<String, List<TBusOrderProcessHistory>> historyRecordMap = (Map<String, List<TBusOrderProcessHistory>>) context.get("historyRecords");
         List<TBusOrderProcessHistory> historyRecords = historyRecordMap.getOrDefault(orderNo, new ArrayList<>());
-        
+        if (historyRecords.isEmpty()) return new ArrayList<>();
+
         Map<Integer, List<TBusOrderProcessHistory>> groupedRecords = historyRecords.stream()
             .collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderProcessId));
             
@@ -241,8 +283,15 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
 
         Integer orderId = orderHead.getOrderId();
         String orderProductCode = orderHead.getBodyMaterialNumber();
-        Map<String, List<Map>> orderPpbomMap = (Map<String, List<Map>>) context.get("orderPpboms");
-        List<Map> orderPpbomList = orderPpbomMap.getOrDefault(String.valueOf(orderId), new ArrayList<>());
+        
+        // 使用优化的索引Map，避免重复循环
+        Map<String, Map<String, Map>> orderPpbomsByMaterial = (Map<String, Map<String, Map>>) context.get("orderPpbomsByMaterial");
+        Map<String, Map> materialPpbomMap = orderPpbomsByMaterial != null ? orderPpbomsByMaterial.getOrDefault(String.valueOf(orderId), Collections.emptyMap()) : Collections.emptyMap();
+        
+        Map<String, Map<String, Map<String, TSysRecipeInput>>> productRecipeProcessMap = (Map<String, Map<String, Map<String, TSysRecipeInput>>>) context.get("productRecipeProcessMap");
+        Map<String, Map<String, TSysRecipeInput>> processRecipeMap = productRecipeProcessMap != null ? productRecipeProcessMap.getOrDefault(orderProductCode, Collections.emptyMap()) : Collections.emptyMap();
+
+        List<Map> orderPpbomList = (List<Map>) ((Map)context.get("orderPpboms")).getOrDefault(String.valueOf(orderId), Collections.emptyList());
 
         for (Map.Entry<Integer, List<TBusOrderProcessHistory>> entry : groupedRecords.entrySet()) {
             Integer orderProcessId = entry.getKey();
@@ -253,21 +302,8 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                 String processStatus = getProcessStatusDescription(orderProcess.getProcessStatus());
                 String currentProcessNumber = (orderProcess.getProcessId() != null) ? orderProcess.getProcessId().getProcessNumber() : null;
 
-                // 预计算当前工序的配方信息和计划锅数
-                Map<String, TSysRecipeInput> recipeMaterialMap = new HashMap<>();
-                if (orderProductCode != null && currentProcessNumber != null) {
-                    Map<String, List<TSysRecipeProductBinding>> recipeBindingMap = (Map<String, List<TSysRecipeProductBinding>>) context.get("recipeBindings");
-                    List<TSysRecipeProductBinding> productBindings = recipeBindingMap != null ? recipeBindingMap.getOrDefault(orderProductCode, new ArrayList<>()) : new ArrayList<>();
-                    Map<Integer, List<TSysRecipeInput>> recipeInputMap = (Map<Integer, List<TSysRecipeInput>>) context.get("recipeInputs");
-                    for (TSysRecipeProductBinding binding : productBindings) {
-                        List<TSysRecipeInput> recipeInputs = recipeInputMap != null ? recipeInputMap.getOrDefault(binding.getRecipeId(), new ArrayList<>()) : new ArrayList<>();
-                        for (TSysRecipeInput input : recipeInputs) {
-                            if (Objects.equals(currentProcessNumber, input.getProcessNumber())) {
-                                recipeMaterialMap.put(input.getSemiFinishedProductCode()+"_"+input.getMaterialCode(), input);
-                            }
-                        }
-                    }
-                }
+                // 直接从索引获取配方信息，显著提升速度
+                Map<String, TSysRecipeInput> recipeMaterialMap = processRecipeMap.getOrDefault(currentProcessNumber, Collections.emptyMap());
 
                 // 预计算计划锅数
                 Integer calculatedPlanPotCount = null;
@@ -275,11 +311,7 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                     String otherMaterialNumber = (String) otherPpbom.get("material_number");
                     TSysRecipeInput otherRecipeInput = recipeMaterialMap.get("null_" + otherMaterialNumber);
                     if (otherRecipeInput == null) otherRecipeInput = recipeMaterialMap.get("_" + otherMaterialNumber);
-                    if (otherRecipeInput == null) {
-                        otherRecipeInput = recipeMaterialMap.values().stream()
-                                .filter(input -> input != null && Objects.equals(otherMaterialNumber, input.getMaterialCode()))
-                                .findFirst().orElse(null);
-                    }
+                    
                     if (otherRecipeInput != null && "1".equals(otherRecipeInput.getPotCalculationBasis())) {
                         Object mustQtyObj = otherPpbom.get("must_qty");
                         BigDecimal standardInput = otherRecipeInput.getStandardInput();
@@ -315,44 +347,37 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                     materialInfo.setUnit(firstRecord.getRecordUnit());
                     materialInfo.setPlannedPotCount(calculatedPlanPotCount);
                     
-                    // 实际累计锅数 = 该物料的报工记录条数（recordType='1'）
-                    int actualAccumulatedPotCount = (int) materialRecords.stream()
-                            .filter(r -> "1".equals(r.getRecordType()))
-                            .count();
+                    // 实际累计锅数
+                    int actualAccumulatedPotCount = (int) materialRecords.stream().filter(r -> "1".equals(r.getRecordType())).count();
                     materialInfo.setActualAccumulatedPotCount(actualAccumulatedPotCount);
                     
-                    // 设置计划投入
+                    // 设置计划投入，使用Map索引提速
                     BigDecimal plannedInput = BigDecimal.ZERO;
-                    for (Map ppbom : orderPpbomList) {
-                        if (materialNumber != null && materialNumber.equals(ppbom.get("material_number"))) {
-                            Object mustQtyObj = ppbom.get("must_qty");
-                            TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + materialNumber);
-                            if (recipeInput == null) recipeInput = recipeMaterialMap.get("_" + materialNumber);
-                            if (recipeInput == null) {
-                                recipeInput = recipeMaterialMap.values().stream().filter(input -> input != null && materialNumber.equals(input.getMaterialCode())).findFirst().orElse(null);
-                            }
-                            Object ratioObj = (recipeInput != null && recipeInput.getPlanInputRatio() != null) ? recipeInput.getPlanInputRatio() : ppbom.get("plan_input_ratio");
-                            if (mustQtyObj != null) {
-                                BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
-                                plannedInput = (ratioObj != null) ? mustQty.multiply(new BigDecimal(ratioObj.toString())).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP) : mustQty;
-                            }
-                            break;
+                    Map ppbom = materialPpbomMap.get(materialNumber);
+                    if (ppbom != null) {
+                        Object mustQtyObj = ppbom.get("must_qty");
+                        TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + materialNumber);
+                        if (recipeInput == null) recipeInput = recipeMaterialMap.get("_" + materialNumber);
+                        Object ratioObj = (recipeInput != null && recipeInput.getPlanInputRatio() != null) ? recipeInput.getPlanInputRatio() : ppbom.get("plan_input_ratio");
+                        if (mustQtyObj != null) {
+                            BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
+                            plannedInput = (ratioObj != null) ? mustQty.multiply(new BigDecimal(ratioObj.toString())).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP) : mustQty;
                         }
                     }
                     materialInfo.setPlannedInput(plannedInput);
 
-                    // 设置实际投入 - 对所有相同物料编码的记录求和
-                    BigDecimal actualInput = materialRecords.stream()
-                            .filter(r -> "1".equals(r.getRecordType()))
-                            .map(r -> r.getRecordQty() != null ? r.getRecordQty() : BigDecimal.ZERO)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    // 设置实际投入和残次品重量
+                    BigDecimal actualInput = BigDecimal.ZERO;
+                    BigDecimal defectiveWeight = BigDecimal.ZERO;
+                    for (TBusOrderProcessHistory r : materialRecords) {
+                        BigDecimal qty = r.getRecordQty() != null ? r.getRecordQty() : BigDecimal.ZERO;
+                        if ("1".equals(r.getRecordType())) {
+                            actualInput = actualInput.add(qty);
+                        } else if ("2".equals(r.getRecordType())) {
+                            defectiveWeight = defectiveWeight.add(qty);
+                        }
+                    }
                     materialInfo.setActualInput(actualInput);
-
-                    // 设置残次品重量 (recordType = '2') - 对所有相同物料编码的记录求和
-                    BigDecimal defectiveWeight = materialRecords.stream()
-                            .filter(r -> "2".equals(r.getRecordType()))
-                            .map(r -> r.getRecordQty() != null ? r.getRecordQty() : BigDecimal.ZERO)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
                     materialInfo.setDefectiveWeight(defectiveWeight);
 
                     String groupKey = firstRecord.getProcessName() + "|" + processStatus;
@@ -380,8 +405,8 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         
         if (orderHead != null) {
             Integer orderId = orderHead.getOrderId();
-            Map<String, List<Map>> orderPpbomMap = (Map<String, List<Map>>) context.get("orderPpboms");
-            List<Map> orderPpbomList = orderPpbomMap.getOrDefault(String.valueOf(orderId), new ArrayList<>());
+            Map<String, Map<String, Map>> orderPpbomsByMaterial = (Map<String, Map<String, Map>>) context.get("orderPpbomsByMaterial");
+            Map<String, Map> materialPpbomMap = orderPpbomsByMaterial != null ? orderPpbomsByMaterial.getOrDefault(String.valueOf(orderId), Collections.emptyMap()) : Collections.emptyMap();
             
             String orderProductCode = orderHead.getBodyMaterialNumber();
             Map<Integer, TBusOrderProcess> orderProcessByIdMap = (Map<Integer, TBusOrderProcess>) context.get("orderProcessesById");
@@ -389,33 +414,17 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
             String currentProcessNumber = (orderProcess != null && orderProcess.getProcessId() != null) ? orderProcess.getProcessId().getProcessNumber() : null;
             
             // 获取配方管理信息
-            Map<String, TSysRecipeInput> recipeMaterialMap = new HashMap<>();
-            if (orderProductCode != null && currentProcessNumber != null) {
-                Map<String, List<TSysRecipeProductBinding>> recipeBindingMap = (Map<String, List<TSysRecipeProductBinding>>) context.get("recipeBindings");
-                List<TSysRecipeProductBinding> productBindings = recipeBindingMap != null ? recipeBindingMap.getOrDefault(orderProductCode, new ArrayList<>()) : new ArrayList<>();
-                
-                Map<Integer, List<TSysRecipeInput>> recipeInputMap = (Map<Integer, List<TSysRecipeInput>>) context.get("recipeInputs");
-                for (TSysRecipeProductBinding binding : productBindings) {
-                    List<TSysRecipeInput> recipeInputs = recipeInputMap != null ? recipeInputMap.getOrDefault(binding.getRecipeId(), new ArrayList<>()) : new ArrayList<>();
-                    for (TSysRecipeInput input : recipeInputs) {
-                        if (Objects.equals(currentProcessNumber, input.getProcessNumber())) {
-                            recipeMaterialMap.put(input.getSemiFinishedProductCode()+"_"+input.getMaterialCode(), input);
-                        }
-                    }
-                }
-            }
+            Map<String, Map<String, Map<String, TSysRecipeInput>>> productRecipeProcessMap = (Map<String, Map<String, Map<String, TSysRecipeInput>>>) context.get("productRecipeProcessMap");
+            Map<String, Map<String, TSysRecipeInput>> processRecipeMap = productRecipeProcessMap != null ? productRecipeProcessMap.getOrDefault(orderProductCode, Collections.emptyMap()) : Collections.emptyMap();
+            Map<String, TSysRecipeInput> recipeMaterialMap = processRecipeMap.getOrDefault(currentProcessNumber, Collections.emptyMap());
             
             // 计划投入量和计划锅数逻辑
             Integer calculatedPlanPotCount = null;
+            List<Map> orderPpbomList = (List<Map>) ((Map)context.get("orderPpboms")).getOrDefault(String.valueOf(orderId), Collections.emptyList());
             for (Map otherPpbom : orderPpbomList) {
                 String otherMaterialNumber = (String) otherPpbom.get("material_number");
                 TSysRecipeInput otherRecipeInput = recipeMaterialMap.get("null_" + otherMaterialNumber);
                 if (otherRecipeInput == null) otherRecipeInput = recipeMaterialMap.get("_" + otherMaterialNumber);
-                if (otherRecipeInput == null) {
-                    otherRecipeInput = recipeMaterialMap.values().stream()
-                            .filter(input -> input != null && Objects.equals(otherMaterialNumber, input.getMaterialCode()))
-                            .findFirst().orElse(null);
-                }
                 
                 if (otherRecipeInput != null && "1".equals(otherRecipeInput.getPotCalculationBasis())) {
                     Object mustQtyObj = otherPpbom.get("must_qty");
@@ -432,30 +441,23 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                 }
             }
             
-            // 设置当前物料的计划投入量
-            for (Map ppbom : orderPpbomList) {
-                if (materialNumber != null && materialNumber.equals(ppbom.get("material_number"))) {
-                    Object mustQtyObj = ppbom.get("must_qty");
-                    TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + materialNumber);
-                    if (recipeInput == null) recipeInput = recipeMaterialMap.get("_" + materialNumber);
-                    if (recipeInput == null) {
-                        recipeInput = recipeMaterialMap.values().stream()
-                                .filter(input -> input != null && Objects.equals(materialNumber, input.getMaterialCode()))
-                                .findFirst().orElse(null);
-                    }
-                    Object ratioObj = (recipeInput != null && recipeInput.getPlanInputRatio() != null) ? recipeInput.getPlanInputRatio() : ppbom.get("plan_input_ratio");
-                    
-                    if (mustQtyObj != null) {
-                        BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
-                        if (ratioObj != null) {
-                            materialInfo.setPlannedInput(mustQty.multiply(new BigDecimal(ratioObj.toString())).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP));
-                        } else {
-                            materialInfo.setPlannedInput(mustQty);
-                        }
+            // 设置当前物料的计划投入量，使用Map索引
+            Map ppbom = materialPpbomMap.get(materialNumber);
+            if (ppbom != null) {
+                Object mustQtyObj = ppbom.get("must_qty");
+                TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + materialNumber);
+                if (recipeInput == null) recipeInput = recipeMaterialMap.get("_" + materialNumber);
+                Object ratioObj = (recipeInput != null && recipeInput.getPlanInputRatio() != null) ? recipeInput.getPlanInputRatio() : ppbom.get("plan_input_ratio");
+                
+                if (mustQtyObj != null) {
+                    BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
+                    if (ratioObj != null) {
+                        materialInfo.setPlannedInput(mustQty.multiply(new BigDecimal(ratioObj.toString())).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP));
                     } else {
-                        materialInfo.setPlannedInput(BigDecimal.ZERO);
+                        materialInfo.setPlannedInput(mustQty);
                     }
-                    break;
+                } else {
+                    materialInfo.setPlannedInput(BigDecimal.ZERO);
                 }
             }
             
@@ -536,6 +538,11 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
     }
 
     private List<RawMaterialInputReportVo> getAllRawMaterialInputReportDataOptimized(RawMaterialInputQueryDto queryDto) {
+        // 获取当前登录用户ID
+        String currentUserId = getCurrentUserId();
+        // 获取用户绑定的产线ID列表
+        List<String> userCwkids = userService.getUserCurrentCwkid(currentUserId);
+        
         // 创建排序规则：按下单日期降序
         List<Sort.Order> orders = new ArrayList<>();
         orders.add(new Sort.Order(Sort.Direction.DESC, "billDate"));
@@ -554,12 +561,22 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                 if (!StringUtils.isEmpty(queryDto.getProductName())) {
                     predicates.add(criteriaBuilder.like(root.get("bodyMaterialName"), "%" + queryDto.getProductName() + "%"));
                 }
+                // 订单号（模糊查询）
+                if (!StringUtils.isEmpty(queryDto.getOrderNo())) {
+                    predicates.add(criteriaBuilder.like(root.get("orderNo"), "%" + queryDto.getOrderNo() + "%"));
+                }
                 if (queryDto.getOrderDateStart() != null) {
                     predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("billDate"), queryDto.getOrderDateStart()));
                 }
                 if (queryDto.getOrderDateEnd() != null) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("billDate"), queryDto.getOrderDateEnd()));
                 }
+                
+                // 根据用户绑定的产线ID过滤
+                if (userCwkids != null && !userCwkids.isEmpty()) {
+                    predicates.add(root.get("cwkid").in(userCwkids));
+                }
+                
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }, pageable);
             
@@ -568,25 +585,18 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
             List<TBusOrderHead> heads = orderHeadPage.getContent();
             Map<String, Object> context = prefetchData(heads);
             
-            // 并行处理每个订单
-            List<CompletableFuture<RawMaterialInputReportVo>> voFutures = heads.stream()
-                .map(order -> CompletableFuture.supplyAsync(() -> {
-                    RawMaterialInputReportVo vo = new RawMaterialInputReportVo();
-                    vo.setOrderNo(order.getOrderNo());
-                    vo.setOrderTime(order.getBillDate());
-                    vo.setProductName(order.getBodyMaterialName());
-                    vo.setProductionLine(order.getVwkname());
-                    calculateOutputDataWithContext(vo, order.getOrderNo(), context);
-                    vo.setProcessGroupInfoList(getProcessGroupInfoListWithContext(order.getOrderNo(), context));
-                    return vo;
-                }))
-                .collect(Collectors.toList());
-            
-            List<RawMaterialInputReportVo> batchList = voFutures.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
-            
-            allList.addAll(batchList);
+            // 使用并行流显著提升大数据量下的数据组装速度
+            List<RawMaterialInputReportVo> batchResults = heads.parallelStream().map(order -> {
+                RawMaterialInputReportVo vo = new RawMaterialInputReportVo();
+                vo.setOrderNo(order.getOrderNo());
+                vo.setOrderTime(order.getBillDate());
+                vo.setProductName(order.getBodyMaterialName());
+                vo.setProductionLine(order.getVwkname());
+                calculateOutputDataWithContext(vo, order.getOrderNo(), context);
+                vo.setProcessGroupInfoList(getProcessGroupInfoListWithContext(order.getOrderNo(), context));
+                return vo;
+            }).collect(Collectors.toList());
+            allList.addAll(batchResults);
             
             if (orderHeadPage.isLast()) break;
             current++;
