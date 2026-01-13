@@ -9,6 +9,7 @@ import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.sql.mes.production.ProductionDataRepository;
 import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderPPBom;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
 import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
@@ -80,12 +81,10 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                 // 查询外包装工序的历史记录（process_number为GX-011）
                 List<TBusOrderProcessHistory> packagingHistories = productionDataRepository.findPackagingProcesses(orderNos);
 
-                // 计算实际产量：外包装数据的record_qty总和
-                BigDecimal actualOutput = packagingHistories.stream()
-                        .map(history -> history.getRecordQty() != null ? history.getRecordQty() : BigDecimal.ZERO)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                // 计算实际产量：外包装工序记录的条数总和
+                BigDecimal actualOutput = new BigDecimal(packagingHistories.size());
 
-                // 净含量重量：同样取外包装数据的record_qty总和
+                // 净含量重量：外包装工序记录的record_qty字段值的总和
                 BigDecimal netContentWeight = packagingHistories.stream()
                         .map(history -> history.getRecordQty() != null ? history.getRecordQty() : BigDecimal.ZERO)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -93,34 +92,65 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                 // 查询投入物料信息
                 List<TBusOrderProcessHistory> inputMaterialHistories = productionDataRepository.findInputMaterials(orderNos);
 
+                // 计算计划投入：从订单的BOM中获取并按物料编码聚合
+                Map<String, BigDecimal> materialPlannedInputMap = new HashMap<>();
+                Map<String, TBusOrderPPBom> materialInfoMap = new HashMap<>();
+                for (TBusOrderHead order : ordersInLineAndDate) {
+                    if (order.getTBusOrderPPBomSet() != null) {
+                        for (TBusOrderPPBom bom : order.getTBusOrderPPBomSet()) {
+                            String materialNumber = bom.getMaterialNumber();
+                            if (materialNumber != null) {
+                                BigDecimal qty = bom.getMustQty() != null ? bom.getMustQty() : BigDecimal.ZERO;
+                                materialPlannedInputMap.put(materialNumber, materialPlannedInputMap.getOrDefault(materialNumber, BigDecimal.ZERO).add(qty));
+                                materialInfoMap.putIfAbsent(materialNumber, bom);
+                            }
+                        }
+                    }
+                }
+
                 // 构建投入信息列表，按物料编码分组并合并相同物料的数据
                 Map<String, List<TBusOrderProcessHistory>> groupedByMaterialNumber = inputMaterialHistories.stream()
+                        .filter(h -> h.getMaterialNumber() != null)
                         .collect(Collectors.groupingBy(TBusOrderProcessHistory::getMaterialNumber));
+
+                // 合并所有物料编码（包括只有BOM没有历史记录的）
+                Set<String> allMaterialNumbers = new HashSet<>(groupedByMaterialNumber.keySet());
+                allMaterialNumbers.addAll(materialPlannedInputMap.keySet());
                 
                 List<InputMaterialItem> inputMaterialItems = new ArrayList<>();
-                for (Map.Entry<String, List<TBusOrderProcessHistory>> entry : groupedByMaterialNumber.entrySet()) {
-                    List<TBusOrderProcessHistory> historiesWithSameMaterial = entry.getValue();
-                    
-                    // 获取第一个记录的基础信息
-                    TBusOrderProcessHistory firstHistory = historiesWithSameMaterial.get(0);
+                for (String materialNumber : allMaterialNumbers) {
+                    List<TBusOrderProcessHistory> historiesWithSameMaterial = groupedByMaterialNumber.get(materialNumber);
                     
                     InputMaterialItem item = new InputMaterialItem();
-                    item.setMaterialNumber(firstHistory.getMaterialNumber());
-                    item.setMaterialName(firstHistory.getMaterialName());
-                    item.setRecordUnit(firstHistory.getRecordUnit());
+                    item.setMaterialNumber(materialNumber);
                     
-                    // 根据recordType到字典中寻找对应的值，设置label
-                    String recordTypeLabel = getRecordTypeLabelFromDict(firstHistory.getRecordType());
-                    item.setRecordType(recordTypeLabel);
+                    if (historiesWithSameMaterial != null && !historiesWithSameMaterial.isEmpty()) {
+                        // 获取第一个记录的基础信息
+                        TBusOrderProcessHistory firstHistory = historiesWithSameMaterial.get(0);
+                        item.setMaterialName(firstHistory.getMaterialName());
+                        item.setRecordUnit(firstHistory.getRecordUnit());
+                        
+                        // 根据recordType到字典中寻找对应的值，设置label
+                        String recordTypeLabel = getRecordTypeLabelFromDict(firstHistory.getRecordType());
+                        item.setRecordType(recordTypeLabel);
+                        
+                        // 计算总的实际投入量
+                        BigDecimal totalActualInput = historiesWithSameMaterial.stream()
+                                .map(history -> history.getRecordQty() != null ? history.getRecordQty() : BigDecimal.ZERO)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                        
+                        item.setActualInput(totalActualInput);
+                    } else {
+                        // 只有BOM信息的情况
+                        TBusOrderPPBom bom = materialInfoMap.get(materialNumber);
+                        item.setMaterialName(bom != null ? bom.getMaterialName() : "");
+                        item.setRecordUnit(bom != null ? bom.getUnit() : "");
+                        item.setRecordType("计划物料");
+                        item.setActualInput(BigDecimal.ZERO);
+                    }
                     
-                    // 计算总的实际投入量
-                    BigDecimal totalActualInput = historiesWithSameMaterial.stream()
-                            .map(history -> history.getRecordQty() != null ? history.getRecordQty() : BigDecimal.ZERO)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    item.setActualInput(totalActualInput);
-                    
-                    // 计划投入先取0
-                    item.setPlannedInput(BigDecimal.ZERO);
+                    // 设置计划投入
+                    item.setPlannedInput(materialPlannedInputMap.getOrDefault(materialNumber, BigDecimal.ZERO));
                     
                     inputMaterialItems.add(item);
                 }
@@ -140,17 +170,31 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                 productionData.setPackagingWasteWeight(BigDecimal.ZERO);
                 productionData.setDefectiveWeight(BigDecimal.ZERO);
                 
-                // 计算投入产出比 (实际产量 / 总投入量)，如果总投入量为0则设为0
+                // 计算总投入量
                 BigDecimal totalInput = inputMaterialItems.stream()
                         .map(item -> item.getActualInput() != null ? item.getActualInput() : BigDecimal.ZERO)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
+                
+                // 计算投入产出比 = 全部材料实际投入总和 / 净含量重量 * 100%
                 BigDecimal inputOutputRatio = BigDecimal.ZERO;
-                if (totalInput.compareTo(BigDecimal.ZERO) > 0) {
-                    inputOutputRatio = actualOutput.divide(totalInput, 4, BigDecimal.ROUND_HALF_UP);
+                if (netContentWeight != null && netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
+                    inputOutputRatio = totalInput.divide(netContentWeight, 4, BigDecimal.ROUND_HALF_UP)
+                            .multiply(new BigDecimal("100"));
                 }
                 productionData.setInputOutputRatio(inputOutputRatio);
                 
-                productionData.setMaterialConsumptionPerBox(BigDecimal.ZERO);
+                // 计算单箱原辅料消耗 = 原辅料实际投入 / 实际产量
+                // 原辅料就是 record_type 为 1 的记录
+                BigDecimal rawMaterialInput = inputMaterialHistories.stream()
+                        .filter(h -> "1".equals(h.getRecordType()))
+                        .map(h -> h.getRecordQty() != null ? h.getRecordQty() : BigDecimal.ZERO)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                
+                BigDecimal materialConsumptionPerBox = BigDecimal.ZERO;
+                if (actualOutput != null && actualOutput.compareTo(BigDecimal.ZERO) > 0) {
+                    materialConsumptionPerBox = rawMaterialInput.divide(actualOutput, 4, BigDecimal.ROUND_HALF_UP);
+                }
+                productionData.setMaterialConsumptionPerBox(materialConsumptionPerBox);
                 
                 // 废次品比率：如果实际产量大于0，则为废次品重量/实际产量
                 BigDecimal defectiveRate = BigDecimal.ZERO;
