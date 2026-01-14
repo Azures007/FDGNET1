@@ -292,12 +292,12 @@ CREATE TABLE public.t_bus_order_process_history (
 	iot_collection_last_time timestamp(6) NULL,
 	record_type_pd varchar(255) NULL,
 	order_process_id int4 NULL,
-	CONSTRAINT t_bus_order_process_history_pkey PRIMARY KEY (order_process_history_id),
-	CONSTRAINT fkamvs0vwawrqdt3isln5coandh FOREIGN KEY (class_id) REFERENCES public.t_sys_class(class_id),
-	CONSTRAINT fke7s4lp0wh21bfwgy2eytrfw9t FOREIGN KEY (device_id) REFERENCES public.t_sys_device(device_id),
-	CONSTRAINT fkeb561d94ubaroaqv6f61vsgg3 FOREIGN KEY (person_id) REFERENCES public.t_sys_personnel_info(personnel_id),
-	CONSTRAINT fkj5y987o8v32r6iq9skhfus791 FOREIGN KEY (process_id) REFERENCES public.t_sys_process_info(process_id),
-	CONSTRAINT fkoujc04mn9oxpi8k1bbqxy2y26 FOREIGN KEY (device_person_id) REFERENCES public.t_sys_personnel_info(personnel_id)
+	CONSTRAINT t_bus_order_process_history_pkey PRIMARY KEY (order_process_history_id)--,
+-- 	CONSTRAINT fkamvs0vwawrqdt3isln5coandh FOREIGN KEY (class_id) REFERENCES public.t_sys_class(class_id),
+-- 	CONSTRAINT fke7s4lp0wh21bfwgy2eytrfw9t FOREIGN KEY (device_id) REFERENCES public.t_sys_device(device_id),
+-- 	CONSTRAINT fkeb561d94ubaroaqv6f61vsgg3 FOREIGN KEY (person_id) REFERENCES public.t_sys_personnel_info(personnel_id),
+-- 	CONSTRAINT fkj5y987o8v32r6iq9skhfus791 FOREIGN KEY (process_id) REFERENCES public.t_sys_process_info(process_id),
+-- 	CONSTRAINT fkoujc04mn9oxpi8k1bbqxy2y26 FOREIGN KEY (device_person_id) REFERENCES public.t_sys_personnel_info(personnel_id)
 );
 CREATE TABLE public.t_bus_order_process_lk (
 	order_id int4 NOT NULL DEFAULT 0,
@@ -333,12 +333,12 @@ CREATE TABLE public.t_bus_order_process_record (
 	capacity_qty float4 NULL,
 	iot_collection_last_time timestamp(6) NULL,
 	record_type_pd varchar(255) NULL,
-	CONSTRAINT t_bus_order_process_record_pkey PRIMARY KEY (order_process_record_id),
-	CONSTRAINT fkl091cmoiip50ygm5wm4rhbn71 FOREIGN KEY (device_id) REFERENCES public.t_sys_device(device_id),
-	CONSTRAINT fkn92el27ojt02xyn3dxcqw7jxs FOREIGN KEY (class_id) REFERENCES public.t_sys_class(class_id),
-	CONSTRAINT fkpvgb8aqwat916inhvl4jruga6 FOREIGN KEY (device_person_id) REFERENCES public.t_sys_personnel_info(personnel_id),
-	CONSTRAINT fkt4djfbl7ygk9js58pxp3190kd FOREIGN KEY (person_id) REFERENCES public.t_sys_personnel_info(personnel_id),
-	CONSTRAINT fkthfjlfcew5hgqohua8xfy5kiw FOREIGN KEY (process_id) REFERENCES public.t_sys_process_info(process_id)
+	CONSTRAINT t_bus_order_process_record_pkey PRIMARY KEY (order_process_record_id)--,
+-- 	CONSTRAINT fkl091cmoiip50ygm5wm4rhbn71 FOREIGN KEY (device_id) REFERENCES public.t_sys_device(device_id),
+-- 	CONSTRAINT fkn92el27ojt02xyn3dxcqw7jxs FOREIGN KEY (class_id) REFERENCES public.t_sys_class(class_id),
+-- 	CONSTRAINT fkpvgb8aqwat916inhvl4jruga6 FOREIGN KEY (device_person_id) REFERENCES public.t_sys_personnel_info(personnel_id),
+-- 	CONSTRAINT fkt4djfbl7ygk9js58pxp3190kd FOREIGN KEY (person_id) REFERENCES public.t_sys_personnel_info(personnel_id),
+-- 	CONSTRAINT fkthfjlfcew5hgqohua8xfy5kiw FOREIGN KEY (process_id) REFERENCES public.t_sys_process_info(process_id)
 );
 
 CREATE TABLE public.t_sync_material (
