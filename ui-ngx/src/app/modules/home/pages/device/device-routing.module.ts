@@ -29,6 +29,7 @@ const routes: Routes = [
       auth: [Authority.TENANT_ADMIN, Authority.CUSTOMER_USER],
       title: 'device.devices',
       devicesType: 'tenant',
+      reuse: false,
       breadcrumb: {
         label: 'device.devices',
         icon: 'devices_other'
