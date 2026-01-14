@@ -22,6 +22,7 @@ export class MaterialComponent implements OnInit {
     current: 0,
     size: 50,
     productName: "",
+    orderNo: "",
   });
   //新增角色参数
   roleData = {
@@ -74,6 +75,7 @@ export class MaterialComponent implements OnInit {
       size: this.searchFormGroup.value.size,
       body: {
         productName: this.searchFormGroup.value.productName,
+        orderNo: this.searchFormGroup.value.orderNo,
         orderDateStart: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         orderDateEnd: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
       }
@@ -110,6 +112,7 @@ export class MaterialComponent implements OnInit {
       size: this.searchFormGroup.value.size,
       body: {
         productName: this.searchFormGroup.value.productName,
+        orderNo: this.searchFormGroup.value.orderNo,
         orderDateStart: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         orderDateEnd: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
       }
@@ -144,6 +147,7 @@ export class MaterialComponent implements OnInit {
   }
   reset() {
     this.searchFormGroup.value.productName = '';
+    this.searchFormGroup.value.orderNo = '';
     this.pdRange = new FormGroup({
       start: new FormControl(this.utils.dateFormat(new Date(new Date().getTime() - 24 * 60 * 60 * 1000), 'yyyy-MM-dd')),
       end: new FormControl(this.utils.dateFormat(new Date(), 'yyyy-MM-dd')),

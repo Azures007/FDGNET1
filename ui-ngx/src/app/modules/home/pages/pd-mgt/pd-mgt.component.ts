@@ -5,6 +5,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { PdMgtService } from '@app/core/http/pd-mgt.service';
 import { Utils } from '../order-management/w-utils';
 import { SelectionModel } from '@angular/cdk/collections';
+import { OrderService } from '@app/core/http/order.service';
 
 export interface PeriodicElement {
   name: string;
@@ -34,8 +35,9 @@ export class PdMgtComponent implements OnInit {
     size: 50,
     pdWorkshopName: "",
     materialName: "",
+    cwkLine: "",
   });
-
+  cwkList = []
   //新增角色参数
   roleData = {
     byFactory: "",
@@ -75,10 +77,14 @@ export class PdMgtComponent implements OnInit {
     public fb: FormBuilder,
     private pdMgtService: PdMgtService,
     private utils: Utils,
+    private apiOrder: OrderService,
   ) { }
 
   ngOnInit(): void {
     this.getTableData();
+    this.apiOrder.fetchBaseList().subscribe(res => {
+      this.cwkList = res.data;
+    })
   }
   audit() {
     if (this.selection.selected.length === 0) {
@@ -104,6 +110,7 @@ export class PdMgtComponent implements OnInit {
       body: {
         pdWorkshopName: this.searchFormGroup.value.pdWorkshopName,
         materialName: this.searchFormGroup.value.materialName,
+        cwkid: this.searchFormGroup.value.cwkLine,
         //endTime: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
         startTime: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         endTime: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
@@ -129,6 +136,7 @@ export class PdMgtComponent implements OnInit {
       body: {
         pdWorkshopName: this.searchFormGroup.value.pdWorkshopName,
         materialName: this.searchFormGroup.value.materialName,
+        cwkid: this.searchFormGroup.value.cwkLine,
         startTime: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         endTime: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
       }
@@ -203,6 +211,7 @@ export class PdMgtComponent implements OnInit {
   reset() {
     this.searchFormGroup.value.pdWorkshopName = '';
     this.searchFormGroup.value.materialName = '';
+    this.searchFormGroup.value.cwkLine = '';
     this.pdRange = new FormGroup({
       start: new FormControl(null),
       end: new FormControl(null),
