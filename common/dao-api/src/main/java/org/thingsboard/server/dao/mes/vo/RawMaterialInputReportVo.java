@@ -37,6 +37,9 @@ public class RawMaterialInputReportVo {
     @ApiModelProperty("实际产量")
     private BigDecimal actualOutput;
 
+    @ApiModelProperty("净含量")
+    private BigDecimal netContent;
+
     // 原料投入信息列表（按工序分组）
     @ApiModelProperty("原料投入信息列表（按工序分组）")
     private List<ProcessGroupInfoVo> processGroupInfoList;

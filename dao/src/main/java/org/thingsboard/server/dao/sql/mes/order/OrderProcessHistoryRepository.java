@@ -228,6 +228,8 @@ public interface OrderProcessHistoryRepository extends JpaRepository<TBusOrderPr
     List<TBusOrderProcessHistory> findByOrderNoAndProcessName(String orderNo, String processName);
 
     List<TBusOrderProcessHistory> findAllByOrderNoInAndProcessName(List<String> orderNos, String processName);
+
+    List<TBusOrderProcessHistory> findAllByOrderNoInAndProcessNumber(List<String> orderNos, String processNumber);
     
     /**
      * 根据订单号列表、业务类型、排除特定报工状态查询历史记录

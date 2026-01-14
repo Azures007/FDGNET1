@@ -1,5 +1,6 @@
 package org.thingsboard.server.vo;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
 import lombok.Data;
@@ -29,6 +30,9 @@ public class RawMaterialInputReportExcelVo extends BaseRowModel {
 
     @ExcelProperty({"合格品信息", "实际产量"})
     private String actualOutput;
+
+    @ExcelProperty({"合格品信息", "净含量"})
+    private String netContent;
 
     // 工序列表
     @ExcelProperty({"工序列表", "工序名称"})
@@ -60,5 +64,8 @@ public class RawMaterialInputReportExcelVo extends BaseRowModel {
 
     @ExcelProperty({"工序列表", "残次品重量"})
     private String defectiveWeight;
+
+    @ExcelIgnore
+    private String processGroupKey;
 
 }
