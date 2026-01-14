@@ -54,7 +54,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "c.process_number executeProcessNumber, \n" +
             "null executeProcessStatus \n" +
             "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process=m2.process_id ) as a\n" +
-            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
+            "left join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_sys_craft_process_rel b on a.craft_id =b.craft_id \n" +
             "join t_sys_process_info c on b.process_id =c.process_id \n" +
             "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
@@ -171,7 +171,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "    NULL AS recordTypePd\n" +
             "FROM t_bus_order_head a \n" +
             "LEFT JOIN t_sys_process_info m2 ON a.current_process = m2.process_id\n" +
-            "JOIN t_sys_craft_info t1 ON t1.craft_id = a.craft_id \n" +
+            "LEFT JOIN t_sys_craft_info t1 ON t1.craft_id = a.craft_id \n" +
             "JOIN t_bus_order_process_lk b ON a.order_id = b.order_id \n" +
             "JOIN t_bus_order_process c ON b.order_process_id = c.order_process_id \n" +
             "JOIN t_sys_process_info d ON c.process_id = d.process_id \n" +
@@ -256,7 +256,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "h2.record_type_pd executeRecordTypePd, \n" +
             "a2.old_record_type_pd recordTypePd \n" +
             "from t_bus_order_head a \n" +
-            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
+            "left join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join t_bus_order_process a2 on a1.order_process_id =a2.order_process_id \n" +
@@ -532,7 +532,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             ",TO_CHAR(a2.old_hand_over_time,'YYYY-MM-DD HH24:MI:SS') as transferTime \n" +
             "from t_bus_order_head a \n" +
             "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
-            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
+            "left join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_bus_order_process_lk  a1 on a.order_id =a1.order_id \n" +
             "join (select a.*,b.order_process_id  to_order_process_id from t_bus_order_process a " +
             "left join (select order_process_id ,old_order_process_id from t_bus_order_process where type='3') as  b " +
@@ -575,7 +575,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
     @Query(value = "select count(1) \n" +
             "from t_bus_order_head a \n" +
             "join t_bus_user_current_org_line e on e.workline =a.nc_cwkid and e.user_id= ?1 \n" +
-            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
+            "left join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "JOIN t_bus_order_process_lk b ON a.order_id = b.order_id \n" +
             "JOIN t_bus_order_process c ON b.order_process_id = c.order_process_id \n" +
             "JOIN t_sys_process_info d ON c.process_id = d.process_id \n" +
@@ -639,7 +639,7 @@ public interface AppOrderTaskRepository extends JpaRepository<TBusOrderHead,Inte
             "c.process_number executeProcessNumber, \n" +
             "null executeProcessStatus \n" +
             "from (select * from t_bus_order_head a left join t_sys_process_info m2 on a.current_process=m2.process_id ) as a\n" +
-            "join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
+            "left join t_sys_craft_info t1 on t1.craft_id=a.craft_id \n" +
             "join t_sys_craft_process_rel b on a.craft_id =b.craft_id \n" +
             "join t_sys_process_info c on b.process_id =c.process_id \n" +
             "join t_sys_process_class_rel d on c.process_id =d.process_id \n" +
