@@ -302,8 +302,11 @@ public class BoardServiceImpl implements BoardService {
                         "速度", byDateFrontTimes, byDateLaterTimes));
                 insourcingDeviceRunVo.setAvgSpeed(deviceRepository.avgQtyByMykey(device.getName(),
                         "速度", byDateFrontTimes, byDateLaterTimes).setScale(1, RoundingMode.HALF_UP));
-                insourcingDeviceRunVo.setPieceQty(deviceRepository.maxQtyByMykey(device.getName(),
-                        "包装件数", byDateFrontTimes, byDateLaterTimes));
+                BigDecimal maxPieceQty = deviceRepository.maxQtyByMykey(device.getName(),
+                        "包装件数", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal minPieceQty = deviceRepository.minQtyByMykey(device.getName(),
+                        "包装件数", byDateFrontTimes, byDateLaterTimes);
+                insourcingDeviceRunVo.setPieceQty(maxPieceQty.subtract(minPieceQty));
                 insourcingDeviceRunVo.setOverSize(0);
                 insourcingDeviceRunVo.setTempSuccess(new BigDecimal("0"));
                 insourcingDeviceRunVos.add(insourcingDeviceRunVo);
