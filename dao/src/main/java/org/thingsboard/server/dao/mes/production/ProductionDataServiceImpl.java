@@ -14,15 +14,19 @@ import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderPPBom;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
+import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessRecord;
 import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
+import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
 import org.thingsboard.server.common.data.mes.vo.InputMaterialItem;
 import org.thingsboard.server.common.data.mes.vo.ProductionData;
 import org.thingsboard.server.common.data.mes.vo.ProductionDataExcelVo;
 import org.thingsboard.server.dao.mes.dto.ProductionDataQueryDto;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftInfoRepository;
 import org.thingsboard.server.dao.sql.mes.production.ProductionDataRepository;
 import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
+import org.thingsboard.server.dao.user.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
@@ -30,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 
@@ -45,11 +50,17 @@ public class ProductionDataServiceImpl implements ProductionDataService {
     @Autowired
     private TSysCodeDscRepository tSysCodeDscRepository;
 
+    @Autowired
+    private TSysCraftInfoRepository tSysCraftInfoRepository;
+
+    @Autowired
+    private UserService userService;
+
     @Override
-    public void exportProductionData(ProductionDataQueryDto queryDto, HttpServletResponse response) {
+    public void exportProductionData(List<String> userCwkids, ProductionDataQueryDto queryDto, HttpServletResponse response) {
         try {
             // 获取所有数据
-            PageVo<ProductionData> allData = queryProductionData(0, 10000, queryDto);
+            PageVo<ProductionData> allData = queryProductionData(userCwkids, 0, 10000, queryDto);
             List<ProductionData> list = allData.getList();
 
             // 转换为Excel格式
@@ -98,8 +109,8 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                     vo.setMaterialName(materialItem.getMaterialName());
                     vo.setRecordType(materialItem.getRecordType());
                     vo.setRecordUnit(materialItem.getRecordUnit());
-                    vo.setPlannedInput(materialItem.getPlannedInput() != null ? materialItem.getPlannedInput().toString() : "0");
-                    vo.setActualInput(materialItem.getActualInput() != null ? materialItem.getActualInput().toString() : "0");
+                    vo.setPlannedInput(materialItem.getPlannedInput() != null ? materialItem.getPlannedInput() : "0.00");
+                    vo.setActualInput(materialItem.getActualInput() != null ? materialItem.getActualInput() : "0.00");
                     
                     voList.add(vo);
                 }
@@ -115,18 +126,24 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         vo.setProductionLine(data.getProductionLine());
         
         // 损耗信息
-        vo.setPackagingWasteWeight(data.getPackagingWasteWeight() != null ? data.getPackagingWasteWeight().toString() : "0");
-        vo.setDefectiveWeight(data.getDefectiveWeight() != null ? data.getDefectiveWeight().toString() : "0");
+        vo.setPackagingWasteWeight(data.getPackagingWasteWeight() != null ? data.getPackagingWasteWeight() : "0");
+        vo.setDefectiveWeight(data.getDefectiveWeight() != null ? data.getDefectiveWeight() : "0");
         
         // 产出信息
-        vo.setPlannedOutput(data.getPlannedOutput() != null ? data.getPlannedOutput().toString() : "0");
-        vo.setActualOutput(data.getActualOutput() != null ? data.getActualOutput().toString() : "0");
-        vo.setNetContentWeight(data.getNetContentWeight() != null ? data.getNetContentWeight().toString() : "0");
+        vo.setPlannedOutput(data.getPlannedOutput() != null ? data.getPlannedOutput() : "0");
+        vo.setActualOutput(data.getActualOutput() != null ? data.getActualOutput() : "0");
+        vo.setNetContentWeight(data.getNetContentWeight() != null ? data.getNetContentWeight() : "0");
         
         // 投入产出比
-        vo.setInputOutputRatio(data.getInputOutputRatio() != null ? data.getInputOutputRatio().toString() + "%" : "0%");
-        vo.setMaterialConsumptionPerBox(data.getMaterialConsumptionPerBox() != null ? data.getMaterialConsumptionPerBox().toString() : "0");
-        vo.setDefectiveRate(data.getDefectiveRate() != null ? data.getDefectiveRate().toString() : "0");
+        String ratio = data.getInputOutputRatio();
+        if ("-".equals(ratio)) {
+            vo.setInputOutputRatio("-");
+        } else {
+            vo.setInputOutputRatio(ratio != null ? ratio + "%" : "0%");
+        }
+        
+        vo.setMaterialConsumptionPerBox(data.getMaterialConsumptionPerBox() != null ? data.getMaterialConsumptionPerBox() : "0");
+        vo.setDefectiveRate(data.getDefectiveRate() != null ? data.getDefectiveRate() : "0");
     }
 
     /**
@@ -183,14 +200,31 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         }
     }
     @Override
-    public PageVo<ProductionData> queryProductionData(int current, int size, ProductionDataQueryDto queryDto) {
+    public PageVo<ProductionData> queryProductionData(List<String> userCwkids, int current, int size, ProductionDataQueryDto queryDto) {
+        // 获取“周转肉松饼”的工艺ID
+        TSysCraftInfo turnoverCraftInfo = tSysCraftInfoRepository.findByCraftName("周转肉松饼");
+        Integer turnoverCraftId = turnoverCraftInfo != null ? turnoverCraftInfo.getCraftId() : null;
+    
+        // 获取“肉松饼成品”的工艺ID
+        TSysCraftInfo finishedCraftInfo = tSysCraftInfoRepository.findByCraftName("肉松饼成品");
+        Integer finishedCraftId = finishedCraftInfo != null ? finishedCraftInfo.getCraftId() : null;
+    
         // 处理时间范围，确保开始时间是当天00:00:00，结束时间是当天23:59:59
         Date startTime = adjustStartDate(queryDto.getStartTime());
         Date endTime = adjustEndDate(queryDto.getEndTime());
-        
-        // 根据时间范围查询订单头信息
-        List<TBusOrderHead> orderHeads = productionDataRepository.findByTimeRange(startTime, endTime);
-        if (orderHeads.isEmpty()) {
+            
+        // 确定最终过滤的产线ID列表
+        List<String> targetCwkids = new ArrayList<>();
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(queryDto.getCwkid())) {
+            // 如果指定了产线，则使用指定的产线
+            targetCwkids.add(queryDto.getCwkid());
+        } else if (userCwkids != null && !userCwkids.isEmpty()) {
+            // 如果未指定产线，则默认使用用户绑定的所有产线
+            targetCwkids.addAll(userCwkids);
+        }
+            
+        // 如果既没有指定产线，该用户也没有绑定的权限产线，则直接返回空结果，防止查出全量数据
+        if (targetCwkids.isEmpty()) {
             PageVo<ProductionData> emptyPage = new PageVo<>();
             emptyPage.setList(new ArrayList<>());
             emptyPage.setTotal(0);
@@ -198,226 +232,285 @@ public class ProductionDataServiceImpl implements ProductionDataService {
             emptyPage.setSize(size);
             return emptyPage;
         }
-
-        // 收集所有订单号用于批量查询
-        List<String> allOrderNos = orderHeads.stream()
-                .map(TBusOrderHead::getOrderNo)
-                .filter(Objects::nonNull)
-                .distinct()
+    
+        // 第一步：初步查询所有符合条件的订单基本信息（产线、最小接单时间、订单号）
+        List<Object[]> matchingBasics = productionDataRepository.findAllMatchingOrderBasics(startTime, endTime, targetCwkids, turnoverCraftId, finishedCraftId);
+            
+        if (matchingBasics.isEmpty()) {
+            PageVo<ProductionData> emptyPage = new PageVo<>();
+            emptyPage.setList(new ArrayList<>());
+            emptyPage.setTotal(0);
+            emptyPage.setCurrent(current);
+            emptyPage.setSize(size);
+            return emptyPage;
+        }
+    
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
+        // 第二步：在内存中对订单进行预分组（按产线和日期），用于分页
+        // Map<"Line_Date", List<orderNo>>
+        Map<String, List<String>> groupToOrderNos = new LinkedHashMap<>();
+    
+        for (Object[] row : matchingBasics) {
+            String line = (String) row[0];
+            Date minRT = (Date) row[1];
+            String orderNo = (String) row[2];
+                
+            String dateStr = minRT != null ? minRT.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(dateFormatter) : "未知日期";
+            String key = line + "_" + dateStr;
+                
+            groupToOrderNos.computeIfAbsent(key, k -> new ArrayList<>()).add(orderNo);
+        }
+    
+        // 第三步：对分组进行排序和分页
+        List<String> sortedGroupKeys = groupToOrderNos.keySet().stream()
+                .sorted((k1, k2) -> {
+                    String d1 = k1.split("_")[1];
+                    String d2 = k2.split("_")[1];
+                    int dateComp = d2.compareTo(d1); // 日期降序
+                    if (dateComp != 0) return dateComp;
+                    return k1.split("_")[0].compareTo(k2.split("_")[0]); // 产线升序
+                })
                 .collect(Collectors.toList());
-
-        // 批量查询所有相关的历史记录并按订单号分组缓存
-        List<TBusOrderProcessHistory> allHistories = productionDataRepository.findAllHistories(allOrderNos);
-        Map<String, List<TBusOrderProcessHistory>> allHistoriesMap = allHistories.stream()
-                .collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderNo));
-
-        // 预加载字典数据以提高效率
+    
+        int totalGroups = sortedGroupKeys.size();
+        int startIndex = current * size;
+        int endIndex = Math.min(startIndex + size, totalGroups);
+    
+        if (startIndex >= totalGroups) {
+            PageVo<ProductionData> emptyPage = new PageVo<>();
+            emptyPage.setList(new ArrayList<>());
+            emptyPage.setTotal(totalGroups);
+            emptyPage.setCurrent(current);
+            emptyPage.setSize(size);
+            return emptyPage;
+        }
+    
+        List<String> pagedGroupKeys = sortedGroupKeys.subList(startIndex, endIndex);
+    
+        // 第四步：仅针对当前页的分组，收集需要的订单号并拉取详细数据
+        List<String> pagedOrderNos = pagedGroupKeys.stream()
+                .flatMap(key -> groupToOrderNos.get(key).stream())
+                .collect(Collectors.toList());
+        
+        // 分批获取详细数据以避免 SQL 参数过多导致的超时或参数限制错误
+        List<TBusOrderHead> orderHeads = new ArrayList<>();
+        Map<String, List<Object[]>> actualInputAggMap = new HashMap<>(); // orderNo -> List<[materialNumber, name, unit, type, sumQty]>
+        Map<String, Long> actualOutputCountMap = new HashMap<>(); // orderNo -> count
+        Map<String, BigDecimal> netWeightAggMap = new HashMap<>(); // orderNo -> sumQty
+                
+        // 使用更小的时间暗示 hint，进一步加速索引扫描
+        Calendar calHint = Calendar.getInstance();
+        calHint.setTime(startTime);
+        calHint.add(Calendar.DAY_OF_MONTH, -1);
+        Date hintStart = calHint.getTime();
+        
+        int chunkSize = 200; // 减小 chunkSize 以降低单次查询负载
+        for (int i = 0; i < pagedOrderNos.size(); i += chunkSize) {
+            List<String> chunk = pagedOrderNos.subList(i, Math.min(i + chunkSize, pagedOrderNos.size()));
+                    
+            // 批量获取头信息
+            List<Object[]> headResultsChunk = productionDataRepository.findByOrderNoInWithMinRT(chunk);
+            for (Object[] row : headResultsChunk) {
+                orderHeads.add((TBusOrderHead) row[0]);
+            }
+                    
+            // 使用数据库聚合查询，极大减少传输数据量
+            List<Object[]> inputAgg = productionDataRepository.findActualInputAggregated(chunk, hintStart);
+            for (Object[] row : inputAgg) {
+                String oNo = (String) row[0];
+                actualInputAggMap.computeIfAbsent(oNo, k -> new ArrayList<>()).add(new Object[]{row[1], row[2], row[3], row[4], row[5]});
+            }
+                    
+            List<Object[]> outputAgg = productionDataRepository.findActualOutputCountAggregated(chunk, hintStart);
+            for (Object[] row : outputAgg) {
+                actualOutputCountMap.put((String) row[0], (Long) row[1]);
+            }
+                    
+            List<Object[]> weightAgg = productionDataRepository.findNetWeightAggregated(chunk, hintStart);
+            for (Object[] row : weightAgg) {
+                netWeightAggMap.put((String) row[0], (BigDecimal) row[1]);
+            }
+        }
+        
+        Map<String, Integer> orderTypeMap = new HashMap<>();
+        for (TBusOrderHead head : orderHeads) {
+            // 判断订单类型 (工艺优先)
+            Integer type = 2; // 默认
+            Integer cid = (head.getCraftId() != null) ? head.getCraftId().getCraftId() : null;
+            if (turnoverCraftId != null && turnoverCraftId.equals(cid)) {
+                type = 1;
+            } else if (finishedCraftId != null && finishedCraftId.equals(cid)) {
+                type = 2;
+            } else if ("周转饼流程生产单".equals(head.getBillType())) {
+                type = 1;
+            } else if ("普通流程生产订单".equals(head.getBillType())) {
+                type = 2;
+            }
+            orderTypeMap.put(head.getOrderNo(), type);
+        }
+        
+        // 预加载字典
         List<TSysCodeDsc> dictList = tSysCodeDscRepository.findByCodeClId("RECORDTYPE0000");
         Map<String, String> dictMap = dictList.stream()
                 .collect(Collectors.toMap(TSysCodeDsc::getCodeValue, TSysCodeDsc::getCodeDsc, (v1, v2) -> v1));
-
-        // 预聚合所有订单的BOM信息和物料基本信息以提升并行计算效率
+        
+        // 预聚合当前页的BOM信息
         Map<String, Map<String, BigDecimal>> orderPlannedInputMap = new HashMap<>();
         Map<String, TBusOrderPPBom> allMaterialInfoMap = new HashMap<>();
         for (TBusOrderHead order : orderHeads) {
             Map<String, BigDecimal> bomMap = new HashMap<>();
             if (order.getTBusOrderPPBomSet() != null) {
                 for (TBusOrderPPBom bom : order.getTBusOrderPPBomSet()) {
-                    String materialNumber = bom.getMaterialNumber();
-                    if (materialNumber != null) {
+                    String matNum = bom.getMaterialNumber();
+                    if (matNum != null) {
                         BigDecimal qty = bom.getMustQty() != null ? bom.getMustQty() : BigDecimal.ZERO;
-                        bomMap.merge(materialNumber, qty, BigDecimal::add);
-                        allMaterialInfoMap.putIfAbsent(materialNumber, bom);
+                        bomMap.merge(matNum, qty, BigDecimal::add);
+                        allMaterialInfoMap.putIfAbsent(matNum, bom);
                     }
                 }
             }
             orderPlannedInputMap.put(order.getOrderNo(), bomMap);
         }
-
-        // 按产线和日期分组
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        Map<String, Map<String, List<TBusOrderHead>>> groupedByProductionLineAndDate = orderHeads.stream()
-                .filter(head -> head.getVwkname() != null) // 确保产线不为空
-                .collect(Collectors.groupingBy(
-                        TBusOrderHead::getVwkname, // 按产线分组
-                        Collectors.groupingBy(head -> {
-                            // 提取日期部分，格式化为yyyy-MM-dd
-                            if (head.getBillDate() != null) {
-                                return head.getBillDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate().format(dateFormatter);
-                            } else {
-                                return "未知日期";
-                            }
-                        })
-                ));
-
-        // 创建结果列表
-        List<ProductionData> result = groupedByProductionLineAndDate.entrySet().parallelStream()
-                .flatMap(lineEntry -> {
-                    String productionLine = lineEntry.getKey();
-                    Map<String, List<TBusOrderHead>> ordersByDate = lineEntry.getValue();
-                    
-                    return ordersByDate.entrySet().stream().map(dateEntry -> {
-                        String date = dateEntry.getKey();
-                        List<TBusOrderHead> ordersInLineAndDate = dateEntry.getValue();
-
-                        // 收集该组的订单号
-                        List<String> groupOrderNos = ordersInLineAndDate.stream()
-                                .map(TBusOrderHead::getOrderNo)
-                                .filter(Objects::nonNull)
-                                .collect(Collectors.toList());
-
-                        // 从缓存中获取该组订单的所有历史记录
-                        List<TBusOrderProcessHistory> groupAllHistories = new ArrayList<>();
-                        groupOrderNos.forEach(no -> {
-                            List<TBusOrderProcessHistory> histories = allHistoriesMap.get(no);
-                            if (histories != null) groupAllHistories.addAll(histories);
-                        });
-
-                        // 过滤外包装工序历史记录 (GX-011)
-                        List<TBusOrderProcessHistory> packagingHistories = groupAllHistories.stream()
-                                .filter(h -> "GX-011".equals(h.getProcessNumber()))
-                                .collect(Collectors.toList());
-
-                        // 计算实际产量：外包装工序记录的条数总和
-                        BigDecimal actualOutput = new BigDecimal(packagingHistories.size());
-
-                        // 净含量重量：外包装工序记录的record_qty字段值的总和
-                        BigDecimal netContentWeight = packagingHistories.stream()
-                                .map(history -> history.getRecordQty() != null ? history.getRecordQty() : BigDecimal.ZERO)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                        // 投入物料历史记录（即该组所有的历史记录）
-                        List<TBusOrderProcessHistory> inputMaterialHistories = groupAllHistories;
-
-                        // 计算计划产量：同一产线同一天的body_plan_prd_qty之和
-                        BigDecimal plannedOutput = ordersInLineAndDate.stream()
-                                .map(order -> order.getBodyPlanPrdQty() != null ? order.getBodyPlanPrdQty() : BigDecimal.ZERO)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                        // 计算计划投入：从预加载的缓存中直接获取
+        
+        // 第五步：执行最终的聚合计算（仅针对当前页的数据）
+        List<ProductionData> pagedResult = pagedGroupKeys.stream()
+                .map(groupKey -> {
+                    String[] parts = groupKey.split("_");
+                    String productionLine = parts[0];
+                    String date = parts[1];
+                            
+                    List<String> orderNosInGroup = groupToOrderNos.get(groupKey);
+                    List<TBusOrderHead> ordersInGroup = orderHeads.stream()
+                            .filter(o -> orderNosInGroup.contains(o.getOrderNo()))
+                            .collect(Collectors.toList());
+        
+                    // 拆分周转饼订单和成品订单
+                    List<TBusOrderHead> turnoverOrders = ordersInGroup.stream()
+                            .filter(o -> orderTypeMap.getOrDefault(o.getOrderNo(), 2) == 1)
+                            .collect(Collectors.toList());
+                    List<TBusOrderHead> finishedOrders = ordersInGroup.stream()
+                            .filter(o -> orderTypeMap.getOrDefault(o.getOrderNo(), 2) == 2)
+                            .collect(Collectors.toList());
+        
+                    ProductionData productionData = new ProductionData();
+                    productionData.setProductionLine(productionLine);
+                    productionData.setDate(date);
+        
+                    // --- 1. 处理投入信息 (周转订单) ---
+                    List<InputMaterialItem> inputMaterialItems = new ArrayList<>();
+                    BigDecimal totalActualInputSum = BigDecimal.ZERO;
+                    BigDecimal rawMaterialInputSum = BigDecimal.ZERO;
+        
+                    if (!turnoverOrders.isEmpty()) {
+                        // 计划投入聚合
                         Map<String, BigDecimal> materialPlannedInputMap = new HashMap<>();
-                        for (TBusOrderHead order : ordersInLineAndDate) {
-                            Map<String, BigDecimal> orderBoms = orderPlannedInputMap.get(order.getOrderNo());
-                            if (orderBoms != null) {
-                                orderBoms.forEach((num, qty) -> materialPlannedInputMap.merge(num, qty, BigDecimal::add));
+                        // 实际投入聚合 (从 DB 聚合结果中取)
+                        Map<String, BigDecimal> materialActualInputMap = new HashMap<>();
+                        Map<String, String[]> matMetadataMap = new HashMap<>(); // matNum -> [name, unit, type]
+        
+                        for (TBusOrderHead o : turnoverOrders) {
+                            String oNo = o.getOrderNo();
+                            // 计划
+                            Map<String, BigDecimal> boms = orderPlannedInputMap.get(oNo);
+                            if (boms != null) boms.forEach((num, q) -> materialPlannedInputMap.merge(num, q, BigDecimal::add));
+                                    
+                            // 实际
+                            List<Object[]> aggs = actualInputAggMap.get(oNo);
+                            if (aggs != null) {
+                                for (Object[] row : aggs) {
+                                    String matNum = (String) row[0];
+                                    BigDecimal qty = (BigDecimal) row[4];
+                                    materialActualInputMap.merge(matNum, qty, BigDecimal::add);
+                                    matMetadataMap.putIfAbsent(matNum, new String[]{(String)row[1], (String)row[2], (String)row[3]});
+                                            
+                                    totalActualInputSum = totalActualInputSum.add(qty);
+                                    if ("1".equals(row[3])) rawMaterialInputSum = rawMaterialInputSum.add(qty);
+                                }
                             }
                         }
-
-                        // 构建投入信息列表，按物料编码分组并合并相同物料的数据
-                        Map<String, List<TBusOrderProcessHistory>> groupedByMaterialNumber = inputMaterialHistories.stream()
-                                .filter(h -> h.getMaterialNumber() != null)
-                                .collect(Collectors.groupingBy(TBusOrderProcessHistory::getMaterialNumber));
-
-                        // 合并所有物料编码（包括只有BOM没有历史记录的）
-                        Set<String> allMaterialNumbers = new HashSet<>(groupedByMaterialNumber.keySet());
-                        allMaterialNumbers.addAll(materialPlannedInputMap.keySet());
-                        
-                        List<InputMaterialItem> inputMaterialItems = new ArrayList<>();
-                        for (String materialNumber : allMaterialNumbers) {
-                            List<TBusOrderProcessHistory> historiesWithSameMaterial = groupedByMaterialNumber.get(materialNumber);
-                            
+        
+                        Set<String> allMatNums = new HashSet<>(materialActualInputMap.keySet());
+                        allMatNums.addAll(materialPlannedInputMap.keySet());
+        
+                        for (String matNum : allMatNums) {
                             InputMaterialItem item = new InputMaterialItem();
-                            item.setMaterialNumber(materialNumber);
-                            
-                            if (historiesWithSameMaterial != null && !historiesWithSameMaterial.isEmpty()) {
-                                // 获取第一个记录的基础信息
-                                TBusOrderProcessHistory firstHistory = historiesWithSameMaterial.get(0);
-                                item.setMaterialName(firstHistory.getMaterialName());
-                                item.setRecordUnit(firstHistory.getRecordUnit());
-                                
-                                // 使用缓存的字典数据设置label
-                                String recordType = firstHistory.getRecordType();
-                                String recordTypeLabel = dictMap.getOrDefault(recordType, getFallbackRecordTypeLabel(recordType));
-                                item.setRecordType(recordTypeLabel);
-                                
-                                // 计算总的实际投入量
-                                BigDecimal totalActualInput = historiesWithSameMaterial.stream()
-                                        .map(history -> history.getRecordQty() != null ? history.getRecordQty() : BigDecimal.ZERO)
-                                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                                
-                                item.setActualInput(totalActualInput);
+                            item.setMaterialNumber(matNum);
+                                    
+                            String[] meta = matMetadataMap.get(matNum);
+                            if (meta != null) {
+                                item.setMaterialName(meta[0]);
+                                item.setRecordUnit(meta[1]);
+                                item.setRecordType(dictMap.getOrDefault(meta[2], getFallbackRecordTypeLabel(meta[2])));
                             } else {
-                                // 只有BOM信息的情况
-                                TBusOrderPPBom bom = allMaterialInfoMap.get(materialNumber);
+                                TBusOrderPPBom bom = allMaterialInfoMap.get(matNum);
                                 item.setMaterialName(bom != null ? bom.getMaterialName() : "");
                                 item.setRecordUnit(bom != null ? bom.getUnit() : "");
                                 item.setRecordType("-");
-                                item.setActualInput(BigDecimal.ZERO);
                             }
-                            
-                            // 设置计划投入
-                            item.setPlannedInput(materialPlannedInputMap.getOrDefault(materialNumber, BigDecimal.ZERO));
-                            
+                                    
+                            item.setActualInput(materialActualInputMap.getOrDefault(matNum, BigDecimal.ZERO).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                            item.setPlannedInput(materialPlannedInputMap.getOrDefault(matNum, BigDecimal.ZERO).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                             inputMaterialItems.add(item);
                         }
-
-                        // 创建主实体对象
-                        ProductionData productionData = new ProductionData();
-                        productionData.setProductionLine(productionLine);
-                        productionData.setDate(date);
-                        productionData.setPlannedOutput(plannedOutput);
-                        productionData.setActualOutput(actualOutput);
-                        productionData.setNetContentWeight(netContentWeight);
-                        
-                        productionData.setPackagingWasteWeight(BigDecimal.ZERO);
-                        productionData.setDefectiveWeight(BigDecimal.ZERO);
-                        
-                        // 计算总投入量
-                        BigDecimal totalInput = inputMaterialItems.stream()
-                                .map(item -> item.getActualInput() != null ? item.getActualInput() : BigDecimal.ZERO)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        
-                        // 计算投入产出比 = 全部材料实际投入总和 / 净含量重量 * 100%
-                        BigDecimal inputOutputRatio = BigDecimal.ZERO;
-                        if (netContentWeight != null && netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
-                            inputOutputRatio = totalInput.divide(netContentWeight, 4, BigDecimal.ROUND_HALF_UP)
-                                    .multiply(new BigDecimal("100"));
+                    } else {
+                        // 占位符
+                        InputMaterialItem p = new InputMaterialItem();
+                        p.setMaterialNumber("-"); p.setMaterialName("-"); p.setRecordType("-"); p.setRecordUnit("-"); p.setPlannedInput("-"); p.setActualInput("-");
+                        inputMaterialItems.add(p);
+                    }
+                    productionData.setInputMaterialItems(inputMaterialItems);
+        
+                    // --- 2. 处理产出信息 (成品订单) ---
+                    if (!finishedOrders.isEmpty()) {
+                        BigDecimal totalPlannedOut = BigDecimal.ZERO;
+                        BigDecimal totalActualOut = BigDecimal.ZERO;
+                        BigDecimal totalNetWeight = BigDecimal.ZERO;
+        
+                        for (TBusOrderHead order : finishedOrders) {
+                            String oNo = order.getOrderNo();
+                            totalPlannedOut = totalPlannedOut.add(order.getBodyPlanPrdQty() != null ? order.getBodyPlanPrdQty() : BigDecimal.ZERO);
+                                    
+                            Long count = actualOutputCountMap.get(oNo);
+                            if (count != null && count > 0) {
+                                totalActualOut = totalActualOut.add(new BigDecimal(count).divide(getAValue(order), 2, BigDecimal.ROUND_HALF_UP));
+                            }
+                                    
+                            BigDecimal weight = netWeightAggMap.get(oNo);
+                            if (weight != null) totalNetWeight = totalNetWeight.add(weight);
                         }
-                        productionData.setInputOutputRatio(inputOutputRatio);
-                        
-                        // 计算单箱原辅料消耗 = 原辅料实际投入 / 实际产量
-                        BigDecimal rawMaterialInput = inputMaterialHistories.stream()
-                                .filter(h -> "1".equals(h.getRecordType()))
-                                .map(h -> h.getRecordQty() != null ? h.getRecordQty() : BigDecimal.ZERO)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        
-                        BigDecimal materialConsumptionPerBox = BigDecimal.ZERO;
-                        if (actualOutput != null && actualOutput.compareTo(BigDecimal.ZERO) > 0) {
-                            materialConsumptionPerBox = rawMaterialInput.divide(actualOutput, 4, BigDecimal.ROUND_HALF_UP);
-                        }
-                        productionData.setMaterialConsumptionPerBox(materialConsumptionPerBox);
-                        
-                        // 废次品比率
-                        BigDecimal defectiveRate = BigDecimal.ZERO;
-                        if (actualOutput.compareTo(BigDecimal.ZERO) > 0 && productionData.getDefectiveWeight() != null) {
-                            defectiveRate = productionData.getDefectiveWeight().divide(actualOutput, 4, BigDecimal.ROUND_HALF_UP);
-                        }
-                        productionData.setDefectiveRate(defectiveRate);
-                        
-                        productionData.setInputMaterialItems(inputMaterialItems);
-                        return productionData;
-                    });
+        
+                        productionData.setPlannedOutput(totalPlannedOut.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                        productionData.setActualOutput(totalActualOut.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                        productionData.setNetContentWeight(totalNetWeight.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                        productionData.setPackagingWasteWeight("0.00");
+                        productionData.setDefectiveWeight("0.00");
+                        productionData.setDefectiveRate("0.00");
+        
+                        if (totalNetWeight.compareTo(BigDecimal.ZERO) > 0) {
+                            productionData.setInputOutputRatio(totalActualInputSum.divide(totalNetWeight, 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                        } else productionData.setInputOutputRatio("-");
+        
+                        if (totalActualOut.compareTo(BigDecimal.ZERO) > 0) {
+                            productionData.setMaterialConsumptionPerBox(rawMaterialInputSum.divide(totalActualOut, 4, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                        } else productionData.setMaterialConsumptionPerBox("-");
+                    } else {
+                        productionData.setPlannedOutput("-"); productionData.setActualOutput("-"); productionData.setNetContentWeight("-");
+                        productionData.setPackagingWasteWeight("-"); productionData.setDefectiveWeight("-"); productionData.setInputOutputRatio("-");
+                        productionData.setMaterialConsumptionPerBox("-"); productionData.setDefectiveRate("-");
+                    }
+        
+                    return productionData;
                 })
-                .sorted(Comparator.comparing(ProductionData::getDate).reversed().thenComparing(ProductionData::getProductionLine))
                 .collect(Collectors.toList());
-
-        // 实现分页逻辑
-        int total = result.size();
-        int startIndex = current * size;
-        int endIndex = Math.min(startIndex + size, total);
-
-        List<ProductionData> pagedResult = new ArrayList<>();
-        if (startIndex < total) {
-            pagedResult = result.subList(startIndex, endIndex);
-        }
-
+    
         // 构建分页结果
         PageVo<ProductionData> pageResult = new PageVo<>();
         pageResult.setList(pagedResult);
-        pageResult.setTotal(total);
+        pageResult.setTotal(totalGroups);
         pageResult.setCurrent(current);
         pageResult.setSize(size);
-
+    
         return pageResult;
     }
     
@@ -488,5 +581,30 @@ public class ProductionDataServiceImpl implements ProductionDataService {
             default:
                 return "其他";
         }
+    }
+
+    /**
+     * 计算实际产量中的A值
+     */
+    private BigDecimal getAValue(TBusOrderHead head) {
+        if (head.getQtyPerJian() != null && head.getQtyPerJian().compareTo(BigDecimal.ZERO) > 0) {
+            return head.getQtyPerJian();
+        }
+        String spec = head.getBodyMaterialSpecification();
+        if (spec != null && spec.contains("*") && spec.contains("/")) {
+            try {
+                int start = spec.indexOf("*") + 1;
+                int end = spec.indexOf("/", start);
+                if (end > start) {
+                    String sub = spec.substring(start, end).replaceAll("[^0-9.]", "");
+                    if (!sub.isEmpty()) {
+                        return new BigDecimal(sub);
+                    }
+                }
+            } catch (Exception e) {
+                // 解析失败忽略
+            }
+        }
+        return BigDecimal.ONE;
     }
 }

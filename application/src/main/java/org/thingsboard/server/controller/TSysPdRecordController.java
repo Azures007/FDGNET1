@@ -54,8 +54,13 @@ public class TSysPdRecordController extends BaseController {
                                                                   @RequestParam(value = "sortField", defaultValue = "") String sortField,
                                                                   @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                   @RequestBody TSysPdRecordDto tSysPdRecordDto) throws ThingsboardException {
-        SecurityUser currentUser = getCurrentUser();
-        Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordList(currentUser.getId().toString(),current, size,sortField,sortOrder, tSysPdRecordDto);
+        // 获取当前登录用户ID
+        SecurityUser securityUser = getCurrentUser();
+        String currentUserId = securityUser.getId().getId().toString();
+        // 获取用户绑定的产线ID列表
+        List<String> userCwkids = userService.getUserCurrentCwkid(currentUserId);
+        
+        Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordList(currentUserId, userCwkids, current, size, sortField, sortOrder, tSysPdRecordDto);
         PageVo<TSysPdRecordVo> pageVo = new PageVo<>(pdRecordList);
         return ResultUtil.success(pageVo);
 
@@ -74,8 +79,13 @@ public class TSysPdRecordController extends BaseController {
                                                                         @RequestParam(value = "sortField", defaultValue = "") String sortField,
                                                                         @RequestParam(value = "sortOrder", defaultValue = "") String sortOrder,
                                                                         @RequestBody TSysPdRecordDto tSysPdRecordDto) throws ThingsboardException {
-        SecurityUser currentUser = getCurrentUser();
-        Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordListWithSplit(currentUser.getId().toString(), current, size, sortField, sortOrder, tSysPdRecordDto);
+        // 获取当前登录用户ID
+        SecurityUser securityUser = getCurrentUser();
+        String currentUserId = securityUser.getId().getId().toString();
+        // 获取用户绑定的产线ID列表
+        List<String> userCwkids = userService.getUserCurrentCwkid(currentUserId);
+        
+        Page<TSysPdRecordVo> pdRecordList = tSysPdRecordService.tSysPdRecordListWithSplit(currentUserId, userCwkids, current, size, sortField, sortOrder, tSysPdRecordDto);
         PageVo<TSysPdRecordVo> pageVo = new PageVo<>(pdRecordList);
         return ResultUtil.success(pageVo);
     }
@@ -97,8 +107,13 @@ public class TSysPdRecordController extends BaseController {
                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                          @RequestBody TSysPdRecordDto tSysPdRecordDto,
                          HttpServletResponse response) throws IOException, ThingsboardException {
-        SecurityUser currentUser = getCurrentUser();
-        tSysPdRecordExcelService.download(currentUser.getId().toString(), current, size, tSysPdRecordDto, response);
+        // 获取当前登录用户ID
+        SecurityUser securityUser = getCurrentUser();
+        String currentUserId = securityUser.getId().getId().toString();
+        // 获取用户绑定的产线ID列表
+        List<String> userCwkids = userService.getUserCurrentCwkid(currentUserId);
+        
+        tSysPdRecordExcelService.download(currentUserId, userCwkids, current, size, tSysPdRecordDto, response);
     }
 
     /**
@@ -110,7 +125,12 @@ public class TSysPdRecordController extends BaseController {
                                   @RequestParam(value = "size", defaultValue = "10") Integer size,
                                   @RequestBody TSysPdRecordDto tSysPdRecordDto,
                                   HttpServletResponse response) throws IOException, ThingsboardException {
-        SecurityUser currentUser = getCurrentUser();
-        tSysPdRecordExcelService.downloadWithSplit(currentUser.getId().toString(), current, size, tSysPdRecordDto, response);
+        // 获取当前登录用户ID
+        SecurityUser securityUser = getCurrentUser();
+        String currentUserId = securityUser.getId().getId().toString();
+        // 获取用户绑定的产线ID列表
+        List<String> userCwkids = userService.getUserCurrentCwkid(currentUserId);
+        
+        tSysPdRecordExcelService.downloadWithSplit(currentUserId, userCwkids, current, size, tSysPdRecordDto, response);
     }
 }

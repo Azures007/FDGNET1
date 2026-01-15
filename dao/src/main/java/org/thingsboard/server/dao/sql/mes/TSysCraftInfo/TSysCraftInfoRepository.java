@@ -9,4 +9,9 @@ import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
  * @Description:
  */
 public interface TSysCraftInfoRepository extends JpaRepository<TSysCraftInfo,Integer> {
+
+    /**
+     * 根据工艺名称查询工艺信息
+     */
+    TSysCraftInfo findByCraftName(String craftName);
 }

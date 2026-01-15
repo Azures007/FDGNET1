@@ -289,6 +289,104 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         vo.setNetContent(netContent);
     }
 
+    private BigDecimal calculatePlannedInput(Map<String, TSysRecipeInput> recipeMaterialMap, Map materialPpbom, String materialNumber, String groupCode) {
+        if (materialPpbom == null) return BigDecimal.ZERO;
+        
+        Object mustQtyObj = materialPpbom.get("must_qty");
+        if (mustQtyObj == null) return BigDecimal.ZERO;
+        BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
+        
+        if (recipeMaterialMap == null || recipeMaterialMap.isEmpty()) {
+            return mustQty;
+        }
+
+        TSysRecipeInput recipeInput = null;
+        if (StringUtils.isNotEmpty(groupCode)) {
+            recipeInput = recipeMaterialMap.get(groupCode + "_" + materialNumber);
+        }
+        if (recipeInput == null) {
+            recipeInput = recipeMaterialMap.get("null_" + materialNumber);
+        }
+        if (recipeInput == null) {
+            recipeInput = recipeMaterialMap.get("_" + materialNumber);
+        }
+        if (recipeInput == null) {
+            recipeInput = recipeMaterialMap.values().stream()
+                    .filter(in -> in != null && StringUtils.equals(in.getMaterialCode(), materialNumber))
+                    .findFirst().orElse(null);
+        }
+
+        BigDecimal planInputRatio = (recipeInput != null && recipeInput.getPlanInputRatio() != null) 
+                ? recipeInput.getPlanInputRatio() 
+                : new BigDecimal("100.00");
+        
+        return mustQty.multiply(planInputRatio).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP);
+    }
+
+    private Integer calculatePlannedPotCount(Map<String, TSysRecipeInput> recipeMaterialMap, List<Map> orderPpbomList, String groupCode, TBusOrderHead orderHead) {
+        if (recipeMaterialMap == null || recipeMaterialMap.isEmpty() || orderPpbomList == null || orderPpbomList.isEmpty()) {
+            return orderHead != null && orderHead.getBodyPotQty() != null ? orderHead.getBodyPotQty() : 0;
+        }
+
+        // 模仿 getOrderPpbom 逻辑：查找锅数计算基准='1'的物料
+        for (Map ppbom : orderPpbomList) {
+            String materialNumber = (String) ppbom.get("material_number");
+            if (materialNumber == null) continue;
+
+            TSysRecipeInput recipeInput = null;
+            // 1. 优先使用分组编码匹配
+            if (StringUtils.isNotEmpty(groupCode)) {
+                recipeInput = recipeMaterialMap.get(groupCode + "_" + materialNumber);
+            }
+            
+            // 2. 如果没找到或基准不匹配，尝试各种 fallback 匹配方式
+            if (recipeInput == null || !"1".equals(recipeInput.getPotCalculationBasis())) {
+                // 尝试 null_ 前缀
+                recipeInput = recipeMaterialMap.get("null_" + materialNumber);
+                
+                // 尝试 ""_ 前缀
+                if (recipeInput == null || !"1".equals(recipeInput.getPotCalculationBasis())) {
+                    recipeInput = recipeMaterialMap.get("_" + materialNumber);
+                }
+                
+                // 3. 遍历查找匹配的物料编码（同时匹配锅数计算基准='1'）
+                if (recipeInput == null || !"1".equals(recipeInput.getPotCalculationBasis())) {
+                    recipeInput = recipeMaterialMap.values().stream()
+                            .filter(input -> input != null 
+                                    && materialNumber.equals(input.getMaterialCode())
+                                    && "1".equals(input.getPotCalculationBasis()))
+                            .findFirst()
+                            .orElse(null);
+                }
+            }
+
+            // 4. 检查是否满足锅数计算基准='1'
+            if (recipeInput != null && "1".equals(recipeInput.getPotCalculationBasis())) {
+                Object mustQtyObj = ppbom.get("must_qty");
+                BigDecimal standardInput = recipeInput.getStandardInput();
+                
+                if (mustQtyObj != null && standardInput != null && standardInput.compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
+                    BigDecimal planInputRatio = recipeInput.getPlanInputRatio();
+                    if (planInputRatio == null) planInputRatio = new BigDecimal("100.00");
+                    
+                    // 计算调整后的计划投入量 = 用料清单的需求量 * 计划投入比例% / 100
+                    BigDecimal adjustedMustQty = mustQty.multiply(planInputRatio).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP);
+                    
+                    if (adjustedMustQty.compareTo(BigDecimal.ZERO) > 0) {
+                        // 计算计划锅数 = 计划投入 / 每锅投入标准，向上取整
+                        // 注意：这里先用 HALF_UP 保留两位小数，再用 UP 向上取整，完全同步 getOrderPpbom 逻辑
+                        BigDecimal planPotCount = adjustedMustQty.divide(standardInput, 2, BigDecimal.ROUND_HALF_UP);
+                        return planPotCount.setScale(0, BigDecimal.ROUND_UP).intValue();
+                    }
+                }
+            }
+        }
+        
+        // 如果没找到计算基准物料，默认返回订单头的计划锅数
+        return orderHead != null && orderHead.getBodyPotQty() != null ? orderHead.getBodyPotQty() : 0;
+    }
+
     private List<ProcessGroupInfoVo> getProcessGroupInfoListWithContext(String orderNo, Map<String, Object> context) {
         // 1. 获取基础数据
         Map<String, List<TBusOrderHead>> orderHeadMap = (Map<String, List<TBusOrderHead>>) context.get("orderHeads");
@@ -298,14 +396,14 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         Integer orderId = orderHead.getOrderId();
         String orderProductCode = orderHead.getBodyMaterialNumber();
         
-        // 2. 获取报工历史记录并按工序执行ID分组
+        // 2. 获取报工历史记录并按工序执行ID和分组编码(半成品)分组
         Map<String, List<TBusOrderProcessHistory>> historyRecordMap = (Map<String, List<TBusOrderProcessHistory>>) context.get("historyRecords");
         List<TBusOrderProcessHistory> historyRecords = historyRecordMap.getOrDefault(orderNo, new ArrayList<>());
         
-        // 按 orderProcessId 分组报工记录，支持相同工序编号的多个实例
-        Map<Integer, List<TBusOrderProcessHistory>> reportingProcessMap = historyRecords.stream()
+        // 按 orderProcessId + groupCode 分组报工记录，支持同个工序下不同半成品的拆分
+        Map<String, List<TBusOrderProcessHistory>> reportingProcessMap = historyRecords.stream()
             .filter(r -> r.getOrderProcessId() != null)
-            .collect(Collectors.groupingBy(TBusOrderProcessHistory::getOrderProcessId, LinkedHashMap::new, Collectors.toList()));
+            .collect(Collectors.groupingBy(r -> r.getOrderProcessId() + "_" + (r.getGroupCode() != null ? r.getGroupCode() : ""), LinkedHashMap::new, Collectors.toList()));
 
         // 3. 获取配方默认工序信息
         Map<String, Map<String, Map<String, TSysRecipeInput>>> productRecipeProcessMap = (Map<String, Map<String, Map<String, TSysRecipeInput>>>) context.get("productRecipeProcessMap");
@@ -324,35 +422,34 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         Set<String> handledProcessNumbers = new HashSet<>();
 
         // 6. 首先处理有报工记录的工序
-        for (Map.Entry<Integer, List<TBusOrderProcessHistory>> entry : reportingProcessMap.entrySet()) {
-            Integer orderProcessId = entry.getKey();
+        for (Map.Entry<String, List<TBusOrderProcessHistory>> entry : reportingProcessMap.entrySet()) {
             List<TBusOrderProcessHistory> records = entry.getValue();
             if (records.isEmpty()) continue;
 
             TBusOrderProcessHistory firstHistory = records.get(0);
+            Integer orderProcessId = firstHistory.getOrderProcessId();
             String processNumber = firstHistory.getProcessNumber();
+            String groupCode = firstHistory.getGroupCode();
             TBusOrderProcess orderProcess = orderProcessByIdMap.get(orderProcessId);
             
             ProcessGroupInfoVo groupVo = new ProcessGroupInfoVo();
             groupVo.setProcessName(firstHistory.getProcessName());
             groupVo.setProcessStatus(orderProcess != null ? getProcessStatusDescription(orderProcess.getProcessStatus()) : "未知");
-            groupVo.setGroupKey(String.valueOf(orderProcessId));
+            groupVo.setGroupKey(orderProcessId + "_" + (groupCode != null ? groupCode : ""));
             
             // 处理该工序下的物料
-            List<ProcessMaterialInfoVo> materialInfoList = processReportingMaterials(records, orderHead, materialPpbomMap, recipeProcessMap.get(processNumber), orderPpbomList);
+            List<ProcessMaterialInfoVo> materialInfoList = processReportingMaterials(records, orderHead, materialPpbomMap, recipeProcessMap.get(processNumber), orderPpbomList, groupCode);
             groupVo.setMaterialInfoList(materialInfoList);
             
             finalResult.add(groupVo);
             if (processNumber != null) {
-                handledProcessNumbers.add(processNumber);
+                handledProcessNumbers.add(processNumber + "_" + (groupCode != null ? groupCode : ""));
             }
         }
 
         // 7. 处理没有报工记录但配方中存在的默认工序
         for (Map.Entry<String, Map<String, TSysRecipeInput>> entry : recipeProcessMap.entrySet()) {
             String processNumber = entry.getKey();
-            if (handledProcessNumbers.contains(processNumber)) continue;
-
             Map<String, TSysRecipeInput> recipeMaterials = entry.getValue();
             if (recipeMaterials.isEmpty()) continue;
 
@@ -364,6 +461,9 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                 TSysRecipeInput firstInput = subGroupInputs.get(0);
                 String semiFinishedProductCode = firstInput.getSemiFinishedProductCode() == null ? "" : firstInput.getSemiFinishedProductCode();
                 
+                // 如果该工序+半成品已经有报工记录，则跳过默认展示
+                if (handledProcessNumbers.contains(processNumber + "_" + semiFinishedProductCode)) continue;
+
                 // 获取工序名称
                 TSysProcessInfo processInfo = allProcessMap.get(processNumber);
                 String processName = processInfo != null ? processInfo.getProcessName() : firstInput.getProcessName();
@@ -373,15 +473,22 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                 groupVo.setProcessStatus("未开工");
                 groupVo.setGroupKey(processNumber + "_" + semiFinishedProductCode);
 
+                // 计算该分组的计划锅数
+                Integer planPotCount = calculatePlannedPotCount(recipeMaterials, orderPpbomList, semiFinishedProductCode, orderHead);
+
                 List<ProcessMaterialInfoVo> materialInfoList = new ArrayList<>();
                 for (TSysRecipeInput recipeInput : subGroupInputs) {
                     ProcessMaterialInfoVo materialVo = new ProcessMaterialInfoVo();
                     materialVo.setMaterialCode(recipeInput.getMaterialCode());
                     materialVo.setMaterialName(recipeInput.getMaterialName());
                     materialVo.setUnit(recipeInput.getUnit());
-                    materialVo.setPlannedInput(BigDecimal.ZERO);
+                    
+                    // 设置计划投入：从BOM获取并按配方比例调整
+                    Map ppbom = materialPpbomMap.get(recipeInput.getMaterialCode());
+                    materialVo.setPlannedInput(calculatePlannedInput(recipeMaterials, ppbom, recipeInput.getMaterialCode(), semiFinishedProductCode));
+                    
                     materialVo.setActualInput(BigDecimal.ZERO);
-                    materialVo.setPlannedPotCount(0);
+                    materialVo.setPlannedPotCount(planPotCount);
                     materialVo.setActualAccumulatedPotCount(0);
                     materialVo.setDefectiveWeight(BigDecimal.ZERO);
                     materialInfoList.add(materialVo);
@@ -396,7 +503,7 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
 
     private List<ProcessMaterialInfoVo> processReportingMaterials(List<TBusOrderProcessHistory> records, TBusOrderHead orderHead, 
                                                                  Map<String, Map> materialPpbomMap, Map<String, TSysRecipeInput> recipeMaterialMap,
-                                                                 List<Map> orderPpbomList) {
+                                                                 List<Map> orderPpbomList, String groupCode) {
         List<ProcessMaterialInfoVo> materialInfoList = new ArrayList<>();
         Map<String, List<TBusOrderProcessHistory>> materialGroupMap = records.stream()
             .collect(Collectors.groupingBy(TBusOrderProcessHistory::getMaterialNumber));
@@ -404,30 +511,8 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         // 如果该工序没有报工记录对应的配方，创建一个空的Map避免空指针
         if (recipeMaterialMap == null) recipeMaterialMap = Collections.emptyMap();
 
-        // 计算计划锅数 (复用原有逻辑)
-        Integer calculatedPlanPotCount = null;
-        for (Map otherPpbom : orderPpbomList) {
-            String otherMaterialNumber = (String) otherPpbom.get("material_number");
-            TSysRecipeInput otherRecipeInput = recipeMaterialMap.get("null_" + otherMaterialNumber);
-            if (otherRecipeInput == null) otherRecipeInput = recipeMaterialMap.get("_" + otherMaterialNumber);
-            
-            if (otherRecipeInput != null && "1".equals(otherRecipeInput.getPotCalculationBasis())) {
-                Object mustQtyObj = otherPpbom.get("must_qty");
-                BigDecimal standardInput = otherRecipeInput.getStandardInput();
-                if (mustQtyObj != null && standardInput != null && standardInput.compareTo(BigDecimal.ZERO) > 0) {
-                    BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
-                    Object planInputRatioObj = otherRecipeInput.getPlanInputRatio() != null ? otherRecipeInput.getPlanInputRatio() : otherPpbom.get("plan_input_ratio");
-                    if (planInputRatioObj != null) {
-                        mustQty = mustQty.multiply(new BigDecimal(planInputRatioObj.toString())).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP);
-                    }
-                    calculatedPlanPotCount = mustQty.divide(standardInput, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_UP).intValue();
-                    break;
-                }
-            }
-        }
-        if (calculatedPlanPotCount == null) {
-            calculatedPlanPotCount = orderHead.getBodyPotQty() != null ? orderHead.getBodyPotQty() : 0;
-        }
+        // 计算计划锅数
+        Integer calculatedPlanPotCount = calculatePlannedPotCount(recipeMaterialMap, orderPpbomList, groupCode, orderHead);
 
         for (Map.Entry<String, List<TBusOrderProcessHistory>> materialEntry : materialGroupMap.entrySet()) {
             String materialNumber = materialEntry.getKey();
@@ -444,20 +529,9 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
             int actualAccumulatedPotCount = (int) materialRecords.stream().filter(r -> "1".equals(r.getRecordType())).count();
             materialInfo.setActualAccumulatedPotCount(actualAccumulatedPotCount);
             
-            // 设置计划投入
-            BigDecimal plannedInput = BigDecimal.ZERO;
+            // 设置计划投入：从BOM获取并按配方比例调整
             Map ppbom = materialPpbomMap.get(materialNumber);
-            if (ppbom != null) {
-                Object mustQtyObj = ppbom.get("must_qty");
-                TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + materialNumber);
-                if (recipeInput == null) recipeInput = recipeMaterialMap.get("_" + materialNumber);
-                Object ratioObj = (recipeInput != null && recipeInput.getPlanInputRatio() != null) ? recipeInput.getPlanInputRatio() : ppbom.get("plan_input_ratio");
-                if (mustQtyObj != null) {
-                    BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
-                    plannedInput = (ratioObj != null) ? mustQty.multiply(new BigDecimal(ratioObj.toString())).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP) : mustQty;
-                }
-            }
-            materialInfo.setPlannedInput(plannedInput);
+            materialInfo.setPlannedInput(calculatePlannedInput(recipeMaterialMap, ppbom, materialNumber, groupCode));
 
             // 设置实际投入和残次品重量
             BigDecimal actualInput = BigDecimal.ZERO;

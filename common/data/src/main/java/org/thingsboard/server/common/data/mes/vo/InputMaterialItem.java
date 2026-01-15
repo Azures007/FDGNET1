@@ -26,8 +26,8 @@ public class InputMaterialItem {
     private String recordUnit;
 
     @ApiModelProperty(value = "计划投入")
-    private BigDecimal plannedInput;
+    private String plannedInput;
 
     @ApiModelProperty(value = "实际投入")
-    private BigDecimal actualInput;
+    private String actualInput;
 }

@@ -23,16 +23,19 @@ public class TSysPdRecordExcelServiceImpl implements TSysPdRecordExcelService {
     @Autowired
     private TSysPdRecordService tSysPdRecordService;
 
+    @Autowired
+    private org.thingsboard.server.dao.user.UserService userService;
+
     @Override
-    public void download(String userId, Integer current, Integer size,
+    public void download(String currentUserId, List<String> userCwkids, Integer current, Integer size,
                          TSysPdRecordDto tSysPdRecordDto, HttpServletResponse response) throws IOException {
-        downloadWithoutReturn(userId, current, size, tSysPdRecordDto, response);
+        downloadWithoutReturn(currentUserId, userCwkids, current, size, tSysPdRecordDto, response);
     }
 
     @Override
-    public void downloadWithSplit(String userId, Integer current, Integer size,
+    public void downloadWithSplit(String currentUserId, List<String> userCwkids, Integer current, Integer size,
                                   TSysPdRecordDto tSysPdRecordDto, HttpServletResponse response) throws IOException {
-        var page = tSysPdRecordService.tSysPdRecordListWithSplit(userId, current, size, "", "", tSysPdRecordDto);
+        var page = tSysPdRecordService.tSysPdRecordListWithSplit(currentUserId, userCwkids, current, size, "", "", tSysPdRecordDto);
         List<TSysPdRecordExcelVo> excelVos = new ArrayList<>();
         int index = 1;
         for (TSysPdRecordVo vo : page.getContent()) {
@@ -52,9 +55,9 @@ public class TSysPdRecordExcelServiceImpl implements TSysPdRecordExcelService {
     }
 
     @Override
-    public void downloadWithoutReturn(String userId, Integer current, Integer size,
+    public void downloadWithoutReturn(String currentUserId, List<String> userCwkids, Integer current, Integer size,
                                       TSysPdRecordDto tSysPdRecordDto, HttpServletResponse response) throws IOException {
-        var page = tSysPdRecordService.tSysPdRecordList(userId, current, size, "", "", tSysPdRecordDto);
+        var page = tSysPdRecordService.tSysPdRecordList(currentUserId, userCwkids, current, size, "", "", tSysPdRecordDto);
         List<TSysPdRecordExcelWithoutReturnVo> excelVos = new ArrayList<>();
         int index = 1;
         for (TSysPdRecordVo vo : page.getContent()) {

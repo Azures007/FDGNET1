@@ -7,17 +7,20 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.mes.vo.ProductionData;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.dto.ProductionDataQueryDto;
 import org.thingsboard.server.dao.mes.production.ProductionDataService;
 import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.service.security.model.SecurityUser;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 投入产出比报表控制器
@@ -26,7 +29,7 @@ import java.util.Date;
 @Api(tags = "投入产出比报表")
 @RestController
 @RequestMapping("/api/inputoutputratio")
-public class ProductionDataController {
+public class ProductionDataController extends BaseController {
 
     @Autowired
     private ProductionDataService productionDataService;
@@ -42,21 +45,33 @@ public class ProductionDataController {
     public ResponseResult<PageVo<ProductionData>> query(
             @RequestParam(value = "current", defaultValue = "0") Integer current,
             @RequestParam(value = "size", defaultValue = "10") Integer size,
-            @RequestBody ProductionDataQueryDto queryDto) {
-        return ResultUtil.success(productionDataService.queryProductionData(current, size, queryDto));
+            @RequestBody ProductionDataQueryDto queryDto) throws ThingsboardException {
+        // 获取当前登录用户ID
+        SecurityUser securityUser = getCurrentUser();
+        String currentUserId = securityUser.getId().getId().toString();
+        // 获取用户绑定的产线ID列表
+        List<String> userCwkids = userService.getUserCurrentCwkid(currentUserId);
+        
+        return ResultUtil.success(productionDataService.queryProductionData(userCwkids, current, size, queryDto));
     }
 
     @ApiOperation("导出投入产出比报表")
     @PostMapping("/export")
     public void export(@RequestBody ProductionDataQueryDto queryDto, HttpServletResponse response) {
         try {
+            // 获取当前登录用户ID
+            SecurityUser securityUser = getCurrentUser();
+            String currentUserId = securityUser.getId().getId().toString();
+            // 获取用户绑定的产线ID列表
+            List<String> userCwkids = userService.getUserCurrentCwkid(currentUserId);
+
             String fileName = "投入产出比报表_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             response.setCharacterEncoding("utf-8");
             fileName = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
             response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 
-            productionDataService.exportProductionData(queryDto, response);
+            productionDataService.exportProductionData(userCwkids, queryDto, response);
         } catch (Exception e) {
             try {
                 response.reset();

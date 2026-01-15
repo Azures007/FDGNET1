@@ -16,7 +16,8 @@ import java.util.List;
 public interface TSysPdRecordService {
     /**
      * 盘点记录列表
-     * @param userId
+     * @param currentUserId
+     * @param userCwkids
      * @param current
      * @param size
      * @param sortField
@@ -24,11 +25,12 @@ public interface TSysPdRecordService {
      * @param tSysPdRecordDto
      * @return
      */
-    Page<TSysPdRecordVo> tSysPdRecordList(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto);
+    Page<TSysPdRecordVo> tSysPdRecordList(String currentUserId, List<String> userCwkids, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto);
 
     /**
      * 盘点还原记录列表
-     * @param userId
+     * @param currentUserId
+     * @param userCwkids
      * @param current
      * @param size
      * @param sortField
@@ -36,7 +38,7 @@ public interface TSysPdRecordService {
      * @param tSysPdRecordDto
      * @return
      */
-    Page<TSysPdRecordVo> tSysPdRecordListWithSplit(String userId, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto);
+    Page<TSysPdRecordVo> tSysPdRecordListWithSplit(String currentUserId, List<String> userCwkids, Integer current, Integer size, String sortField, String sortOrder, TSysPdRecordDto tSysPdRecordDto);
     
     /**
      * 审核盘点记录

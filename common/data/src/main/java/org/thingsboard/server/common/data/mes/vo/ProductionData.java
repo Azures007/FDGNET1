@@ -21,28 +21,28 @@ public class ProductionData {
     private String productionLine;
 
     @ApiModelProperty(value = "计划产量")
-    private BigDecimal plannedOutput;
+    private String plannedOutput;
 
     @ApiModelProperty(value = "实际产量")
-    private BigDecimal actualOutput;
+    private String actualOutput;
 
     @ApiModelProperty(value = "净含量重量")
-    private BigDecimal netContentWeight;
+    private String netContentWeight;
 
     @ApiModelProperty(value = "包膜废品重量")
-    private BigDecimal packagingWasteWeight;
+    private String packagingWasteWeight;
 
     @ApiModelProperty(value = "废次品重量")
-    private BigDecimal defectiveWeight;
+    private String defectiveWeight;
 
     @ApiModelProperty(value = "投入产出比")
-    private BigDecimal inputOutputRatio;
+    private String inputOutputRatio;
 
     @ApiModelProperty(value = "单箱原辅料消耗")
-    private BigDecimal materialConsumptionPerBox;
+    private String materialConsumptionPerBox;
 
     @ApiModelProperty(value = "废次品比率")
-    private BigDecimal defectiveRate;
+    private String defectiveRate;
 
     @ApiModelProperty(value = "投入信息列表")
     private List<InputMaterialItem> inputMaterialItems;

@@ -21,4 +21,7 @@ public class ProductionDataQueryDto {
     @ApiModelProperty(value = "结束时间")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
     private Date endTime;
+
+    @ApiModelProperty(value = "产线id")
+    private String cwkid;
 }
