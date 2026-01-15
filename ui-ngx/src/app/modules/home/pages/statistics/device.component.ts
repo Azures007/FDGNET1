@@ -142,4 +142,8 @@ export class DeviceComponent implements OnInit {
 
     this.getTableData();
   }
+  format(second) {
+    // 转换成小时，保留一位小数
+    return (second / 60 / 60).toFixed(1);
+  }
 }
