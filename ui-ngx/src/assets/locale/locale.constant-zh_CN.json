@@ -124,8 +124,8 @@
       "domain-schema-http": "HTTP",
       "domain-schema-https": "HTTPS",
       "domain-schema-mixed": "HTTP+HTTPS",
-      "email-attribute-key": "电子邮件属性键",
-      "email-attribute-key-required": "电子邮件属性密钥必填。",
+      "email-attribute-key": "账号属性键",
+      "email-attribute-key-required": "账号属性密钥必填。",
       "enable": "启用OAuth2设置",
       "first-name-attribute-key": "名字属性键",
       "general": "General",
@@ -206,7 +206,7 @@
     "twilio-account-sid-required": "Twilio 帐户的 SID 必填",
     "twilio-account-token": "Twilio帐户令牌",
     "twilio-account-token-required": "Twilio 帐户令牌必填",
-    "user-lockout-notification-email": "如果用户帐户锁定，请发送通知到电子邮件"
+    "user-lockout-notification-email": "如果用户帐户锁定，请发送通知到账号"
   },
   "aggregation": {
     "aggregation": "聚合",
@@ -552,7 +552,7 @@
     "address2": "地址2",
     "city": "城市",
     "country": "国家",
-    "email": "电子邮件",
+    "email": "账号",
     "no-address": "无地址",
     "phone": "电话",
     "postal-code": "邮政编码",
@@ -1129,7 +1129,7 @@
     "city": "城市",
     "country": "国家",
     "created-time": "创建时间",
-    "email": "电子邮件",
+    "email": "账号",
     "first-name": "名字",
     "label": "标签",
     "last-name": "姓",
@@ -1906,7 +1906,7 @@
   },
   "login": {
     "create-password": "创建密码",
-    "email": "电子邮件",
+    "email": "账号",
     "error": "登录错误",
     "expired-password-reset-message": "您的凭据已过期！请创建新密码。",
     "forgot-password": "忘记密码？",
@@ -1923,8 +1923,8 @@
     "request-password-reset": "请求密码重置",
     "reset-password": "重置密码",
     "sign-in": "登录 ",
-    "username": "用户名（电子邮件）",
-    "account": "账号（电子邮件）"
+    "username": "用户名（账号）",
+    "account": "账号（账号）"
   },
   "ota-update": {
     "add": "添加包",
@@ -2195,9 +2195,9 @@
     "max-d-p-storage-days": "最大日存储数据点数（0-无限制）",
     "max-d-p-storage-days-range": "最大日存储数据点数不能为负数",
     "max-d-p-storage-days-required": "最大日存储数据点数必填。",
-    "max-emails": "发送的最大电子邮件数（0-无限制）",
-    "max-emails-range": "发送的最大电子邮件数不能为负数",
-    "max-emails-required": "最大电子邮件发送数必填。",
+    "max-emails": "发送的最大账号数（0-无限制）",
+    "max-emails-range": "发送的最大账号数不能为负数",
+    "max-emails-required": "最大账号发送数必填。",
     "max-j-s-executions": "最大JavaScript执行数（0-不受限制）",
     "max-j-s-executions-range": "JavaScript的最大执行数不能为负数",
     "max-j-s-executions-required": "最大JavaScript执行数必填。",
@@ -2328,7 +2328,7 @@
     "timezone-required": "时区必填。"
   },
   "user": {
-    "activation-email-sent-message": "激活电子邮件已成功发送！",
+    "activation-email-sent-message": "激活账号已成功发送！",
     "activation-link": "用户激活链接",
     "activation-link-copied-message": "用户激活链接已经复制到粘贴板",
     "activation-link-text": "使用该链接 <a href='{{activationLink}}' target='_blank'>激活</a> 激活用户:",
@@ -2352,8 +2352,8 @@
     "disable-account": "禁用用户帐户",
     "disable-account-message": "已成功禁用用户帐户！",
     "display-activation-link": "显示激活链接",
-    "email": "电子邮件",
-    "email-required": "电子邮件必填。",
+    "email": "账号",
+    "email-required": "账号必填。",
     "enable-account": "启用用户帐户",
     "enable-account-message": "已成功启用用户帐户！",
     "first-name": "名字",

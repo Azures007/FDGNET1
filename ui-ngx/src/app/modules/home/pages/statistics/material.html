@@ -16,6 +16,10 @@
       <label class="label">产品名称</label>
       <input class="input" [(ngModel)]="searchFormGroup.value.productName" />
     </div>
+    <div class="row-block cols4">
+      <label class="label">订单号</label>
+      <input class="input" [(ngModel)]="searchFormGroup.value.orderNo" />
+    </div>
 
     <div class="row-block cols4">
       <label class="label"></label>
@@ -41,7 +45,7 @@
       <thead>
         <tr>
           <th colspan="4">订单基础信息</th>
-          <th colspan="2">合格品信息</th>
+          <th colspan="3">合格品信息</th>
           <th colspan="10">原料投入信息</th>
         </tr>
         <tr>
@@ -51,6 +55,7 @@
           <th width="100px">产品名称</th>
           <th width="100px">计划产量(件)</th>
           <th width="100px">实际产量(件)</th>
+          <th width="100px">净含量(kg)</th>
           <th width="100px">工序名称</th>
           <th width="100px">工序状态</th>
           <th width="100px">物料编码</th>
@@ -75,6 +80,7 @@
                   <td [attr.rowspan]="firstItem.firstColsNum" *ngIf="secondIndex == 0 && thirdIndex == 0">{{firstItem.productName}}</td>
                   <td [attr.rowspan]="firstItem.firstColsNum" *ngIf="secondIndex == 0 && thirdIndex == 0">{{firstItem.plannedOutput}}</td>
                   <td [attr.rowspan]="firstItem.firstColsNum" *ngIf="secondIndex == 0 && thirdIndex == 0">{{firstItem.actualOutput}}</td>
+                  <td [attr.rowspan]="firstItem.firstColsNum" *ngIf="secondIndex == 0 && thirdIndex == 0">{{firstItem.netContent}}</td>
                   <td [attr.rowspan]="secondItem.secondColsNum" *ngIf="thirdIndex == 0">{{secondItem.processName}}</td>
                   <td [attr.rowspan]="secondItem.secondColsNum" *ngIf="thirdIndex == 0">{{secondItem.processStatus}}</td>
                   <td>{{thirdItem.materialCode}}</td>
@@ -97,6 +103,7 @@
               <td [attr.rowspan]="firstItem.firstColsNum">{{firstItem.productName}}</td>
               <td [attr.rowspan]="firstItem.firstColsNum">{{firstItem.plannedOutput}}</td>
               <td [attr.rowspan]="firstItem.firstColsNum">{{firstItem.actualOutput}}</td>
+              <td [attr.rowspan]="firstItem.firstColsNum">{{firstItem.netContent}}</td>
               <td></td>
               <td></td>
               <td></td>

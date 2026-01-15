@@ -17,6 +17,9 @@ public class ProcessGroupInfoVo {
     @ApiModelProperty("工序状态")
     private String processStatus;
 
+    @ApiModelProperty("工序分组标识(用于合并)")
+    private String groupKey;
+
     @ApiModelProperty("工序下的物料信息列表")
     private List<ProcessMaterialInfoVo> materialInfoList;
 }

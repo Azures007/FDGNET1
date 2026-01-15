@@ -22,6 +22,14 @@
       <input class="input" [(ngModel)]="searchFormGroup.value.materialName" />
     </div>
     <div class="row-block cols4">
+      <label class="label">生产线：</label>
+      <select required [(ngModel)]="searchFormGroup.value.cwkLine">
+        <option *ngFor="let item of cwkList" [value]="item.cwkid">
+          {{item.vwkname}}
+        </option>
+      </select>
+    </div>
+    <div class="row-block cols4">
       <label class="label"></label>
       <div class="btn-group">
         <button class="search_btn" (click)="getTableData()">
