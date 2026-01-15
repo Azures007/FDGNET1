@@ -282,6 +282,15 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
     BigDecimal avgQtyByMykey(String name, String key,Long dateFront,Long dateLater);
 
     /**
+     * 统计设备上报数据
+     */
+    @Query(value = "select count(*) from ts_kv a \n" +
+            "join device b on a.entity_id =b.id \n" +
+            "join ts_kv_dictionary c on a.\"key\" =c.key_id \n" +
+            "where c.\"key\" =?2 and b.name=?1 and a.ts between ?3 and ?4 ",nativeQuery = true)
+    BigDecimal countQtyByMykey(String name, String key,Long dateFront,Long dateLater);
+
+    /**
      * 超标次数
      * @param name
      * @param inTepmSize
