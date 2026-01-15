@@ -101,94 +101,94 @@ public class BoardServiceImpl implements BoardService {
         List<Map> deviceMaps = deviceRepository.findLikeName("Oven");
         if (deviceMaps != null && deviceMaps.size() > 0) {
             List<Device> devices = JSON.parseArray(JSON.toJSONString(deviceMaps), Device.class);
-            List<OvenDeviceRunVo> ovenDeviceRunVos=new ArrayList<>();
+            List<OvenDeviceRunVo> ovenDeviceRunVos = new ArrayList<>();
             for (Device device : devices) {
-                OvenDeviceRunVo ovenDeviceRunVo=new OvenDeviceRunVo();
+                OvenDeviceRunVo ovenDeviceRunVo = new OvenDeviceRunVo();
                 Long byDateFrontTimes = simpleDateFormat.parse(byDateFront).getTime();
                 Long byDateLaterTimes = simpleDateFormat.parse(byDateLater).getTime();
                 ovenDeviceRunVo.setRunDate(format.format(simpleDateFormat.parse(byDateFront)));
                 ovenDeviceRunVo.setDeviceCode(device.getName());
                 ovenDeviceRunVo.setDeviceName(device.getName());
                 //总运行时长
-                BigDecimal runSeund=deviceRepository.sumQtyByMykey(device.getName(),
-                        "开机时间",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal runSeund = deviceRepository.sumQtyByMykey(device.getName(),
+                        "开机时间", byDateFrontTimes, byDateLaterTimes);
                 ovenDeviceRunVo.setRunSeund(runSeund.longValue());
 
-                BigDecimal maxOneTempT1=deviceRepository.maxQtyByMykey(device.getName(),
-                        "一区上温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal maxOneTempT1 = deviceRepository.maxQtyByMykey(device.getName(),
+                        "一区上温度", byDateFrontTimes, byDateLaterTimes);
 
-                BigDecimal maxOneTempT2=deviceRepository.maxQtyByMykey(device.getName(),
-                        "一区下温度",byDateFrontTimes,byDateLaterTimes);
-                ovenDeviceRunVo.setMaxOneTemp(maxOneTempT1.compareTo(maxOneTempT2)==1?maxOneTempT1:maxOneTempT2);
+                BigDecimal maxOneTempT2 = deviceRepository.maxQtyByMykey(device.getName(),
+                        "一区下温度", byDateFrontTimes, byDateLaterTimes);
+                ovenDeviceRunVo.setMaxOneTemp(maxOneTempT1.compareTo(maxOneTempT2) == 1 ? maxOneTempT1 : maxOneTempT2);
 
-                BigDecimal minOneTempT1=deviceRepository.minQtyByMykey(device.getName(),
-                        "一区上温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal minOneTempT1 = deviceRepository.minQtyByMykey(device.getName(),
+                        "一区上温度", byDateFrontTimes, byDateLaterTimes);
 
-                BigDecimal minOneTempT2=deviceRepository.minQtyByMykey(device.getName(),
-                        "一区下温度",byDateFrontTimes,byDateLaterTimes);
-                ovenDeviceRunVo.setMinOneTemp(minOneTempT1.compareTo(minOneTempT2)==1?minOneTempT2:minOneTempT1);
+                BigDecimal minOneTempT2 = deviceRepository.minQtyByMykey(device.getName(),
+                        "一区下温度", byDateFrontTimes, byDateLaterTimes);
+                ovenDeviceRunVo.setMinOneTemp(minOneTempT1.compareTo(minOneTempT2) == 1 ? minOneTempT2 : minOneTempT1);
 
-                BigDecimal maxTwoTempT1=deviceRepository.maxQtyByMykey(device.getName(),
-                        "二区上温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal maxTwoTempT1 = deviceRepository.maxQtyByMykey(device.getName(),
+                        "二区上温度", byDateFrontTimes, byDateLaterTimes);
 
-                BigDecimal maxTwoTempT2=deviceRepository.maxQtyByMykey(device.getName(),
-                        "二区下温度",byDateFrontTimes,byDateLaterTimes);
-                ovenDeviceRunVo.setMaxTwoTemp(maxTwoTempT1.compareTo(maxTwoTempT2)==1?maxTwoTempT1:maxTwoTempT2);
+                BigDecimal maxTwoTempT2 = deviceRepository.maxQtyByMykey(device.getName(),
+                        "二区下温度", byDateFrontTimes, byDateLaterTimes);
+                ovenDeviceRunVo.setMaxTwoTemp(maxTwoTempT1.compareTo(maxTwoTempT2) == 1 ? maxTwoTempT1 : maxTwoTempT2);
 
-                BigDecimal minTwoTempT1=deviceRepository.minQtyByMykey(device.getName(),
-                        "二区上温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal minTwoTempT1 = deviceRepository.minQtyByMykey(device.getName(),
+                        "二区上温度", byDateFrontTimes, byDateLaterTimes);
 
-                BigDecimal minTwoTempT2=deviceRepository.minQtyByMykey(device.getName(),
-                        "二区下温度",byDateFrontTimes,byDateLaterTimes);
-                ovenDeviceRunVo.setMinTwoTemp(minTwoTempT1.compareTo(minTwoTempT2)==1?minTwoTempT2:minTwoTempT1);
+                BigDecimal minTwoTempT2 = deviceRepository.minQtyByMykey(device.getName(),
+                        "二区下温度", byDateFrontTimes, byDateLaterTimes);
+                ovenDeviceRunVo.setMinTwoTemp(minTwoTempT1.compareTo(minTwoTempT2) == 1 ? minTwoTempT2 : minTwoTempT1);
 
-                BigDecimal maxThreeTempT1=deviceRepository.maxQtyByMykey(device.getName(),
-                        "三区上温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal maxThreeTempT1 = deviceRepository.maxQtyByMykey(device.getName(),
+                        "三区上温度", byDateFrontTimes, byDateLaterTimes);
 
-                BigDecimal maxThreeTempT2=deviceRepository.maxQtyByMykey(device.getName(),
-                        "三区下温度",byDateFrontTimes,byDateLaterTimes);
-                ovenDeviceRunVo.setMaxThreeTemp(maxThreeTempT1.compareTo(maxThreeTempT2)==1?maxThreeTempT1:maxThreeTempT2);
+                BigDecimal maxThreeTempT2 = deviceRepository.maxQtyByMykey(device.getName(),
+                        "三区下温度", byDateFrontTimes, byDateLaterTimes);
+                ovenDeviceRunVo.setMaxThreeTemp(maxThreeTempT1.compareTo(maxThreeTempT2) == 1 ? maxThreeTempT1 : maxThreeTempT2);
 
-                BigDecimal minThreeTempT1=deviceRepository.minQtyByMykey(device.getName(),
-                        "三区上温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal minThreeTempT1 = deviceRepository.minQtyByMykey(device.getName(),
+                        "三区上温度", byDateFrontTimes, byDateLaterTimes);
 
-                BigDecimal minThreeTempT2=deviceRepository.minQtyByMykey(device.getName(),
-                        "三区下温度",byDateFrontTimes,byDateLaterTimes);
-                ovenDeviceRunVo.setMinThreeTemp(minThreeTempT1.compareTo(minThreeTempT2)==1?minThreeTempT2:minThreeTempT1);
+                BigDecimal minThreeTempT2 = deviceRepository.minQtyByMykey(device.getName(),
+                        "三区下温度", byDateFrontTimes, byDateLaterTimes);
+                ovenDeviceRunVo.setMinThreeTemp(minThreeTempT1.compareTo(minThreeTempT2) == 1 ? minThreeTempT2 : minThreeTempT1);
 
-                BigDecimal maxFourTempT1=deviceRepository.maxQtyByMykey(device.getName(),
-                        "四区上温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal maxFourTempT1 = deviceRepository.maxQtyByMykey(device.getName(),
+                        "四区上温度", byDateFrontTimes, byDateLaterTimes);
 
-                BigDecimal maxFourTempT2=deviceRepository.maxQtyByMykey(device.getName(),
-                        "四区下温度",byDateFrontTimes,byDateLaterTimes);
-                ovenDeviceRunVo.setMaxFourTemp(maxFourTempT1.compareTo(maxFourTempT2)==1?maxFourTempT1:maxFourTempT2);
+                BigDecimal maxFourTempT2 = deviceRepository.maxQtyByMykey(device.getName(),
+                        "四区下温度", byDateFrontTimes, byDateLaterTimes);
+                ovenDeviceRunVo.setMaxFourTemp(maxFourTempT1.compareTo(maxFourTempT2) == 1 ? maxFourTempT1 : maxFourTempT2);
 
-                BigDecimal minFourTempT1=deviceRepository.minQtyByMykey(device.getName(),
-                        "四区上温度",byDateFrontTimes,byDateLaterTimes);
+                BigDecimal minFourTempT1 = deviceRepository.minQtyByMykey(device.getName(),
+                        "四区上温度", byDateFrontTimes, byDateLaterTimes);
 
-                BigDecimal minFourTempT2=deviceRepository.minQtyByMykey(device.getName(),
-                        "四区下温度",byDateFrontTimes,byDateLaterTimes);
-                ovenDeviceRunVo.setMinFourTemp(minFourTempT1.compareTo(minFourTempT2)==1?minFourTempT2:minFourTempT1);
+                BigDecimal minFourTempT2 = deviceRepository.minQtyByMykey(device.getName(),
+                        "四区下温度", byDateFrontTimes, byDateLaterTimes);
+                ovenDeviceRunVo.setMinFourTemp(minFourTempT1.compareTo(minFourTempT2) == 1 ? minFourTempT2 : minFourTempT1);
 
                 //平均温度
-                BigDecimal avgTemp=new BigDecimal("0");
-                BigDecimal avgOneTempT1=deviceRepository.avgQtyByMykey(device.getName(),
-                        "一区上温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal avgOneTempT2=deviceRepository.avgQtyByMykey(device.getName(),
-                        "一区下温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal avgTwoTempT1=deviceRepository.avgQtyByMykey(device.getName(),
-                        "二区上温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal avgTwoTempT2=deviceRepository.avgQtyByMykey(device.getName(),
-                        "二区下温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal avgThreeTempT1=deviceRepository.avgQtyByMykey(device.getName(),
-                        "三区上温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal avgThreeTempT2=deviceRepository.avgQtyByMykey(device.getName(),
-                        "三区下温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal avgFourTempT1=deviceRepository.avgQtyByMykey(device.getName(),
-                        "四区上温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal avgFourTempT2=deviceRepository.avgQtyByMykey(device.getName(),
-                        "四区下温度",byDateFrontTimes,byDateLaterTimes);
-                avgTemp=avgTemp.add(avgOneTempT1)
+                BigDecimal avgTemp = new BigDecimal("0");
+                BigDecimal avgOneTempT1 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "一区上温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal avgOneTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "一区下温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal avgTwoTempT1 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "二区上温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal avgTwoTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "二区下温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal avgThreeTempT1 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "三区上温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal avgThreeTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "三区下温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal avgFourTempT1 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "四区上温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal avgFourTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "四区下温度", byDateFrontTimes, byDateLaterTimes);
+                avgTemp = avgTemp.add(avgOneTempT1)
                         .add(avgOneTempT2)
                         .add(avgTwoTempT1)
                         .add(avgTwoTempT2)
@@ -196,7 +196,7 @@ public class BoardServiceImpl implements BoardService {
                         .add(avgThreeTempT2)
                         .add(avgFourTempT1)
                         .add(avgFourTempT2);
-                avgTemp=avgTemp.divide(new BigDecimal("8"),1,RoundingMode.HALF_UP);
+                avgTemp = avgTemp.divide(new BigDecimal("8"), 1, RoundingMode.HALF_UP);
                 ovenDeviceRunVo.setAvgTemp(avgTemp);
 
                 BigDecimal inTepmSize = new BigDecimal("10");
@@ -211,41 +211,41 @@ public class BoardServiceImpl implements BoardService {
                 BigDecimal overSize31 = deviceRepository.countByQty(device.getName(), "三区下温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
                 BigDecimal overSize4 = deviceRepository.countByQty(device.getName(), "四区上温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
                 BigDecimal overSize41 = deviceRepository.countByQty(device.getName(), "四区下温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                BigDecimal overSize=overSize1.add(overSize11)
+                BigDecimal overSize = overSize1.add(overSize11)
                         .add(overSize2).add(overSize21).add(overSize3).add(overSize31).add(overSize4).add(overSize41);
                 ovenDeviceRunVo.setOverSize(overSize.intValue());
 
-                BigDecimal countOneTempT1=deviceRepository.countQtyByMykey(device.getName(),
-                        "一区上温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal countOneTempT2=deviceRepository.avgQtyByMykey(device.getName(),
-                        "一区下温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal countTwoTempT1=deviceRepository.countQtyByMykey(device.getName(),
-                        "二区上温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal countTwoTempT2=deviceRepository.avgQtyByMykey(device.getName(),
-                        "二区下温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal countThreeTempT1=deviceRepository.countQtyByMykey(device.getName(),
-                        "三区上温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal countThreeTempT2=deviceRepository.avgQtyByMykey(device.getName(),
-                        "三区下温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal countFourTempT1=deviceRepository.countQtyByMykey(device.getName(),
-                        "四区上温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal countFourTempT2=deviceRepository.avgQtyByMykey(device.getName(),
-                        "四区下温度",byDateFrontTimes,byDateLaterTimes);
-                BigDecimal sumTempSuccess =countOneTempT1.add(countOneTempT2)
+                BigDecimal countOneTempT1 = deviceRepository.countQtyByMykey(device.getName(),
+                        "一区上温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal countOneTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "一区下温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal countTwoTempT1 = deviceRepository.countQtyByMykey(device.getName(),
+                        "二区上温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal countTwoTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "二区下温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal countThreeTempT1 = deviceRepository.countQtyByMykey(device.getName(),
+                        "三区上温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal countThreeTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "三区下温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal countFourTempT1 = deviceRepository.countQtyByMykey(device.getName(),
+                        "四区上温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal countFourTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
+                        "四区下温度", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal sumTempSuccess = countOneTempT1.add(countOneTempT2)
                         .add(countTwoTempT1).add(countTwoTempT2).add(countThreeTempT1).add(countThreeTempT2)
                         .add(countFourTempT1).add(countFourTempT2);
-                BigDecimal tempSuccess=sumTempSuccess.subtract(overSize);
-                tempSuccess=sumTempSuccess.compareTo(new BigDecimal("0"))==0?new BigDecimal("0"):tempSuccess.divide(sumTempSuccess,1,RoundingMode.HALF_UP);
+                BigDecimal tempSuccess = sumTempSuccess.subtract(overSize);
+                tempSuccess = sumTempSuccess.compareTo(new BigDecimal("0")) == 0 ? new BigDecimal("0") : tempSuccess.divide(sumTempSuccess, 1, RoundingMode.HALF_UP);
                 ovenDeviceRunVo.setTempSuccess(tempSuccess);
 
                 ovenDeviceRunVo.setAvgSpeed(deviceRepository.avgQtyByMykey(device.getName(),
-                        "速度",byDateFrontTimes,byDateLaterTimes));
+                        "速度", byDateFrontTimes, byDateLaterTimes).setScale(1,RoundingMode.HALF_UP));
 
                 ovenDeviceRunVo.setAvgHotWind(deviceRepository.avgQtyByMykey(device.getName(),
-                        "热风频率",byDateFrontTimes,byDateLaterTimes));
+                        "热风频率", byDateFrontTimes, byDateLaterTimes).setScale(1,RoundingMode.HALF_UP));
 
                 ovenDeviceRunVo.setErrorSize(deviceRepository.sumQtyByMykey(device.getName(),
-                        "故障警告",byDateFrontTimes,byDateLaterTimes).intValue());
+                        "故障警告", byDateFrontTimes, byDateLaterTimes).intValue());
 
                 ovenDeviceRunVos.add(ovenDeviceRunVo);
             }
@@ -294,14 +294,14 @@ public class BoardServiceImpl implements BoardService {
                 insourcingDeviceRunVo.setMinTemp(minTemp);
                 //平均温度
                 BigDecimal avgTemp = new BigDecimal("0");
-                insourcingDeviceRunVo.setAvgTemp(avgTemp);
+                insourcingDeviceRunVo.setAvgTemp(avgTemp.setScale(1,RoundingMode.HALF_UP));
                 //最高速度
                 insourcingDeviceRunVo.setMaxSpeed(deviceRepository.maxQtyByMykey(device.getName(),
                         "速度", byDateFrontTimes, byDateLaterTimes));
                 insourcingDeviceRunVo.setMinSpeed(deviceRepository.minQtyByMykey(device.getName(),
                         "速度", byDateFrontTimes, byDateLaterTimes));
                 insourcingDeviceRunVo.setAvgSpeed(deviceRepository.avgQtyByMykey(device.getName(),
-                        "速度", byDateFrontTimes, byDateLaterTimes).setScale(3, RoundingMode.HALF_UP));
+                        "速度", byDateFrontTimes, byDateLaterTimes).setScale(1, RoundingMode.HALF_UP));
                 insourcingDeviceRunVo.setPieceQty(deviceRepository.maxQtyByMykey(device.getName(),
                         "包装件数", byDateFrontTimes, byDateLaterTimes));
                 insourcingDeviceRunVo.setOverSize(0);
@@ -351,7 +351,7 @@ public class BoardServiceImpl implements BoardService {
                 //平均温度
                 BigDecimal avgTemp = deviceRepository.avgQtyByMykey(device.getName(),
                         "温度", byDateFrontTimes, byDateLaterTimes);
-                tanSensorDeviceRunVo.setAvgTemp(avgTemp.setScale(3, RoundingMode.HALF_UP));
+                tanSensorDeviceRunVo.setAvgTemp(avgTemp.setScale(1, RoundingMode.HALF_UP));
 
                 //总温度数据数量
                 BigDecimal inTepmSize = new BigDecimal("10");
@@ -374,7 +374,7 @@ public class BoardServiceImpl implements BoardService {
                 //平均湿度
                 BigDecimal avgHemp = deviceRepository.avgQtyByMykey(device.getName(),
                         "湿度", byDateFrontTimes, byDateLaterTimes);
-                tanSensorDeviceRunVo.setAvgHemp(avgHemp.setScale(3, RoundingMode.HALF_UP));
+                tanSensorDeviceRunVo.setAvgHemp(avgHemp.setScale(1, RoundingMode.HALF_UP));
 
                 //总湿度度数据数量
                 BigDecimal inHepmSize = new BigDecimal("10");
