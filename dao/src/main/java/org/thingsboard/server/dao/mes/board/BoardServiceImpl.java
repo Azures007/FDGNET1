@@ -110,8 +110,11 @@ public class BoardServiceImpl implements BoardService {
                 ovenDeviceRunVo.setDeviceCode(device.getName());
                 ovenDeviceRunVo.setDeviceName(device.getName());
                 //总运行时长
-                BigDecimal runSeund = deviceRepository.sumQtyByMykey(device.getName(),
+                BigDecimal maxRunSeund = deviceRepository.maxQtyByMykey(device.getName(),
                         "开机时间", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal minRunSeund = deviceRepository.minQtyByMykey(device.getName(),
+                        "开机时间", byDateFrontTimes, byDateLaterTimes);
+                BigDecimal runSeund = maxRunSeund.subtract(minRunSeund);
                 ovenDeviceRunVo.setRunSeund(runSeund.longValue());
 
                 BigDecimal maxOneTempT1 = deviceRepository.maxQtyByMykey(device.getName(),
