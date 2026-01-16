@@ -233,6 +233,11 @@ public class ProductionDataServiceImpl implements ProductionDataService {
             return emptyPage;
         }
     
+        // 预加载字典以提高速度
+        List<TSysCodeDsc> dictList = tSysCodeDscRepository.findByCodeClId("RECORDTYPE0000");
+        Map<String, String> dictMap = dictList.stream()
+                .collect(Collectors.toMap(TSysCodeDsc::getCodeValue, TSysCodeDsc::getCodeDsc, (v1, v2) -> v1));
+        
         // 第一步：初步查询所有符合条件的订单基本信息（产线、最小接单时间、订单号）
         List<Object[]> matchingBasics = productionDataRepository.findAllMatchingOrderBasics(startTime, endTime, targetCwkids, turnoverCraftId, finishedCraftId);
             
@@ -306,32 +311,45 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         Date hintStart = calHint.getTime();
         
         int chunkSize = 200; // 减小 chunkSize 以降低单次查询负载
+        
+        // 使用并行流处理分批数据拉取，显著提升速度
+        List<List<String>> chunks = new ArrayList<>();
         for (int i = 0; i < pagedOrderNos.size(); i += chunkSize) {
-            List<String> chunk = pagedOrderNos.subList(i, Math.min(i + chunkSize, pagedOrderNos.size()));
-                    
+            chunks.add(pagedOrderNos.subList(i, Math.min(i + chunkSize, pagedOrderNos.size())));
+        }
+        
+        chunks.parallelStream().forEach(chunk -> {
             // 批量获取头信息
             List<Object[]> headResultsChunk = productionDataRepository.findByOrderNoInWithMinRT(chunk);
-            for (Object[] row : headResultsChunk) {
-                orderHeads.add((TBusOrderHead) row[0]);
+            synchronized (orderHeads) {
+                for (Object[] row : headResultsChunk) {
+                    orderHeads.add((TBusOrderHead) row[0]);
+                }
             }
                     
-            // 使用数据库聚合查询，极大减少传输数据量
+            // 使用数据库聚合查询
             List<Object[]> inputAgg = productionDataRepository.findActualInputAggregated(chunk, hintStart);
-            for (Object[] row : inputAgg) {
-                String oNo = (String) row[0];
-                actualInputAggMap.computeIfAbsent(oNo, k -> new ArrayList<>()).add(new Object[]{row[1], row[2], row[3], row[4], row[5]});
+            synchronized (actualInputAggMap) {
+                for (Object[] row : inputAgg) {
+                    String oNo = (String) row[0];
+                    actualInputAggMap.computeIfAbsent(oNo, k -> new ArrayList<>()).add(new Object[]{row[1], row[2], row[3], row[4], row[5]});
+                }
             }
                     
             List<Object[]> outputAgg = productionDataRepository.findActualOutputCountAggregated(chunk, hintStart);
-            for (Object[] row : outputAgg) {
-                actualOutputCountMap.put((String) row[0], (Long) row[1]);
+            synchronized (actualOutputCountMap) {
+                for (Object[] row : outputAgg) {
+                    actualOutputCountMap.put((String) row[0], (Long) row[1]);
+                }
             }
                     
             List<Object[]> weightAgg = productionDataRepository.findNetWeightAggregated(chunk, hintStart);
-            for (Object[] row : weightAgg) {
-                netWeightAggMap.put((String) row[0], (BigDecimal) row[1]);
+            synchronized (netWeightAggMap) {
+                for (Object[] row : weightAgg) {
+                    netWeightAggMap.put((String) row[0], (BigDecimal) row[1]);
+                }
             }
-        }
+        });
         
         Map<String, Integer> orderTypeMap = new HashMap<>();
         for (TBusOrderHead head : orderHeads) {
@@ -350,10 +368,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
             orderTypeMap.put(head.getOrderNo(), type);
         }
         
-        // 预加载字典
-        List<TSysCodeDsc> dictList = tSysCodeDscRepository.findByCodeClId("RECORDTYPE0000");
-        Map<String, String> dictMap = dictList.stream()
-                .collect(Collectors.toMap(TSysCodeDsc::getCodeValue, TSysCodeDsc::getCodeDsc, (v1, v2) -> v1));
+        // 已在前面预加载
         
         // 预聚合当前页的BOM信息
         Map<String, Map<String, BigDecimal>> orderPlannedInputMap = new HashMap<>();
@@ -516,6 +531,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
     
     /**
      * 调整开始日期为当天的00:00:00
+     * 根据用户要求，自动加上8小时
      */
     private Date adjustStartDate(Date date) {
         if (date == null) {
@@ -523,6 +539,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         }
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
+        cal.add(Calendar.HOUR_OF_DAY, 8);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
@@ -532,6 +549,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
     
     /**
      * 调整结束日期为当天的23:59:59
+     * 根据用户要求，自动加上8小时
      */
     private Date adjustEndDate(Date date) {
         if (date == null) {
@@ -539,6 +557,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         }
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
+        cal.add(Calendar.HOUR_OF_DAY, 8);
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
