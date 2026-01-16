@@ -4,6 +4,7 @@ import { AppState } from '@core/core.state';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { StatisticsService } from '@app/core/http/statistics.service';
 import { Utils } from '../order-management/w-utils';
+import { OrderService } from '@app/core/http/order.service';
 
 
 @Component({
@@ -21,6 +22,7 @@ export class RatioComponent implements OnInit {
   searchFormGroup = this.fb.group({
     current: 0,
     size: 50,
+    cwkid: "",
   });
   //新增角色参数
   roleData = {
@@ -56,15 +58,19 @@ export class RatioComponent implements OnInit {
 
   btns = JSON.parse(localStorage.getItem('btns'));
   set = new Set(this.btns);
-
+  cwkList = [];
   constructor(protected store: Store<AppState>,
     public fb: FormBuilder,
     private statisticsService: StatisticsService,
     private utils: Utils,
+    private apiOrder: OrderService,
   ) { }
 
   ngOnInit(): void {
     this.getTableData();
+    this.apiOrder.fetchBaseList().subscribe(res => {
+      this.cwkList = res.data;
+    })
   }
   //获取表格数据
   getTableData(): void {
@@ -74,6 +80,7 @@ export class RatioComponent implements OnInit {
       body: {
         startTime: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         endTime: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
+        cwkid: this.searchFormGroup.value.cwkid,
       }
     }
     this.statisticsService.fetchGetInputOutputRatioTableList(par).subscribe(res => {
@@ -89,6 +96,7 @@ export class RatioComponent implements OnInit {
       body: {
         startTime: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
         endTime: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
+        cwkid: this.searchFormGroup.value.cwkid,
       }
     }
     this.statisticsService.exportInputOutputRatioTableList(par).subscribe(res => {
@@ -124,7 +132,7 @@ export class RatioComponent implements OnInit {
       start: new FormControl(this.utils.dateFormat(new Date(new Date().getTime() - 24 * 60 * 60 * 1000), 'yyyy-MM-dd')),
       end: new FormControl(this.utils.dateFormat(new Date(), 'yyyy-MM-dd')),
     });
-
+    this.searchFormGroup.value.cwkid = "";
     this.getTableData();
   }
 }

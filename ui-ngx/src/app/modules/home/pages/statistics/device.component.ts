@@ -86,8 +86,8 @@ export class DeviceComponent implements OnInit {
       size: this.searchFormGroup.value.size,
       body: {
         deviceType: this.searchFormGroup.value.deviceType,
-        byDateFront: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
-        byDateLater: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
+        byDateFront: this.pdRange.value.start ? this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd') : null,
+        byDateLater: this.pdRange.value.end ? this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd') : null,
       }
     }
     this.statisticsService.fetchGetDeviceRunTableList(par).subscribe(res => {
@@ -101,8 +101,8 @@ export class DeviceComponent implements OnInit {
       size: this.searchFormGroup.value.size,
       body: {
         deviceType: this.searchFormGroup.value.deviceType,
-        byDateFront: this.pdRange.value.start ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd 00:00:00')) : null,
-        byDateLater: this.pdRange.value.end ? new Date(this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd 23:59:59')) : null,
+        byDateFront: this.pdRange.value.start ? this.utils.dateFormat(new Date(this.pdRange.value.start), 'yyyy-MM-dd') : null,
+        byDateLater: this.pdRange.value.end ? this.utils.dateFormat(new Date(this.pdRange.value.end), 'yyyy-MM-dd') : null,
       }
     }
     this.statisticsService.exportDeviceRunTableList(par).subscribe(res => {
