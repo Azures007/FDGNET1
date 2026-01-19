@@ -233,7 +233,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
             return emptyPage;
         }
     
-        // 预加载字典以提高速度
+        // 预加载字典提高速度
         List<TSysCodeDsc> dictList = tSysCodeDscRepository.findByCodeClId("RECORDTYPE0000");
         Map<String, String> dictMap = dictList.stream()
                 .collect(Collectors.toMap(TSysCodeDsc::getCodeValue, TSysCodeDsc::getCodeDsc, (v1, v2) -> v1));
@@ -253,7 +253,6 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
         // 第二步：在内存中对订单进行预分组（按产线和日期），用于分页
-        // Map<"Line_Date", List<orderNo>>
         Map<String, List<String>> groupToOrderNos = new LinkedHashMap<>();
     
         for (Object[] row : matchingBasics) {
@@ -300,9 +299,9 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         
         // 分批获取详细数据以避免 SQL 参数过多导致的超时或参数限制错误
         List<TBusOrderHead> orderHeads = new ArrayList<>();
-        Map<String, List<Object[]>> actualInputAggMap = new HashMap<>(); // orderNo -> List<[materialNumber, name, unit, type, sumQty]>
-        Map<String, Long> actualOutputCountMap = new HashMap<>(); // orderNo -> count
-        Map<String, BigDecimal> netWeightAggMap = new HashMap<>(); // orderNo -> sumQty
+        Map<String, List<Object[]>> actualInputAggMap = new HashMap<>();
+        Map<String, Long> actualOutputCountMap = new HashMap<>();
+        Map<String, BigDecimal> netWeightAggMap = new HashMap<>();
                 
         // 使用更小的时间暗示 hint，进一步加速索引扫描
         Calendar calHint = Calendar.getInstance();
@@ -367,8 +366,6 @@ public class ProductionDataServiceImpl implements ProductionDataService {
             }
             orderTypeMap.put(head.getOrderNo(), type);
         }
-        
-        // 已在前面预加载
         
         // 预聚合当前页的BOM信息
         Map<String, Map<String, BigDecimal>> orderPlannedInputMap = new HashMap<>();
@@ -563,30 +560,6 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MILLISECOND, 999);
         return cal.getTime();
-    }
-    
-    /**
-     * 根据recordType获取对应的标签（从字典中获取）
-     */
-    private String getRecordTypeLabelFromDict(String recordType) {
-        if (recordType == null) {
-            return "未知类型";
-        }
-        
-        try {
-            // 查询字典表获取对应的描述，使用Repository直接查询
-            List<TSysCodeDsc> allRecords = tSysCodeDscRepository.findByCodeClId("RECORDTYPE0000");
-            for (TSysCodeDsc codeDsc : allRecords) {
-                if (recordType.equals(codeDsc.getCodeValue())) {
-                    return codeDsc.getCodeDsc();
-                }
-            }
-        } catch (Exception e) {
-            // 如果查询字典失败，使用默认值
-            System.out.println("查询字典失败: " + e.getMessage());
-        }
-        
-        return getFallbackRecordTypeLabel(recordType);
     }
 
     private String getFallbackRecordTypeLabel(String recordType) {

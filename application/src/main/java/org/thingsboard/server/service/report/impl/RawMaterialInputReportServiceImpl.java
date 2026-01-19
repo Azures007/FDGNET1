@@ -101,6 +101,17 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         }
     }
 
+    /**
+     * 为时间添加8小时以修正时区显示问题
+     */
+    private Date add8HoursToTime(Date date) {
+        if (date == null) return null;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.HOUR_OF_DAY, 8);
+        return cal.getTime();
+    }
+
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof SecurityUser) {
@@ -114,7 +125,6 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
     @Override
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public PageVo<RawMaterialInputReportVo> queryRawMaterialInputReport(Integer current, Integer size, RawMaterialInputQueryDto queryDto) {
-        // 根据要求，自动加上8小时时差调整
         adjustDates(queryDto);
         
         // 获取当前登录用户ID
@@ -179,7 +189,9 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
             List<RawMaterialInputReportVo> list = orderHeads.parallelStream().map(order -> {
                 RawMaterialInputReportVo vo = new RawMaterialInputReportVo();
                 vo.setOrderNo(order.getOrderNo());
-                vo.setOrderTime(order.getBillDate());
+                // 修正时区显示问题
+                Date adjustedOrderTime = add8HoursToTime(order.getBillDate());
+                vo.setOrderTime(adjustedOrderTime);
                 vo.setProductName(order.getBodyMaterialName());
                 vo.setProductionLine(order.getVwkname());
                 calculateOutputDataWithContext(vo, order.getOrderNo(), prefetchContext);
@@ -390,7 +402,7 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
             return orderHead != null && orderHead.getBodyPotQty() != null ? orderHead.getBodyPotQty() : 0;
         }
 
-        // 模仿 getOrderPpbom 逻辑：查找锅数计算基准='1'的物料
+        // 查找锅数计算基准='1'的物料
         for (Map ppbom : orderPpbomList) {
             String materialNumber = (String) ppbom.get("material_number");
             if (materialNumber == null) continue;
@@ -441,7 +453,6 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
                     
                     if (adjustedMustQty.compareTo(BigDecimal.ZERO) > 0) {
                         // 计算计划锅数 = 计划投入 / 每锅投入标准，向上取整
-                        // 注意：这里先用 HALF_UP 保留两位小数，再用 UP 向上取整，完全同步 getOrderPpbom 逻辑
                         BigDecimal planPotCount = adjustedMustQty.divide(standardInput, 2, BigDecimal.ROUND_HALF_UP);
                         return planPotCount.setScale(0, BigDecimal.ROUND_UP).intValue();
                     }
@@ -621,109 +632,6 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         return materialInfoList;
     }
 
-    private void setProductionValuesWithContext(ProcessMaterialInfoVo materialInfo, String orderNo, Integer orderProcessId, String materialNumber, Map<String, Object> context) {
-        Map<String, List<TBusOrderHead>> orderHeadMap = (Map<String, List<TBusOrderHead>>) context.get("orderHeads");
-        List<TBusOrderHead> orderHeadList = orderHeadMap.get(orderNo);
-        TBusOrderHead orderHead = (orderHeadList != null && !orderHeadList.isEmpty()) ? orderHeadList.get(0) : null;
-        
-        if (orderHead != null) {
-            Integer orderId = orderHead.getOrderId();
-            Map<String, Map<String, Map>> orderPpbomsByMaterial = (Map<String, Map<String, Map>>) context.get("orderPpbomsByMaterial");
-            Map<String, Map> materialPpbomMap = orderPpbomsByMaterial != null ? orderPpbomsByMaterial.getOrDefault(String.valueOf(orderId), Collections.emptyMap()) : Collections.emptyMap();
-            
-            String orderProductCode = orderHead.getBodyMaterialNumber();
-            Map<Integer, TBusOrderProcess> orderProcessByIdMap = (Map<Integer, TBusOrderProcess>) context.get("orderProcessesById");
-            TBusOrderProcess orderProcess = orderProcessByIdMap.get(orderProcessId);
-            String currentProcessNumber = (orderProcess != null && orderProcess.getProcessId() != null) ? orderProcess.getProcessId().getProcessNumber() : null;
-            
-            // 获取配方管理信息
-            Map<String, Map<String, Map<String, TSysRecipeInput>>> productRecipeProcessMap = (Map<String, Map<String, Map<String, TSysRecipeInput>>>) context.get("productRecipeProcessMap");
-            Map<String, Map<String, TSysRecipeInput>> processRecipeMap = productRecipeProcessMap != null ? productRecipeProcessMap.getOrDefault(orderProductCode, Collections.emptyMap()) : Collections.emptyMap();
-            Map<String, TSysRecipeInput> recipeMaterialMap = processRecipeMap.getOrDefault(currentProcessNumber, Collections.emptyMap());
-            
-            // 计划投入量和计划锅数逻辑
-            Integer calculatedPlanPotCount = null;
-            List<Map> orderPpbomList = (List<Map>) ((Map)context.get("orderPpboms")).getOrDefault(String.valueOf(orderId), Collections.emptyList());
-            for (Map otherPpbom : orderPpbomList) {
-                String otherMaterialNumber = (String) otherPpbom.get("material_number");
-                TSysRecipeInput otherRecipeInput = recipeMaterialMap.get("null_" + otherMaterialNumber);
-                if (otherRecipeInput == null) otherRecipeInput = recipeMaterialMap.get("_" + otherMaterialNumber);
-                
-                if (otherRecipeInput != null && "1".equals(otherRecipeInput.getPotCalculationBasis())) {
-                    Object mustQtyObj = otherPpbom.get("must_qty");
-                    BigDecimal standardInput = otherRecipeInput.getStandardInput();
-                    if (mustQtyObj != null && standardInput != null && standardInput.compareTo(BigDecimal.ZERO) > 0) {
-                        BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
-                        Object planInputRatioObj = otherRecipeInput.getPlanInputRatio() != null ? otherRecipeInput.getPlanInputRatio() : otherPpbom.get("plan_input_ratio");
-                        if (planInputRatioObj != null) {
-                            mustQty = mustQty.multiply(new BigDecimal(planInputRatioObj.toString())).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP);
-                        }
-                        calculatedPlanPotCount = mustQty.divide(standardInput, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_UP).intValue();
-                        break;
-                    }
-                }
-            }
-            
-            // 设置当前物料的计划投入量，使用Map索引
-            Map ppbom = materialPpbomMap.get(materialNumber);
-            if (ppbom != null) {
-                Object mustQtyObj = ppbom.get("must_qty");
-                TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + materialNumber);
-                if (recipeInput == null) recipeInput = recipeMaterialMap.get("_" + materialNumber);
-                Object ratioObj = (recipeInput != null && recipeInput.getPlanInputRatio() != null) ? recipeInput.getPlanInputRatio() : ppbom.get("plan_input_ratio");
-                
-                if (mustQtyObj != null) {
-                    BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
-                    if (ratioObj != null) {
-                        materialInfo.setPlannedInput(mustQty.multiply(new BigDecimal(ratioObj.toString())).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP));
-                    } else {
-                        materialInfo.setPlannedInput(mustQty);
-                    }
-                } else {
-                    materialInfo.setPlannedInput(BigDecimal.ZERO);
-                }
-            }
-            
-            if (calculatedPlanPotCount != null) {
-                materialInfo.setPlannedPotCount(calculatedPlanPotCount);
-            } else {
-                materialInfo.setPlannedPotCount(orderHead.getBodyPotQty() != null ? orderHead.getBodyPotQty() : 0);
-            }
-        }
-        
-        // 实际投入量从预取的记录中获取
-        Map<String, List<TBusOrderProcessRecord>> processRecordMap = (Map<String, List<TBusOrderProcessRecord>>) context.get("processRecords");
-        List<TBusOrderProcessRecord> allRecordsForOrder = processRecordMap.getOrDefault(orderNo, new ArrayList<>());
-        
-        BigDecimal actualInput = allRecordsForOrder.stream()
-                .filter(r -> Objects.equals(orderProcessId, r.getOrderProcessId()) && Objects.equals(materialNumber, r.getMaterialNumber()) && "1".equals(r.getRecordType()))
-                .map(r -> r.getRecordQty() != null ? r.getRecordQty() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        materialInfo.setActualInput(actualInput);
-        
-        // 实际累计锅数从预取的锅数记录获取
-        Map<Integer, List<TBusOrderPotCount>> potCountMap = (Map<Integer, List<TBusOrderPotCount>>) context.get("potCounts");
-        List<TBusOrderPotCount> potCounts = potCountMap != null ? potCountMap.getOrDefault(orderProcessId, new ArrayList<>()) : new ArrayList<>();
-        
-        // 获取当前订单工序的所有物料编码
-        List<String> groupMaterialCodes = allRecordsForOrder.stream()
-                .filter(r -> Objects.equals(orderProcessId, r.getOrderProcessId()) && "1".equals(r.getRecordType()))
-                .map(TBusOrderProcessRecord::getMaterialNumber).distinct().collect(Collectors.toList());
-        
-        if (!groupMaterialCodes.isEmpty()) {
-            int minCount = Integer.MAX_VALUE;
-            boolean hasUnused = false;
-            for (String code : groupMaterialCodes) {
-                int count = potCounts.stream().filter(p -> Objects.equals(code, p.getMaterialNumber())).mapToInt(TBusOrderPotCount::getInputCount).sum();
-                if (count == 0) { hasUnused = true; break; }
-                if (count < minCount) minCount = count;
-            }
-            materialInfo.setActualAccumulatedPotCount(hasUnused ? 0 : (minCount == Integer.MAX_VALUE ? 0 : minCount));
-        } else {
-            materialInfo.setActualAccumulatedPotCount(0);
-        }
-    }
-
     @Override
     public void exportRawMaterialInputReport(Integer current, Integer size, RawMaterialInputQueryDto queryDto, HttpServletResponse response) {
         // 根据要求，自动加上8小时时差调整
@@ -819,7 +727,9 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
             List<RawMaterialInputReportVo> batchResults = heads.parallelStream().map(order -> {
                 RawMaterialInputReportVo vo = new RawMaterialInputReportVo();
                 vo.setOrderNo(order.getOrderNo());
-                vo.setOrderTime(order.getBillDate());
+                // 修正时区显示问题
+                Date adjustedOrderTime = add8HoursToTime(order.getBillDate());
+                vo.setOrderTime(adjustedOrderTime);
                 vo.setProductName(order.getBodyMaterialName());
                 vo.setProductionLine(order.getVwkname());
                 calculateOutputDataWithContext(vo, order.getOrderNo(), context);
@@ -897,518 +807,7 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         excelVo.setActualOutput(reportVo.getActualOutput() != null ? reportVo.getActualOutput().toString() : "0");
         excelVo.setNetContent(reportVo.getNetContent() != null ? reportVo.getNetContent().toString() : "0");
     }
-    
-    /**
-     * 计算计划产量和实际产量
-     * @param vo 报表VO对象
-     * @param orderNo 订单号
-     */
-    private void calculateOutputData(RawMaterialInputReportVo vo, String orderNo) {
-        // 从t_bus_order_head表中获取计划产量
-        List<TBusOrderHead> orderHeadList = orderHeadRepository.findByOrderNo(orderNo);
-        TBusOrderHead orderHead = (orderHeadList != null && !orderHeadList.isEmpty()) ? orderHeadList.get(0) : null;
-        BigDecimal plannedOutput = (orderHead != null && orderHead.getBodyPlanPrdQty() != null) ? 
-            orderHead.getBodyPlanPrdQty() : BigDecimal.ZERO;
-        
-        // 查询t_bus_order_process_history表中process_name为'外包装'的记录数量作为实际产量
-        List<TBusOrderProcessHistory> actualOutputRecords = orderProcessHistoryRepository
-            .findByOrderNoAndProcessName(orderNo, "外包装");
-        BigDecimal actualOutput = new BigDecimal(actualOutputRecords.size());
-        
-        // 实际产量需要除以特定值
-        BigDecimal divisionValue = getDivisionValue(orderHead);
-        if (divisionValue.compareTo(BigDecimal.ZERO) > 0) {
-            actualOutput = actualOutput.divide(divisionValue, 2, BigDecimal.ROUND_HALF_UP);
-        }
-        
-        vo.setPlannedOutput(plannedOutput);
-        vo.setActualOutput(actualOutput);
-    }
-    
 
-    
-    /**
-     * 获取原料投入信息列表（按工序分组）
-     * @param orderNo 订单号
-     * @return 工序分组信息列表
-     */
-    private List<ProcessGroupInfoVo> getProcessGroupInfoList(String orderNo) {
-        // 查询t_bus_order_process_record表中对应order_no的数据
-        List<TBusOrderProcessRecord> processRecords = orderProcessRecordRepository.findAllByOrderNo(orderNo);
-        
-        // 按order_process_id分组处理
-        Map<Integer, List<TBusOrderProcessRecord>> groupedRecords = processRecords.stream()
-            .collect(Collectors.groupingBy(TBusOrderProcessRecord::getOrderProcessId));
-            
-        // 按工序名称和工序状态分组
-        Map<String, List<ProcessMaterialInfoVo>> processMaterialGroupMap = new LinkedHashMap<>();
-        
-        for (Map.Entry<Integer, List<TBusOrderProcessRecord>> entry : groupedRecords.entrySet()) {
-            Integer orderProcessId = entry.getKey();
-            List<TBusOrderProcessRecord> records = entry.getValue();
-            
-            // 根据order_process_id查询t_bus_order_process表获取工序状态
-            Optional<TBusOrderProcess> orderProcessOpt = orderProcessRepository.findById(orderProcessId);
-            
-            if (orderProcessOpt.isPresent()) {
-                TBusOrderProcess orderProcess = orderProcessOpt.get();
-                String processStatus = getProcessStatusDescription(orderProcess.getProcessStatus());
-                
-                // 为每个记录创建ProcessMaterialInfoVo
-                for (TBusOrderProcessRecord record : records) {
-                    ProcessMaterialInfoVo materialInfo = new ProcessMaterialInfoVo();
-                    materialInfo.setMaterialCode(record.getMaterialNumber());
-                    materialInfo.setMaterialName(record.getMaterialName());
-                    materialInfo.setUnit(record.getRecordUnit());
-//                    materialInfo.setOrderNo(orderNo);
-                    
-                    // 查询计划投入、实际投入、计划锅数和实际累计锅数,传入分组编码
-                    setProductionValuesForMaterialInfo(materialInfo, orderNo, orderProcessId, record.getMaterialNumber(), record.getGroupCode());
-                    
-                    // 使用工序名称和工序状态作为key进行分组
-                    String groupKey = record.getProcessName() + "|" + processStatus;
-                    processMaterialGroupMap.computeIfAbsent(groupKey, k -> new ArrayList<>()).add(materialInfo);
-                }
-            }
-        }
-        
-        // 构建ProcessGroupInfoVo列表
-        List<ProcessGroupInfoVo> result = new ArrayList<>();
-        for (Map.Entry<String, List<ProcessMaterialInfoVo>> entry : processMaterialGroupMap.entrySet()) {
-            String[] keyParts = entry.getKey().split("\\|");
-            String processName = keyParts[0];
-            String processStatus = keyParts[1];
-            
-            ProcessGroupInfoVo groupInfo = new ProcessGroupInfoVo();
-            groupInfo.setProcessName(processName);
-            groupInfo.setProcessStatus(processStatus);
-            groupInfo.setMaterialInfoList(entry.getValue());
-            
-            result.add(groupInfo);
-        }
-        
-        return result;
-    }
-    
-    /**
-     * 设置生产相关值（计划投入、实际投入、计划锅数、实际累计锅数）
-     * @param info 原料投入信息对象
-     * @param orderNo 订单号
-     * @param orderProcessId 工序执行表ID
-     * @param materialNumber 物料编号
-     */
-    private void setProductionValues(RawMaterialInputInfoVo info, String orderNo, Integer orderProcessId, String materialNumber) {
-        // 查询订单用料清单，获取计划投入量（mustQty -> plannedInput）
-        List<TBusOrderHead> orderHeadList = orderHeadRepository.findByOrderNo(orderNo);
-        List<Map> orderPpbomList = null;
-        if (orderHeadList != null && !orderHeadList.isEmpty()) {
-            Integer orderId = orderHeadList.get(0).getOrderId();
-            orderPpbomList = orderHeadRepository.getOrderPPbomByOrderIdAndMidPpbomEntryInputProcess(orderId);
-            
-            // 获取订单产品编码和工序信息，用于配方管理逻辑
-            String orderProductCode = orderHeadList.get(0).getBodyMaterialNumber();
-            Optional<TBusOrderProcess> orderProcessOpt = orderProcessRepository.findById(orderProcessId);
-            String currentProcessNumber = null;
-            if (orderProcessOpt.isPresent()) {
-                currentProcessNumber = orderProcessOpt.get().getProcessId().getProcessNumber();
-            }
-            
-            // 获取配方管理信息
-            Map<String, TSysRecipeInput> recipeMaterialMap = new HashMap<>();
-            if (orderProductCode != null && currentProcessNumber != null) {
-                List<TSysRecipeProductBinding> productBindings = recipeProductBindingRepository.findByProductCodeAndRecipeStatusEnabled(orderProductCode);
-                for (TSysRecipeProductBinding binding : productBindings) {
-                    List<TSysRecipeInput> recipeInputs = recipeInputRepository.findByRecipeId(binding.getRecipeId());
-                    for (TSysRecipeInput input : recipeInputs) {
-                        if (currentProcessNumber.equals(input.getProcessNumber())) {
-                            recipeMaterialMap.put(input.getSemiFinishedProductCode()+"_"+input.getMaterialCode(), input);
-                        }
-                    }
-                }
-            }
-            
-            // 首先查找锅数计算基准为'1'的物料，用于计算计划锅数
-            Integer calculatedPlanPotCount = null;
-            for (Map ppbom : orderPpbomList) {
-                String ppbomMaterialNumber = (String) ppbom.get("material_number");
-                Object potCalculationBasis = ppbom.get("pot_calculation_basis"); // 锅数计算基准
-                
-                // 优先从配方管理中获取锅数计算基准
-                TSysRecipeInput recipeInputForBasis = recipeMaterialMap.get("null_" + ppbomMaterialNumber);
-                if (recipeInputForBasis == null) {
-                    recipeInputForBasis = recipeMaterialMap.get("_" + ppbomMaterialNumber);
-                }
-                if (recipeInputForBasis == null) {
-                    recipeInputForBasis = recipeMaterialMap.values().stream()
-                            .filter(input -> input != null 
-                                    && ppbomMaterialNumber.equals(input.getMaterialCode()))
-                            .findFirst()
-                            .orElse(null);
-                }
-                
-                String effectivePotCalculationBasis = null;
-                if (recipeInputForBasis != null && recipeInputForBasis.getPotCalculationBasis() != null) {
-                    effectivePotCalculationBasis = recipeInputForBasis.getPotCalculationBasis();
-                } else if (potCalculationBasis != null) {
-                    effectivePotCalculationBasis = potCalculationBasis.toString();
-                }
-                
-                // 如果当前物料是锅数计算基准='1'的物料，则计算计划锅数
-                if (effectivePotCalculationBasis != null && "1".equals(effectivePotCalculationBasis)) {
-                    Object mustQtyObj = ppbom.get("must_qty");
-                    // 从配方管理中获取计划投入比例，如果没有则从用料清单获取
-                    Object planInputRatioObj = null;
-                    if (recipeInputForBasis != null && recipeInputForBasis.getPlanInputRatio() != null) {
-                        planInputRatioObj = recipeInputForBasis.getPlanInputRatio();
-                    } else {
-                        planInputRatioObj = ppbom.get("plan_input_ratio");
-                    }
-                    BigDecimal mustQtyForCalculation = null;
-                    
-                    // 如果存在计划投入比例，则调整计划投入量用于计算锅数
-                    if (mustQtyObj != null) {
-                        BigDecimal originalMustQty = new BigDecimal(mustQtyObj.toString());
-                        
-                        if (planInputRatioObj != null) {
-                            BigDecimal planInputRatio = new BigDecimal(planInputRatioObj.toString());
-                            // 计算调整后的计划投入量 = 原始计划投入量 * 计划投入比例% / 100
-                            mustQtyForCalculation = originalMustQty.multiply(planInputRatio).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP);
-                        } else {
-                            // 如果没有计划投入比例，则使用原始计划投入量
-                            mustQtyForCalculation = originalMustQty;
-                        }
-                    }
-                    
-                    // 尝试从配方管理中获取每锅投入标准
-                    TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + ppbomMaterialNumber);
-                    if (recipeInput == null) {
-                        recipeInput = recipeMaterialMap.get("_" + ppbomMaterialNumber);
-                    }
-                    if (recipeInput == null) {
-                        recipeInput = recipeMaterialMap.values().stream()
-                                .filter(input -> input != null 
-                                        && ppbomMaterialNumber.equals(input.getMaterialCode()))
-                                .findFirst()
-                                .orElse(null);
-                    }
-                    
-                    Object standardInputObj = null;
-                    if (recipeInput != null && recipeInput.getStandardInput() != null) {
-                        standardInputObj = recipeInput.getStandardInput();
-                    } else {
-                        // 如果配方管理中没有，则使用用料清单中的标准
-                        standardInputObj = ppbom.get("mid_ppbom_entry_material_standard");
-                    }
-                    
-                    if (mustQtyForCalculation != null && standardInputObj != null) {
-                        try {
-                            BigDecimal standardInput = new BigDecimal(standardInputObj.toString());
-                            if (standardInput.compareTo(BigDecimal.ZERO) > 0) {
-                                // 使用向上取整的方式计算计划锅数
-                                BigDecimal calculatedValue = mustQtyForCalculation.divide(standardInput, 2, BigDecimal.ROUND_UP);
-                                calculatedPlanPotCount = calculatedValue.intValue();
-                                log.debug("使用基准物料计算计划锅数: 基准物料={}, 计划投入量={}, 每锅标准={}, 计算结果={}", 
-                                    ppbomMaterialNumber, mustQtyForCalculation, standardInput, calculatedPlanPotCount);
-                                break; // 找到基准物料后就退出循环
-                            }
-                        } catch (Exception e) {
-                            log.error("使用基准物料计算计划锅数失败: ", e);
-                        }
-                    }
-                }
-            }
-            
-            // 如果没有找到锅数计算基准为'1'的物料，尝试使用当前物料进行计算
-            if (calculatedPlanPotCount == null) {
-                for (Map ppbom : orderPpbomList) {
-                    String ppbomMaterialNumber = (String) ppbom.get("material_number");
-                    if (materialNumber != null && materialNumber.equals(ppbomMaterialNumber)) {
-                        Object mustQtyObj = ppbom.get("must_qty");
-                        // 从配方管理中获取计划投入比例，如果没有则从用料清单获取
-                        TSysRecipeInput recipeInputForRatio = recipeMaterialMap.get("null_" + ppbomMaterialNumber);
-                        if (recipeInputForRatio == null) {
-                            recipeInputForRatio = recipeMaterialMap.get("_" + ppbomMaterialNumber);
-                        }
-                        if (recipeInputForRatio == null) {
-                            recipeInputForRatio = recipeMaterialMap.values().stream()
-                                    .filter(input -> input != null 
-                                            && ppbomMaterialNumber.equals(input.getMaterialCode()))
-                                    .findFirst()
-                                    .orElse(null);
-                        }
-                        Object planInputRatioObj = null;
-                        if (recipeInputForRatio != null && recipeInputForRatio.getPlanInputRatio() != null) {
-                            planInputRatioObj = recipeInputForRatio.getPlanInputRatio();
-                        } else {
-                            planInputRatioObj = ppbom.get("plan_input_ratio");
-                        }
-                        BigDecimal mustQtyForCalculation = null;
-                        
-                        // 如果存在计划投入比例，则调整计划投入量用于计算锅数
-                        if (mustQtyObj != null) {
-                            BigDecimal originalMustQty = new BigDecimal(mustQtyObj.toString());
-                            
-                            if (planInputRatioObj != null) {
-                                BigDecimal planInputRatio = new BigDecimal(planInputRatioObj.toString());
-                                // 计算调整后的计划投入量 = 原始计划投入量 * 计划投入比例% / 100
-                                mustQtyForCalculation = originalMustQty.multiply(planInputRatio).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP);
-                            } else {
-                                // 如果没有计划投入比例，则使用原始计划投入量
-                                mustQtyForCalculation = originalMustQty;
-                            }
-                        }
-                        
-                        // 尝试从配方管理中获取每锅投入标准
-                        TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + ppbomMaterialNumber);
-                        if (recipeInput == null) {
-                            recipeInput = recipeMaterialMap.get("_" + ppbomMaterialNumber);
-                        }
-                        if (recipeInput == null) {
-                            recipeInput = recipeMaterialMap.values().stream()
-                                    .filter(input -> input != null 
-                                            && ppbomMaterialNumber.equals(input.getMaterialCode()))
-                                    .findFirst()
-                                    .orElse(null);
-                        }
-                        
-                        Object standardInputObj = null;
-                        if (recipeInput != null && recipeInput.getStandardInput() != null) {
-                            standardInputObj = recipeInput.getStandardInput();
-                        } else {
-                            // 如果配方管理中没有，则使用用料清单中的标准
-                            standardInputObj = ppbom.get("mid_ppbom_entry_material_standard");
-                        }
-                        
-                        if (mustQtyForCalculation != null && standardInputObj != null) {
-                            try {
-                                BigDecimal standardInput = new BigDecimal(standardInputObj.toString());
-                                if (standardInput.compareTo(BigDecimal.ZERO) > 0) {
-                                    // 使用向上取整的方式计算计划锅数
-                                    BigDecimal calculatedValue = mustQtyForCalculation.divide(standardInput, 2, BigDecimal.ROUND_UP);
-                                    calculatedPlanPotCount = calculatedValue.intValue();
-                                    log.debug("使用当前物料计算计划锅数: 物料={}, 计划投入量={}, 每锅标准={}, 计算结果={}", 
-                                        ppbomMaterialNumber, mustQtyForCalculation, standardInput, calculatedPlanPotCount);
-                                    break; // 使用当前物料计算后退出循环
-                                }
-                            } catch (Exception e) {
-                                log.error("使用当前物料计算计划锅数失败: ", e);
-                            }
-                        } else {
-                            log.debug("当前物料无法计算计划锅数: 物料={}, mustQtyForCalculation={}, standardInputObj={}", 
-                                ppbomMaterialNumber, mustQtyForCalculation, standardInputObj);
-                        }
-                    }
-                }
-            }
-            
-            // 如果仍未计算出计划锅数，尝试使用第一个可用物料进行计算
-            if (calculatedPlanPotCount == null) {
-                for (Map ppbom : orderPpbomList) {
-                    String ppbomMaterialNumber = (String) ppbom.get("material_number");
-                    Object mustQtyObj = ppbom.get("must_qty");
-                    // 从配方管理中获取计划投入比例，如果没有则从用料清单获取
-                    TSysRecipeInput recipeInputForRatio = recipeMaterialMap.get("null_" + ppbomMaterialNumber);
-                    if (recipeInputForRatio == null) {
-                        recipeInputForRatio = recipeMaterialMap.get("_" + ppbomMaterialNumber);
-                    }
-                    if (recipeInputForRatio == null) {
-                        recipeInputForRatio = recipeMaterialMap.values().stream()
-                                .filter(input -> input != null 
-                                        && ppbomMaterialNumber.equals(input.getMaterialCode()))
-                                .findFirst()
-                                .orElse(null);
-                    }
-                    Object planInputRatioObj = null;
-                    if (recipeInputForRatio != null && recipeInputForRatio.getPlanInputRatio() != null) {
-                        planInputRatioObj = recipeInputForRatio.getPlanInputRatio();
-                    } else {
-                        planInputRatioObj = ppbom.get("plan_input_ratio");
-                    }
-                    BigDecimal mustQtyForCalculation = null;
-                    
-                    // 如果存在计划投入比例，则调整计划投入量用于计算锅数
-                    if (mustQtyObj != null) {
-                        BigDecimal originalMustQty = new BigDecimal(mustQtyObj.toString());
-                        
-                        if (planInputRatioObj != null) {
-                            BigDecimal planInputRatio = new BigDecimal(planInputRatioObj.toString());
-                            // 计算调整后的计划投入量 = 原始计划投入量 * 计划投入比例% / 100
-                            mustQtyForCalculation = originalMustQty.multiply(planInputRatio).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP);
-                        } else {
-                            // 如果没有计划投入比例，则使用原始计划投入量
-                            mustQtyForCalculation = originalMustQty;
-                        }
-                    }
-                    
-                    // 尝试从配方管理中获取每锅投入标准
-                    TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + ppbomMaterialNumber);
-                    if (recipeInput == null) {
-                        recipeInput = recipeMaterialMap.get("_" + ppbomMaterialNumber);
-                    }
-                    if (recipeInput == null) {
-                        recipeInput = recipeMaterialMap.values().stream()
-                                .filter(input -> input != null 
-                                        && ppbomMaterialNumber.equals(input.getMaterialCode()))
-                                .findFirst()
-                                .orElse(null);
-                    }
-                    
-                    Object standardInputObj = null;
-                    if (recipeInput != null && recipeInput.getStandardInput() != null) {
-                        standardInputObj = recipeInput.getStandardInput();
-                    } else {
-                        // 如果配方管理中没有，则使用用料清单中的标准
-                        standardInputObj = ppbom.get("mid_ppbom_entry_material_standard");
-                    }
-                    
-                    if (mustQtyForCalculation != null && standardInputObj != null) {
-                        try {
-                            BigDecimal standardInput = new BigDecimal(standardInputObj.toString());
-                            if (standardInput.compareTo(BigDecimal.ZERO) > 0) {
-                                // 使用向上取整的方式计算计划锅数
-                                BigDecimal calculatedValue = mustQtyForCalculation.divide(standardInput, 2, BigDecimal.ROUND_UP);
-                                calculatedPlanPotCount = calculatedValue.intValue();
-                                log.debug("使用任意物料计算计划锅数: 物料={}, 计划投入量={}, 每锅标准={}, 计算结果={}", 
-                                    ppbomMaterialNumber, mustQtyForCalculation, standardInput, calculatedPlanPotCount);
-                                break; // 使用任意物料计算后退出循环
-                            }
-                        } catch (Exception e) {
-                            log.error("使用任意物料计算计划锅数失败: ", e);
-                        }
-                    }
-                }
-            }
-            
-            // 查找匹配的物料信息，设置计划投入量
-            for (Map ppbom : orderPpbomList) {
-                String ppbomMaterialNumber = (String) ppbom.get("material_number");
-                if (materialNumber != null && materialNumber.equals(ppbomMaterialNumber)) {
-                    // 设置计划投入量 (mustQty -> plannedInput)
-                    Object mustQtyObj = ppbom.get("must_qty");
-                    // 从配方管理中获取计划投入比例，如果没有则从用料清单获取
-                    TSysRecipeInput recipeInput = recipeMaterialMap.get("null_" + ppbomMaterialNumber);
-                    if (recipeInput == null) {
-                        recipeInput = recipeMaterialMap.get("_" + ppbomMaterialNumber);
-                    }
-                    if (recipeInput == null) {
-                        recipeInput = recipeMaterialMap.values().stream()
-                                .filter(input -> input != null 
-                                        && ppbomMaterialNumber.equals(input.getMaterialCode()))
-                                .findFirst()
-                                .orElse(null);
-                    }
-                    Object planInputRatioObj = null;
-                    if (recipeInput != null && recipeInput.getPlanInputRatio() != null) {
-                        planInputRatioObj = recipeInput.getPlanInputRatio();
-                    } else {
-                        planInputRatioObj = ppbom.get("plan_input_ratio");
-                    }
-                    
-                    if (mustQtyObj != null) {
-                        BigDecimal mustQty = new BigDecimal(mustQtyObj.toString());
-                        
-                        // 如果存在计划投入比例，则调整计划投入量
-                        if (planInputRatioObj != null) {
-                            BigDecimal planInputRatio = new BigDecimal(planInputRatioObj.toString());
-                            // 计算调整后的计划投入量 = 原始计划投入量 * 计划投入比例% / 100
-                            BigDecimal adjustedPlannedInput = mustQty.multiply(planInputRatio).divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP);
-                            info.setPlannedInput(adjustedPlannedInput);
-                            log.debug("使用计划投入比例计算计划投入量: 原始值={}, 比例={}, 调整后值={}", mustQty, planInputRatio, adjustedPlannedInput);
-                        } else {
-                            // 如果没有计划投入比例，则使用原始计划投入量
-                            info.setPlannedInput(mustQty);
-                            log.debug("未找到计划投入比例，使用原始计划投入量: {}", mustQty);
-                        }
-                    } else {
-                        log.debug("未找到mustQty值，设置计划投入量为0");
-                        info.setPlannedInput(BigDecimal.ZERO);
-                    }
-                    break;
-                }
-            }
-            
-            // 设置计划锅数：优先使用计算出的值，如果没有则使用订单头的值
-            if (calculatedPlanPotCount != null) {
-                info.setPlannedPotCount(calculatedPlanPotCount);
-                log.debug("设置计划锅数: {}", calculatedPlanPotCount);
-            } else {
-                // 如果没有找到锅数计算基准为'1'的物料，使用订单头中的计划锅数
-                if (orderHeadList != null && !orderHeadList.isEmpty()) {
-                    TBusOrderHead orderHead = orderHeadList.get(0);
-                    if (orderHead.getBodyPotQty() != null) {
-                        info.setPlannedPotCount(orderHead.getBodyPotQty());
-                        log.debug("使用订单头计划锅数: {}", orderHead.getBodyPotQty());
-                    } else {
-                        info.setPlannedPotCount(0); // 默认值
-                        log.debug("未找到任何计划锅数，设置为默认值0");
-                    }
-                } else {
-                    info.setPlannedPotCount(0); // 默认值
-                    log.debug("未找到订单头信息，设置计划锅数为默认值0");
-                }
-            }
-        }
-        
-        // 获取累计投入量（实际投入量）(recordQtyTotal -> actualInput)
-        // 需要通过orderProcessId获取对应的processId
-        Integer processId = null;
-        Optional<TBusOrderProcess> orderProcessOpt = orderProcessRepository.findById(orderProcessId);
-        if (orderProcessOpt.isPresent()) {
-            processId = orderProcessOpt.get().getProcessId().getProcessId();
-        }
-        
-        // 使用getPpbomRecordQtyTotal方法，该方法返回订单工序的累计投入量
-        if (processId != null && orderNo != null) {
-            List<Map> recordQtyTotalRecords = orderProcessRecordRepository
-                .getPpbomRecordQtyTotal(orderNo, processId, -1); // 使用orderNo和processId，-1表示不过滤materialId
-            if (recordQtyTotalRecords != null) {
-                for (Map record : recordQtyTotalRecords) {
-                    String recordMaterialNumber = (String) record.get("material_number");
-                    if (materialNumber != null && materialNumber.equals(recordMaterialNumber)) {
-                        Object recordQtyObj = record.get("record_qty");
-                        if (recordQtyObj != null) {
-                            // 设置实际投入量 (recordQtyTotal -> actualInput)
-                            info.setActualInput(new BigDecimal(recordQtyObj.toString()));
-                            
-                            // 设置单位
-                            Object recordUnitObj = record.get("record_unit");
-                            if (recordUnitObj != null) {
-                                info.setUnit(recordUnitObj.toString());
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-        
-        // 如果上面的方法没有找到数据，回退到按orderProcessId查询并求和
-        if (info.getActualInput() == null || info.getActualInput().compareTo(BigDecimal.ZERO) == 0) {
-            List<TBusOrderProcessRecord> records = orderProcessRecordRepository
-                .findAllByOrderProcessIdAndMaterialNumberAndRecordType(orderProcessId, materialNumber, "1");
-            BigDecimal actualInput = BigDecimal.ZERO;
-            for (TBusOrderProcessRecord record : records) {
-                if (record.getRecordQty() != null) {
-                    actualInput = actualInput.add(record.getRecordQty());
-                }
-            }
-            info.setActualInput(actualInput);
-        }
-        
-        // 设置实际累计锅数 (personalCount -> actualAccumulatedPotCount)
-        if (orderProcessId != null && materialNumber != null) {
-            // 从锅数记录表获取投入次数
-            int cnt = orderPotCountRepository.sumInputCountByOrderProcessAndMaterialNumber(orderProcessId, materialNumber);
-            info.setActualAccumulatedPotCount(cnt);
-            
-            // 如果获取不到，则使用getMinInputCountByOrderProcess方法
-            if (info.getActualAccumulatedPotCount() == null || info.getActualAccumulatedPotCount() == 0) {
-                int actualAccumulatedPotCount = orderPotCountRepository.getMinInputCountByOrderProcess(orderProcessId);
-                info.setActualAccumulatedPotCount(actualAccumulatedPotCount);
-            }
-        }
-    }
-    
     /**
      * 设置生产相关值（计划投入、实际投入、计划锅数、实际累计锅数）
      * @param materialInfo 物料信息对象
