@@ -66,6 +66,10 @@ public class BoardServiceImpl implements BoardService {
                     deviceRunBoardTypeVos.add(createdInsourcingDeviceRunBoardVo(toByDateFront, toByDateLater));
                 }
                 break;
+                case "烤炉":{
+                    deviceRunBoardTypeVos.add(createdOvenDeviceRunBoardVo(toByDateFront, toByDateLater));
+                }
+                break;
                 case "温湿度仪": {
                     deviceRunBoardTypeVos.add(createdTANSensorDeviceRunBoardVo(toByDateFront, toByDateLater));
                 }
