@@ -19,33 +19,28 @@ import java.util.List;
 public interface ProductionDataRepository extends CrudRepository<TBusOrderHead, Integer> {
 
     /**
-     * 根据产线、时间范围（接单时间最小值）和工艺ID查询订单头信息
-     * 优化方案：采用更高效的查询结构，避免在 SELECT 和 WHERE 中重复执行子查询
+     * 根据产线、时间范围（计划开工时间）和工艺ID查询订单基本信息
+     * 优化查询逻辑，确保即使工艺ID为空也能通过单据类型匹配，并过滤已删除订单
      */
-    /**
-     * 根据产线、时间范围（接单时间最小值）和工艺ID查询订单基本信息
-     * 优化方案：利用 receive_time 索引进行范围扫描，通过 GROUP BY 计算最小接单时间，避免关联查询时的全表扫描。
-     */
-    @Query(value = "SELECT h.nc_vwkname, p_min.min_rt, h.order_no " +
-            "FROM ( " +
-            "    SELECT order_no, MIN(receive_time) as min_rt " +
-            "    FROM t_bus_order_process " +
-            "    WHERE receive_time <= :endTime " +
-            "    GROUP BY order_no " +
-            "    HAVING MIN(receive_time) >= :startTime " +
-            ") p_min " +
-            "JOIN t_bus_order_head h ON h.order_no = p_min.order_no " +
-            "WHERE ((:cwkids) IS NULL OR h.nc_cwkid IN (:cwkids)) " +
+    @Query(value = "SELECT h.nc_vwkname, h.body_plan_start_date, h.order_no " +
+            "FROM t_bus_order_head h " +
+            "WHERE h.body_plan_start_date >= :startTime " +
+            "AND h.body_plan_start_date <= :endTime " +
+            "AND ((:cwkids) IS NULL OR h.nc_cwkid IN (:cwkids)) " +
             "AND (" +
-            "  (h.bill_type = '周转饼流程生产单' OR (:craftId1 IS NOT NULL AND h.craft_id = :craftId1)) " +
-            "  OR " +
-            "  (h.bill_type = '普通流程生产订单' OR (:craftId2 IS NOT NULL AND h.craft_id = :craftId2)) " +
-            ")", nativeQuery = true)
+            "  h.bill_type = '周转饼流程生产单' " +
+            "  OR h.bill_type = '普通流程生产订单' " +
+            "  OR h.bill_type LIKE '%周转%' " +
+            "  OR h.bill_type LIKE '%成品%' " +
+            "  OR ((:craftIds1) IS NOT NULL AND CAST(h.craft_id AS text) IN (:craftIds1)) " +
+            "  OR ((:craftIds2) IS NOT NULL AND CAST(h.craft_id AS text) IN (:craftIds2)) " +
+            ") " +
+            "AND (h.is_deleted = '0')", nativeQuery = true)
     List<Object[]> findAllMatchingOrderBasics(@Param("startTime") Date startTime, 
                                              @Param("endTime") Date endTime, 
                                              @Param("cwkids") List<String> cwkids,
-                                             @Param("craftId1") Integer craftId1,
-                                             @Param("craftId2") Integer craftId2);
+                                             @Param("craftIds1") List<String> craftIds1,
+                                             @Param("craftIds2") List<String> craftIds2);
 
     /**
      * 聚合查询：批量获取订单的投入明细（按物料和类型汇总）
@@ -54,10 +49,9 @@ public interface ProductionDataRepository extends CrudRepository<TBusOrderHead, 
     @Query("SELECT t.orderNo, t.materialNumber, t.materialName, t.recordUnit, t.recordType, SUM(t.recordQty) " +
            "FROM TBusOrderProcessHistory t " +
            "WHERE t.orderNo IN :orderNos " +
-           "AND t.processNumber NOT IN ('GX-007', 'GX-011') " +
-           "AND t.reportTime >= :hintStart " +
+           "AND t.processNumber NOT IN ('GX-011') " +
            "GROUP BY t.orderNo, t.materialNumber, t.materialName, t.recordUnit, t.recordType")
-    List<Object[]> findActualInputAggregated(@Param("orderNos") List<String> orderNos, @Param("hintStart") Date hintStart);
+    List<Object[]> findActualInputAggregated(@Param("orderNos") List<String> orderNos);
 
     /**
      * 聚合查询：批量获取成品的报工条数
@@ -66,9 +60,8 @@ public interface ProductionDataRepository extends CrudRepository<TBusOrderHead, 
            "FROM TBusOrderProcessHistory t " +
            "WHERE t.orderNo IN :orderNos " +
            "AND t.processNumber = 'GX-011' " +
-           "AND t.reportTime >= :hintStart " +
            "GROUP BY t.orderNo")
-    List<Object[]> findActualOutputCountAggregated(@Param("orderNos") List<String> orderNos, @Param("hintStart") Date hintStart);
+    List<Object[]> findActualOutputCountAggregated(@Param("orderNos") List<String> orderNos);
 
     /**
      * 聚合查询：批量获取成品的净含量重量
@@ -77,14 +70,13 @@ public interface ProductionDataRepository extends CrudRepository<TBusOrderHead, 
            "FROM TBusOrderProcessRecord t " +
            "WHERE t.orderNo IN :orderNos " +
            "AND t.processNumber = 'GX-011' " +
-           "AND t.reportTime >= :hintStart " +
            "GROUP BY t.orderNo")
-    List<Object[]> findNetWeightAggregated(@Param("orderNos") List<String> orderNos, @Param("hintStart") Date hintStart);
+    List<Object[]> findNetWeightAggregated(@Param("orderNos") List<String> orderNos);
 
     /**
-     * 根据订单号查询订单及其相关的最小接单时间
+     * 根据订单号查询订单及其相关的计划开工时间
      */
-    @Query("SELECT t, (SELECT MIN(p.receiveTime) FROM TBusOrderProcess p WHERE p.orderNo = t.orderNo) " +
+    @Query("SELECT t, t.bodyPlanStartDate " +
             "FROM TBusOrderHead t WHERE t.orderNo IN :orderNos")
     List<Object[]> findByOrderNoInWithMinRT(@Param("orderNos") List<String> orderNos);
 
