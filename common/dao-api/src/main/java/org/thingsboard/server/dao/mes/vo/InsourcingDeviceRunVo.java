@@ -25,7 +25,7 @@ public class InsourcingDeviceRunVo extends BaseRowModel {
     private String deviceName;
     @ExcelProperty(value = "运行时间",index = 4)
     @ApiModelProperty("运行时间")
-    private Long runSeund;
+    private BigDecimal runSeund;
     @ExcelProperty(value = "最高温度",index = 5)
     @ApiModelProperty("最高温度")
     private BigDecimal maxTemp;

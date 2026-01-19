@@ -24,7 +24,7 @@ public class OvenDeviceRunVo extends BaseRowModel {
     private String deviceName;
     @ExcelProperty(value = "运行时间",index = 4)
     @ApiModelProperty("运行时间")
-    private Long runSeund;
+    private BigDecimal runSeund;
     @ExcelProperty(value = "温度1区最高温",index = 5)
     @ApiModelProperty("温度1区最高温")
     private BigDecimal maxOneTemp;

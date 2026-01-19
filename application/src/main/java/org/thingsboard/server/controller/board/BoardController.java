@@ -14,6 +14,8 @@ import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.service.TSysDevice.TSysDeviceExcelService;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +46,7 @@ public class BoardController extends BaseController {
         return ResultUtil.success(deviceRunBoardVos);
     }
 
-    @ApiOperation("设备运行报表")
+    @ApiOperation("导出设备运行报表")
     @PostMapping("/exportDeviceRunBoard")
     public ResponseResult<List<DeviceRunBoardVo>> exportDeviceRunBoard(@RequestBody DeviceRunBoardDto deviceRunBoardDto,
                                                                        HttpServletResponse response) throws ParseException {
@@ -64,15 +66,28 @@ public class BoardController extends BaseController {
                     for (DeviceRunBoardTypeVo deviceRunBoardTypeVo : deviceRunBoardTypeVoList) {
                         if (deviceRunBoardTypeVo.getInsourcingDeviceRunVoList() != null
                                 && deviceRunBoardTypeVo.getInsourcingDeviceRunVoList().size() > 0) {
-                            insourcingDeviceRunVoList.addAll(deviceRunBoardTypeVo.getInsourcingDeviceRunVoList());
+                            List<InsourcingDeviceRunVo> insourcingDeviceRunVoList1 = deviceRunBoardTypeVo.getInsourcingDeviceRunVoList();
+                            for (InsourcingDeviceRunVo insourcingDeviceRunVo : insourcingDeviceRunVoList1) {
+                                insourcingDeviceRunVo.setRunSeund(insourcingDeviceRunVo.getRunSeund().divide(new BigDecimal("3600"),1, RoundingMode.HALF_UP));
+                            }
+                            insourcingDeviceRunVoList.addAll(insourcingDeviceRunVoList1);
                         }
                         if (deviceRunBoardTypeVo.getOvenDeviceRunVos() != null
                                 && deviceRunBoardTypeVo.getOvenDeviceRunVos().size() > 0) {
-                            ovenDeviceRunVos.addAll(deviceRunBoardTypeVo.getOvenDeviceRunVos());
+                            List<OvenDeviceRunVo> ovenDeviceRunVos1 = deviceRunBoardTypeVo.getOvenDeviceRunVos();
+                            for (OvenDeviceRunVo ovenDeviceRunVo : ovenDeviceRunVos1) {
+                                ovenDeviceRunVo.setRunSeund(ovenDeviceRunVo.getRunSeund().divide(new BigDecimal("3600"),1, RoundingMode.HALF_UP));
+
+                            }
+                            ovenDeviceRunVos.addAll(ovenDeviceRunVos1);
                         }
                         if (deviceRunBoardTypeVo.getTanSensorDeviceRunVos() != null
                                 && deviceRunBoardTypeVo.getTanSensorDeviceRunVos().size() > 0) {
-                            tanSensorDeviceRunVos.addAll(deviceRunBoardTypeVo.getTanSensorDeviceRunVos());
+                            List<TanSensorDeviceRunVo> tanSensorDeviceRunVos1 = deviceRunBoardTypeVo.getTanSensorDeviceRunVos();
+                            for (TanSensorDeviceRunVo tanSensorDeviceRunVo : tanSensorDeviceRunVos1) {
+                                tanSensorDeviceRunVo.setRunSeund(tanSensorDeviceRunVo.getRunSeund().divide(new BigDecimal("3600"),1, RoundingMode.HALF_UP));
+                            }
+                            tanSensorDeviceRunVos.addAll(tanSensorDeviceRunVos1);
                         }
                     }
                 }

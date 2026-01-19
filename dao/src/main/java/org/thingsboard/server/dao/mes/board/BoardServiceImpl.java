@@ -119,7 +119,7 @@ public class BoardServiceImpl implements BoardService {
                 BigDecimal minRunSeund = deviceRepository.minQtyByMykey(device.getName(),
                         "开机时间", byDateFrontTimes, byDateLaterTimes);
                 BigDecimal runSeund = maxRunSeund.subtract(minRunSeund);
-                ovenDeviceRunVo.setRunSeund(runSeund.longValue());
+                ovenDeviceRunVo.setRunSeund(runSeund);
 
                 BigDecimal maxOneTempT1 = deviceRepository.maxQtyByMykey(device.getName(),
                         "一区上温度", byDateFrontTimes, byDateLaterTimes);
@@ -292,7 +292,7 @@ public class BoardServiceImpl implements BoardService {
                 BigDecimal minRunSeund = deviceRepository.minQtyByMykey(device.getName(),
                         "开机时间", byDateFrontTimes, byDateLaterTimes);
                 BigDecimal runSeund = maxRunSeund.subtract(minRunSeund);
-                insourcingDeviceRunVo.setRunSeund(runSeund.abs().longValue());
+                insourcingDeviceRunVo.setRunSeund(runSeund.abs());
                 //最高温度
                 BigDecimal maxTemp = new BigDecimal("0");
                 insourcingDeviceRunVo.setMaxTemp(maxTemp);
@@ -349,7 +349,7 @@ public class BoardServiceImpl implements BoardService {
                 tanSensorDeviceRunVo.setDeviceCode(device.getName());
                 tanSensorDeviceRunVo.setDeviceName(device.getName());
                 //总运行时长
-                tanSensorDeviceRunVo.setRunSeund(86400L);
+                tanSensorDeviceRunVo.setRunSeund(new BigDecimal("86400"));
                 //最高温度
                 BigDecimal maxTemp = deviceRepository.maxQtyByMykey(device.getName(),
                         "温度", byDateFrontTimes, byDateLaterTimes);
