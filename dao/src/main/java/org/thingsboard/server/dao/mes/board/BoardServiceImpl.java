@@ -363,15 +363,18 @@ public class BoardServiceImpl implements BoardService {
                         "温度", byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setAvgTemp(avgTemp.setScale(1, RoundingMode.HALF_UP));
 
-                //总温度数据数量
-                BigDecimal inTepmSize = new BigDecimal("10");
-                String iotTemp = GlobalConstant.getCodeDscName("iot_temp", device.getName());
-                inTepmSize = new BigDecimal(iotTemp);
+                //总温度数量
+                BigDecimal countTepmSize=deviceRepository.countQtyByMykey(device.getName(),
+                        "湿度", byDateFrontTimes, byDateLaterTimes);
 
-                BigDecimal tempSuccess = deviceRepository.countByQty(device.getName(), "温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                tanSensorDeviceRunVo.setHempSize(tempSuccess);
-                BigDecimal tempSize = (inTepmSize.subtract(tempSuccess)).divide(inTepmSize, 1, RoundingMode.HALF_UP);
+                String iotTemp = GlobalConstant.getCodeDscName("iot_temp", device.getName());
+                BigDecimal inTepmSize = new BigDecimal(iotTemp);
+
+                BigDecimal tempSize = deviceRepository.countByQty(device.getName(), "温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setTempSize(tempSize);
+
+                BigDecimal tempSuccess = (countTepmSize.subtract(tempSize)).divide(countTepmSize, 1, RoundingMode.HALF_UP);
+                tanSensorDeviceRunVo.setTempSuccess(tempSuccess);
 
                 //最高湿度
                 BigDecimal maxhemp = deviceRepository.maxQtyByMykey(device.getName(),
@@ -386,14 +389,18 @@ public class BoardServiceImpl implements BoardService {
                         "湿度", byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setAvgHemp(avgHemp.setScale(1, RoundingMode.HALF_UP));
 
-                //总湿度度数据数量
+                //字典湿度数量
                 BigDecimal inHepmSize = new BigDecimal("10");
                 inHepmSize = new BigDecimal(GlobalConstant.getCodeDscName("iot_hemp", device.getName()));
 
-                BigDecimal hempSuccess = deviceRepository.countByQty(device.getName(), "湿度", inHepmSize, byDateFrontTimes, byDateLaterTimes);
-                tanSensorDeviceRunVo.setHempSuccess(hempSuccess);
-                BigDecimal hempSize = (inHepmSize.subtract(hempSuccess)).divide(inHepmSize, 1, RoundingMode.HALF_UP);
+                //总湿度数量
+                BigDecimal countHepmSize=deviceRepository.countQtyByMykey(device.getName(),
+                        "湿度", byDateFrontTimes, byDateLaterTimes);
+
+                BigDecimal hempSize = deviceRepository.countByQty(device.getName(), "湿度", inHepmSize, byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setHempSize(hempSize);
+                BigDecimal hempSuccess = (countHepmSize.subtract(hempSize)).divide(countHepmSize, 1, RoundingMode.HALF_UP);
+                tanSensorDeviceRunVo.setHempSuccess(hempSuccess);
 
                 tanSensorDeviceRunVos.add(tanSensorDeviceRunVo);
             }

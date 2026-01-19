@@ -298,10 +298,17 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
      * @param byDateLaterTimes
      * @return
      */
-    @Query(value = "select GREATEST( \n" +
-            "    COUNT(COALESCE(a.long_v, a.dbl_v)) - ?3,     0 ) from ts_kv a \n" +
+    @Query(value = "select COUNT(1) from ts_kv a \n" +
             "join device b on a.entity_id =b.id \n" +
             "join ts_kv_dictionary c on a.\"key\" =c.key_id \n" +
-            "where c.\"key\" =?2 and b.name=?1 and a.ts between ?4 and ?5 ",nativeQuery = true)
+            "where c.\"key\" =?2 and b.name=?1 and a.ts between ?4 and ?5 \n" +
+            "  and (COALESCE(a.long_v, a.dbl_v) - ?3) > 0 ",nativeQuery = true)
     BigDecimal countByQty(String name, String key, BigDecimal inTepmSize, Long byDateFrontTimes, Long byDateLaterTimes);
+
+//    @Query(value = "select GREATEST( \n" +
+//            "    COUNT(COALESCE(a.long_v, a.dbl_v)) - ?3,     0 ) from ts_kv a \n" +
+//            "join device b on a.entity_id =b.id \n" +
+//            "join ts_kv_dictionary c on a.\"key\" =c.key_id \n" +
+//            "where c.\"key\" =?2 and b.name=?1 and a.ts between ?4 and ?5 ",nativeQuery = true)
+//    BigDecimal countByQty(String name, String key, BigDecimal inTepmSize, Long byDateFrontTimes, Long byDateLaterTimes);
 }
