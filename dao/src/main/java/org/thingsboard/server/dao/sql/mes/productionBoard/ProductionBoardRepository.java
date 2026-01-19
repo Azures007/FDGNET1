@@ -88,6 +88,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      */
     @Query(value = "SELECT COUNT(h.order_id) as orderCount, COALESCE(SUM(h.body_plan_prd_qty), 0) as planProductionQuantity " +
            "FROM t_bus_order_head h " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -108,6 +109,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      */
     @Query(value = "SELECT COUNT(h.order_id) as orderCount, COALESCE(SUM(h.body_plan_prd_qty), 0) as planProductionQuantity " +
            "FROM t_bus_order_head h " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -132,6 +134,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "LEFT JOIN t_bus_order_ppbom_lk lk ON lk.order_id = h.order_id " +
            "LEFT JOIN t_bus_order_ppbom bom ON bom.order_ppbom_id = lk.order_ppbom_id " +
            "LEFT JOIN t_sync_material m ON m.material_code = bom.material_number " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -158,6 +161,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "LEFT JOIN t_bus_order_ppbom_lk lk ON lk.order_id = h.order_id " +
            "LEFT JOIN t_bus_order_ppbom bom ON bom.order_ppbom_id = lk.order_ppbom_id " +
            "LEFT JOIN t_sync_material m ON m.material_code = bom.material_number " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -185,6 +189,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "LEFT JOIN t_bus_order_ppbom_lk lk ON lk.order_id = h.order_id " +
            "LEFT JOIN t_bus_order_ppbom bom ON bom.order_ppbom_id = lk.order_ppbom_id " +
            "LEFT JOIN t_sync_material m ON m.material_code = bom.material_number " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -210,6 +215,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "LEFT JOIN t_bus_order_ppbom_lk lk ON lk.order_id = h.order_id " +
            "LEFT JOIN t_bus_order_ppbom bom ON bom.order_ppbom_id = lk.order_ppbom_id " +
            "LEFT JOIN t_sync_material m ON m.material_code = bom.material_number " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -244,6 +250,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "  AND r.bus_type = 'BG' " +
            "  AND r.record_type = '3' " +
            "  AND r.report_status = '0' " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -255,6 +262,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +
            "FROM t_bus_order_head h " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -286,6 +294,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "  AND r.bus_type = 'BG' " +
            "  AND r.record_type = '3' " +
            "  AND r.report_status = '0' " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -324,6 +333,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "    AND r.report_status = '0' " +
            "  GROUP BY r.order_no" +
            ") completed ON h.order_no = completed.order_no " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
@@ -361,6 +371,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "    AND r.report_status = '0' " +
            "  GROUP BY r.order_no" +
            ") completed ON h.order_no = completed.order_no " +
+            "JOIN t_sys_craft_material_rel rel on rel.material_code=h.body_material_number and rel.craft_id=9 " +
            "WHERE h.is_deleted = '0' " +
            "AND h.bill_type = '普通流程生产订单' " +
            "AND h.body_plan_start_date >= :startDate " +
