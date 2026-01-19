@@ -57,7 +57,7 @@
                         <td>物料编码</td>
                         <td>操作</td>
                     </tr>
-                    <tr *ngFor="let personItem of dataCheck;index as i">
+                    <tr *ngFor="let personItem of (searchFlag?searchListFn():dataCheck);index as i">
                         <td>{{personItem.materialName}}</td>
                         <td>{{personItem.materialCode}}</td>
                         <td>

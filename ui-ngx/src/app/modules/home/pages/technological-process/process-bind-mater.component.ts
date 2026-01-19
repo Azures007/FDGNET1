@@ -146,9 +146,11 @@ export class ProcessBindMaterComponent implements OnInit {
     console.log(this.dataCheckCopy);
     this.dataSource.push(data);
   }
-
+  searchFlag = false;
   //搜索已选中列表
   searchCheckList() {
+    this.searchFlag = true;
+    return;
     let arr = new Array();
     if (this.dataCheckCopy.length == 0) {
       this.dataCheckCopy = JSON.parse(JSON.stringify(this.dataCheck));
@@ -171,10 +173,14 @@ export class ProcessBindMaterComponent implements OnInit {
     console.log(this.dataCheckCopy);
 
   }
-
+  searchListFn() {
+    return this.dataCheck.filter(item => item.materialName.indexOf(this.materialNameCheck) != -1);
+  }
   //重置已选中列表搜索
   searchCheckListReset() {
     this.materialNameCheck = "";
+    this.searchFlag = false;
+    return;
     this.dataCheck = JSON.parse(JSON.stringify(this.dataCheckCopy));
   }
 
