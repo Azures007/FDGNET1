@@ -115,7 +115,8 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
             entity.setCreatedTime(new java.util.Date());
             //entity.setUnit("KG");
             String spec=entity.getMaterialspec();
-            Pattern pattern = Pattern.compile("\\*(\\d+(\\.\\d+)?)/");
+            //Pattern pattern = Pattern.compile("\\*(\\d+(\\.\\d+)?)/");
+            Pattern pattern = Pattern.compile("\\*(\\d+(\\.\\d+)?)[^/]*/");
             Matcher matcher = pattern.matcher(spec);
             BigDecimal qtyPerJian=new BigDecimal(0);
             if (matcher.find()) {
@@ -225,7 +226,7 @@ public class NcTBusOrderHeadServiceImpl implements NcTBusOrderHeadService {
                 entity.setCreatedTime(new java.util.Date());
                 //entity.setUnit("KG");
                 String spec=entity.getMaterialspec();
-                Pattern pattern = Pattern.compile("\\*(\\d+(\\.\\d+)?)/");
+                Pattern pattern = Pattern.compile("\\*(\\d+(\\.\\d+)?)[^/]*/");
                 Matcher matcher = pattern.matcher(spec);
                 BigDecimal qtyPerJian=new BigDecimal(0);
                 if (matcher.find()) {
