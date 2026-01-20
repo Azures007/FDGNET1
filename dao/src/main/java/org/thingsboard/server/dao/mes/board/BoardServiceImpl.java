@@ -208,7 +208,9 @@ public class BoardServiceImpl implements BoardService {
 
                 BigDecimal inTepmSize = new BigDecimal("10");
                 String iotTemp = GlobalConstant.getCodeDscName("iot_over_temp", device.getName());
-                inTepmSize = new BigDecimal(iotTemp);
+                if (iotTemp != null) {
+                    inTepmSize = new BigDecimal(iotTemp);
+                }
 
                 BigDecimal overSize1 = deviceRepository.countByQty(device.getName(), "一区上温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
                 BigDecimal overSize11 = deviceRepository.countByQty(device.getName(), "一区下温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
@@ -367,8 +369,11 @@ public class BoardServiceImpl implements BoardService {
                 BigDecimal countTepmSize = deviceRepository.countQtyByMykey(device.getName(),
                         "湿度", byDateFrontTimes, byDateLaterTimes);
 
+                BigDecimal inTepmSize = new BigDecimal("20");
                 String iotTemp = GlobalConstant.getCodeDscName("iot_temp", device.getName());
-                BigDecimal inTepmSize = new BigDecimal(iotTemp);
+                if (iotTemp != null) {
+                    inTepmSize = new BigDecimal(iotTemp);
+                }
 
                 BigDecimal tempSize = deviceRepository.countByQty(device.getName(), "温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setTempSize(tempSize);
@@ -392,7 +397,11 @@ public class BoardServiceImpl implements BoardService {
 
                 //字典湿度数量
                 BigDecimal inHepmSize = new BigDecimal("10");
-                inHepmSize = new BigDecimal(GlobalConstant.getCodeDscName("iot_hemp", device.getName()));
+                String iotHemp = GlobalConstant.getCodeDscName("iot_hemp", device.getName());
+                if (iotHemp != null) {
+                    inHepmSize = new BigDecimal(iotHemp);
+                }
+
 
                 //总湿度数量
                 BigDecimal countHepmSize = deviceRepository.countQtyByMykey(device.getName(),
