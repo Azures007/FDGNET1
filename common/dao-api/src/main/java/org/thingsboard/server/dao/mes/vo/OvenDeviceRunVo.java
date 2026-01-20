@@ -67,8 +67,5 @@ public class OvenDeviceRunVo extends BaseRowModel {
     @ExcelProperty(value = "故障次数",index = 18)
     @ApiModelProperty("故障次数")
     private Integer errorSize;
-    @ExcelProperty(value = "包装件数",index = 19)
-    @ApiModelProperty("包装件数")
-    private BigDecimal pieceQty;
 
 }

@@ -242,8 +242,8 @@ public class BoardServiceImpl implements BoardService {
                         .add(countTwoTempT1).add(countTwoTempT2).add(countThreeTempT1).add(countThreeTempT2)
                         .add(countFourTempT1).add(countFourTempT2);
                 BigDecimal tempSuccess = sumTempSuccess.subtract(overSize);
-                tempSuccess = sumTempSuccess.compareTo(new BigDecimal("0")) == 0 ? new BigDecimal("0") : tempSuccess.divide(sumTempSuccess, 1, RoundingMode.HALF_UP);
-                ovenDeviceRunVo.setTempSuccess(tempSuccess);
+                tempSuccess = sumTempSuccess.compareTo(new BigDecimal("0")) == 0 ? new BigDecimal("0") : tempSuccess.divide(sumTempSuccess, 4, RoundingMode.HALF_UP);
+                ovenDeviceRunVo.setTempSuccess(tempSuccess.multiply(new BigDecimal("100")));
 
                 ovenDeviceRunVo.setAvgSpeed(deviceRepository.avgQtyByMykey(device.getName(),
                         "速度", byDateFrontTimes, byDateLaterTimes).setScale(1,RoundingMode.HALF_UP));
@@ -374,7 +374,7 @@ public class BoardServiceImpl implements BoardService {
                 tanSensorDeviceRunVo.setTempSize(tempSize);
 
                 BigDecimal tempSuccess = (countTepmSize.subtract(tempSize)).divide(countTepmSize, 1, RoundingMode.HALF_UP);
-                tanSensorDeviceRunVo.setTempSuccess(tempSuccess);
+                tanSensorDeviceRunVo.setTempSuccess(tempSuccess.multiply(new BigDecimal("100")));
 
                 //最高湿度
                 BigDecimal maxhemp = deviceRepository.maxQtyByMykey(device.getName(),
@@ -387,7 +387,7 @@ public class BoardServiceImpl implements BoardService {
                 //平均湿度
                 BigDecimal avgHemp = deviceRepository.avgQtyByMykey(device.getName(),
                         "湿度", byDateFrontTimes, byDateLaterTimes);
-                tanSensorDeviceRunVo.setAvgHemp(avgHemp.setScale(1, RoundingMode.HALF_UP));
+                tanSensorDeviceRunVo.setAvgHemp(avgHemp.setScale(4, RoundingMode.HALF_UP));
 
                 //字典湿度数量
                 BigDecimal inHepmSize = new BigDecimal("10");
@@ -399,8 +399,9 @@ public class BoardServiceImpl implements BoardService {
 
                 BigDecimal hempSize = deviceRepository.countByQty(device.getName(), "湿度", inHepmSize, byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setHempSize(hempSize);
-                BigDecimal hempSuccess = (countHepmSize.subtract(hempSize)).divide(countHepmSize, 1, RoundingMode.HALF_UP);
-                tanSensorDeviceRunVo.setHempSuccess(hempSuccess);
+                BigDecimal hempSuccess = (countHepmSize.subtract(hempSize));
+                hempSuccess=hempSuccess.divide(countHepmSize, 4, RoundingMode.HALF_UP);
+                tanSensorDeviceRunVo.setHempSuccess(hempSuccess.multiply(new BigDecimal("100")));
 
                 tanSensorDeviceRunVos.add(tanSensorDeviceRunVo);
             }
