@@ -66,7 +66,7 @@ public class BoardServiceImpl implements BoardService {
                     deviceRunBoardTypeVos.add(createdInsourcingDeviceRunBoardVo(toByDateFront, toByDateLater));
                 }
                 break;
-                case "烤炉":{
+                case "烤炉": {
                     deviceRunBoardTypeVos.add(createdOvenDeviceRunBoardVo(toByDateFront, toByDateLater));
                 }
                 break;
@@ -242,14 +242,14 @@ public class BoardServiceImpl implements BoardService {
                         .add(countTwoTempT1).add(countTwoTempT2).add(countThreeTempT1).add(countThreeTempT2)
                         .add(countFourTempT1).add(countFourTempT2);
                 BigDecimal tempSuccess = sumTempSuccess.subtract(overSize);
-                tempSuccess = sumTempSuccess.compareTo(new BigDecimal("0")) == 0 ? new BigDecimal("0") : tempSuccess.divide(sumTempSuccess, 4, RoundingMode.HALF_UP);
+                tempSuccess =  overSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0") :sumTempSuccess.compareTo(new BigDecimal("0")) == 0 ? new BigDecimal("0") : tempSuccess.divide(sumTempSuccess, 4, RoundingMode.HALF_UP);
                 ovenDeviceRunVo.setTempSuccess(tempSuccess.multiply(new BigDecimal("100")));
 
                 ovenDeviceRunVo.setAvgSpeed(deviceRepository.avgQtyByMykey(device.getName(),
-                        "速度", byDateFrontTimes, byDateLaterTimes).setScale(1,RoundingMode.HALF_UP));
+                        "速度", byDateFrontTimes, byDateLaterTimes).setScale(1, RoundingMode.HALF_UP));
 
                 ovenDeviceRunVo.setAvgHotWind(deviceRepository.avgQtyByMykey(device.getName(),
-                        "热风频率", byDateFrontTimes, byDateLaterTimes).setScale(1,RoundingMode.HALF_UP));
+                        "热风频率", byDateFrontTimes, byDateLaterTimes).setScale(1, RoundingMode.HALF_UP));
 
                 ovenDeviceRunVo.setErrorSize(deviceRepository.sumQtyByMykey(device.getName(),
                         "故障警告", byDateFrontTimes, byDateLaterTimes).intValue());
@@ -301,7 +301,7 @@ public class BoardServiceImpl implements BoardService {
                 insourcingDeviceRunVo.setMinTemp(minTemp);
                 //平均温度
                 BigDecimal avgTemp = new BigDecimal("0");
-                insourcingDeviceRunVo.setAvgTemp(avgTemp.setScale(1,RoundingMode.HALF_UP));
+                insourcingDeviceRunVo.setAvgTemp(avgTemp.setScale(1, RoundingMode.HALF_UP));
                 //最高速度
                 insourcingDeviceRunVo.setMaxSpeed(deviceRepository.maxQtyByMykey(device.getName(),
                         "速度", byDateFrontTimes, byDateLaterTimes));
@@ -364,7 +364,7 @@ public class BoardServiceImpl implements BoardService {
                 tanSensorDeviceRunVo.setAvgTemp(avgTemp.setScale(1, RoundingMode.HALF_UP));
 
                 //总温度数量
-                BigDecimal countTepmSize=deviceRepository.countQtyByMykey(device.getName(),
+                BigDecimal countTepmSize = deviceRepository.countQtyByMykey(device.getName(),
                         "湿度", byDateFrontTimes, byDateLaterTimes);
 
                 String iotTemp = GlobalConstant.getCodeDscName("iot_temp", device.getName());
@@ -373,7 +373,8 @@ public class BoardServiceImpl implements BoardService {
                 BigDecimal tempSize = deviceRepository.countByQty(device.getName(), "温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setTempSize(tempSize);
 
-                BigDecimal tempSuccess = (countTepmSize.subtract(tempSize)).divide(countTepmSize, 1, RoundingMode.HALF_UP);
+                BigDecimal tempSuccess = countTepmSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0")
+                        : (countTepmSize.subtract(tempSize)).divide(countTepmSize, 1, RoundingMode.HALF_UP);
                 tanSensorDeviceRunVo.setTempSuccess(tempSuccess.multiply(new BigDecimal("100")));
 
                 //最高湿度
@@ -394,13 +395,13 @@ public class BoardServiceImpl implements BoardService {
                 inHepmSize = new BigDecimal(GlobalConstant.getCodeDscName("iot_hemp", device.getName()));
 
                 //总湿度数量
-                BigDecimal countHepmSize=deviceRepository.countQtyByMykey(device.getName(),
+                BigDecimal countHepmSize = deviceRepository.countQtyByMykey(device.getName(),
                         "湿度", byDateFrontTimes, byDateLaterTimes);
 
                 BigDecimal hempSize = deviceRepository.countByQty(device.getName(), "湿度", inHepmSize, byDateFrontTimes, byDateLaterTimes);
                 tanSensorDeviceRunVo.setHempSize(hempSize);
                 BigDecimal hempSuccess = (countHepmSize.subtract(hempSize));
-                hempSuccess=hempSuccess.divide(countHepmSize, 4, RoundingMode.HALF_UP);
+                hempSuccess = hempSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0") : hempSuccess.divide(countHepmSize, 4, RoundingMode.HALF_UP);
                 tanSensorDeviceRunVo.setHempSuccess(hempSuccess.multiply(new BigDecimal("100")));
 
                 tanSensorDeviceRunVos.add(tanSensorDeviceRunVo);
