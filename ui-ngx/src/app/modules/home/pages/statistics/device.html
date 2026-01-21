@@ -41,130 +41,128 @@
   </div>
   <div class="page-content">
    <!-- 原生table渲染 -->
-    <ng-container *ngFor="let firstItem of dataSource">
-      <ng-container *ngFor="let secondItem of firstItem.deviceRunBoardTypeVoList">
-        <table class="table" align="center" border="1">
-          <thead>
-            <tr>
-              <th>设备类型：{{secondItem.deviceType}}</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-        <table class="table" align="center" border="1" *ngIf="secondItem.deviceType == '内包机'">
-          <thead>
-            <tr>
-              <th>运行日期</th>
-              <th>设备编号</th>
-              <th>设备名称</th>
-              <th>运行时间(时)</th>
-              <th>最高速度</th>
-              <th>最低速度</th>
-              <th>平均速度</th>
-              <th>包装件数</th>
-              <th>超标次数</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let thirdItem of secondItem.insourcingDeviceRunVoList">
-              <td>{{firstItem.byDateTime | date:'yyyy-MM-dd'}}</td>
-              <td>{{thirdItem.deviceCode}}</td>
-              <td>{{thirdItem.deviceName}}</td>
-              <td>{{format(thirdItem.runSeund)}}</td>
-              <td>{{thirdItem.maxSpeed}}</td>
-              <td>{{thirdItem.minSpeed}}</td>
-              <td>{{thirdItem.avgSpeed}}</td>
-              <td>{{thirdItem.pieceQty}}</td>
-              <td>{{thirdItem.overSize}}</td>
-            </tr>
-          </tbody>
-        </table>
-        <table class="table" align="center" border="1" *ngIf="secondItem.deviceType == '温湿度监测'">
-          <thead>
-            <tr>
-              <th>运行日期</th>
-              <th>设备编号</th>
-              <th>设备名称</th>
-              <th>运行时间(时)</th>
-              <th>最高温度</th>
-              <th>最低温度</th>
-              <th>平均温度</th>
-              <th>温度超标次数</th>
-              <th>温度达标率</th>
-              <th>最高湿度</th>
-              <th>最低湿度</th>
-              <th>平均湿度</th>
-              <th>湿度超标次数</th>
-              <th>湿度达标率</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let thirdItem of secondItem.tanSensorDeviceRunVos">
-              <td>{{firstItem.byDateTime | date:'yyyy-MM-dd'}}</td>
-              <td>{{thirdItem.deviceCode}}</td>
-              <td>{{thirdItem.deviceName}}</td>
-              <td>{{format(thirdItem.runSeund)}}</td>
-              <td>{{thirdItem.maxTemp}}</td>
-              <td>{{thirdItem.minTemp}}</td>
-              <td>{{thirdItem.avgTemp}}</td>
-              <td>{{thirdItem.tempSize}}</td>
-              <td>{{thirdItem.tempSuccess || '-'}}%</td>
-              <td>{{thirdItem.maxHump}}</td>
-              <td>{{thirdItem.minHemp}}</td>
-              <td>{{thirdItem.avgHemp}}</td>
-              <td>{{thirdItem.hempSize}}</td>
-              <td>{{thirdItem.hempSuccess}}%</td>
-            </tr>
-          </tbody>
-        </table>
-        <table class="table" align="center" border="1" *ngIf="secondItem.deviceType == '烤炉'">
-          <thead>
-            <tr>
-              <th>运行日期</th>
-              <th>设备编号</th>
-              <th>设备名称</th>
-              <th>运行时间(时)</th>
-              <th>温度1区<br>最高温</th>
-              <th>温度1区<br>最低温</th>
-              <th>温度2区<br>最高温</th>
-              <th>温度2区<br>最低温</th>
-              <th>温度3区<br>最高温</th>
-              <th>温度3区<br>最低温</th>
-              <th>温度4区<br>最高温</th>
-              <th>温度4区<br>最低温</th>
-              <th>总平均温度</th>
-              <th>超标次数</th>
-              <th>达标率</th>
-              <th>平均速度</th>
-              <th>平均热风频率</th>
-              <th>故障报告次数</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let thirdItem of secondItem.ovenDeviceRunVos">
-              <td>{{firstItem.byDateTime | date:'yyyy-MM-dd'}}</td>
-              <td>{{thirdItem.deviceCode}}</td>
-              <td>{{thirdItem.deviceName}}</td>
-              <td>{{format(thirdItem.runSeund)}}</td>
-              <td>{{thirdItem.maxOneTemp}}</td>
-              <td>{{thirdItem.minOneTemp}}</td>
-              <td>{{thirdItem.maxTwoTemp}}</td>
-              <td>{{thirdItem.minTwoTemp}}</td>
-              <td>{{thirdItem.maxThreeTemp}}</td>
-              <td>{{thirdItem.minThreeTemp}}</td>
-              <td>{{thirdItem.maxFourTemp}}</td>
-              <td>{{thirdItem.minFourTemp}}</td>
-              <td>{{thirdItem.avgTemp}}</td>
-              <td>{{thirdItem.overSize}}</td>
-              <td>{{thirdItem.tempSuccess}}%</td>
-              <td>{{thirdItem.avgSpeed}}</td>
-              <td>{{thirdItem.avgHotWind}}</td>
-              <td>{{thirdItem.errorSize}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </ng-container>
+    <ng-container *ngFor="let secondItem of dataSource">
+      <table class="table" align="center" border="1">
+        <thead>
+          <tr>
+            <th>设备类型：{{secondItem.deviceType}}</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <table class="table" align="center" border="1" *ngIf="secondItem.deviceType == '内包机'">
+        <thead>
+          <tr>
+            <th>运行日期</th>
+            <th>设备编号</th>
+            <th>设备名称</th>
+            <th>运行时间(时)</th>
+            <th>最高速度</th>
+            <th>最低速度</th>
+            <th>平均速度</th>
+            <th>包装件数</th>
+            <th>超标次数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let thirdItem of secondItem.insourcingDeviceRunVoList">
+            <td>{{thirdItem.runDate | date:'yyyy-MM-dd'}}</td>
+            <td>{{thirdItem.deviceCode}}</td>
+            <td>{{thirdItem.deviceName}}</td>
+            <td>{{format(thirdItem.runSeund)}}</td>
+            <td>{{thirdItem.maxSpeed}}</td>
+            <td>{{thirdItem.minSpeed}}</td>
+            <td>{{thirdItem.avgSpeed}}</td>
+            <td>{{thirdItem.pieceQty}}</td>
+            <td>{{thirdItem.overSize}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table" align="center" border="1" *ngIf="secondItem.deviceType == '温湿度监测'">
+        <thead>
+          <tr>
+            <th>运行日期</th>
+            <th>设备编号</th>
+            <th>设备名称</th>
+            <th>运行时间(时)</th>
+            <th>最高温度</th>
+            <th>最低温度</th>
+            <th>平均温度</th>
+            <th>温度超标次数</th>
+            <th>温度达标率</th>
+            <th>最高湿度</th>
+            <th>最低湿度</th>
+            <th>平均湿度</th>
+            <th>湿度超标次数</th>
+            <th>湿度达标率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let thirdItem of secondItem.tanSensorDeviceRunVos">
+            <td>{{thirdItem.runDate | date:'yyyy-MM-dd'}}</td>
+            <td>{{thirdItem.deviceCode}}</td>
+            <td>{{thirdItem.deviceName}}</td>
+            <td>{{format(thirdItem.runSeund)}}</td>
+            <td>{{thirdItem.maxTemp}}</td>
+            <td>{{thirdItem.minTemp}}</td>
+            <td>{{thirdItem.avgTemp}}</td>
+            <td>{{thirdItem.tempSize}}</td>
+            <td>{{thirdItem.tempSuccess || '-'}}%</td>
+            <td>{{thirdItem.maxHump}}</td>
+            <td>{{thirdItem.minHemp}}</td>
+            <td>{{thirdItem.avgHemp}}</td>
+            <td>{{thirdItem.hempSize}}</td>
+            <td>{{thirdItem.hempSuccess}}%</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table" align="center" border="1" *ngIf="secondItem.deviceType == '烤炉'">
+        <thead>
+          <tr>
+            <th>运行日期</th>
+            <th>设备编号</th>
+            <th>设备名称</th>
+            <th>运行时间(时)</th>
+            <th>温度1区<br>最高温</th>
+            <th>温度1区<br>最低温</th>
+            <th>温度2区<br>最高温</th>
+            <th>温度2区<br>最低温</th>
+            <th>温度3区<br>最高温</th>
+            <th>温度3区<br>最低温</th>
+            <th>温度4区<br>最高温</th>
+            <th>温度4区<br>最低温</th>
+            <th>总平均温度</th>
+            <th>超标次数</th>
+            <th>达标率</th>
+            <th>平均速度</th>
+            <th>平均热风频率</th>
+            <th>故障报告次数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let thirdItem of secondItem.ovenDeviceRunVos">
+            <td>{{thirdItem.runDate | date:'yyyy-MM-dd'}}</td>
+            <td>{{thirdItem.deviceCode}}</td>
+            <td>{{thirdItem.deviceName}}</td>
+            <td>{{format(thirdItem.runSeund)}}</td>
+            <td>{{thirdItem.maxOneTemp}}</td>
+            <td>{{thirdItem.minOneTemp}}</td>
+            <td>{{thirdItem.maxTwoTemp}}</td>
+            <td>{{thirdItem.minTwoTemp}}</td>
+            <td>{{thirdItem.maxThreeTemp}}</td>
+            <td>{{thirdItem.minThreeTemp}}</td>
+            <td>{{thirdItem.maxFourTemp}}</td>
+            <td>{{thirdItem.minFourTemp}}</td>
+            <td>{{thirdItem.avgTemp}}</td>
+            <td>{{thirdItem.overSize}}</td>
+            <td>{{thirdItem.tempSuccess}}%</td>
+            <td>{{thirdItem.avgSpeed}}</td>
+            <td>{{thirdItem.avgHotWind}}</td>
+            <td>{{thirdItem.errorSize}}</td>
+          </tr>
+        </tbody>
+      </table>
     </ng-container>
     <table class="table" align="center" border="1" *ngIf="false">
       <thead>
