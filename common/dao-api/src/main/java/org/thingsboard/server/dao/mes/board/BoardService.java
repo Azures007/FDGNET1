@@ -2,6 +2,7 @@ package org.thingsboard.server.dao.mes.board;
 
 import org.thingsboard.server.dao.mes.dto.DeviceRunBoardDto;
 import org.thingsboard.server.dao.mes.vo.BoardDevice;
+import org.thingsboard.server.dao.mes.vo.DeviceRunBoardTypeVo;
 import org.thingsboard.server.dao.mes.vo.DeviceRunBoardVo;
 
 import java.text.ParseException;
@@ -20,6 +21,6 @@ public interface BoardService {
      * @param deviceRunBoardDto
      * @return
      */
-    List<DeviceRunBoardVo> deviceRunBoard(DeviceRunBoardDto deviceRunBoardDto) throws ParseException;
+    List<DeviceRunBoardTypeVo> deviceRunBoard(DeviceRunBoardDto deviceRunBoardDto) throws ParseException;
 
 }
