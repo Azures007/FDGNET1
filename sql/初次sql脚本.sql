@@ -1861,3 +1861,11 @@ CREATE INDEX idx_nc_sync_log_sync_status ON t_bus_nc_sync_log(sync_status);
 ALTER TABLE t_bus_order_head
     ADD COLUMN qty_per_jian DECIMAL(19, 4);
 COMMENT ON COLUMN t_bus_order_head.qty_per_jian IS '每件数量';
+
+-- 为t_bus_order_head表
+CREATE INDEX idx_order_head_nc_cwkid ON t_bus_order_head(nc_cwkid) WHERE is_deleted = '0';
+CREATE INDEX idx_order_head_order_no ON t_bus_order_head(order_no);
+
+-- 为t_bus_order_process_history表
+CREATE INDEX idx_process_history_order_no ON t_bus_order_process_history(order_no);
+CREATE INDEX idx_process_history_composite ON t_bus_order_process_history(report_time, process_number, report_status);
