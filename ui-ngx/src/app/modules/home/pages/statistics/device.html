@@ -42,7 +42,7 @@
   <div class="page-content">
    <!-- 原生table渲染 -->
     <ng-container *ngFor="let secondItem of dataSource">
-      <table class="table" align="center" border="1">
+      <table class="table" align="center" >
         <thead>
           <tr>
             <th>设备类型：{{secondItem.deviceType}}</th>
@@ -51,7 +51,7 @@
         <tbody>
         </tbody>
       </table>
-      <table class="table" align="center" border="1" *ngIf="secondItem.deviceType == '内包机'">
+      <table class="table" align="center"  *ngIf="secondItem.deviceType == '内包机'">
         <thead>
           <tr>
             <th>运行日期</th>
@@ -79,7 +79,7 @@
           </tr>
         </tbody>
       </table>
-      <table class="table" align="center" border="1" *ngIf="secondItem.deviceType == '温湿度监测'">
+      <table class="table" align="center"  *ngIf="secondItem.deviceType == '温湿度监测'">
         <thead>
           <tr>
             <th>运行日期</th>
@@ -117,7 +117,7 @@
           </tr>
         </tbody>
       </table>
-      <table class="table" align="center" border="1" *ngIf="secondItem.deviceType == '烤炉'">
+      <table class="table" align="center"  *ngIf="secondItem.deviceType == '烤炉'">
         <thead>
           <tr>
             <th>运行日期</th>
@@ -164,7 +164,7 @@
         </tbody>
       </table>
     </ng-container>
-    <table class="table" align="center" border="1" *ngIf="false">
+    <table class="table" align="center"  *ngIf="false">
       <thead>
         <tr>
           <th colspan="4">订单基础信息</th>
