@@ -49,7 +49,7 @@ public interface ProductionDataRepository extends CrudRepository<TBusOrderHead, 
     @Query("SELECT t.orderNo, t.materialNumber, t.materialName, t.recordUnit, t.recordType, SUM(t.recordQty) " +
            "FROM TBusOrderProcessHistory t " +
            "WHERE t.orderNo IN :orderNos " +
-           "AND t.processNumber NOT IN ('GX-011') " +
+           "AND t.processNumber NOT IN ('GX-007','GX-011') " +
            "GROUP BY t.orderNo, t.materialNumber, t.materialName, t.recordUnit, t.recordType")
     List<Object[]> findActualInputAggregated(@Param("orderNos") List<String> orderNos);
 
