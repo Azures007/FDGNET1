@@ -96,7 +96,7 @@ public class BoardServiceImpl implements BoardService {
         List<Map> deviceMaps = deviceRepository.findLikeName("Oven");
         do {
             String toByDateFront = format.format(dateFront) + " 00:00:00";
-            String toByDateLater = format.format(dateLater) + " 23:59:59";
+            String toByDateLater = format.format(dateFront) + " 23:59:59";
             if (deviceMaps != null && deviceMaps.size() > 0) {
                 List<Device> devices = JSON.parseArray(JSON.toJSONString(deviceMaps), Device.class);
                 for (Device device : devices) {
@@ -283,7 +283,7 @@ public class BoardServiceImpl implements BoardService {
 
         do {
             String toByDateFront = format.format(dateFront) + " 00:00:00";
-            String toByDateLater = format.format(dateLater) + " 23:59:59";
+            String toByDateLater = format.format(dateFront) + " 23:59:59";
 
             if (deviceMaps != null && deviceMaps.size() > 0) {
                 List<Device> devices = JSON.parseArray(JSON.toJSONString(deviceMaps), Device.class);
@@ -359,7 +359,7 @@ public class BoardServiceImpl implements BoardService {
 
         do {
             String toByDateFront = format.format(dateFront) + " 00:00:00";
-            String toByDateLater = format.format(dateLater) + " 23:59:59";
+            String toByDateLater = format.format(dateFront) + " 23:59:59";
 
             if (deviceMaps != null && deviceMaps.size() > 0) {
                 List<Device> devices = JSON.parseArray(JSON.toJSONString(deviceMaps), Device.class);
