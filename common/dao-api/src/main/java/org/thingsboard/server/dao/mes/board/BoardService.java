@@ -14,7 +14,7 @@ public interface BoardService {
      * 内包机速度折线图数据
      * @return
      */
-    List<BoardDataDevice> lineSellp(String deviceCode);
+    List<BoardDataDevice> lineSellp(String deviceCode,String key,String type);
 
     /**
      * 设备运行报表
@@ -28,7 +28,7 @@ public interface BoardService {
      * @param deviceCodes
      * @return
      */
-    List<LineClVo> lineCl(List<String> deviceCodes);
+    List<LineClVo> lineCl(List<String> deviceCodes,String key);
 
     /**
      * 监测告警（当天）列表

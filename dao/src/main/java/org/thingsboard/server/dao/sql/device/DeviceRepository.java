@@ -306,17 +306,18 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
     BigDecimal countByQty(String name, String key, BigDecimal inTepmSize, Long byDateFrontTimes, Long byDateLaterTimes);
 
     /**
-     * 内包机最近一小时速度
+     * long最近一小时速度
      * @param deviceCode
      * @param lastHourStartTimestamp
      * @param lastHourEndTimestamp
      * @return
      */
-    @Query(value = "SELECT ts by_ts, long_v by_qty," +
+    @Query(value = "SELECT ts by_ts, COALESCE(long_v,0) by_qty," +
             "TO_CHAR(timezone('Asia/Shanghai', TO_TIMESTAMP(ts / 1000.0)), 'YYYY-MM-DD HH24:MI:SS') AS by_date\n" +
             "FROM (\n" +
             "    SELECT \n" +
             "        a.ts,\n" +
+            "        a.dbl_v, \n "+
             "        a.long_v,\n" +
             "        LAG(a.long_v) OVER (ORDER BY a.ts) AS prev_long_v\n" +
             "    FROM ts_kv a \n" +
@@ -328,11 +329,40 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
             "        AND a.ts BETWEEN ?2 AND ?3\n" +
             ") sub\n" +
             "WHERE \n" +
-            "    prev_long_v IS NULL  \n" +
+            "    (prev_long_v IS NULL ) \n" +
             "    OR long_v <> prev_long_v  \n" +
-            "    and ts BETWEEN ?2 AND ?3\n" +
             "ORDER BY ts; ",nativeQuery = true)
     List<Map> lineSellp(String deviceCode, long lastHourStartTimestamp, long lastHourEndTimestamp,String key);
+
+
+    /**
+     * 内包机最近一小时速度
+     * @param deviceCode
+     * @param lastHourStartTimestamp
+     * @param lastHourEndTimestamp
+     * @return
+     */
+    @Query(value = "SELECT ts by_ts, COALESCE(dbl_v,0) by_qty," +
+            "TO_CHAR(timezone('Asia/Shanghai', TO_TIMESTAMP(ts / 1000.0)), 'YYYY-MM-DD HH24:MI:SS') AS by_date\n" +
+            "FROM (\n" +
+            "    SELECT \n" +
+            "        a.ts,\n" +
+            "        a.dbl_v, \n "+
+            "        a.long_v,\n" +
+            "        LAG(a.dbl_v) OVER (ORDER BY a.ts) AS prev_dbl_v\n" +
+            "    FROM ts_kv a \n" +
+            "    JOIN device b ON a.entity_id = b.\"id\" \n" +
+            "    JOIN ts_kv_dictionary c ON a.\"key\" = c.key_id\n" +
+            "    WHERE \n" +
+            "        b.\"name\" = ?1 \n" +
+            "        AND c.\"key\" = ?4\n" +
+            "        AND a.ts BETWEEN ?2 AND ?3\n" +
+            ") sub\n" +
+            "WHERE \n" +
+            "    (prev_dbl_v IS NULL ) \n" +
+            "    OR dbl_v <> prev_dbl_v  \n" +
+            "ORDER BY ts; ",nativeQuery = true)
+    List<Map> lineSellpByDb(String deviceCode, long lastHourStartTimestamp, long lastHourEndTimestamp,String key);
 
 //    @Query(value = "select GREATEST( \n" +
 //            "    COUNT(COALESCE(a.long_v, a.dbl_v)) - ?3,     0 ) from ts_kv a \n" +

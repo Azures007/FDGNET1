@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Builder
 @Data
 @NoArgsConstructor
-@ApiModel("内包机产量分析对线")
+@ApiModel("设备数据分析折线图")
 public class LineClVo {
 
     @ApiModelProperty("设备编码")

@@ -32,7 +32,7 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public List<BoardDataDevice> lineSellp(String deviceCode) {
+    public List<BoardDataDevice> lineSellp(String deviceCode,String key,String type) {
         // 1. 指定时区
         ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 
@@ -45,7 +45,13 @@ public class BoardServiceImpl implements BoardService {
 
         // 4. 最近一小时结束：当前时间（即该时间段的结束）
         long lastHourEndTimestamp = currentTimestamp;
-        List<Map> lineSellpMaps = deviceRepository.lineSellp(deviceCode, lastHourStartTimestamp, lastHourEndTimestamp, "速度");
+        List<Map> lineSellpMaps;
+        if(type.equals("long")){
+            lineSellpMaps = deviceRepository.lineSellp(deviceCode, lastHourStartTimestamp, lastHourEndTimestamp, key);
+        }else {
+            lineSellpMaps = deviceRepository.lineSellpByDb(deviceCode, lastHourStartTimestamp, lastHourEndTimestamp, key);
+
+        }
         List<BoardDataDevice> boardDataDevices = JSON.parseArray(JSON.toJSONString(lineSellpMaps), BoardDataDevice.class);
         return boardDataDevices;
     }
@@ -92,7 +98,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<LineClVo> lineCl(List<String> deviceCodes) {
+    public List<LineClVo> lineCl(List<String> deviceCodes,String key) {
         // 1. 指定时区
         ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 
@@ -111,8 +117,8 @@ public class BoardServiceImpl implements BoardService {
             lineClVo = LineClVo.builder()
                     .deviceCode(deviceCode)
                     .build();
-            BigDecimal maxQty = deviceRepository.maxQtyByMykey(deviceCode, "包装件数", lastHourStartTimestamp, lastHourEndTimestamp);
-            BigDecimal minQty = deviceRepository.minQtyByMykey(deviceCode, "包装件数", lastHourStartTimestamp, lastHourEndTimestamp);
+            BigDecimal maxQty = deviceRepository.maxQtyByMykey(deviceCode, key, lastHourStartTimestamp, lastHourEndTimestamp);
+            BigDecimal minQty = deviceRepository.minQtyByMykey(deviceCode, key, lastHourStartTimestamp, lastHourEndTimestamp);
             lineClVo.setByQty(maxQty.subtract(minQty));
             lineClVos.add(lineClVo);
         }

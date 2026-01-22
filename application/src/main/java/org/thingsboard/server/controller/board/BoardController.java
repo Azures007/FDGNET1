@@ -34,24 +34,55 @@ public class BoardController extends BaseController {
     @ApiOperation("内包机速度折线图数据(当天)")
     @GetMapping("/lineSellp")
     public ResponseResult<List<BoardDataDevice>> lineSellp(@RequestParam("deviceCode") String deviceCode) {
-        List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode);
+        List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "速度","long");
         return ResultUtil.success(boardDevices);
     }
 
     @ApiOperation("内包机产量分析折线图（当天）")
     @GetMapping("/lineCl")
-    public ResponseResult<List<LineClVo>> lineCl(@RequestParam("deviceCodes") List<String> deviceCodes){
-        List<LineClVo> lineClVos=boardService.lineCl(deviceCodes);
+    public ResponseResult<List<LineClVo>> lineCl(@RequestParam("deviceCodes") List<String> deviceCodes) {
+        List<LineClVo> lineClVos = boardService.lineCl(deviceCodes, "包装件数");
         return ResultUtil.success(lineClVos);
     }
 
     @ApiOperation("监测告警（当天）")
     @GetMapping("/listYj")
-    public ResponseResult<ListYjVo> listYj(){
-        ListYjVo listYjVo=boardService.listYj();
+    public ResponseResult<ListYjVo> listYj() {
+        ListYjVo listYjVo = boardService.listYj();
         return ResultUtil.success(listYjVo);
     }
 
+    @GetMapping("/listTemp")
+    @ApiOperation("车间温度检测（当天）")
+    public ResponseResult<List<ListDeviceData>> listTemp(@RequestParam("deviceCodes") List<String> deviceCodes) {
+        List<ListDeviceData> listDeviceDatas = new ArrayList<>();
+        ListDeviceData listDeviceData;
+        for (String deviceCode : deviceCodes) {
+            List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "温度","dbl");
+            listDeviceData = ListDeviceData.builder()
+                    .deviceCode(deviceCode)
+                    .boardDataDeviceList(boardDevices)
+                    .build();
+            listDeviceDatas.add(listDeviceData);
+        }
+        return ResultUtil.success(listDeviceDatas);
+    }
+
+    @GetMapping("/listHemp")
+    @ApiOperation("车间湿度检测（当天）")
+    public ResponseResult<List<ListDeviceData>> listHemp(@RequestParam("deviceCodes") List<String> deviceCodes) {
+        List<ListDeviceData> listDeviceDatas = new ArrayList<>();
+        ListDeviceData listDeviceData;
+        for (String deviceCode : deviceCodes) {
+            List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "湿度","dbl");
+            listDeviceData = ListDeviceData.builder()
+                    .deviceCode(deviceCode)
+                    .boardDataDeviceList(boardDevices)
+                    .build();
+            listDeviceDatas.add(listDeviceData);
+        }
+        return ResultUtil.success(listDeviceDatas);
+    }
 
 
     @ApiOperation("设备运行报表")
@@ -91,10 +122,10 @@ public class BoardController extends BaseController {
                         List<OvenDeviceRunVo> ovenDeviceRunVos1 = deviceRunBoardTypeVo.getOvenDeviceRunVos();
                         for (OvenDeviceRunVo ovenDeviceRunVo : ovenDeviceRunVos1) {
                             ovenDeviceRunVo.setRunSeund(ovenDeviceRunVo.getRunSeund().divide(new BigDecimal("3600"), 1, RoundingMode.HALF_UP));
-                            ovenDeviceRunVo.setAvgSpeedExport(ovenDeviceRunVo.getAvgSpeed()+"%");
-                            ovenDeviceRunVo.setAvgTempExport(ovenDeviceRunVo.getAvgTemp()+"%");
-                            ovenDeviceRunVo.setTempSuccessExport(ovenDeviceRunVo.getTempSuccess()+"%");
-                            ovenDeviceRunVo.setAvgHotWindExport(ovenDeviceRunVo.getAvgHotWind()+"%");
+                            ovenDeviceRunVo.setAvgSpeedExport(ovenDeviceRunVo.getAvgSpeed() + "%");
+                            ovenDeviceRunVo.setAvgTempExport(ovenDeviceRunVo.getAvgTemp() + "%");
+                            ovenDeviceRunVo.setTempSuccessExport(ovenDeviceRunVo.getTempSuccess() + "%");
+                            ovenDeviceRunVo.setAvgHotWindExport(ovenDeviceRunVo.getAvgHotWind() + "%");
                         }
                         ovenDeviceRunVos.addAll(ovenDeviceRunVos1);
                     }
@@ -103,9 +134,9 @@ public class BoardController extends BaseController {
                         List<TanSensorDeviceRunVo> tanSensorDeviceRunVos1 = deviceRunBoardTypeVo.getTanSensorDeviceRunVos();
                         for (TanSensorDeviceRunVo tanSensorDeviceRunVo : tanSensorDeviceRunVos1) {
                             tanSensorDeviceRunVo.setRunSeund(tanSensorDeviceRunVo.getRunSeund().divide(new BigDecimal("3600"), 1, RoundingMode.HALF_UP));
-                            tanSensorDeviceRunVo.setAvgHempExport(tanSensorDeviceRunVo.getAvgHemp()+"%");
-                            tanSensorDeviceRunVo.setHempSuccessExport(tanSensorDeviceRunVo.getHempSuccess()+"%");
-                            tanSensorDeviceRunVo.setTempSuccessExport(tanSensorDeviceRunVo.getTempSuccess()+"%");
+                            tanSensorDeviceRunVo.setAvgHempExport(tanSensorDeviceRunVo.getAvgHemp() + "%");
+                            tanSensorDeviceRunVo.setHempSuccessExport(tanSensorDeviceRunVo.getHempSuccess() + "%");
+                            tanSensorDeviceRunVo.setTempSuccessExport(tanSensorDeviceRunVo.getTempSuccess() + "%");
                         }
                         tanSensorDeviceRunVos.addAll(tanSensorDeviceRunVos1);
                     }
