@@ -1,9 +1,10 @@
 package org.thingsboard.server.dao.mes.board;
 
 import org.thingsboard.server.dao.mes.dto.DeviceRunBoardDto;
-import org.thingsboard.server.dao.mes.vo.BoardDevice;
+import org.thingsboard.server.dao.mes.vo.BoardDataDevice;
 import org.thingsboard.server.dao.mes.vo.DeviceRunBoardTypeVo;
-import org.thingsboard.server.dao.mes.vo.DeviceRunBoardVo;
+import org.thingsboard.server.dao.mes.vo.LineClVo;
+import org.thingsboard.server.dao.mes.vo.ListYjVo;
 
 import java.text.ParseException;
 import java.util.List;
@@ -11,10 +12,9 @@ import java.util.List;
 public interface BoardService {
     /**
      * 内包机速度折线图数据
-     * @param byDate
      * @return
      */
-    List<BoardDevice> lineSellp(String byDate);
+    List<BoardDataDevice> lineSellp(String deviceCode);
 
     /**
      * 设备运行报表
@@ -23,4 +23,16 @@ public interface BoardService {
      */
     List<DeviceRunBoardTypeVo> deviceRunBoard(DeviceRunBoardDto deviceRunBoardDto) throws ParseException;
 
+    /**
+     * 内包机产量分析折线图（当天）
+     * @param deviceCodes
+     * @return
+     */
+    List<LineClVo> lineCl(List<String> deviceCodes);
+
+    /**
+     * 监测告警（当天）列表
+     * @return
+     */
+    ListYjVo listYj();
 }

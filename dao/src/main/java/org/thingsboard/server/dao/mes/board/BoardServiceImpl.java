@@ -15,8 +15,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -30,10 +32,22 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public List<BoardDevice> lineSellp(String byDate) {
+    public List<BoardDataDevice> lineSellp(String deviceCode) {
+        // 1. 指定时区
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 
+        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+        Instant nowInstant = Instant.now();
+        long currentTimestamp = nowInstant.toEpochMilli();
 
-        return null;
+        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
+        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+
+        // 4. 最近一小时结束：当前时间（即该时间段的结束）
+        long lastHourEndTimestamp = currentTimestamp;
+        List<Map> lineSellpMaps = deviceRepository.lineSellp(deviceCode, lastHourStartTimestamp, lastHourEndTimestamp, "速度");
+        List<BoardDataDevice> boardDataDevices = JSON.parseArray(JSON.toJSONString(lineSellpMaps), BoardDataDevice.class);
+        return boardDataDevices;
     }
 
     @Override
@@ -75,6 +89,41 @@ public class BoardServiceImpl implements BoardService {
 
         }
         return deviceRunBoardTypeVos;
+    }
+
+    @Override
+    public List<LineClVo> lineCl(List<String> deviceCodes) {
+        // 1. 指定时区
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+        Instant nowInstant = Instant.now();
+        long currentTimestamp = nowInstant.toEpochMilli();
+
+        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
+        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+
+        // 4. 最近一小时结束：当前时间（即该时间段的结束）
+        long lastHourEndTimestamp = currentTimestamp;
+        List<LineClVo> lineClVos = new ArrayList<>();
+        LineClVo lineClVo;
+        for (String deviceCode : deviceCodes) {
+            lineClVo = LineClVo.builder()
+                    .deviceCode(deviceCode)
+                    .build();
+            BigDecimal maxQty = deviceRepository.maxQtyByMykey(deviceCode, "包装件数", lastHourStartTimestamp, lastHourEndTimestamp);
+            BigDecimal minQty = deviceRepository.minQtyByMykey(deviceCode, "包装件数", lastHourStartTimestamp, lastHourEndTimestamp);
+            lineClVo.setByQty(maxQty.subtract(minQty));
+            lineClVos.add(lineClVo);
+        }
+        return lineClVos;
+    }
+
+    @Override
+    public ListYjVo listYj() {
+
+
+        return null;
     }
 
     /**

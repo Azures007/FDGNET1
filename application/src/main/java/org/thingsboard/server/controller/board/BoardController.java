@@ -31,13 +31,28 @@ public class BoardController extends BaseController {
     @Autowired
     TSysDeviceExcelService downloadService;
 
-    //    @ApiOperation("内包机速度折线图数据")
-    @PostMapping("/lineSellp")
-    public ResponseResult<List<BoardDevice>> lineSellp(@ApiParam(name = "byDate", value = "日期 格式：yyyy-MM-dd", required = true)
-                                                       @RequestParam("byDate") String byDate) {
-        List<BoardDevice> boardDevices = boardService.lineSellp(byDate);
-        return ResultUtil.success();
+    @ApiOperation("内包机速度折线图数据(当天)")
+    @GetMapping("/lineSellp")
+    public ResponseResult<List<BoardDataDevice>> lineSellp(@RequestParam("deviceCode") String deviceCode) {
+        List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode);
+        return ResultUtil.success(boardDevices);
     }
+
+    @ApiOperation("内包机产量分析折线图（当天）")
+    @GetMapping("/lineCl")
+    public ResponseResult<List<LineClVo>> lineCl(@RequestParam("deviceCodes") List<String> deviceCodes){
+        List<LineClVo> lineClVos=boardService.lineCl(deviceCodes);
+        return ResultUtil.success(lineClVos);
+    }
+
+    @ApiOperation("监测告警（当天）")
+    @GetMapping("/listYj")
+    public ResponseResult<ListYjVo> listYj(){
+        ListYjVo listYjVo=boardService.listYj();
+        return ResultUtil.success(listYjVo);
+    }
+
+
 
     @ApiOperation("设备运行报表")
     @PostMapping("/deviceRunBoard")
