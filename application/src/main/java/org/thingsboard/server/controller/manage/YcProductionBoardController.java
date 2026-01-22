@@ -101,7 +101,7 @@ public class YcProductionBoardController extends BaseController {
         return ResultUtil.success(productionBoardService.getOrderProgress(productionLine, current, size, startDate, endDate));
     }
 
-    @ApiOperation("获取生产态势监控")
+    @ApiOperation("获取生产态势监控（正常范围）")
     @GetMapping("/productionBG")
     public ResponseResult<PageVo<ProductionBgVo>> getProductionBG(
             @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
@@ -112,7 +112,18 @@ public class YcProductionBoardController extends BaseController {
         return ResultUtil.success(productionBoardService.getProductionBG(productionLine, current, size, startDate, endDate));
     }
 
-    @ApiOperation("获取外包净含量实况")
+    @ApiOperation("获取生产态势监控（异常范围）")
+    @GetMapping("/productionBGAbnormal")
+    public ResponseResult<PageVo<ProductionBgVo>> getProductionBGAbnormal(
+            @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
+            @ApiParam("当前页码") @RequestParam(value = "current", defaultValue = "0") Integer current,
+            @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @ApiParam("开始日期(yyyy-MM-dd)") @RequestParam(required = false) String startDate,
+            @ApiParam("结束日期(yyyy-MM-dd)") @RequestParam(required = false) String endDate) throws ThingsboardException {
+        return ResultUtil.success(productionBoardService.getProductionBGAbnormal(productionLine, current, size, startDate, endDate));
+    }
+
+    @ApiOperation("获取外包净含量实况（正常范围）")
     @GetMapping("/outsourcingNetContent")
     public ResponseResult<PageVo<OutsourcingNetContent>> getOutsourcingNetContent(
             @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
@@ -121,6 +132,17 @@ public class YcProductionBoardController extends BaseController {
             @ApiParam("开始日期(yyyy-MM-dd)") @RequestParam(required = false) String startDate,
             @ApiParam("结束日期(yyyy-MM-dd)") @RequestParam(required = false) String endDate) throws ThingsboardException {
         return ResultUtil.success(productionBoardService.getOutsourcingNetContent(productionLine, current, size, startDate, endDate));
+    }
+
+    @ApiOperation("获取外包净含量实况（异常范围）")
+    @GetMapping("/outsourcingNetContentAbnormal")
+    public ResponseResult<PageVo<OutsourcingNetContent>> getOutsourcingNetContentAbnormal(
+            @ApiParam("生产线cwkid") @RequestParam(required = false) String productionLine,
+            @ApiParam("当前页码") @RequestParam(value = "current", defaultValue = "0") Integer current,
+            @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @ApiParam("开始日期(yyyy-MM-dd)") @RequestParam(required = false) String startDate,
+            @ApiParam("结束日期(yyyy-MM-dd)") @RequestParam(required = false) String endDate) throws ThingsboardException {
+        return ResultUtil.success(productionBoardService.getOutsourcingNetContentAbnormal(productionLine, current, size, startDate, endDate));
     }
 
     @ApiOperation("查询所有生效的生产线")

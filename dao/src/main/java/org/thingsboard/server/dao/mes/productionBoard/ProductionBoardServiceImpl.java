@@ -531,7 +531,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             // 创建分页参数
             Pageable pageable = PageRequest.of(current, size);
             
-            // 查询生产报工数据（返回Page<Map>）
+            // 查询生产报工数据（正常范围）- 返回Page<Map>
             Page<Map> select;
             if (startDateTime != null && endDateTime != null) {
                 select = productionBoardRepository.findProductionBgDataByDateRange(
@@ -543,6 +543,72 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                 );
             } else {
                 select = productionBoardRepository.findProductionBgData(
+                    productionLine,
+                    worklineIds,
+                    pageable
+                );
+            }
+            
+            // 使用JSON转换为ProductionBgVo对象列表
+            List<ProductionBgVo> castEntity = JSON.parseArray(JSON.toJSONString(select.getContent()), ProductionBgVo.class);
+            
+            // 获取总数
+            int total = (int) select.getTotalElements();
+            
+            // 构建响应
+            PageVo<ProductionBgVo> pageVo = new PageVo<>(size, current);
+            pageVo.setTotal(total);
+            pageVo.setList(castEntity);
+            
+            return pageVo;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 查询失败时返回空数据
+            PageVo<ProductionBgVo> emptyPageVo = new PageVo<>(size, current);
+            emptyPageVo.setTotal(0);
+            emptyPageVo.setList(new ArrayList<>());
+            return emptyPageVo;
+        }
+    }
+
+    @Override
+    public PageVo<ProductionBgVo> getProductionBGAbnormal(String productionLine, Integer current, Integer size, String startDate, String endDate) {
+        // 获取允许的生产线ID列表
+        List<String> worklineIds = getAllowedWorklineIds();
+        if (worklineIds.isEmpty()) {
+            PageVo<ProductionBgVo> emptyPageVo = new PageVo<>(size, current);
+            emptyPageVo.setTotal(0);
+            emptyPageVo.setList(new ArrayList<>());
+            return emptyPageVo;
+        }
+        
+        try {
+            // 处理日期范围
+            Date startDateTime = null;
+            Date endDateTime = null;
+            
+            if (startDate != null && !startDate.trim().isEmpty() && endDate != null && !endDate.trim().isEmpty()) {
+                SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                startDateTime = fullSdf.parse(startDate + " 00:00:00");
+                endDateTime = fullSdf.parse(endDate + " 23:59:59");
+            }
+            
+            // 创建分页参数
+            Pageable pageable = PageRequest.of(current, size);
+            
+            // 查询生产报工数据（异常范围）- 返回Page<Map>
+            Page<Map> select;
+            if (startDateTime != null && endDateTime != null) {
+                select = productionBoardRepository.findProductionBgDataAbnormalByDateRange(
+                    productionLine,
+                    startDateTime,
+                    endDateTime,
+                    worklineIds,
+                    pageable
+                );
+            } else {
+                select = productionBoardRepository.findProductionBgDataAbnormal(
                     productionLine,
                     worklineIds,
                     pageable
@@ -597,7 +663,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             // 创建分页参数
             Pageable pageable = PageRequest.of(current, size);
             
-            // 查询外包净含量数据（返回Page<Map>）
+            // 查询外包净含量数据（正常范围）- 返回Page<Map>
             Page<Map> select;
             if (startDateTime != null && endDateTime != null) {
                 select = productionBoardRepository.findOutsourcingNetContentDataByDateRange(
@@ -609,6 +675,72 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                 );
             } else {
                 select = productionBoardRepository.findOutsourcingNetContentData(
+                    productionLine,
+                    worklineIds,
+                    pageable
+                );
+            }
+            
+            // 使用JSON转换为OutsourcingNetContent对象列表
+            List<OutsourcingNetContent> castEntity = JSON.parseArray(JSON.toJSONString(select.getContent()), OutsourcingNetContent.class);
+            
+            // 获取总数
+            int total = (int) select.getTotalElements();
+            
+            // 构建响应
+            PageVo<OutsourcingNetContent> pageVo = new PageVo<>(size, current);
+            pageVo.setTotal(total);
+            pageVo.setList(castEntity);
+            
+            return pageVo;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 查询失败时返回空数据
+            PageVo<OutsourcingNetContent> emptyPageVo = new PageVo<>(size, current);
+            emptyPageVo.setTotal(0);
+            emptyPageVo.setList(new ArrayList<>());
+            return emptyPageVo;
+        }
+    }
+
+    @Override
+    public PageVo<OutsourcingNetContent> getOutsourcingNetContentAbnormal(String productionLine, Integer current, Integer size, String startDate, String endDate) {
+        // 获取允许的生产线ID列表
+        List<String> worklineIds = getAllowedWorklineIds();
+        if (worklineIds.isEmpty()) {
+            PageVo<OutsourcingNetContent> emptyPageVo = new PageVo<>(size, current);
+            emptyPageVo.setTotal(0);
+            emptyPageVo.setList(new ArrayList<>());
+            return emptyPageVo;
+        }
+        
+        try {
+            // 处理日期范围
+            Date startDateTime = null;
+            Date endDateTime = null;
+            
+            if (startDate != null && !startDate.trim().isEmpty() && endDate != null && !endDate.trim().isEmpty()) {
+                SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                startDateTime = fullSdf.parse(startDate + " 00:00:00");
+                endDateTime = fullSdf.parse(endDate + " 23:59:59");
+            }
+            
+            // 创建分页参数
+            Pageable pageable = PageRequest.of(current, size);
+            
+            // 查询外包净含量数据（异常范围）- 返回Page<Map>
+            Page<Map> select;
+            if (startDateTime != null && endDateTime != null) {
+                select = productionBoardRepository.findOutsourcingNetContentDataAbnormalByDateRange(
+                    productionLine,
+                    startDateTime,
+                    endDateTime,
+                    worklineIds,
+                    pageable
+                );
+            } else {
+                select = productionBoardRepository.findOutsourcingNetContentDataAbnormal(
                     productionLine,
                     worklineIds,
                     pageable
