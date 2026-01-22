@@ -31,14 +31,24 @@ public interface ProductionBoardService {
     OrderProgressPageVo getOrderProgress(String productionLine, Integer current, Integer size, String startDate, String endDate);
 
     /**
-     * 获取报工列表
+     * 获取报工列表（正常范围）
      */
     PageVo<ProductionBgVo> getProductionBG(String productionLine, Integer current, Integer size, String startDate, String endDate);
 
     /**
-     * 获取外包净含量实况
+     * 获取报工列表（异常范围）
+     */
+    PageVo<ProductionBgVo> getProductionBGAbnormal(String productionLine, Integer current, Integer size, String startDate, String endDate);
+
+    /**
+     * 获取外包净含量实况（正常范围）
      */
     PageVo<OutsourcingNetContent> getOutsourcingNetContent(String productionLine, Integer current, Integer size, String startDate, String endDate);
+
+    /**
+     * 获取外包净含量实况（异常范围）
+     */
+    PageVo<OutsourcingNetContent> getOutsourcingNetContentAbnormal(String productionLine, Integer current, Integer size, String startDate, String endDate);
 
     /**
      * 获取完整的生产看板数据（可选）
