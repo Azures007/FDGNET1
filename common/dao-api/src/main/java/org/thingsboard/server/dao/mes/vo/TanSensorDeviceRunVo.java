@@ -34,9 +34,11 @@ public class TanSensorDeviceRunVo extends BaseRowModel {
     @ExcelProperty(value = "平均温度",index = 7)
     @ApiModelProperty("平均温度")
     private BigDecimal avgTemp;
-    @ExcelProperty(value = "温度达标率",index = 8)
     @ApiModelProperty("温度达标率")
     private BigDecimal tempSuccess;
+    @ExcelProperty(value = "温度达标率",index = 8)
+    @ApiModelProperty("温度达标率(导出专用)")
+    private String tempSuccessExport;
     @ExcelProperty(value = "温度超标次数",index = 9)
     @ApiModelProperty("温度超标次数")
     private BigDecimal tempSize;
@@ -46,15 +48,17 @@ public class TanSensorDeviceRunVo extends BaseRowModel {
     @ExcelProperty(value = "最低湿度",index = 11)
     @ApiModelProperty("最低湿度")
     private BigDecimal minHemp;
-    @ExcelProperty(value = "平均湿度",index = 12)
     @ApiModelProperty("平均湿度")
     private BigDecimal avgHemp;
-    @ExcelProperty(value = "湿度达标率",index = 13)
+    @ExcelProperty(value = "平均湿度",index = 12)
+    @ApiModelProperty("平均湿度（导出专用）")
+    private String avgHempExport;
     @ApiModelProperty("湿度达标率")
     private BigDecimal hempSuccess;
+    @ExcelProperty(value = "湿度达标率",index = 13)
+    @ApiModelProperty("湿度达标率（导出专用）")
+    private String hempSuccessExport;
     @ExcelProperty(value = "湿度超标次数",index = 14)
     @ApiModelProperty("湿度超标次数")
     private BigDecimal hempSize;
-
-
 }

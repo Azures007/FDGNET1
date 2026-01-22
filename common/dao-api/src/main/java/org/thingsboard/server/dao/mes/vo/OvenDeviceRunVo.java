@@ -49,21 +49,29 @@ public class OvenDeviceRunVo extends BaseRowModel {
     @ExcelProperty(value = "温度4区最低温",index = 12)
     @ApiModelProperty("温度4区最低温")
     private BigDecimal minFourTemp;
-    @ExcelProperty(value = "总平均温度",index = 13)
     @ApiModelProperty("总平均温度")
     private BigDecimal avgTemp;
+    @ExcelProperty(value = "总平均温度",index = 13)
+    @ApiModelProperty("总平均温度(导出专用)")
+    private String avgTempExport;
     @ExcelProperty(value = "超标次数",index = 14)
     @ApiModelProperty("超标次数")
     private Integer overSize;
-    @ExcelProperty(value = "达标率",index = 15)
     @ApiModelProperty("达标率")
     private BigDecimal tempSuccess;
-    @ExcelProperty(value = "平均速度",index = 16)
+    @ExcelProperty(value = "达标率",index = 15)
+    @ApiModelProperty("达标率（导出专用）")
+    private String tempSuccessExport;
     @ApiModelProperty("平均速度")
     private BigDecimal avgSpeed;
-    @ExcelProperty(value = "平均热风频率",index = 17)
+    @ExcelProperty(value = "平均速度",index = 16)
+    @ApiModelProperty("平均速度(导出专用)")
+    private String avgSpeedExport;
     @ApiModelProperty("平均热风频率")
     private BigDecimal avgHotWind;
+    @ExcelProperty(value = "平均热风频率",index = 17)
+    @ApiModelProperty("平均热风频率（导出专用）")
+    private String  avgHotWindExport;
     @ExcelProperty(value = "故障次数",index = 18)
     @ApiModelProperty("故障次数")
     private Integer errorSize;
