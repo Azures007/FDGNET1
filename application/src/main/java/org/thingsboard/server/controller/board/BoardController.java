@@ -25,8 +25,7 @@ import java.util.List;
 @Api(value = "大屏看板接口", tags = "大屏看板接口")
 public class BoardController extends BaseController {
 
-    @Autowired
-    BoardService boardService;
+
 
     @Autowired
     TSysDeviceExcelService downloadService;

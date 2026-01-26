@@ -68,6 +68,7 @@ import org.thingsboard.server.dao.edge.EdgeService;
 import org.thingsboard.server.dao.entityview.EntityViewService;
 import org.thingsboard.server.dao.exception.DataValidationException;
 import org.thingsboard.server.dao.exception.IncorrectParameterException;
+import org.thingsboard.server.dao.mes.board.BoardService;
 import org.thingsboard.server.dao.mes.menu.MenuService;
 import org.thingsboard.server.dao.mes.ncWorkline.NcWorklineService;
 import org.thingsboard.server.dao.mes.order.*;
@@ -139,6 +140,9 @@ public abstract class BaseController {
 //    protected DictService dictService;
     @Autowired
     protected TSysAbrasiveSpecificationService tSysAbrasiveSpecificationService;
+
+    @Autowired
+    protected BoardService boardService;
 
     @Autowired
     protected RoleService roleService;

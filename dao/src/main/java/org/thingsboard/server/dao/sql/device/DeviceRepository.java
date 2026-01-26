@@ -336,6 +336,16 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
 
 
     /**
+     * 通过设备获取硬件上报数据
+     */
+    @Query(value = "select COALESCE(a.long_v, a.dbl_v) from ts_kv a " +
+            "join device b on a.entity_id=b.id " +
+            "join ts_kv_dictionary c on a.key=c.key_id " +
+            "where b.name=?1 and a.ts=?2 and c.key=?3 ",nativeQuery = true)
+    BigDecimal getKvByTSAndKey(String deviceCode, Long byTs,String key);
+
+
+    /**
      * 内包机最近一小时速度
      * @param deviceCode
      * @param lastHourStartTimestamp
@@ -363,6 +373,25 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
             "    OR dbl_v <> prev_dbl_v  \n" +
             "ORDER BY ts; ",nativeQuery = true)
     List<Map> lineSellpByDb(String deviceCode, long lastHourStartTimestamp, long lastHourEndTimestamp,String key);
+
+    /**
+     * 通过设备名称模糊获取设备
+     * @param deviceType
+     * @return
+     */
+    @Query(value = "select name,label from device where name like %?1%",nativeQuery = true)
+    List<Map> listDeviceIot(String deviceType);
+
+    /**
+     * 获取设备最新数据---通过设备名及键值
+     * @param deviceName
+     * @return
+     */
+    @Query(value = "select COALESCE(a.long_v, a.dbl_v) from ts_kv_latest a " +
+            "join device b on a.entity_id=b.id  " +
+            "join ts_kv_dictionary c on a.key=c.key_id " +
+            "where b.name=?1 and c.key=?2",nativeQuery = true)
+    BigDecimal listDeviceKvLatest(String deviceName,String key);
 
 //    @Query(value = "select GREATEST( \n" +
 //            "    COUNT(COALESCE(a.long_v, a.dbl_v)) - ?3,     0 ) from ts_kv a \n" +

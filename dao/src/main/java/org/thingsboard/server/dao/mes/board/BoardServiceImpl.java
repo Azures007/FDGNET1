@@ -31,8 +31,9 @@ public class BoardServiceImpl implements BoardService {
     DeviceRepository deviceRepository;
 
 
+
     @Override
-    public List<BoardDataDevice> lineSellp(String deviceCode,String key,String type) {
+    public List<BoardDataDevice> lineSellp(String deviceCode, String key, String type) {
         // 1. 指定时区
         ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 
@@ -46,9 +47,9 @@ public class BoardServiceImpl implements BoardService {
         // 4. 最近一小时结束：当前时间（即该时间段的结束）
         long lastHourEndTimestamp = currentTimestamp;
         List<Map> lineSellpMaps;
-        if(type.equals("long")){
+        if (type.equals("long")) {
             lineSellpMaps = deviceRepository.lineSellp(deviceCode, lastHourStartTimestamp, lastHourEndTimestamp, key);
-        }else {
+        } else {
             lineSellpMaps = deviceRepository.lineSellpByDb(deviceCode, lastHourStartTimestamp, lastHourEndTimestamp, key);
 
         }
@@ -98,7 +99,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<LineClVo> lineCl(List<String> deviceCodes,String key) {
+    public List<LineClVo> lineCl(List<String> deviceCodes, String key) {
         // 1. 指定时区
         ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 
@@ -130,6 +131,63 @@ public class BoardServiceImpl implements BoardService {
 
 
         return null;
+    }
+
+    @Override
+    public List<ListDeviceIotVo> listDeviceIot(String deviceType) {
+        ZoneId zone = ZoneId.of("Asia/Shanghai");
+        // 一行获取0点毫秒戳
+        long start = LocalDate.now(zone).atStartOfDay(zone).toInstant().toEpochMilli();
+        // 一行获取23:59:59.999毫秒戳
+        long end = LocalDate.now(zone).atTime(23,59,59,999_000_000).atZone(zone).toInstant().toEpochMilli();
+        List<ListDeviceIotVo> listDeviceIotVos = new ArrayList();
+        ListDeviceIotVo listDeviceIotVo;
+        List<Map> maps = deviceRepository.listDeviceIot(deviceType);
+        if (maps != null && maps.size() > 0) {
+            for (Map map : maps) {
+                //设备状态
+                BigDecimal deviceStatus = deviceRepository.listDeviceKvLatest(map.get("name").toString(), "开机状态");
+                //热风效率
+                BigDecimal deviceHz = deviceRepository.listDeviceKvLatest(map.get("name").toString(), "热风频率");
+                //速度
+                BigDecimal deviceSd = deviceRepository.listDeviceKvLatest(map.get("name").toString(), "速度");
+                listDeviceIotVo=ListDeviceIotVo.builder()
+                        .deviceCode(map.get("name").toString())
+                        .deviceName(map.get("label").toString())
+                        .deviceFactory("清蒙工厂")
+                        .deviceHz(deviceHz)
+                        .deviceStatus(deviceStatus)
+                        .deviceSd(deviceSd)
+                        .maxOneTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "一区上温度"))
+                        .minOneTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "一区下温度"))
+                        .maxTwoTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "二区上温度"))
+                        .minTwoTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "二区下温度"))
+                        .maxThreeTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "三区上温度"))
+                        .minThreeTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "三区下温度"))
+                        .maxFourTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "四区上温度"))
+                        .minFourTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "四区下温度"))
+                        .build();
+                listDeviceIotVos.add(listDeviceIotVo);
+            }
+        }
+
+        return listDeviceIotVos;
+    }
+
+    @Override
+    public List<ListDeviceTempDatsVo> listDeviceTempDats(String deviceCode,String type) {
+        List<ListDeviceTempDatsVo> listDeviceTempDatsVos=new ArrayList<>();
+        List<BoardDataDevice> boardDataDevices = this.lineSellp(deviceCode, type + "上温度", "dbl");
+        for (BoardDataDevice boardDataDevice : boardDataDevices) {
+            ListDeviceTempDatsVo listDeviceTempDatsVo=ListDeviceTempDatsVo.builder()
+                    .byDate(boardDataDevice.getByDate())
+                    .byTs(boardDataDevice.getByTs())
+                    .byMaxQty(boardDataDevice.getByQty())
+                    .byMinQty(deviceRepository.getKvByTSAndKey(deviceCode,boardDataDevice.getByTs(),type + "下温度").toString())
+                    .build();
+            listDeviceTempDatsVos.add(listDeviceTempDatsVo);
+        }
+        return listDeviceTempDatsVos;
     }
 
     /**

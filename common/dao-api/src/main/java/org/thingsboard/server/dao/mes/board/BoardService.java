@@ -1,10 +1,7 @@
 package org.thingsboard.server.dao.mes.board;
 
 import org.thingsboard.server.dao.mes.dto.DeviceRunBoardDto;
-import org.thingsboard.server.dao.mes.vo.BoardDataDevice;
-import org.thingsboard.server.dao.mes.vo.DeviceRunBoardTypeVo;
-import org.thingsboard.server.dao.mes.vo.LineClVo;
-import org.thingsboard.server.dao.mes.vo.ListYjVo;
+import org.thingsboard.server.dao.mes.vo.*;
 
 import java.text.ParseException;
 import java.util.List;
@@ -35,4 +32,18 @@ public interface BoardService {
      * @return
      */
     ListYjVo listYj();
+
+    /**
+     * 设备iot信息
+     * @param deviceType
+     * @return
+     */
+    List<ListDeviceIotVo> listDeviceIot(String deviceType);
+
+    /**
+     * 温度趋势分析折线图
+     * @param deviceCode
+     * @return
+     */
+    List<ListDeviceTempDatsVo> listDeviceTempDats(String deviceCode,String type);
 }
