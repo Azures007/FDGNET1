@@ -190,6 +190,34 @@ public class BoardServiceImpl implements BoardService {
         return listDeviceTempDatsVos;
     }
 
+    @Override
+    public List<BoardDataDevice> getErrorDatas(String deviceCode) {
+        ZoneId zone = ZoneId.of("Asia/Shanghai");
+        // 一行获取0点毫秒戳
+        long start = LocalDate.now(zone).atStartOfDay(zone).toInstant().toEpochMilli();
+        // 一行获取23:59:59.999毫秒戳
+        long end = LocalDate.now(zone).atTime(23,59,59,999_000_000).atZone(zone).toInstant().toEpochMilli();
+        String overOneUpMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最大值");
+        String overOneDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最大值");
+        String overTwoUpMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最大值");
+        String overTwoDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最大值");
+        String overThreeUpMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最大值");
+        String overThreeDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最大值");
+        String overFourUpMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最大值");
+        String overFourDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最大值");
+        List<Map> errMaps=deviceRepository.getErrorDatas(deviceCode,start,end,
+                new BigDecimal(overOneUpMaxTemp),
+                new BigDecimal(overOneDownMaxTemp),
+                new BigDecimal(overTwoUpMaxTemp),
+                new BigDecimal(overTwoDownMaxTemp),
+                new BigDecimal(overThreeUpMaxTemp),
+                new BigDecimal(overThreeDownMaxTemp),
+                new BigDecimal(overFourUpMaxTemp),
+                new BigDecimal(overFourDownMaxTemp));
+        List<BoardDataDevice> boardDataDevices=JSON.parseArray(JSON.toJSONString(errMaps),BoardDataDevice.class);
+        return boardDataDevices;
+    }
+
     /**
      * 烤箱设备运行报表
      *

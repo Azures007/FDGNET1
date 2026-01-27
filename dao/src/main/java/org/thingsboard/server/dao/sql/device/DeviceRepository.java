@@ -393,6 +393,64 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
             "where b.name=?1 and c.key=?2",nativeQuery = true)
     BigDecimal listDeviceKvLatest(String deviceName,String key);
 
+    /**
+     * 异常列表
+     * @param deviceCode
+     * @param start
+     * @param end
+     * @param bigDecimal
+     * @param bigDecimal1
+     * @param bigDecimal2
+     * @param bigDecimal3
+     * @param bigDecimal4
+     * @param bigDecimal5
+     * @param bigDecimal6
+     * @param bigDecimal7
+     * @return
+     */
+    @Query(value = "SELECT\n" +
+            "    CASE\n" +
+            "        WHEN c.\"key\" = '一区上温度' AND a.dbl_v > ?4 THEN '一区上温度超最大值'\n" +
+            "        WHEN c.\"key\" = '一区下温度' AND a.dbl_v > ?5 THEN '一区下温度超最大值'\n" +
+            "        WHEN c.\"key\" = '二区上温度' AND a.dbl_v > ?6 THEN '二区上温度超最大值'\n" +
+            "        WHEN c.\"key\" = '二区下温度' AND a.dbl_v > ?7 THEN '二区下温度超最大值'\n" +
+            "        WHEN c.\"key\" = '三区上温度' AND a.dbl_v > ?8 THEN '三区上温度超最大值'\n" +
+            "        WHEN c.\"key\" = '三区下温度' AND a.dbl_v > ?9 THEN '三区下温度超最大值'\n" +
+            "        WHEN c.\"key\" = '四区上温度' AND a.dbl_v > ?10 THEN '四区上温度超最大值'\n" +
+            "        WHEN c.\"key\" = '四区下温度' AND a.dbl_v > ?11 THEN '四区下温度超最大值'\n" +
+            "    END AS by_qty,\n" +
+            "    a.ts AS by_ts,\n" +
+            "   TO_CHAR(timezone('Asia/Shanghai', TO_TIMESTAMP(ts / 1000.0)), 'YYYY-MM-DD HH24:MI:SS') AS by_date " +
+            "FROM\n" +
+            "    public.ts_kv a\n" +
+            "JOIN\n" +
+            "    public.device b ON a.entity_id = b.id\n" +
+            "JOIN\n" +
+            "    public.ts_kv_dictionary c ON a.\"key\" = c.key_id\n" +
+            "WHERE\n" +
+            "    b.\"name\" = ?1 \n" +
+            "    AND c.\"key\" IN (\n" +
+            "        '一区上温度','一区下温度',\n" +
+            "        '二区上温度','二区下温度',\n" +
+            "        '三区上温度','三区下温度',\n" +
+            "        '四区上温度','四区下温度'\n" +
+            "    )\n" +
+            "    AND a.ts BETWEEN ?2 AND ?3\n" +
+            "    AND a.dbl_v IS NOT NULL\n" +
+            "    AND (\n" +
+            "        (c.\"key\" = '一区上温度' AND a.dbl_v > ?4)\n" +
+            "        OR (c.\"key\" = '一区下温度' AND a.dbl_v > ?5)\n" +
+            "        OR (c.\"key\" = '二区上温度' AND a.dbl_v > ?6)\n" +
+            "        OR (c.\"key\" = '二区下温度' AND a.dbl_v > ?7)\n" +
+            "        OR (c.\"key\" = '三区上温度' AND a.dbl_v > ?8)\n" +
+            "        OR (c.\"key\" = '三区下温度' AND a.dbl_v > ?9)\n" +
+            "        OR (c.\"key\" = '四区上温度' AND a.dbl_v > ?10)\n" +
+            "        OR (c.\"key\" = '四区下温度' AND a.dbl_v > ?11)\n" +
+            "    )\n" +
+            "ORDER BY\n" +
+            "    a.ts DESC",nativeQuery = true)
+    List<Map> getErrorDatas(String deviceCode, long start, long end, BigDecimal bigDecimal, BigDecimal bigDecimal1, BigDecimal bigDecimal2, BigDecimal bigDecimal3, BigDecimal bigDecimal4, BigDecimal bigDecimal5, BigDecimal bigDecimal6, BigDecimal bigDecimal7);
+
 //    @Query(value = "select GREATEST( \n" +
 //            "    COUNT(COALESCE(a.long_v, a.dbl_v)) - ?3,     0 ) from ts_kv a \n" +
 //            "join device b on a.entity_id =b.id \n" +

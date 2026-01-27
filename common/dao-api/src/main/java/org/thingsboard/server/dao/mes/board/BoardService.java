@@ -46,4 +46,11 @@ public interface BoardService {
      * @return
      */
     List<ListDeviceTempDatsVo> listDeviceTempDats(String deviceCode,String type);
+
+    /**
+     * 告警信息获取（当天）
+     * @param deviceCode
+     * @return
+     */
+    List<BoardDataDevice> getErrorDatas(String deviceCode);
 }

@@ -53,6 +53,13 @@ public class BoardOvenController extends BaseController {
         return ResultUtil.success(boardDevices);
     }
 
+    @ApiOperation("告警信息获取（当天）")
+    @GetMapping("/getErrorDatas")
+    public ResponseResult<List<BoardDataDevice>> getErrorDatas(@RequestParam("deviceCode") String deviceCode){
+        List<BoardDataDevice> boardDataDevices=boardService.getErrorDatas(deviceCode);
+        return ResultUtil.success(boardDataDevices);
+    }
+
 
 
 }
