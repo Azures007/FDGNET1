@@ -397,10 +397,10 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "r.material_name as materialName, " +
            "CONCAT(TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))), '-', " +
            "TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))) as standard, " +
-           "r.record_qty as recordQuantity, " +
+           "SUM(r.record_qty) as recordQuantity, " +
            "CASE WHEN r.pot_number IS NOT NULL " +
            "THEN CONCAT('第', r.pot_number, '锅') ELSE '' END as potStr, " +
-           "r.report_time as recordTime " +
+           "MAX(r.report_time) as recordTime " +
            "FROM t_bus_order_head h " +
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
            "LEFT JOIN t_sys_recipe_product_binding b ON b.product_code = h.body_material_number " +
@@ -414,7 +414,21 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND (i.standard_input IS NULL OR i.allowable_deviation IS NULL " +
            "     OR (r.record_qty >= (i.standard_input - i.allowable_deviation) " +
            "         AND r.record_qty <= (i.standard_input + i.allowable_deviation))) " +
-           "ORDER BY r.report_time DESC",
+           "GROUP BY \n" +
+            "    h.order_no,\n" +
+            "    h.nc_vwkname,\n" +
+            "    r.process_name,\n" +
+            "    r.material_name,\n" +
+            "    CONCAT(\n" +
+            "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))),\n" +
+            "        '-',\n" +
+            "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))\n" +
+            "    ),\n" +
+            "    CASE \n" +
+            "        WHEN r.pot_number IS NOT NULL THEN CONCAT('第', r.pot_number, '锅') \n" +
+            "        ELSE '' \n" +
+            "    END\n" +
+            "ORDER BY MAX(r.report_time) DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +
            "FROM t_bus_order_head h " +
@@ -430,6 +444,20 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND (i.standard_input IS NULL OR i.allowable_deviation IS NULL " +
            "     OR (r.record_qty >= (i.standard_input - i.allowable_deviation) " +
            "         AND r.record_qty <= (i.standard_input + i.allowable_deviation)))" +
+                   "GROUP BY \n" +
+                   "    h.order_no,\n" +
+                   "    h.nc_vwkname,\n" +
+                   "    r.process_name,\n" +
+                   "    r.material_name,\n" +
+                   "    CONCAT(\n" +
+                   "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))),\n" +
+                   "        '-',\n" +
+                   "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))\n" +
+                   "    ),\n" +
+                   "    CASE \n" +
+                   "        WHEN r.pot_number IS NOT NULL THEN CONCAT('第', r.pot_number, '锅') \n" +
+                   "        ELSE '' \n" +
+                   "    END\n" +
            ") as total",
            nativeQuery = true)
     Page<Map> findProductionBgData(@Param("productionLine") String productionLine,
@@ -449,10 +477,10 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "r.material_name as materialName, " +
            "CONCAT(TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))), '-', " +
            "TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))) as standard, " +
-           "r.record_qty as recordQuantity, " +
+           "SUM(r.record_qty) as recordQuantity, " +
            "CASE WHEN r.pot_number IS NOT NULL " +
            "THEN CONCAT('第', r.pot_number, '锅') ELSE '' END as potStr, " +
-           "r.report_time as recordTime " +
+           "MAX(r.report_time) as recordTime " +
            "FROM t_bus_order_head h " +
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
            "LEFT JOIN t_sys_recipe_product_binding b ON b.product_code = h.body_material_number " +
@@ -468,7 +496,21 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND (i.standard_input IS NULL OR i.allowable_deviation IS NULL " +
            "     OR (r.record_qty >= (i.standard_input - i.allowable_deviation) " +
            "         AND r.record_qty <= (i.standard_input + i.allowable_deviation))) " +
-           "ORDER BY r.report_time DESC",
+           "GROUP BY \n" +
+            "    h.order_no,\n" +
+            "    h.nc_vwkname,\n" +
+            "    r.process_name,\n" +
+            "    r.material_name,\n" +
+            "    CONCAT(\n" +
+            "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))),\n" +
+            "        '-',\n" +
+            "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))\n" +
+            "    ),\n" +
+            "    CASE \n" +
+            "        WHEN r.pot_number IS NOT NULL THEN CONCAT('第', r.pot_number, '锅') \n" +
+            "        ELSE '' \n" +
+            "    END\n" +
+            "ORDER BY MAX(r.report_time) DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +
            "FROM t_bus_order_head h " +
@@ -486,6 +528,20 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND (i.standard_input IS NULL OR i.allowable_deviation IS NULL " +
            "     OR (r.record_qty >= (i.standard_input - i.allowable_deviation) " +
            "         AND r.record_qty <= (i.standard_input + i.allowable_deviation)))" +
+                   "GROUP BY \n" +
+                   "    h.order_no,\n" +
+                   "    h.nc_vwkname,\n" +
+                   "    r.process_name,\n" +
+                   "    r.material_name,\n" +
+                   "    CONCAT(\n" +
+                   "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))),\n" +
+                   "        '-',\n" +
+                   "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))\n" +
+                   "    ),\n" +
+                   "    CASE \n" +
+                   "        WHEN r.pot_number IS NOT NULL THEN CONCAT('第', r.pot_number, '锅') \n" +
+                   "        ELSE '' \n" +
+                   "    END\n" +
            ") as total",
            nativeQuery = true)
     Page<Map> findProductionBgDataByDateRange(@Param("productionLine") String productionLine,
@@ -505,10 +561,10 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "r.material_name as materialName, " +
            "CONCAT(TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))), '-', " +
            "TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))) as standard, " +
-           "r.record_qty as recordQuantity, " +
+           "SUM(r.record_qty) as recordQuantity, " +
            "CASE WHEN r.pot_number IS NOT NULL " +
            "THEN CONCAT('第', r.pot_number, '锅') ELSE '' END as potStr, " +
-           "r.report_time as recordTime " +
+           "MAX(r.report_time) as recordTime " +
            "FROM t_bus_order_head h " +
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
            "LEFT JOIN t_sys_recipe_product_binding b ON b.product_code = h.body_material_number " +
@@ -522,7 +578,21 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND i.standard_input IS NOT NULL AND i.allowable_deviation IS NOT NULL " +
            "AND (r.record_qty < (i.standard_input - i.allowable_deviation) " +
            "     OR r.record_qty > (i.standard_input + i.allowable_deviation)) " +
-           "ORDER BY r.report_time DESC",
+           "GROUP BY \n" +
+            "    h.order_no,\n" +
+            "    h.nc_vwkname,\n" +
+            "    r.process_name,\n" +
+            "    r.material_name,\n" +
+            "    CONCAT(\n" +
+            "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))),\n" +
+            "        '-',\n" +
+            "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))\n" +
+            "    ),\n" +
+            "    CASE \n" +
+            "        WHEN r.pot_number IS NOT NULL THEN CONCAT('第', r.pot_number, '锅') \n" +
+            "        ELSE '' \n" +
+            "    END\n" +
+            "ORDER BY MAX(r.report_time) DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +
            "FROM t_bus_order_head h " +
@@ -538,6 +608,20 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND i.standard_input IS NOT NULL AND i.allowable_deviation IS NOT NULL " +
            "AND (r.record_qty < (i.standard_input - i.allowable_deviation) " +
            "     OR r.record_qty > (i.standard_input + i.allowable_deviation))" +
+                   "GROUP BY \n" +
+                   "    h.order_no,\n" +
+                   "    h.nc_vwkname,\n" +
+                   "    r.process_name,\n" +
+                   "    r.material_name,\n" +
+                   "    CONCAT(\n" +
+                   "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))),\n" +
+                   "        '-',\n" +
+                   "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))\n" +
+                   "    ),\n" +
+                   "    CASE \n" +
+                   "        WHEN r.pot_number IS NOT NULL THEN CONCAT('第', r.pot_number, '锅') \n" +
+                   "        ELSE '' \n" +
+                   "    END\n" +
            ") as total",
            nativeQuery = true)
     Page<Map> findProductionBgDataAbnormal(@Param("productionLine") String productionLine,
@@ -557,10 +641,10 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "r.material_name as materialName, " +
            "CONCAT(TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))), '-', " +
            "TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))) as standard, " +
-           "r.record_qty as recordQuantity, " +
+           "SUM(r.record_qty) as recordQuantity, " +
            "CASE WHEN r.pot_number IS NOT NULL " +
            "THEN CONCAT('第', r.pot_number, '锅') ELSE '' END as potStr, " +
-           "r.report_time as recordTime " +
+           "MAX(r.report_time) as recordTime " +
            "FROM t_bus_order_head h " +
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no AND r.report_status = '0' " +
            "LEFT JOIN t_sys_recipe_product_binding b ON b.product_code = h.body_material_number " +
@@ -576,7 +660,20 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND i.standard_input IS NOT NULL AND i.allowable_deviation IS NOT NULL " +
            "AND (r.record_qty < (i.standard_input - i.allowable_deviation) " +
            "     OR r.record_qty > (i.standard_input + i.allowable_deviation)) " +
-           "ORDER BY r.report_time DESC",
+           "GROUP BY \n" +
+            "    h.nc_vwkname,\n" +
+            "    r.process_name,\n" +
+            "    r.material_name,\n" +
+            "    CONCAT(\n" +
+            "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))),\n" +
+            "        '-',\n" +
+            "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))\n" +
+            "    ),\n" +
+            "    CASE \n" +
+            "        WHEN r.pot_number IS NOT NULL THEN CONCAT('第', r.pot_number, '锅') \n" +
+            "        ELSE '' \n" +
+            "    END\n" +
+            "ORDER BY MAX(r.report_time) DESC",
            countQuery = "SELECT COUNT(*) FROM (" +
            "SELECT h.order_no " +
            "FROM t_bus_order_head h " +
@@ -594,6 +691,20 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND i.standard_input IS NOT NULL AND i.allowable_deviation IS NOT NULL " +
            "AND (r.record_qty < (i.standard_input - i.allowable_deviation) " +
            "     OR r.record_qty > (i.standard_input + i.allowable_deviation))" +
+                   "GROUP BY \n" +
+                   "    h.order_no,\n" +
+                   "    h.nc_vwkname,\n" +
+                   "    r.process_name,\n" +
+                   "    r.material_name,\n" +
+                   "    CONCAT(\n" +
+                   "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input - i.allowable_deviation) AS text))),\n" +
+                   "        '-',\n" +
+                   "        TRIM(TRAILING '0' FROM TRIM(TRAILING '.' FROM CAST((i.standard_input + i.allowable_deviation) AS text)))\n" +
+                   "    ),\n" +
+                   "    CASE \n" +
+                   "        WHEN r.pot_number IS NOT NULL THEN CONCAT('第', r.pot_number, '锅') \n" +
+                   "        ELSE '' \n" +
+                   "    END\n" +
            ") as total",
            nativeQuery = true)
     Page<Map> findProductionBgDataAbnormalByDateRange(@Param("productionLine") String productionLine,
