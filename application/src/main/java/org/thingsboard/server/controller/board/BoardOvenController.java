@@ -19,7 +19,7 @@ import org.thingsboard.server.dao.mes.vo.ListDeviceTempDatsVo;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/board/oven")
+@RequestMapping("/api/noauth/board/oven")
 @Api(value = "大屏看板烤炉接口", tags = "大屏看板烤炉接口")
 public class BoardOvenController extends BaseController {
 
