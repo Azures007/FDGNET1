@@ -39,6 +39,14 @@ public class BoardOvenController extends BaseController {
         return ResultUtil.success(listDeviceTempDatsVos);
     }
 
+    @GetMapping("/listDeviceTempDatsOrUpDown")
+    @ApiOperation("温度趋势分析（上下分开）")
+    public ResponseResult<List<BoardDataDevice>> listDeviceTempDatsOrUpDown(@RequestParam("deviceCode") String deviceCode,
+                                                                         @RequestParam("deviceType") String deviceType){
+        List<BoardDataDevice> boardDataDevices = boardService.lineSellp(deviceCode, deviceType,"dbl");
+        return ResultUtil.success(boardDataDevices);
+    }
+
     @ApiOperation("烤炉速度折线图数据(当天)")
     @GetMapping("/lineSellp")
     public ResponseResult<List<BoardDataDevice>> lineSellp(@RequestParam("deviceCode") String deviceCode) {
