@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,7 +13,6 @@ import lombok.*;
 @ToString
 @ApiModel("烤炉温度折线图")
 public class ListDeviceTempDatsVo {
-
 
     @ApiModelProperty("上温度")
     private String byMaxQty;

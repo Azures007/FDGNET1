@@ -3,6 +3,7 @@ package org.thingsboard.server.dao.mes.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import org.thingsboard.server.dao.constant.GlobalConstant;
 
 import java.math.BigDecimal;
 
@@ -46,5 +47,38 @@ public class ListDeviceIotVo {
     private BigDecimal maxFourTemp;
     @ApiModelProperty("温度4区下温")
     private BigDecimal minFourTemp;
+
+    @ApiModelProperty("温度1区上温最大值")
+    private String overOneUpMaxTemp;
+    @ApiModelProperty("温度1区上温最小值")
+    private String overOneUpMinTemp;
+    @ApiModelProperty("温度1区下温最大值")
+    private String overOneDownMaxTemp;
+    @ApiModelProperty("温度1区下温最小值")
+    private String overOneDownMinTemp;
+    @ApiModelProperty("温度2区上温最大值")
+    private String overTwoUpMaxTemp;
+    @ApiModelProperty("温度2区上温最小值")
+    private String overTwoUpMinTemp;
+    @ApiModelProperty("温度2区下温最大值")
+    private String overTwoDownMaxTemp;
+    @ApiModelProperty("温度3区下温最小值")
+    private String overTwoDownMinTemp;
+    @ApiModelProperty("温度3区上温最大值")
+    private String overThreeUpMaxTemp;
+    @ApiModelProperty("温度3区上温最小值")
+    private String overThreeUpMinTemp;
+    @ApiModelProperty("温度3区下温最大值")
+    private String overThreeDownMaxTemp;
+    @ApiModelProperty("温度3区下温最小值")
+    private String overThreeDownMinTemp;
+    @ApiModelProperty("温度4区上温最大值")
+    private String overFourUpMaxTemp;
+    @ApiModelProperty("温度4区上温最小值")
+    private String overFourUpMinTemp;
+    @ApiModelProperty("温度4区下温最大值")
+    private String overFourDownMaxTemp;
+    @ApiModelProperty("温度4区下温最小值")
+    private String overFourDownMinTemp;
 
 }

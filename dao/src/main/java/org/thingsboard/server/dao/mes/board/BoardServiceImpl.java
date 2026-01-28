@@ -151,7 +151,7 @@ public class BoardServiceImpl implements BoardService {
                 BigDecimal deviceHz = deviceRepository.listDeviceKvLatest(map.get("name").toString(), "热风频率");
                 //速度
                 BigDecimal deviceSd = deviceRepository.listDeviceKvLatest(map.get("name").toString(), "速度");
-                listDeviceIotVo=ListDeviceIotVo.builder()
+                listDeviceIotVo = ListDeviceIotVo.builder()
                         .deviceCode(map.get("name").toString())
                         .deviceName(map.get("label").toString())
                         .deviceFactory("清蒙工厂")
@@ -166,6 +166,22 @@ public class BoardServiceImpl implements BoardService {
                         .minThreeTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "三区下温度"))
                         .maxFourTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "四区上温度"))
                         .minFourTemp(deviceRepository.listDeviceKvLatest(map.get("name").toString(), "四区下温度"))
+                        .overOneUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最大值"))
+                        .overOneUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最小值"))
+                        .overOneDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区下温度最大值"))
+                        .overOneDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区下温度最小值"))
+                        .overTwoUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最大值"))
+                        .overTwoUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最小值"))
+                        .overTwoDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区下温度最大值"))
+                        .overTwoDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区下温度最小值"))
+                        .overThreeUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最大值"))
+                        .overThreeUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最小值"))
+                        .overThreeDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区下温度最大值"))
+                        .overThreeDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区下温度最小值"))
+                        .overFourUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最大值"))
+                        .overFourUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最小值"))
+                        .overFourDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区下温度最大值"))
+                        .overFourDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区下温度最小值"))
                         .build();
                 listDeviceIotVos.add(listDeviceIotVo);
             }
@@ -179,6 +195,7 @@ public class BoardServiceImpl implements BoardService {
         List<ListDeviceTempDatsVo> listDeviceTempDatsVos=new ArrayList<>();
         List<BoardDataDevice> boardDataDevices = this.lineSellp(deviceCode, type + "上温度", "dbl");
         for (BoardDataDevice boardDataDevice : boardDataDevices) {
+//            GlobalConstant.getCodeDscName("",)
             ListDeviceTempDatsVo listDeviceTempDatsVo=ListDeviceTempDatsVo.builder()
                     .byDate(boardDataDevice.getByDate())
                     .byTs(boardDataDevice.getByTs())
