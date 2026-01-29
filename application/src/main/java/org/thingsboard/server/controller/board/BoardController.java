@@ -123,7 +123,7 @@ public class BoardController extends BaseController {
                             ovenDeviceRunVo.setRunSeund(ovenDeviceRunVo.getRunSeund().divide(new BigDecimal("3600"), 1, RoundingMode.HALF_UP));
                             ovenDeviceRunVo.setAvgSpeedExport(ovenDeviceRunVo.getAvgSpeed()+" " );
                             ovenDeviceRunVo.setAvgTempExport(ovenDeviceRunVo.getAvgTemp()+" ");
-                            ovenDeviceRunVo.setTempSuccessExport(ovenDeviceRunVo.getTempSuccess() + " ");
+                            ovenDeviceRunVo.setTempSuccessExport(ovenDeviceRunVo.getTempSuccess() + "%");
                             ovenDeviceRunVo.setAvgHotWindExport(ovenDeviceRunVo.getAvgHotWind() + " ");
                         }
                         ovenDeviceRunVos.addAll(ovenDeviceRunVos1);
