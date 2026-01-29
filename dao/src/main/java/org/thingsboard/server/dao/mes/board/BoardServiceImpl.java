@@ -43,6 +43,7 @@ public class BoardServiceImpl implements BoardService {
 
         // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
         long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
         // 4. 最近一小时结束：当前时间（即该时间段的结束）
         long lastHourEndTimestamp = currentTimestamp;
@@ -54,6 +55,12 @@ public class BoardServiceImpl implements BoardService {
 
         }
         List<BoardDataDevice> boardDataDevices = JSON.parseArray(JSON.toJSONString(lineSellpMaps), BoardDataDevice.class);
+        BoardDataDevice boardDataDevice=BoardDataDevice.builder()
+                .byQty(boardDataDevices.get(boardDataDevices.size()-1).getByQty())
+                .byTs(currentTimestamp)
+                .byDate(simpleDateFormat.format(new Date()))
+                .build();
+        boardDataDevices.add(boardDataDevice);
         return boardDataDevices;
     }
 

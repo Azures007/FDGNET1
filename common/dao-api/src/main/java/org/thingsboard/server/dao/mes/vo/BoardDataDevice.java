@@ -2,11 +2,11 @@ package org.thingsboard.server.dao.mes.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Data
+@AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @ToString
 @ApiModel("设备上报数据")
