@@ -223,13 +223,13 @@ public class BoardServiceImpl implements BoardService {
         // 一行获取23:59:59.999毫秒戳
         long end = LocalDate.now(zone).atTime(23,59,59,999_000_000).atZone(zone).toInstant().toEpochMilli();
         String overOneUpMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最大值");
-        String overOneDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最大值");
+        String overOneDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "一区下温度最大值");
         String overTwoUpMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最大值");
-        String overTwoDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最大值");
+        String overTwoDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "二区下温度最大值");
         String overThreeUpMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最大值");
-        String overThreeDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最大值");
+        String overThreeDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "三区下温度最大值");
         String overFourUpMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最大值");
-        String overFourDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最大值");
+        String overFourDownMaxTemp = GlobalConstant.getCodeDscName("iot_over_error", "四区下温度最大值");
         List<Map> errMaps=deviceRepository.getErrorDatas(deviceCode,start,end,
                 new BigDecimal(overOneUpMaxTemp),
                 new BigDecimal(overOneDownMaxTemp),
