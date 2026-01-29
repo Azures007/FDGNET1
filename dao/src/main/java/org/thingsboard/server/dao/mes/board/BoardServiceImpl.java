@@ -60,6 +60,7 @@ public class BoardServiceImpl implements BoardService {
                 .byTs(currentTimestamp)
                 .byDate(simpleDateFormat.format(new Date()))
                 .build();
+
         boardDataDevices.add(boardDataDevice);
         return boardDataDevices;
     }
@@ -370,37 +371,25 @@ public class BoardServiceImpl implements BoardService {
                         inTepmSize = new BigDecimal(iotTemp);
                     }
 
-                    BigDecimal overSize1 = deviceRepository.countByQty(device.getName(), "一区上温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal overSize11 = deviceRepository.countByQty(device.getName(), "一区下温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal overSize2 = deviceRepository.countByQty(device.getName(), "二区上温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal overSize21 = deviceRepository.countByQty(device.getName(), "二区下温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal overSize3 = deviceRepository.countByQty(device.getName(), "三区上温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal overSize31 = deviceRepository.countByQty(device.getName(), "三区下温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal overSize4 = deviceRepository.countByQty(device.getName(), "四区上温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal overSize41 = deviceRepository.countByQty(device.getName(), "四区下温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal overSize = overSize1.add(overSize11)
-                            .add(overSize2).add(overSize21).add(overSize3).add(overSize31).add(overSize4).add(overSize41);
+                    BigDecimal overSize1 = deviceRepository.countByQty(device.getName(), "一区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","一区上温度最大值")), byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal overSize2 = deviceRepository.countByQty(device.getName(), "二区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","二区上温度最大值")), byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal overSize3 = deviceRepository.countByQty(device.getName(), "三区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","三区上温度最大值")), byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal overSize4 = deviceRepository.countByQty(device.getName(), "四区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","四区上温度最大值")), byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal overSize = overSize1
+                            .add(overSize2).add(overSize3).add(overSize4);
                     ovenDeviceRunVo.setOverSize(overSize.intValue());
 
                     BigDecimal countOneTempT1 = deviceRepository.countQtyByMykey(device.getName(),
                             "一区上温度", byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal countOneTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
-                            "一区下温度", byDateFrontTimes, byDateLaterTimes);
                     BigDecimal countTwoTempT1 = deviceRepository.countQtyByMykey(device.getName(),
                             "二区上温度", byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal countTwoTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
-                            "二区下温度", byDateFrontTimes, byDateLaterTimes);
                     BigDecimal countThreeTempT1 = deviceRepository.countQtyByMykey(device.getName(),
                             "三区上温度", byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal countThreeTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
-                            "三区下温度", byDateFrontTimes, byDateLaterTimes);
                     BigDecimal countFourTempT1 = deviceRepository.countQtyByMykey(device.getName(),
                             "四区上温度", byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal countFourTempT2 = deviceRepository.avgQtyByMykey(device.getName(),
-                            "四区下温度", byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal sumTempSuccess = countOneTempT1.add(countOneTempT2)
-                            .add(countTwoTempT1).add(countTwoTempT2).add(countThreeTempT1).add(countThreeTempT2)
-                            .add(countFourTempT1).add(countFourTempT2);
+                    BigDecimal sumTempSuccess = countOneTempT1
+                            .add(countTwoTempT1).add(countThreeTempT1)
+                            .add(countFourTempT1);
                     BigDecimal tempSuccess = sumTempSuccess.subtract(overSize);
                     tempSuccess = overSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0") : sumTempSuccess.compareTo(new BigDecimal("0")) == 0 ? new BigDecimal("0") : tempSuccess.divide(sumTempSuccess, 4, RoundingMode.HALF_UP);
                     ovenDeviceRunVo.setTempSuccess(tempSuccess.multiply(new BigDecimal("100")));
@@ -411,8 +400,17 @@ public class BoardServiceImpl implements BoardService {
                     ovenDeviceRunVo.setAvgHotWind(deviceRepository.avgQtyByMykey(device.getName(),
                             "热风频率", byDateFrontTimes, byDateLaterTimes).setScale(1, RoundingMode.HALF_UP));
 
-                    ovenDeviceRunVo.setErrorSize(deviceRepository.sumQtyByMykey(device.getName(),
-                            "故障警告", byDateFrontTimes, byDateLaterTimes).intValue());
+                    BigDecimal gz = deviceRepository.countByQty(device.getName(),
+                            "故障警告",BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal aq = deviceRepository.countByQty(device.getName(),
+                            "安全报警",BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal cw = deviceRepository.countByQty(device.getName(),
+                            "超温报警",BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal dj = deviceRepository.countByQty(device.getName(),
+                            "电机报警",BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal xt = deviceRepository.countByQty(device.getName(),
+                            "系统报警",BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
+                    ovenDeviceRunVo.setErrorSize(gz.add(aq).add(cw).add(dj).add(xt).intValue());
 
                     ovenDeviceRunVos.add(ovenDeviceRunVo);
                 }

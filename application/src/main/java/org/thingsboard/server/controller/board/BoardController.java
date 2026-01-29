@@ -121,10 +121,10 @@ public class BoardController extends BaseController {
                         List<OvenDeviceRunVo> ovenDeviceRunVos1 = deviceRunBoardTypeVo.getOvenDeviceRunVos();
                         for (OvenDeviceRunVo ovenDeviceRunVo : ovenDeviceRunVos1) {
                             ovenDeviceRunVo.setRunSeund(ovenDeviceRunVo.getRunSeund().divide(new BigDecimal("3600"), 1, RoundingMode.HALF_UP));
-                            ovenDeviceRunVo.setAvgSpeedExport(ovenDeviceRunVo.getAvgSpeed() + "%");
-                            ovenDeviceRunVo.setAvgTempExport(ovenDeviceRunVo.getAvgTemp() + "%");
-                            ovenDeviceRunVo.setTempSuccessExport(ovenDeviceRunVo.getTempSuccess() + "%");
-                            ovenDeviceRunVo.setAvgHotWindExport(ovenDeviceRunVo.getAvgHotWind() + "%");
+                            ovenDeviceRunVo.setAvgSpeedExport(ovenDeviceRunVo.getAvgSpeed()+" " );
+                            ovenDeviceRunVo.setAvgTempExport(ovenDeviceRunVo.getAvgTemp()+" ");
+                            ovenDeviceRunVo.setTempSuccessExport(ovenDeviceRunVo.getTempSuccess() + " ");
+                            ovenDeviceRunVo.setAvgHotWindExport(ovenDeviceRunVo.getAvgHotWind() + " ");
                         }
                         ovenDeviceRunVos.addAll(ovenDeviceRunVos1);
                     }
@@ -133,7 +133,7 @@ public class BoardController extends BaseController {
                         List<TanSensorDeviceRunVo> tanSensorDeviceRunVos1 = deviceRunBoardTypeVo.getTanSensorDeviceRunVos();
                         for (TanSensorDeviceRunVo tanSensorDeviceRunVo : tanSensorDeviceRunVos1) {
                             tanSensorDeviceRunVo.setRunSeund(tanSensorDeviceRunVo.getRunSeund().divide(new BigDecimal("3600"), 1, RoundingMode.HALF_UP));
-                            tanSensorDeviceRunVo.setAvgHempExport(tanSensorDeviceRunVo.getAvgHemp() + "%");
+                            tanSensorDeviceRunVo.setAvgHempExport(tanSensorDeviceRunVo.getAvgHemp() + " ");
                             tanSensorDeviceRunVo.setHempSuccessExport(tanSensorDeviceRunVo.getHempSuccess() + "%");
                             tanSensorDeviceRunVo.setTempSuccessExport(tanSensorDeviceRunVo.getTempSuccess() + "%");
                         }
