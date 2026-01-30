@@ -287,7 +287,10 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      * @return 未完成订单数量
      */
     @Query(value = "SELECT COUNT(*) FROM (" +
-           "SELECT h.order_no, h.body_plan_prd_qty, COUNT(r.record_qty) as completed_count " +
+           "SELECT h.order_no, h.body_plan_prd_qty, h.qty_per_jian, " +
+           "CASE WHEN h.qty_per_jian > 0 " +
+           "THEN FLOOR(COUNT(r.record_qty) / h.qty_per_jian) " +
+           "ELSE COUNT(r.record_qty) END as completed_count " +
            "FROM t_bus_order_head h " +
            "LEFT JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
            "  AND r.process_number = 'GX-011' " +
@@ -301,8 +304,10 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND h.body_plan_start_date <= :endDate " +
            "AND h.nc_cwkid IN (:worklineIds) " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
-           "GROUP BY h.order_no, h.body_plan_prd_qty " +
-           "HAVING COUNT(r.record_qty) < h.body_plan_prd_qty OR COUNT(r.record_qty) = 0" +
+           "GROUP BY h.order_no, h.body_plan_prd_qty, h.qty_per_jian " +
+           "HAVING (CASE WHEN h.qty_per_jian > 0 " +
+           "THEN FLOOR(COUNT(r.record_qty) / h.qty_per_jian) " +
+           "ELSE COUNT(r.record_qty) END) < h.body_plan_prd_qty OR COUNT(r.record_qty) = 0" +
            ") as unfinished",
            nativeQuery = true)
     Long countUnfinishedOrders(@Param("startDate") Date startDate,
