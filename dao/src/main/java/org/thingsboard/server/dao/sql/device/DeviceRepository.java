@@ -418,11 +418,12 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
             "        WHEN c.\"key\" = '三区下温度' AND a.dbl_v > ?9 THEN '三区下温度超最大值'\n" +
             "        WHEN c.\"key\" = '四区上温度' AND a.dbl_v > ?10 THEN '四区上温度超最大值'\n" +
             "        WHEN c.\"key\" = '四区下温度' AND a.dbl_v > ?11 THEN '四区下温度超最大值'\n" +
+            "        \n" +
             "        WHEN c.\"key\" = '安全报警' AND a.long_v > 0 THEN '安全报警'\n" +
-            "        WHEN c.\"key\" = '超温报警' AND a.dbl_v > 0 THEN '超温报警'\n" +
-            "        WHEN c.\"key\" = '电机报警' AND a.dbl_v > 0 THEN '电机报警'\n" +
-            "        WHEN c.\"key\" = '故障警告' AND a.dbl_v > 0 THEN '故障警告'\n" +
-            "        WHEN c.\"key\" = '系统报警' AND a.dbl_v > 0 THEN '系统报警'\n" +
+            "        WHEN c.\"key\" = '超温报警' AND a.long_v > 0 THEN '超温报警'\n" +
+            "        WHEN c.\"key\" = '电机报警' AND a.long_v > 0 THEN '电机报警'\n" +
+            "        WHEN c.\"key\" = '故障警告' AND a.long_v > 0 THEN '故障警告'\n" +
+            "        WHEN c.\"key\" = '系统报警' AND a.long_v > 0 THEN '系统报警' " +
             "    END AS by_qty,\n" +
             "    a.ts AS by_ts,\n" +
             "   TO_CHAR(timezone('Asia/Shanghai', TO_TIMESTAMP(ts / 1000.0)), 'YYYY-MM-DD HH24:MI:SS') AS by_date " +
@@ -440,10 +441,9 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
             "        '三区上温度','三区下温度',\n" +
             "        '四区上温度','四区下温度',\n" +
             "        '系统报警','安全报警',\n" +
-            "        '超温报警','电机报警','故障报警'\n" +
+            "        '超温报警','电机报警','故障警告'\n" +
             "    )\n" +
             "    AND a.ts BETWEEN ?2 AND ?3\n" +
-            "    AND a.dbl_v IS NOT NULL\n" +
             "    AND (\n" +
             "        (c.\"key\" = '一区上温度' AND a.dbl_v > ?4)\n" +
             "        OR (c.\"key\" = '一区下温度' AND a.dbl_v > ?5)\n" +
