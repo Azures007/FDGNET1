@@ -23,6 +23,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceTransportType;
+import org.thingsboard.server.dao.mes.dto.IotDeviceDto;
 import org.thingsboard.server.dao.model.sql.DeviceEntity;
 import org.thingsboard.server.dao.model.sql.DeviceInfoEntity;
 
@@ -462,6 +463,55 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
             "ORDER BY\n" +
             "    a.ts DESC",nativeQuery = true)
     List<Map> getErrorDatas(String deviceCode, long start, long end, BigDecimal bigDecimal, BigDecimal bigDecimal1, BigDecimal bigDecimal2, BigDecimal bigDecimal3, BigDecimal bigDecimal4, BigDecimal bigDecimal5, BigDecimal bigDecimal6, BigDecimal bigDecimal7);
+
+    /**
+     * 烤炉设备上报报表
+     * @param iotDeviceDto
+     * @param pageable
+     * @return
+     */
+    @Query(value = "" +
+            "select\n" +
+            "    b.name device_code,\n" +
+            "\t  b.\"label\" device_name,\n" +
+            "\t MAX(\n" +
+            "        CASE \n" +
+            "            WHEN c.key IN ('安全报警', '超温报警', '电机报警', '故障警告', '系统报警') \n" +
+            "                 AND COALESCE(a.long_v, a.dbl_v) > 0 \n" +
+            "            THEN 1 \n" +
+            "            ELSE 0 \n" +
+            "        END\n" +
+            "    ) AS by_gz,\n" +
+            "     MAX(CASE WHEN c.key = '一区上温度' THEN COALESCE(a.long_v, a.dbl_v) END) AS up_one_temp,\n" +
+            "    MAX(CASE WHEN c.key = '二区上温度' THEN COALESCE(a.long_v, a.dbl_v) END) AS up_two_temp,\n" +
+            "    MAX(CASE WHEN c.key = '三区上温度' THEN COALESCE(a.long_v, a.dbl_v) END) AS up_three_temp,\n" +
+            "    MAX(CASE WHEN c.key = '四区上温度' THEN COALESCE(a.long_v, a.dbl_v) END) AS up_four_temp,\n" +
+            "    MAX(CASE WHEN c.key = '一区下温度' THEN COALESCE(a.long_v, a.dbl_v) END) AS down_one_temp,\n" +
+            "    MAX(CASE WHEN c.key = '二区下温度' THEN COALESCE(a.long_v, a.dbl_v) END) AS down_two_temp,\n" +
+            "    MAX(CASE WHEN c.key = '三区下温度' THEN COALESCE(a.long_v, a.dbl_v) END) AS down_three_temp,\n" +
+            "    MAX(CASE WHEN c.key = '四区下温度' THEN COALESCE(a.long_v, a.dbl_v) END) AS down_four_temp,\n" +
+            "    MAX(CASE WHEN c.key = '速度'       THEN COALESCE(a.long_v, a.dbl_v) END) AS by_sellp,\n" +
+            "    a.ts AS by_ts,\n" +
+            "   TO_CHAR(timezone('Asia/Shanghai', TO_TIMESTAMP(ts / 1000.0)), 'YYYY-MM-DD HH24:MI:SS') AS by_date FROM\n" +
+            "    ts_kv a\n" +
+            "JOIN\n" +
+            "    device b ON a.entity_id = b.id\n" +
+            "JOIN\n" +
+            "    ts_kv_dictionary c ON a.\"key\" = c.key_id\n" +
+            "WHERE\n 1=1 " +
+            "    and ( :#{#iotDeviceDto.deviceCode} is null or :#{#iotDeviceDto.deviceCode}='' or b.\"name\" = :#{#iotDeviceDto.deviceCode}  )\n" +
+            "    and b.name like '%Oven%'      " +
+            "AND c.key IN (\n" +
+            "      '安全报警','超温报警','电机报警','故障警告','系统报警',\n" +
+            "      '一区上温度','二区上温度','三区上温度','四区上温度',\n" +
+            "      '一区下温度','二区下温度','三区下温度','四区下温度','速度'\n" +
+            "  )\n" +
+            "    AND a.ts BETWEEN :#{#iotDeviceDto.startDateTimes} AND :#{#iotDeviceDto.endDateTimes}\n" +
+            "group by  b.name,a.ts,b.\"label\"\n" +
+            "ORDER BY\n" +
+            "    a.ts DESC " +
+            "",nativeQuery = true)
+    Page<Map> listIotDeviceAndOven(@Param("iotDeviceDto") IotDeviceDto iotDeviceDto,@Param("page") Pageable pageable);
 
 //    @Query(value = "select GREATEST( \n" +
 //            "    COUNT(COALESCE(a.long_v, a.dbl_v)) - ?3,     0 ) from ts_kv a \n" +

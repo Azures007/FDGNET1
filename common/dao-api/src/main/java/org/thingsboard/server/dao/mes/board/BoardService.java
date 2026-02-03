@@ -1,6 +1,7 @@
 package org.thingsboard.server.dao.mes.board;
 
 import org.thingsboard.server.dao.mes.dto.DeviceRunBoardDto;
+import org.thingsboard.server.dao.mes.dto.IotDeviceDto;
 import org.thingsboard.server.dao.mes.vo.*;
 
 import java.text.ParseException;
@@ -53,4 +54,13 @@ public interface BoardService {
      * @return
      */
     List<BoardDataDevice> getErrorDatas(String deviceCode);
+
+    /**
+     * 数采报表---烤炉
+     * @param current
+     * @param size
+     * @param iotDeviceDto
+     * @return
+     */
+    PageVo<IotDeviceAndOvenVo> listIotDeviceAndOven(Integer current, Integer size, IotDeviceDto iotDeviceDto);
 }
