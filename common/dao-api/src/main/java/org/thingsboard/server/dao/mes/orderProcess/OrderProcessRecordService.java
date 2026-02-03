@@ -255,4 +255,11 @@ public interface OrderProcessRecordService {
      * @param orderProcessId
      */
     TBusOrderProcessHistory checkIsSupplement(Integer orderProcessId);
+
+    /**
+     * 查询完成数量
+     * @param orderNo 订单号
+     * @return 完成数量
+     */
+    Long findCompletedQuantity(String orderNo);
 }

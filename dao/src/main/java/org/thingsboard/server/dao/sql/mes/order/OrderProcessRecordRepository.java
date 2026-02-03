@@ -491,4 +491,21 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
             "where order_status='1' and d.process_number='GX005' and a2.process_status in('1','2') order by bus.order_process_id desc"
             , nativeQuery = true)
     List<Integer> getAllLsmOrderProcessId(String userId);
+
+    @Query(value = "SELECT " +
+            "COALESCE(" +
+            "CASE WHEN h.qty_per_jian > 0 " +
+            "THEN FLOOR(COUNT(r.record_qty) / h.qty_per_jian) " +
+            "ELSE COUNT(r.record_qty) END, 0) as completedQuantity " +
+            "FROM t_bus_order_head h " +
+            "LEFT JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
+            "AND r.process_number = 'GX-011'\n" +
+            "AND r.bus_type = 'BG'\n" +
+            "AND r.record_type = '3'\n" +
+            "AND r.report_status = '0'"+
+            "WHERE h.order_no = :orderNo " +
+            "AND h.bill_type = '普通流程生产订单' \n"+
+            "GROUP BY h.qty_per_jian",
+            nativeQuery = true)
+    Long findCompletedQuantity(@Param("orderNo") String orderNo);
 }

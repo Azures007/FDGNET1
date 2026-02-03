@@ -614,4 +614,12 @@ public class OrderProcessRecordController extends BaseController {
         return ResultUtil.success(iotDiffValueVo);
     }
 
+    @ApiOperation("查询完成数量")
+    @ApiImplicitParam(name = "orderNo", value = "订单号", required = true)
+    @GetMapping("/getCompletedQuantity")
+    public ResponseResult<Long> getCompletedQuantity(@RequestParam("orderNo") String orderNo) {
+        Long completedQuantity = orderProcessRecordService.findCompletedQuantity(orderNo);
+        return ResultUtil.success(completedQuantity);
+    }
+
 }

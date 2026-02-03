@@ -2807,4 +2807,9 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
 
         return getIotByDevicesVo;
     }
+
+    @Override
+    public Long findCompletedQuantity(String orderNo) {
+        return orderProcessRecordRepository.findCompletedQuantity(orderNo);
+    }
 }
