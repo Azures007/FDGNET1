@@ -375,10 +375,15 @@ public class BoardServiceImpl implements BoardService {
                     BigDecimal overSize2 = deviceRepository.countByQty(device.getName(), "二区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","二区上温度最大值")), byDateFrontTimes, byDateLaterTimes);
                     BigDecimal overSize3 = deviceRepository.countByQty(device.getName(), "三区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","三区上温度最大值")), byDateFrontTimes, byDateLaterTimes);
                     BigDecimal overSize4 = deviceRepository.countByQty(device.getName(), "四区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","四区上温度最大值")), byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal overSize11 = deviceRepository.countByQty(device.getName(), "一区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","一区下温度最大值")), byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal overSize21 = deviceRepository.countByQty(device.getName(), "二区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","二区下温度最大值")), byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal overSize31 = deviceRepository.countByQty(device.getName(), "三区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","三区下温度最大值")), byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal overSize41 = deviceRepository.countByQty(device.getName(), "四区上温度", new BigDecimal(GlobalConstant.getCodeDscName("iot_over_error","四区下温度最大值")), byDateFrontTimes, byDateLaterTimes);
                     BigDecimal overSize = overSize1
-                            .add(overSize2).add(overSize3).add(overSize4);
+                            .add(overSize2).add(overSize3).add(overSize4).add(overSize21).add(overSize31).add(overSize41).add(overSize11);
                     ovenDeviceRunVo.setOverSize(overSize.intValue());
 
+                    //达标率
                     BigDecimal countOneTempT1 = deviceRepository.countQtyByMykey(device.getName(),
                             "一区上温度", byDateFrontTimes, byDateLaterTimes);
                     BigDecimal countTwoTempT1 = deviceRepository.countQtyByMykey(device.getName(),
@@ -387,9 +392,18 @@ public class BoardServiceImpl implements BoardService {
                             "三区上温度", byDateFrontTimes, byDateLaterTimes);
                     BigDecimal countFourTempT1 = deviceRepository.countQtyByMykey(device.getName(),
                             "四区上温度", byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal countOneTempT11 = deviceRepository.countQtyByMykey(device.getName(),
+                            "一区下温度", byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal countTwoTempT11 = deviceRepository.countQtyByMykey(device.getName(),
+                            "二区下温度", byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal countThreeTempT11 = deviceRepository.countQtyByMykey(device.getName(),
+                            "三区下温度", byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal countFourTempT11 = deviceRepository.countQtyByMykey(device.getName(),
+                            "四区下温度", byDateFrontTimes, byDateLaterTimes);
                     BigDecimal sumTempSuccess = countOneTempT1
                             .add(countTwoTempT1).add(countThreeTempT1)
-                            .add(countFourTempT1);
+                            .add(countFourTempT1).add(countTwoTempT11).add(countThreeTempT11)
+                            .add(countFourTempT11).add(countOneTempT11);
                     BigDecimal tempSuccess = sumTempSuccess.subtract(overSize);
                     tempSuccess = overSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0") : sumTempSuccess.compareTo(new BigDecimal("0")) == 0 ? new BigDecimal("0") : tempSuccess.divide(sumTempSuccess, 4, RoundingMode.HALF_UP);
                     ovenDeviceRunVo.setTempSuccess(tempSuccess.multiply(new BigDecimal("100")));
