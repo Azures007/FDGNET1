@@ -34,4 +34,7 @@ public class ChopAndMixTotalData {
 
     @ApiModelProperty("总完成锅数比例")
     private String qualifiedBodyPotQtyPercent;
+
+    @ApiModelProperty("累计件数")
+    private Long totalCount;
 }

@@ -2234,6 +2234,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         //积累斗数
         float qualifiedBodyFightQty = exportPotByImportAll * 2;
         allData.setQualifiedBodyFightQty(qualifiedBodyFightQty);
+        allData.setTotalCount(findCompletedQuantity(searchDto.getOrderNo()));
         vo.setTotalData(allData);
 
 
@@ -2283,6 +2284,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
         currentData.setPersonQualifiedQtyPercent(String.valueOf(personQualifiedQtyPercent * 100 > 100 ? 100 : personQualifiedQtyPercent * 100) + "%");
         currentData.setPersonQualifiedBodyFightQty(personQualifiedBodyFightQty);
         vo.setPersonData(currentData);
+
         return vo;
     }
 
@@ -2810,6 +2812,7 @@ public class OrderProcessRecordServiceImpl implements OrderProcessRecordService 
 
     @Override
     public Long findCompletedQuantity(String orderNo) {
-        return orderProcessRecordRepository.findCompletedQuantity(orderNo);
+        Long ll=orderProcessRecordRepository.findCompletedQuantity(orderNo);
+        return ll==null?0:ll;
     }
 }
