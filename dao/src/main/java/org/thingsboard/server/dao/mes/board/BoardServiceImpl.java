@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.Device;
+import org.thingsboard.server.common.data.StringUtils;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.mes.dto.DeviceRunBoardDto;
 import org.thingsboard.server.dao.mes.dto.IotDeviceDto;
@@ -252,7 +253,7 @@ public class BoardServiceImpl implements BoardService {
         // Java (Spring Boot 示例)
         String startDateStr = iotDeviceDto.getStartDate(); // "2026-02-03"
         String endDateStr = iotDeviceDto.getEndDate();     // "2026-02-03"
-
+        iotDeviceDto.setDeviceCode(StringUtils.isBlank(iotDeviceDto.getDeviceCode())?"":iotDeviceDto.getDeviceCode());
         LocalDateTime startOfDay = LocalDate.parse(startDateStr).atStartOfDay(); // 00:00:00
         LocalDateTime endOfDay = LocalDate.parse(endDateStr).atTime(23, 59, 59); // 23:59:59
 
@@ -265,10 +266,16 @@ public class BoardServiceImpl implements BoardService {
         Pageable pageable = PageRequest.of(current, size);
         Page<Map> page = deviceRepository.listIotDeviceAndOven(iotDeviceDto, pageable);
         PageVo<IotDeviceAndOvenVo> pageVo = new PageVo<>(size, current);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("HH:mm:ss");
         List<Map> maps = page.getContent();
         List<IotDeviceAndOvenVo> iotDeviceAndOvenVos = new ArrayList<>();
         for (Map map : maps) {
             IotDeviceAndOvenVo iotDeviceAndOvenVo = JSON.parseObject(JSON.toJSONString(map), IotDeviceAndOvenVo.class);
+            Date date = new Date(iotDeviceAndOvenVo.getByTs());
+            iotDeviceAndOvenVo.setByDateDates(simpleDateFormat.format(date));
+            iotDeviceAndOvenVo.setByDateTimes(simpleDateFormat1.format(date));
+            iotDeviceAndOvenVo.setByGzBr(iotDeviceAndOvenVo.getByGz().equals("0")?"否":"是");
             // 一区上/下温度上下限
             iotDeviceAndOvenVo.setOverOneUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最大值"));
             iotDeviceAndOvenVo.setOverOneUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最小值"));
