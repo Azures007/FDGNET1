@@ -39,9 +39,6 @@ public class ProductionDataExcelVo {
     private String actualInput;
 
     // --- 损耗信息 ---
-    @ExcelProperty({"损耗信息", "包膜废品重量"})
-    private String packagingWasteWeight;
-
     @ExcelProperty({"损耗信息", "废次品重量"})
     private String defectiveWeight;
 
