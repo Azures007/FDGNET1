@@ -45,7 +45,7 @@
         <tr>
           <th colspan="2">基础信息</th>
           <th colspan="6">投入信息</th>
-          <th colspan="2">损耗信息</th>
+          <th colspan="1">损耗信息</th>
           <th colspan="3">产出信息</th>
           <th colspan="3">投入产出比</th>
         </tr>
@@ -58,7 +58,7 @@
           <th width="100px">单位</th>
           <th width="100px">计划投入</th>
           <th width="100px">实际投入</th>
-          <th width="100px">包膜废品重量</th>
+          <!-- <th width="100px">包膜废品重量</th> -->
           <th width="100px">废次品重量</th>
           <th width="100px">计划产量(件)</th>
           <th width="100px">实际产量(件)</th>
@@ -80,7 +80,7 @@
               <td>{{secondItem.recordUnit}}</td>
               <td>{{secondItem.plannedInput}}</td>
               <td>{{secondItem.actualInput}}</td>
-              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.packagingWasteWeight}}</td>
+              <!-- <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.packagingWasteWeight}}</td> -->
               <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.defectiveWeight}}</td>
               <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.plannedOutput}}</td>
               <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.actualOutput}}</td>
