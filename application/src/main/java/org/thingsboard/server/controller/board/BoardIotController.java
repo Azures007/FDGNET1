@@ -9,6 +9,7 @@ import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.mes.dto.IotDeviceDto;
 import org.thingsboard.server.dao.mes.vo.IotDeviceAndOvenVo;
+import org.thingsboard.server.dao.mes.vo.IotDeviceAndTANSVo;
 import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.service.TSysDevice.TSysDeviceExcelService;
 
@@ -43,7 +44,31 @@ public class BoardIotController extends BaseController {
         PageVo<IotDeviceAndOvenVo> pageVo=boardService.listIotDeviceAndOven(current,size,iotDeviceDto);
         List<IotDeviceAndOvenVo> list = pageVo.getList();
         downloadService.exportIotDeviceAndOven(response,list);
+        return ResultUtil.success();
+    }
+
+
+    @ApiOperation("设备数采报表---温湿仪")
+    @PostMapping("/listIotDeviceAndTANS")
+    public ResponseResult<PageVo<IotDeviceAndTANSVo>> listIotDeviceAndTANS(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                           @RequestBody IotDeviceDto iotDeviceDto){
+        PageVo<IotDeviceAndTANSVo> pageVo=boardService.listIotDeviceAndTANS(current,size,iotDeviceDto);
         return ResultUtil.success(pageVo);
     }
+
+
+    @ApiOperation("设备数采报表---温湿仪")
+    @PostMapping("/exportIotDeviceAndTANS")
+    public ResponseResult exportIotDeviceAndTANS(@RequestParam(value = "current", defaultValue = "0") Integer current,
+                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                           @RequestBody IotDeviceDto iotDeviceDto,
+                                               HttpServletResponse response){
+        PageVo<IotDeviceAndTANSVo> pageVo=boardService.listIotDeviceAndTANS(current,size,iotDeviceDto);
+        List<IotDeviceAndTANSVo> list = pageVo.getList();
+        downloadService.exportIotDeviceAndTANS(response,list);
+        return ResultUtil.success();
+    }
+
 
 }

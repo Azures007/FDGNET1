@@ -63,4 +63,13 @@ public interface BoardService {
      * @return
      */
     PageVo<IotDeviceAndOvenVo> listIotDeviceAndOven(Integer current, Integer size, IotDeviceDto iotDeviceDto);
+
+    /**
+     * 设备数采---温湿度
+     * @param current
+     * @param size
+     * @param iotDeviceDto
+     * @return
+     */
+    PageVo<IotDeviceAndTANSVo> listIotDeviceAndTANS(Integer current, Integer size, IotDeviceDto iotDeviceDto);
 }

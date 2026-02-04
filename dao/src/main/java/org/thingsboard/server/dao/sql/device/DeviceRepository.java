@@ -513,6 +513,37 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, UUID> {
             "",nativeQuery = true)
     Page<Map> listIotDeviceAndOven(@Param("iotDeviceDto") IotDeviceDto iotDeviceDto,@Param("page") Pageable pageable);
 
+
+    /**
+     * 温湿度设备上报报表
+     * @param iotDeviceDto
+     * @param pageable
+     * @return
+     */
+    @Query(value = "" +
+            "SELECT\n" +
+            "    b.name AS device_code,\n" +
+            "    b.\"label\" AS device_name,\n" +
+            "    a.ts AS by_ts,\n" +
+            "    TO_CHAR(timezone('Asia/Shanghai', TO_TIMESTAMP(a.ts / 1000.0)), 'YYYY-MM-DD') AS by_date_dates,\n" +
+            "    TO_CHAR(timezone('Asia/Shanghai', TO_TIMESTAMP(a.ts / 1000.0)), 'HH24:MI:SS') AS by_date_times,\n" +
+            "    TO_CHAR(timezone('Asia/Shanghai', TO_TIMESTAMP(a.ts / 1000.0)), 'YYYY-MM-DD HH24:MI:SS') AS by_date,\n" +
+            "    MAX(CASE WHEN c.key = '温度' THEN COALESCE(a.long_v, a.dbl_v) END) AS by_temp,\n" +
+                    "  MAX(CASE WHEN c.key = '湿度' THEN COALESCE(a.long_v, a.dbl_v) END) AS by_hemp\n" +
+                    "FROM ts_kv a\n" +
+                    "JOIN device b ON a.entity_id = b.id\n" +
+                    "JOIN ts_kv_dictionary c ON a.\"key\" = c.key_id\n" +
+                    "WHERE 1=1\n" +
+                    "    AND (:#{#iotDeviceDto.deviceCode} IS NULL OR :#{#iotDeviceDto.deviceCode} = '' OR b.\"name\" = :#{#iotDeviceDto.deviceCode})\n" +
+                    "    AND b.name LIKE '%TANS%'\n" +
+                    "    AND c.key IN ('温度', '湿度')\n" +
+                    "    AND a.ts BETWEEN :#{#iotDeviceDto.startDateTimes} AND :#{#iotDeviceDto.endDateTimes}\n" +
+                    "GROUP BY b.name, b.\"label\", a.ts\n" +
+                    "ORDER BY a.ts DESC",
+            nativeQuery = true)
+    Page<Map> listIotDeviceAndTANS(@Param("iotDeviceDto") IotDeviceDto iotDeviceDto,@Param("page") Pageable pageable);
+
+
 //    @Query(value = "select GREATEST( \n" +
 //            "    COUNT(COALESCE(a.long_v, a.dbl_v)) - ?3,     0 ) from ts_kv a \n" +
 //            "join device b on a.entity_id =b.id \n" +

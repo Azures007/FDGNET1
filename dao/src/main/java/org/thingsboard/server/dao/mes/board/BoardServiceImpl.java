@@ -250,14 +250,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public PageVo<IotDeviceAndOvenVo> listIotDeviceAndOven(Integer current, Integer size, IotDeviceDto iotDeviceDto) {
-        // Java (Spring Boot 示例)
         String startDateStr = iotDeviceDto.getStartDate(); // "2026-02-03"
         String endDateStr = iotDeviceDto.getEndDate();     // "2026-02-03"
-        iotDeviceDto.setDeviceCode(StringUtils.isBlank(iotDeviceDto.getDeviceCode())?"":iotDeviceDto.getDeviceCode());
+        iotDeviceDto.setDeviceCode(StringUtils.isBlank(iotDeviceDto.getDeviceCode()) ? "" : iotDeviceDto.getDeviceCode());
         LocalDateTime startOfDay = LocalDate.parse(startDateStr).atStartOfDay(); // 00:00:00
         LocalDateTime endOfDay = LocalDate.parse(endDateStr).atTime(23, 59, 59); // 23:59:59
 
-// 转为毫秒时间戳（按 Asia/Shanghai 时区）
         ZoneId shanghai = ZoneId.of("Asia/Shanghai");
         long startTs = startOfDay.atZone(shanghai).toInstant().toEpochMilli();
         long endTs = endOfDay.atZone(shanghai).toInstant().toEpochMilli();
@@ -275,7 +273,7 @@ public class BoardServiceImpl implements BoardService {
             Date date = new Date(iotDeviceAndOvenVo.getByTs());
             iotDeviceAndOvenVo.setByDateDates(simpleDateFormat.format(date));
             iotDeviceAndOvenVo.setByDateTimes(simpleDateFormat1.format(date));
-            iotDeviceAndOvenVo.setByGzBr(iotDeviceAndOvenVo.getByGz().equals("0")?"否":"是");
+            iotDeviceAndOvenVo.setByGzBr(iotDeviceAndOvenVo.getByGz().equals("0") ? "否" : "是");
             // 一区上/下温度上下限
             iotDeviceAndOvenVo.setOverOneUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最大值"));
             iotDeviceAndOvenVo.setOverOneUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最小值"));
@@ -303,6 +301,28 @@ public class BoardServiceImpl implements BoardService {
             iotDeviceAndOvenVos.add(iotDeviceAndOvenVo);
         }
         pageVo.setList(iotDeviceAndOvenVos);
+        pageVo.setTotal(Integer.parseInt(String.valueOf(page.getTotalElements())));
+        return pageVo;
+    }
+
+    @Override
+    public PageVo<IotDeviceAndTANSVo> listIotDeviceAndTANS(Integer current, Integer size, IotDeviceDto iotDeviceDto) {
+        String startDateStr = iotDeviceDto.getStartDate(); // "2026-02-03"
+        String endDateStr = iotDeviceDto.getEndDate();     // "2026-02-03"
+        iotDeviceDto.setDeviceCode(StringUtils.isBlank(iotDeviceDto.getDeviceCode()) ? "" : iotDeviceDto.getDeviceCode());
+        LocalDateTime startOfDay = LocalDate.parse(startDateStr).atStartOfDay(); // 00:00:00
+        LocalDateTime endOfDay = LocalDate.parse(endDateStr).atTime(23, 59, 59); // 23:59:59
+        ZoneId shanghai = ZoneId.of("Asia/Shanghai");
+        long startTs = startOfDay.atZone(shanghai).toInstant().toEpochMilli();
+        long endTs = endOfDay.atZone(shanghai).toInstant().toEpochMilli();
+        iotDeviceDto.setStartDateTimes(startTs);
+        iotDeviceDto.setEndDateTimes(endTs);
+        Pageable pageable = PageRequest.of(current, size);
+        Page<Map> page = deviceRepository.listIotDeviceAndTANS(iotDeviceDto, pageable);
+        PageVo<IotDeviceAndTANSVo> pageVo=new PageVo<>(size,current);
+        List<Map> content = page.getContent();
+        List<IotDeviceAndTANSVo> iotDeviceAndTANSVos=JSON.parseArray(JSON.toJSONString(content),IotDeviceAndTANSVo.class);
+        pageVo.setList(iotDeviceAndTANSVos);
         pageVo.setTotal(Integer.parseInt(String.valueOf(page.getTotalElements())));
         return pageVo;
     }

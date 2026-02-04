@@ -29,7 +29,7 @@ public class IotDeviceAndOvenVo extends BaseRowModel {
     @ExcelIgnore
     @ApiModelProperty("时间戳")
     private Long byTs;
-    @ExcelProperty(value = "采集时间", index = 2)
+    @ExcelProperty(value = "设备编码", index = 2)
     @ApiModelProperty("设备编码")
     private String deviceCode;
     @ExcelProperty(value = "设备名称", index =3)

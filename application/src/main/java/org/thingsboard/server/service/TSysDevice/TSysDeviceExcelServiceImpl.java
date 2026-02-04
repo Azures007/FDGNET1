@@ -12,10 +12,7 @@ import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.dao.mes.TSysDevice.TSysDeviceService;
 import org.thingsboard.server.dao.mes.dto.TSysDeviceDto;
-import org.thingsboard.server.dao.mes.vo.InsourcingDeviceRunVo;
-import org.thingsboard.server.dao.mes.vo.IotDeviceAndOvenVo;
-import org.thingsboard.server.dao.mes.vo.OvenDeviceRunVo;
-import org.thingsboard.server.dao.mes.vo.TanSensorDeviceRunVo;
+import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.dao.sql.mes.ncOrg.NcOrganizationRepository;
 import org.thingsboard.server.dao.sql.mes.tSysDevice.TSysDeviceRepository;
 import org.thingsboard.server.utils.ExcelUtil;
@@ -141,6 +138,13 @@ public class TSysDeviceExcelServiceImpl implements TSysDeviceExcelService {
     public void exportIotDeviceAndOven(HttpServletResponse response, List<IotDeviceAndOvenVo> list) {
 
         ExcelUtil.writeExcel(response, list, System.currentTimeMillis() + "", "sheet1", new IotDeviceAndOvenVo());
+
+    }
+
+    @Override
+    public void exportIotDeviceAndTANS(HttpServletResponse response, List<IotDeviceAndTANSVo> list) {
+
+        ExcelUtil.writeExcel(response, list, System.currentTimeMillis() + "", "sheet1", new IotDeviceAndTANSVo());
 
     }
 }

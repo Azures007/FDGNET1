@@ -3,10 +3,7 @@ package org.thingsboard.server.service.TSysDevice;
 import org.springframework.web.multipart.MultipartFile;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.dao.mes.dto.TSysDeviceDto;
-import org.thingsboard.server.dao.mes.vo.InsourcingDeviceRunVo;
-import org.thingsboard.server.dao.mes.vo.IotDeviceAndOvenVo;
-import org.thingsboard.server.dao.mes.vo.OvenDeviceRunVo;
-import org.thingsboard.server.dao.mes.vo.TanSensorDeviceRunVo;
+import org.thingsboard.server.dao.mes.vo.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,4 +31,6 @@ public interface TSysDeviceExcelService {
     void exportDeviceRunBoard(HttpServletResponse response, List<InsourcingDeviceRunVo> insourcingDeviceRunVoList, List<TanSensorDeviceRunVo> tanSensorDeviceRunVos, List<OvenDeviceRunVo> ovenDeviceRunVos);
 
     void exportIotDeviceAndOven(HttpServletResponse response, List<IotDeviceAndOvenVo> list);
+
+    void exportIotDeviceAndTANS(HttpServletResponse response, List<IotDeviceAndTANSVo> list);
 }
