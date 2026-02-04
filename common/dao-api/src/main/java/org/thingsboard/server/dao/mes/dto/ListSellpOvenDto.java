@@ -19,6 +19,9 @@ public class ListSellpOvenDto {
     @ApiModelProperty("设备编码（全部为空值）")
     private String deviceCode;
 
+    @ApiModelProperty("设备名称（全部为空值）")
+    private String deviceName;
+
     @ApiModelProperty("查询索引")
     private String bySelect;
 

@@ -112,7 +112,7 @@ public class BoardIotController extends BaseController {
         List<BoardDataDevice> boardDataDevices=new ArrayList<>();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if(StringUtils.isNotBlank(deviceCode)){
-            boardDataDevices = boardService.lineSellp(deviceCode, bySelect,
+            boardDataDevices = boardService.lineSellp(listSellpOvenDto.getDeviceName(), bySelect,
                     "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
                     simpleDateFormat.parse(byDate+" 23:59:59").getTime());
             map.put(deviceCode,boardDataDevices);
@@ -122,7 +122,7 @@ public class BoardIotController extends BaseController {
                 List<BoardDataDevice> boardDataDevices1 = boardService.lineSellp(listDeviceIotVo.getDeviceCode(), bySelect,
                         "dbl", simpleDateFormat.parse(byDate + " 00:00:00").getTime(),
                         simpleDateFormat.parse(byDate + " 23:59:59").getTime());
-                map.put(listDeviceIotVo.getDeviceCode(),boardDataDevices1);
+                map.put(listDeviceIotVo.getDeviceName(),boardDataDevices1);
             }
         }
         return ResultUtil.success(map);
