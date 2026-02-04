@@ -92,6 +92,7 @@
               "src/assets/fs/fpsdk/NcryFpSdk.js",
               "src/assets/fs/fpsdk/HttpServerCommunicator.js",
               "src/assets/fs/jslib/jquery/jquery.min.js",
+              "src/assets/fs/jslib/echarts.min.js",
               "src/assets/fs/jsLib/JSON/json2.js",
               "node_modules/tinycolor2/dist/tinycolor-min.js",
               "node_modules/split.js/dist/split.min.js",
