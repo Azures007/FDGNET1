@@ -6,6 +6,8 @@ import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
+import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -13,8 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderHead;
 import org.thingsboard.server.common.data.mes.bus.TBusOrderPPBom;
-import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessHistory;
-import org.thingsboard.server.common.data.mes.bus.TBusOrderProcessRecord;
+import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.mes.sys.TSysCraftInfo;
 import org.thingsboard.server.common.data.mes.vo.InputMaterialItem;
@@ -24,20 +25,22 @@ import org.thingsboard.server.dao.mes.dto.ProductionDataQueryDto;
 import org.thingsboard.server.dao.mes.tSysCodeDsc.TSysCodeDscService;
 import org.thingsboard.server.dao.mes.vo.PageVo;
 import org.thingsboard.server.dao.sql.mes.TSysCraftInfo.TSysCraftInfoRepository;
+import org.thingsboard.server.dao.sql.mes.ncWorkline.NcWorklineRepository;
 import org.thingsboard.server.dao.sql.mes.production.ProductionDataRepository;
 import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
 import org.thingsboard.server.dao.user.UserService;
+import org.thingsboard.server.dao.util.NcApiClient;
 
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
+import java.math.RoundingMode;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 public class ProductionDataServiceImpl implements ProductionDataService {
 
@@ -55,6 +58,14 @@ public class ProductionDataServiceImpl implements ProductionDataService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private NcApiClient ncApiClient;
+
+    @Autowired
+    private NcWorklineRepository ncWorklineRepository;
+
+    private static final String BAD_STOCK_DATA_PATH = "/api/ycnc/mes/mm/bad/stock/data/list";
 
     @Override
     public void exportProductionData(List<String> userCwkids, ProductionDataQueryDto queryDto, HttpServletResponse response) {
@@ -100,19 +111,31 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                 fillBaseInfo(vo, data, groupKey);
                 voList.add(vo);
             } else {
-                for (InputMaterialItem materialItem : materialItems) {
+                // 过滤掉单位为 EA 的投入信息
+                List<InputMaterialItem> filteredItems = materialItems.stream()
+                        .filter(item -> !"EA".equalsIgnoreCase(item.getRecordUnit()))
+                        .collect(Collectors.toList());
+                
+                // 如果过滤后为空，至少保留一条空记录
+                if (filteredItems.isEmpty()) {
                     ProductionDataExcelVo vo = new ProductionDataExcelVo();
                     fillBaseInfo(vo, data, groupKey);
-                    
-                    // 投入信息
-                    vo.setMaterialNumber(materialItem.getMaterialNumber());
-                    vo.setMaterialName(materialItem.getMaterialName());
-                    vo.setRecordType(materialItem.getRecordType());
-                    vo.setRecordUnit(materialItem.getRecordUnit());
-                    vo.setPlannedInput(materialItem.getPlannedInput() != null ? materialItem.getPlannedInput() : "0.000");
-                    vo.setActualInput(materialItem.getActualInput() != null ? materialItem.getActualInput() : "0.000");
-                    
                     voList.add(vo);
+                } else {
+                    for (InputMaterialItem materialItem : filteredItems) {
+                        ProductionDataExcelVo vo = new ProductionDataExcelVo();
+                        fillBaseInfo(vo, data, groupKey);
+                        
+                        // 投入信息
+                        vo.setMaterialNumber(materialItem.getMaterialNumber());
+                        vo.setMaterialName(materialItem.getMaterialName());
+                        vo.setRecordType(materialItem.getRecordType());
+                        vo.setRecordUnit(materialItem.getRecordUnit());
+                        vo.setPlannedInput(materialItem.getPlannedInput() != null ? materialItem.getPlannedInput() : "0.000");
+                        vo.setActualInput(materialItem.getActualInput() != null ? materialItem.getActualInput() : "0.000");
+                        
+                        voList.add(vo);
+                    }
                 }
             }
             return voList.stream();
@@ -126,7 +149,6 @@ public class ProductionDataServiceImpl implements ProductionDataService {
         vo.setProductionLine(data.getProductionLine());
         
         // 损耗信息
-        vo.setPackagingWasteWeight(data.getPackagingWasteWeight() != null ? data.getPackagingWasteWeight() : "0.000");
         vo.setDefectiveWeight(data.getDefectiveWeight() != null ? data.getDefectiveWeight() : "0.000");
         
         // 产出信息
@@ -176,24 +198,23 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                     j++;
                 }
                 if (j - i > 1) {
-                    // 需要合并的列：0-1 (基础信息), 8-15 (损耗、产出、比率信息)
+                    // 需要合并的列：0-1 (基础信息), 8-14 (损耗、产出、比率信息)
                     // 0: 日期, 1: 产线
                     sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 0, 0));
                     sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 1, 1));
                     
-                    // 8: 包膜废品重量, 9: 废次品重量
+                    // 8: 废次品重量
                     sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 8, 8));
-                    sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 9, 9));
                     
-                    // 10: 计划产量, 11: 实际产量, 12: 净含量重量
+                    // 9: 计划产量, 10: 实际产量, 11: 净含量重量
+                    sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 9, 9));
                     sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 10, 10));
                     sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 11, 11));
-                    sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 12, 12));
                     
-                    // 13: 投入产出比, 14: 单箱原辅料消耗, 15: 废次品比率
+                    // 12: 投入产出比, 13: 单箱原辅料消耗, 14: 废次品比率
+                    sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 12, 12));
                     sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 13, 13));
                     sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 14, 14));
-                    sheet.addMergedRegion(new CellRangeAddress(startRow + i, startRow + j - 1, 15, 15));
                 }
                 i = j;
             }
@@ -519,9 +540,14 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                         productionData.setPlannedOutput(totalPlannedOut.setScale(3, BigDecimal.ROUND_HALF_UP).toString());
                         productionData.setActualOutput(totalActualOut.setScale(3, BigDecimal.ROUND_HALF_UP).toString());
                         productionData.setNetContentWeight(totalNetWeight.setScale(3, BigDecimal.ROUND_HALF_UP).toString());
-                        productionData.setPackagingWasteWeight("0.000");
-                        productionData.setDefectiveWeight("0.000");
-                        productionData.setDefectiveRate("0.000");
+                        
+                        // 从NC接口获取废次品数据
+                        BigDecimal defectiveWeight = getDefectiveWeightFromNc(productionLine, date);
+                        productionData.setDefectiveWeight(defectiveWeight.setScale(3, BigDecimal.ROUND_HALF_UP).toString());
+                        
+                        // 计算废次品比率 = 废次品重量 / (净含量重量 + 废次品重量) * 100%，保留两位百分小数
+                        BigDecimal defectiveRate = calculateDefectiveRate(defectiveWeight, totalNetWeight);
+                        productionData.setDefectiveRate(defectiveRate.toString());
         
                         if (totalNetWeight.compareTo(BigDecimal.ZERO) > 0) {
                             productionData.setInputOutputRatio(totalActualInputSum.divide(totalNetWeight, 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(3, BigDecimal.ROUND_HALF_UP).toString());
@@ -532,7 +558,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                         } else productionData.setMaterialConsumptionPerBox("-");
                     } else {
                         productionData.setPlannedOutput("-"); productionData.setActualOutput("-"); productionData.setNetContentWeight("-");
-                        productionData.setPackagingWasteWeight("-"); productionData.setDefectiveWeight("-"); productionData.setInputOutputRatio("-");
+                        productionData.setDefectiveWeight("-"); productionData.setInputOutputRatio("-");
                         productionData.setMaterialConsumptionPerBox("-"); productionData.setDefectiveRate("-");
                     }
         
@@ -541,6 +567,27 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     
+        // 过滤掉单位为 EA 的投入信息
+        for (ProductionData productionData : pagedResult) {
+            if (productionData.getInputMaterialItems() != null && !productionData.getInputMaterialItems().isEmpty()) {
+                List<InputMaterialItem> filteredItems = productionData.getInputMaterialItems().stream()
+                        .filter(item -> !"EA".equalsIgnoreCase(item.getRecordUnit()))
+                        .collect(Collectors.toList());
+                // 如果过滤后为空，保留一个占位符
+                if (filteredItems.isEmpty()) {
+                    InputMaterialItem placeholder = new InputMaterialItem();
+                    placeholder.setMaterialNumber("-");
+                    placeholder.setMaterialName("-");
+                    placeholder.setRecordType("-");
+                    placeholder.setRecordUnit("-");
+                    placeholder.setPlannedInput("-");
+                    placeholder.setActualInput("-");
+                    filteredItems.add(placeholder);
+                }
+                productionData.setInputMaterialItems(filteredItems);
+            }
+        }
+        
         // 构建分页结果
         PageVo<ProductionData> pageResult = new PageVo<>();
         pageResult.setList(pagedResult);
@@ -623,5 +670,80 @@ public class ProductionDataServiceImpl implements ProductionDataService {
             }
         }
         return BigDecimal.ONE;
+    }
+
+    /**
+     * 从NC接口获取废次品重量
+     * @param productionLine 产线名称
+     * @param date 日期
+     * @return 废次品重量
+     */
+    private BigDecimal getDefectiveWeightFromNc(String productionLine, String date) {
+        try {
+            // 根据产线名称查找产线ID
+            NcWorkline workline = ncWorklineRepository.findByVwkname(productionLine);
+            if (workline == null || workline.getCwkid() == null) {
+                log.warn("未找到产线信息: {}", productionLine);
+                return BigDecimal.ZERO;
+            }
+            
+            String cwkid = workline.getCwkid();
+            
+            // 构建请求体
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("cwkid", cwkid);
+            requestBody.put("startDate", date);
+            requestBody.put("endDate", date);
+            
+            // 使用NcApiClient调用NC接口
+            JsonNode dataArray = ncApiClient.postAndGetData(BAD_STOCK_DATA_PATH, requestBody);
+            
+            if (dataArray != null && dataArray.isArray()) {
+                // 累加同个产线同个日期的数量
+                BigDecimal totalNnum = BigDecimal.ZERO;
+                for (JsonNode item : dataArray) {
+                    if (item.has("nnum")) {
+                        JsonNode nnumNode = item.get("nnum");
+                        if (nnumNode != null && !nnumNode.isNull()) {
+                            totalNnum = totalNnum.add(new BigDecimal(nnumNode.asText()));
+                        }
+                    }
+                }
+                log.info("获取废次品数据成功，产线: {}, 日期: {}, 总数量: {}", productionLine, date, totalNnum);
+                return totalNnum;
+            }
+            
+            log.warn("获取废次品数据失败或数据为空，产线: {}, 日期: {}", productionLine, date);
+            return BigDecimal.ZERO;
+        } catch (Exception e) {
+            log.error("调用NC废次品接口异常，产线: {}, 日期: {}", productionLine, date, e);
+            return BigDecimal.ZERO;
+        }
+    }
+    
+    /**
+     * 计算废次品比率
+     * 公式：废次品比率 = 废次品重量 / (净含量重量 + 废次品重量) * 100%，保留两位百分小数
+     * @param defectiveWeight 废次品重量
+     * @param netContentWeight 净含量重量
+     * @return 废次品比率（百分比格式，如 5.25）
+     */
+    private BigDecimal calculateDefectiveRate(BigDecimal defectiveWeight, BigDecimal netContentWeight) {
+        if (defectiveWeight == null || defectiveWeight.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        if (netContentWeight == null || netContentWeight.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        
+        BigDecimal sum = netContentWeight.add(defectiveWeight);
+        if (sum.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        
+        // 废次品重量 / (净含量重量 + 废次品重量) * 100%，保留两位小数
+        return defectiveWeight.divide(sum, 4, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal("100"))
+                .setScale(2, RoundingMode.HALF_UP);
     }
 }

@@ -23,4 +23,11 @@ public interface NcWorklineRepository extends JpaRepository<NcWorkline, Integer>
     NcWorkline getByCwkidAndStatus(String cwkid, String status);
 
     List<NcWorkline> findByStatusAndCwkidIn(String status, List<String> cwkids);
+    
+    /**
+     * 根据产线名称查找产线
+     * @param vwkname 产线名称
+     * @return 产线信息
+     */
+    NcWorkline findByVwkname(String vwkname);
 }
