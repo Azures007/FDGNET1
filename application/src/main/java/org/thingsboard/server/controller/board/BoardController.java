@@ -17,6 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +37,19 @@ public class BoardController extends BaseController {
     @ApiOperation("内包机速度折线图数据(当天)")
     @GetMapping("/lineSellp")
     public ResponseResult<List<BoardDataDevice>> lineSellp(@RequestParam("deviceCode") String deviceCode) {
-        List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "速度","long");
+        // 1. 指定时区
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+        Instant nowInstant = Instant.now();
+        long currentTimestamp = nowInstant.toEpochMilli();
+
+        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
+        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+
+        // 4. 最近一小时结束：当前时间（即该时间段的结束）
+        long lastHourEndTimestamp = currentTimestamp;
+        List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "速度","long",lastHourStartTimestamp,lastHourEndTimestamp);
         return ResultUtil.success(boardDevices);
     }
 
@@ -56,8 +72,20 @@ public class BoardController extends BaseController {
     public ResponseResult<List<ListDeviceData>> listTemp(@RequestParam("deviceCodes") List<String> deviceCodes) {
         List<ListDeviceData> listDeviceDatas = new ArrayList<>();
         ListDeviceData listDeviceData;
+        // 1. 指定时区
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+        Instant nowInstant = Instant.now();
+        long currentTimestamp = nowInstant.toEpochMilli();
+
+        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
+        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+
+        // 4. 最近一小时结束：当前时间（即该时间段的结束）
+        long lastHourEndTimestamp = currentTimestamp;
         for (String deviceCode : deviceCodes) {
-            List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "温度","dbl");
+            List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "温度","dbl",lastHourStartTimestamp,lastHourEndTimestamp);
             listDeviceData = ListDeviceData.builder()
                     .deviceCode(deviceCode)
                     .boardDataDeviceList(boardDevices)
@@ -72,8 +100,20 @@ public class BoardController extends BaseController {
     public ResponseResult<List<ListDeviceData>> listHemp(@RequestParam("deviceCodes") List<String> deviceCodes) {
         List<ListDeviceData> listDeviceDatas = new ArrayList<>();
         ListDeviceData listDeviceData;
+        // 1. 指定时区
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+        Instant nowInstant = Instant.now();
+        long currentTimestamp = nowInstant.toEpochMilli();
+
+        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
+        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+
+        // 4. 最近一小时结束：当前时间（即该时间段的结束）
+        long lastHourEndTimestamp = currentTimestamp;
         for (String deviceCode : deviceCodes) {
-            List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "湿度","dbl");
+            List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "湿度","dbl",lastHourStartTimestamp,lastHourEndTimestamp);
             listDeviceData = ListDeviceData.builder()
                     .deviceCode(deviceCode)
                     .boardDataDeviceList(boardDevices)

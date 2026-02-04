@@ -16,6 +16,10 @@ import org.thingsboard.server.dao.mes.vo.LineClVo;
 import org.thingsboard.server.dao.mes.vo.ListDeviceIotVo;
 import org.thingsboard.server.dao.mes.vo.ListDeviceTempDatsVo;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RestController
@@ -43,21 +47,62 @@ public class BoardOvenController extends BaseController {
     @ApiOperation("温度趋势分析（上下分开）")
     public ResponseResult<List<BoardDataDevice>> listDeviceTempDatsOrUpDown(@RequestParam("deviceCode") String deviceCode,
                                                                          @RequestParam("deviceType") String deviceType){
-        List<BoardDataDevice> boardDataDevices = boardService.lineSellp(deviceCode, deviceType,"dbl");
+        // 1. 指定时区
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+        Instant nowInstant = Instant.now();
+        long currentTimestamp = nowInstant.toEpochMilli();
+
+        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
+        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+
+        // 4. 最近一小时结束：当前时间（即该时间段的结束）
+        long lastHourEndTimestamp = currentTimestamp;
+        List<BoardDataDevice> boardDataDevices = boardService.lineSellp(deviceCode, deviceType,"dbl",lastHourStartTimestamp,lastHourEndTimestamp);
         return ResultUtil.success(boardDataDevices);
     }
 
     @ApiOperation("烤炉速度折线图数据(当天)")
     @GetMapping("/lineSellp")
     public ResponseResult<List<BoardDataDevice>> lineSellp(@RequestParam("deviceCode") String deviceCode) {
-        List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "速度","long");
+        // 1. 指定时区
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+        Instant nowInstant = Instant.now();
+        long currentTimestamp = nowInstant.toEpochMilli();
+
+        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
+        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+
+        // 4. 最近一小时结束：当前时间（即该时间段的结束）
+        long lastHourEndTimestamp = currentTimestamp;
+        List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "速度",
+                "long",lastHourStartTimestamp,lastHourEndTimestamp);
         return ResultUtil.success(boardDevices);
     }
 
     @ApiOperation("烤炉热风分析折线图（当天）")
     @GetMapping("/lineRf")
     public ResponseResult<List<BoardDataDevice>> lineCl(@RequestParam("deviceCode") String deviceCode) {
-        List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "热风频率","long");
+        // 1. 指定时区
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+        Instant nowInstant = Instant.now();
+        long currentTimestamp = nowInstant.toEpochMilli();
+
+        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
+        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+
+        // 4. 最近一小时结束：当前时间（即该时间段的结束）
+        long lastHourEndTimestamp = currentTimestamp;
+        List<BoardDataDevice> boardDevices = boardService.lineSellp(deviceCode, "热风频率","long",
+                lastHourStartTimestamp,lastHourEndTimestamp);
         return ResultUtil.success(boardDevices);
     }
 

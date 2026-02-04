@@ -38,20 +38,12 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public List<BoardDataDevice> lineSellp(String deviceCode, String key, String type) {
-        // 1. 指定时区
-        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
-
-        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+    public List<BoardDataDevice> lineSellp(String deviceCode, String key, String type,
+                                           Long lastHourStartTimestamp, Long lastHourEndTimestamp) {
         Instant nowInstant = Instant.now();
         long currentTimestamp = nowInstant.toEpochMilli();
-
-        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
-        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
-
-        // 4. 最近一小时结束：当前时间（即该时间段的结束）
-        long lastHourEndTimestamp = currentTimestamp;
+        List<BoardDataDevice> boardDataDevices=new ArrayList<>();
         List<Map> lineSellpMaps;
         if (type.equals("long")) {
             lineSellpMaps = deviceRepository.lineSellp(deviceCode, lastHourStartTimestamp, lastHourEndTimestamp, key);
@@ -59,14 +51,20 @@ public class BoardServiceImpl implements BoardService {
             lineSellpMaps = deviceRepository.lineSellpByDb(deviceCode, lastHourStartTimestamp, lastHourEndTimestamp, key);
 
         }
-        List<BoardDataDevice> boardDataDevices = JSON.parseArray(JSON.toJSONString(lineSellpMaps), BoardDataDevice.class);
-        BoardDataDevice boardDataDevice = BoardDataDevice.builder()
-                .byQty(boardDataDevices.get(boardDataDevices.size() - 1).getByQty())
-                .byTs(currentTimestamp)
-                .byDate(simpleDateFormat.format(new Date()))
-                .build();
+        if (lineSellpMaps == null || lineSellpMaps.size() == 0) {
+            return boardDataDevices;
+        }
+        boardDataDevices = JSON.parseArray(JSON.toJSONString(lineSellpMaps), BoardDataDevice.class);
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+        if(simpleDateFormat1.format(new Date(lastHourEndTimestamp)).equals(simpleDateFormat1.format(new Date()))){
+            BoardDataDevice boardDataDevice = BoardDataDevice.builder()
+                    .byQty(boardDataDevices.get(boardDataDevices.size() - 1).getByQty())
+                    .byTs(currentTimestamp)
+                    .byDate(simpleDateFormat.format(new Date()))
+                    .build();
 
-        boardDataDevices.add(boardDataDevice);
+            boardDataDevices.add(boardDataDevice);
+        }
         return boardDataDevices;
     }
 
@@ -205,8 +203,21 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<ListDeviceTempDatsVo> listDeviceTempDats(String deviceCode, String type) {
+        // 1. 指定时区
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        // 2. 获取当前时间的Instant（UTC时间，可直接转毫秒戳）
+        Instant nowInstant = Instant.now();
+        long currentTimestamp = nowInstant.toEpochMilli();
+
+        // 3. 最近一小时开始：当前时间减1小时（3600*1000毫秒）
+        long lastHourStartTimestamp = nowInstant.minus(1, ChronoUnit.HOURS).toEpochMilli();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+
+        // 4. 最近一小时结束：当前时间（即该时间段的结束）
+        long lastHourEndTimestamp = currentTimestamp;
         List<ListDeviceTempDatsVo> listDeviceTempDatsVos = new ArrayList<>();
-        List<BoardDataDevice> boardDataDevices = this.lineSellp(deviceCode, type + "上温度", "dbl");
+        List<BoardDataDevice> boardDataDevices = this.lineSellp(deviceCode, type + "上温度", "dbl", lastHourStartTimestamp, lastHourEndTimestamp);
         for (BoardDataDevice boardDataDevice : boardDataDevices) {
 //            GlobalConstant.getCodeDscName("",)
             ListDeviceTempDatsVo listDeviceTempDatsVo = ListDeviceTempDatsVo.builder()
@@ -319,9 +330,9 @@ public class BoardServiceImpl implements BoardService {
         iotDeviceDto.setEndDateTimes(endTs);
         Pageable pageable = PageRequest.of(current, size);
         Page<Map> page = deviceRepository.listIotDeviceAndTANS(iotDeviceDto, pageable);
-        PageVo<IotDeviceAndTANSVo> pageVo=new PageVo<>(size,current);
+        PageVo<IotDeviceAndTANSVo> pageVo = new PageVo<>(size, current);
         List<Map> content = page.getContent();
-        List<IotDeviceAndTANSVo> iotDeviceAndTANSVos=JSON.parseArray(JSON.toJSONString(content),IotDeviceAndTANSVo.class);
+        List<IotDeviceAndTANSVo> iotDeviceAndTANSVos = JSON.parseArray(JSON.toJSONString(content), IotDeviceAndTANSVo.class);
         pageVo.setList(iotDeviceAndTANSVos);
         pageVo.setTotal(Integer.parseInt(String.valueOf(page.getTotalElements())));
         return pageVo;

@@ -12,7 +12,8 @@ public interface BoardService {
      * 内包机速度折线图数据
      * @return
      */
-    List<BoardDataDevice> lineSellp(String deviceCode,String key,String type);
+    List<BoardDataDevice> lineSellp(String deviceCode,String key,String type,
+                                    Long lastHourStartTimestamp,Long lastHourEndTimestamp);
 
     /**
      * 设备运行报表

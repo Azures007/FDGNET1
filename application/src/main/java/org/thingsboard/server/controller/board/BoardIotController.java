@@ -2,20 +2,25 @@ package org.thingsboard.server.controller.board;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
 import org.thingsboard.server.dao.mes.dto.IotDeviceDto;
-import org.thingsboard.server.dao.mes.vo.IotDeviceAndOvenVo;
-import org.thingsboard.server.dao.mes.vo.IotDeviceAndTANSVo;
-import org.thingsboard.server.dao.mes.vo.PageVo;
+import org.thingsboard.server.dao.mes.dto.ListSellpOvenDto;
+import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.service.TSysDevice.TSysDeviceExcelService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.http.HttpResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/noauth/board/byiots")
@@ -70,5 +75,57 @@ public class BoardIotController extends BaseController {
         return ResultUtil.success();
     }
 
+    @ApiOperation("烤炉折线图")
+    @PostMapping("/listSellpOven")
+    public ResponseResult<Map<String,List<BoardDataDevice>>> listSellpOven(@RequestBody ListSellpOvenDto listSellpOvenDto) throws ParseException {
+        Map<String,List<BoardDataDevice>> map=new HashMap<>();
+        String bySelect = listSellpOvenDto.getBySelect();
+        String byDate = listSellpOvenDto.getByDate();
+        String deviceCode = listSellpOvenDto.getDeviceCode();
+        List<BoardDataDevice> boardDataDevices=new ArrayList<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if(StringUtils.isNotBlank(deviceCode)){
+            boardDataDevices = boardService.lineSellp(deviceCode, bySelect,
+                    "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                    simpleDateFormat.parse(byDate+" 23:59:59").getTime());
+            map.put(deviceCode,boardDataDevices);
+        }else {
+            List<ListDeviceIotVo> listDeviceIotVos=boardService.listDeviceIot("Oven");
+            for (ListDeviceIotVo listDeviceIotVo : listDeviceIotVos) {
+                List<BoardDataDevice> boardDataDevices1 = boardService.lineSellp(listDeviceIotVo.getDeviceCode(), bySelect,
+                        "dbl", simpleDateFormat.parse(byDate + " 00:00:00").getTime(),
+                        simpleDateFormat.parse(byDate + " 23:59:59").getTime());
+                map.put(listDeviceIotVo.getDeviceCode(),boardDataDevices1);
+            }
+        }
+        return ResultUtil.success(map);
+    }
+
+
+    @ApiOperation("温湿仪折线图")
+    @PostMapping("/listSellpTANSensor")
+    public ResponseResult<Map<String,List<BoardDataDevice>>> listSellpTANSensor(@RequestBody ListSellpOvenDto listSellpOvenDto) throws ParseException {
+        Map<String,List<BoardDataDevice>> map=new HashMap<>();
+        String bySelect = listSellpOvenDto.getBySelect();
+        String byDate = listSellpOvenDto.getByDate();
+        String deviceCode = listSellpOvenDto.getDeviceCode();
+        List<BoardDataDevice> boardDataDevices=new ArrayList<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if(StringUtils.isNotBlank(deviceCode)){
+            boardDataDevices = boardService.lineSellp(deviceCode, bySelect,
+                    "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                    simpleDateFormat.parse(byDate+" 23:59:59").getTime());
+            map.put(deviceCode,boardDataDevices);
+        }else {
+            List<ListDeviceIotVo> listDeviceIotVos=boardService.listDeviceIot("TANSensor");
+            for (ListDeviceIotVo listDeviceIotVo : listDeviceIotVos) {
+                List<BoardDataDevice> boardDataDevices1 = boardService.lineSellp(listDeviceIotVo.getDeviceCode(), bySelect,
+                        "dbl", simpleDateFormat.parse(byDate + " 00:00:00").getTime(),
+                        simpleDateFormat.parse(byDate + " 23:59:59").getTime());
+                map.put(listDeviceIotVo.getDeviceCode(),boardDataDevices1);
+            }
+        }
+        return ResultUtil.success(map);
+    }
 
 }
