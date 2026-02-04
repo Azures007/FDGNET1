@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.thingsboard.server.dao.sql.mes.ncWorkline.NcWorklineRepository;
 import org.thingsboard.server.common.data.mes.ncWorkline.NcWorkline;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -21,12 +20,10 @@ import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.mes.vo.TSysPdRecordVo;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
 import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
-import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.thingsboard.server.dao.sql.mes.order.NcSyncLogRepository;
 import org.thingsboard.server.common.data.mes.sys.NcSyncLog;
+import org.thingsboard.server.dao.util.NcApiClient;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -67,26 +64,11 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
     @Autowired
     private NcWorklineRepository ncWorklineRepository;
 
-    @Value("${nc.base-url:http://172.88.0.150:8077}")
-    private String inventoryBaseUrl;
-
-    @Value("${nc.app-id:yc9t8188f4e0j2ce13}")
-    private String ncAppId;
-
-    @Value("${nc.app-secret:e6eed684852d619a5292c4753628ed56}")
-    private String ncAppSecret;
+    @Autowired
+    private NcApiClient ncApiClient;
 
     private static final String INVENTORY_SUBMIT_PATH = "/api/ycnc/mes/mm/inventory/data/submit";
-    private static final String GET_TOKEN_PATH = "/api/ycnc/mes/config/gettoken";
     private static final String SYNC_TYPE_PD_SUBMIT = "盘点提交";
-
-    private RestTemplate restTemplate = new RestTemplate();
-    
-    private ObjectMapper objectMapper = new ObjectMapper();
-    
-    // Token缓存
-    private String cachedToken;
-    private long tokenExpireTime;
 
     @Autowired
     private NcSyncLogRepository ncSyncLogRepository;
@@ -542,33 +524,18 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
 
             try {
                 try {
-                    requestJson = objectMapper.writeValueAsString(requestBody);
+                    requestJson = ncApiClient.getObjectMapper().writeValueAsString(requestBody);
                 } catch (Exception ex) {
                     log.warn("序列化盘点提交请求体失败", ex);
                     requestJson = "序列化失败: " + ex.getMessage();
                 }
 
-                // 获取token
-                String token = getToken();
-                
-                // 设置请求头
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.set("token", token);
-                HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-                // 调用接口
-                String submitUrl = inventoryBaseUrl + INVENTORY_SUBMIT_PATH;
-                ResponseEntity<JsonNode> response = restTemplate.postForEntity(
-                        submitUrl,
-                        requestEntity,
-                        JsonNode.class
-                );
+                // 调用NC接口
+                JsonNode responseBody = ncApiClient.post(INVENTORY_SUBMIT_PATH, requestBody);
 
                 // 处理响应
-                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                    JsonNode responseBody = response.getBody();
-                    int code = responseBody.has("code") ? response.getBody().get("code").asInt() : -1;
+                if (responseBody != null) {
+                    int code = responseBody.has("code") ? responseBody.get("code").asInt() : -1;
                     String msg = responseBody.has("msg") ? responseBody.get("msg").asText() : "";
                     
                     if (code == 1) {
@@ -600,7 +567,7 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
                         throw new RuntimeException(warnMsg);
                     }
                 } else {
-                    String warnMsg = String.format("盘点数据提交失败，仓库: %s, HTTP状态码: %s", pkStordoc, response.getStatusCode());
+                    String warnMsg = String.format("盘点数据提交失败，仓库: %s, 接口返回为空", pkStordoc);
                     log.warn(warnMsg);
                     saveNcSyncLog(SYNC_TYPE_PD_SUBMIT, "1",
                             String.format("仓库:%s 提交失败", pkStordoc),
@@ -635,68 +602,6 @@ public class TSysPdRecordServiceImpl implements TSysPdRecordService {
             ncSyncLogRepository.save(logEntity);
         } catch (Exception e) {
             log.error("保存NC同步日志失败", e);
-        }
-    }
-
-    /**
-     * 获取NC接口token（带缓存机制）
-     * @return token
-     */
-    private String getToken() {
-        // 检查缓存的token是否有效
-        if (cachedToken != null && System.currentTimeMillis() < tokenExpireTime) {
-            return cachedToken;
-        }
-
-        try {
-            // 构建获取token的请求体
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("appId", ncAppId);
-            requestBody.put("appSecret", ncAppSecret);
-
-            // 设置请求头
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-            // 调用获取token接口
-            String tokenUrl = inventoryBaseUrl + GET_TOKEN_PATH;
-            ResponseEntity<JsonNode> response = restTemplate.postForEntity(
-                    tokenUrl,
-                    requestEntity,
-                    JsonNode.class
-            );
-
-            // 处理响应
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                JsonNode responseBody = response.getBody();
-                int code = responseBody.has("code") ? responseBody.get("code").asInt() : -1;
-                String msg = responseBody.has("msg") ? responseBody.get("msg").asText() : "";
-
-                if (code == 1 && responseBody.has("data")) {
-                    JsonNode data = responseBody.get("data");
-                    if (data.has("token")) {
-                        String token = data.get("token").asText();
-                        // 获取有效期（秒），默认7200秒，提前5分钟过期
-                        int expiresIn = data.has("expires_in") ? data.get("expires_in").asInt() : 7200;
-                        // 计算过期时间（提前5分钟过期，避免边界情况）
-                        tokenExpireTime = System.currentTimeMillis() + (expiresIn - 300) * 1000L;
-                        cachedToken = token;
-                        log.info("成功获取NC接口token，有效期: {}秒", expiresIn);
-                        return token;
-                    }
-                }
-                String errorMsg = String.format("获取NC接口token失败，错误信息: %s", msg);
-                log.error(errorMsg);
-                throw new RuntimeException(errorMsg);
-            } else {
-                String errorMsg = String.format("获取NC接口token失败，HTTP状态码: %s", response.getStatusCode());
-                log.error(errorMsg);
-                throw new RuntimeException(errorMsg);
-            }
-        } catch (Exception e) {
-            log.error("调用获取NC接口token异常", e);
-            throw new RuntimeException("调用获取NC接口token异常: " + e.getMessage(), e);
         }
     }
 }

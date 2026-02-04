@@ -504,7 +504,7 @@ public interface OrderProcessRecordRepository extends JpaRepository<TBusOrderPro
             "AND r.record_type = '3'\n" +
             "AND r.report_status = '0'"+
             "WHERE h.order_no = :orderNo " +
-            "AND h.bill_type = '普通流程生产订单' \n"+
+            //"AND h.bill_type = '普通流程生产订单' \n"+
             "GROUP BY h.qty_per_jian",
             nativeQuery = true)
     Long findCompletedQuantity(@Param("orderNo") String orderNo);

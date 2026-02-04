@@ -1,31 +1,34 @@
 package org.thingsboard.server.dao.mes.productionBoard;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.report.TimeDimensionUtils;
 import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.dao.sql.mes.productionBoard.ProductionBoardRepository;
+import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
 import org.thingsboard.server.dao.sql.mes.tSysCodeDsc.TSysCodeDscRepository;
+import org.thingsboard.server.dao.util.NcApiClient;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * 生产看板服务实现（Mock数据）
  */
+@Slf4j
 @Service
 public class ProductionBoardServiceImpl implements ProductionBoardService {
 
@@ -34,6 +37,14 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
     
     @Autowired
     private TSysCodeDscRepository tSysCodeDscRepository;
+    
+    @Autowired
+    private SyncMaterialRepository syncMaterialRepository;
+    
+    @Autowired
+    private NcApiClient ncApiClient;
+    
+    private static final String BAD_STOCK_DATA_PATH = "/api/ycnc/mes/mm/bad/stock/data/list";
     
     /**
      * 从字典获取允许的生产线ID列表
@@ -45,6 +56,81 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
         return tSysCodeDscList.stream()
             .map(TSysCodeDsc::getCodeValue)
             .collect(Collectors.toList());
+    }
+    
+    /**
+     * 从NC接口获取报废料数据（按物料分类筛选）
+     * @param productionLine 生产线ID
+     * @param startDate 开始日期 yyyy-MM-dd
+     * @param endDate 结束日期 yyyy-MM-dd
+     * @param materialClassification 物料分类（如：返工料、废品）
+     * @return 指定分类的总数量
+     */
+    private BigDecimal getBadStockDataByClassification(String productionLine, String startDate, String endDate, String materialClassification) {
+        try {
+            // 构建请求体
+            Map<String, Object> requestBody = new HashMap<>();
+            if (productionLine != null && !productionLine.trim().isEmpty()) {
+                requestBody.put("cwkid", productionLine);
+            }
+            requestBody.put("startDate", startDate);
+            requestBody.put("endDate", endDate);
+            
+            // 调用NC接口
+            JsonNode dataArray = ncApiClient.postAndGetData(BAD_STOCK_DATA_PATH, requestBody);
+            
+            if (dataArray != null && dataArray.isArray()) {
+                BigDecimal totalQuantity = BigDecimal.ZERO;
+                
+                // 遍历数据，筛选指定分类的物料
+                for (JsonNode item : dataArray) {
+                    String code_str = item.has("code") ? item.get("code").asText() : "";
+                    double nnum = item.has("nnum") ? item.get("nnum").asDouble() : 0.0;
+                    
+                    // 根据物料编码查找物料分类
+                    if (code_str != null && !code_str.isEmpty()) {
+                        List<TSyncMaterial> materials = syncMaterialRepository.getByMaterialCode(code_str);
+                        if (materials != null && !materials.isEmpty()) {
+                            TSyncMaterial material = materials.get(0);
+                            // 判断是否为指定分类
+                            if (materialClassification.equals(material.getNcMaterialClassification())) {
+                                totalQuantity = totalQuantity.add(BigDecimal.valueOf(nnum));
+                            }
+                        }
+                    }
+                }
+                
+                log.info("成功获取报废料数据，{}总数量: {}", materialClassification, totalQuantity);
+                return totalQuantity;
+            }
+            
+            return BigDecimal.ZERO;
+        } catch (Exception e) {
+            log.error("调用报废料数据接口异常，物料分类: {}", materialClassification, e);
+            return BigDecimal.ZERO;
+        }
+    }
+    
+    /**
+     * 从NC接口获取返工料数据
+     * @param productionLine 生产线ID
+     * @param startDate 开始日期 yyyy-MM-dd
+     * @param endDate 结束日期 yyyy-MM-dd
+     * @return 返工料总数量
+     */
+    private BigDecimal getBadStockDataFromNC(String productionLine, String startDate, String endDate) {
+        return getBadStockDataByClassification(productionLine, startDate, endDate, "返工料");
+    }
+    
+    /**
+     * 从NC接口获取废品数据
+     * @param productionLine 生产线ID
+     * @param startDate 开始日期 yyyy-MM-dd
+     * @param endDate 结束日期 yyyy-MM-dd
+     * @return 废品总数量
+     */
+    private BigDecimal getDefectiveProductDataFromNC(String productionLine, String startDate, String endDate) {
+        return getBadStockDataByClassification(productionLine, startDate, endDate, "废品");
     }
 
     @Override
@@ -85,6 +171,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             List<Map> resultList;
             BigDecimal planMaterialWeight;
             BigDecimal packagingWeight;
+            BigDecimal packagingBadProductWeight;
             
             if (productionLine != null && !productionLine.trim().isEmpty()) {
                 // 如果传了生产线,按生产线查询
@@ -92,16 +179,20 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     startDateTime, endDateTime, productionLine, worklineIds);
                 planMaterialWeight = productionBoardRepository.sumPlanMaterialWeightByDateRangeAndProductionLine(
                     startDateTime, endDateTime, productionLine, worklineIds);
-                packagingWeight = productionBoardRepository.sumPackagingWeightByDateRangeAndProductionLine(
-                    startDateTime, endDateTime, productionLine, worklineIds);
+                // 从NC接口获取返工料数据作为包材重量
+                packagingWeight = getBadStockDataFromNC(productionLine, finalStartDate, finalEndDate);
+                // 从NC接口获取废品数据作为包材废品重量
+                packagingBadProductWeight = getDefectiveProductDataFromNC(productionLine, finalStartDate, finalEndDate);
             } else {
                 // 否则查询所有
                 resultList = productionBoardRepository.getOrderStatisticsByDateRange(
                     startDateTime, endDateTime, worklineIds);
                 planMaterialWeight = productionBoardRepository.sumPlanMaterialWeightByDateRange(
                     startDateTime, endDateTime, worklineIds);
-                packagingWeight = productionBoardRepository.sumPackagingWeightByDateRange(
-                    startDateTime, endDateTime, worklineIds);
+                // 从NC接口获取返工料数据作为包材重量
+                packagingWeight = getBadStockDataFromNC(null, finalStartDate, finalEndDate);
+                // 从NC接口获取废品数据作为包材废品重量
+                packagingBadProductWeight = getDefectiveProductDataFromNC(null, finalStartDate, finalEndDate);
             }
             
             // 解析查询结果
@@ -131,10 +222,15 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             stats.setPlanMaterialWeight(materialWeight.setScale(3, BigDecimal.ROUND_HALF_UP));
             stats.setPlanMaterialWeightUnit("kg");
             
-            // 包材重量（保留3位小数）
+            // 包材重量（返工料，保留3位小数）
             BigDecimal pkgWeight = packagingWeight != null ? packagingWeight : BigDecimal.ZERO;
             stats.setPackagingWeight(pkgWeight.setScale(3, BigDecimal.ROUND_HALF_UP));
             stats.setPackagingWeightUnit("kg");
+            
+            // 包材废品重量（废品，保留3位小数）
+            BigDecimal badProductWeight = packagingBadProductWeight != null ? packagingBadProductWeight : BigDecimal.ZERO;
+            stats.setPackagingBadProductWeight(badProductWeight.setScale(3, BigDecimal.ROUND_HALF_UP));
+            stats.setPackagingBadProductWeightUnit("kg");
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -152,10 +248,6 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
         stats.setWasteQuantityUnit("kg");
         //stats.setDefectiveRatio(new BigDecimal("0.0125")); // 100/8000 = 1.25%
         //stats.setWasteRatio(new BigDecimal("0.01")); // 80/8000 = 1%
-        
-        // 包材废品重量
-        stats.setPackagingBadProductWeight(new BigDecimal("80"));
-        stats.setPackagingBadProductWeightUnit("kg");
         
         return stats;
     }
