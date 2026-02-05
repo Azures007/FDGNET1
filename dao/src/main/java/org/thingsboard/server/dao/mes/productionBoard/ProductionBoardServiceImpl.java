@@ -96,7 +96,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                         if (materials != null && !materials.isEmpty()) {
                             TSyncMaterial material = materials.get(0);
                             // 判断是否为指定分类
-                            if (materialClassification.equals(material.getNcMaterialClassification())) {
+                            if (materialClassification.equals(material.getNcMaterialCategory())) {
                                 totalQuantity = totalQuantity.add(BigDecimal.valueOf(nnum));
                             }
                         }
