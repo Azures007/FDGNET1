@@ -174,10 +174,10 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                         List<TSyncMaterial> materials = syncMaterialRepository.getByMaterialCode(code_str);
                         if (materials != null && !materials.isEmpty()) {
                             TSyncMaterial material = materials.get(0);
-                            String materialClassification = material.getNcMaterialClassification();
+                            String ncMaterialCategory = material.getNcMaterialCategory();
                             
                             // 只处理废品和返工料
-                            if ("废品".equals(materialClassification) || "返工料".equals(materialClassification)) {
+                            if ("废品".equals(ncMaterialCategory) || "返工料".equals(ncMaterialCategory)) {
                                 // 根据时间维度生成时间键
                                 String timeKey = generateTimeKey(billdate, isDay, isWeek, sdf);
                                 
@@ -186,8 +186,8 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                                     result.computeIfAbsent(timeKey, k -> new HashMap<>());
                                     
                                     // 累加数量
-                                    BigDecimal currentQuantity = result.get(timeKey).getOrDefault(materialClassification, BigDecimal.ZERO);
-                                    result.get(timeKey).put(materialClassification, currentQuantity.add(BigDecimal.valueOf(nnum)));
+                                    BigDecimal currentQuantity = result.get(timeKey).getOrDefault(ncMaterialCategory, BigDecimal.ZERO);
+                                    result.get(timeKey).put(ncMaterialCategory, currentQuantity.add(BigDecimal.valueOf(nnum)));
                                 }
                             }
                         }
