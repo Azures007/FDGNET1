@@ -77,55 +77,115 @@ public class BoardIotController extends BaseController {
 
     @ApiOperation("烤炉折线图")
     @PostMapping("/listSellpOven")
-    public ResponseResult<Map<String,List<BoardDataDevice>>> listSellpOven(@RequestBody ListSellpOvenDto listSellpOvenDto) throws ParseException {
-        Map<String,List<BoardDataDevice>> map=new HashMap<>();
-        String bySelect = listSellpOvenDto.getBySelect();
+    public ResponseResult<List<ListSellpOvenVo>> listSellpOven(@RequestBody ListSellpOvenDto listSellpOvenDto) throws ParseException {
+        List<ListSellpOvenVo> listSellpOvenVos=new ArrayList<>();
         String byDate = listSellpOvenDto.getByDate();
         String deviceCode = listSellpOvenDto.getDeviceCode();
-        List<BoardDataDevice> boardDataDevices=new ArrayList<>();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if(StringUtils.isNotBlank(deviceCode)){
-            boardDataDevices = boardService.lineSellp(deviceCode, bySelect,
-                    "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
-                    simpleDateFormat.parse(byDate+" 23:59:59").getTime());
-            map.put(deviceCode,boardDataDevices);
+            ListSellpOvenVo listSellpOvenVo=ListSellpOvenVo.builder()
+                    .deviceCode(deviceCode)
+                    .deviceName(listSellpOvenDto.getDeviceName())
+                    .oneUpTempBoard(boardService.lineSellp(deviceCode, "一区上温度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .oneDownTempBoard(boardService.lineSellp(deviceCode, "一区下温度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .twoUpTempBoard(boardService.lineSellp(deviceCode, "二区上温度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .twoDownTempBoard(boardService.lineSellp(deviceCode, "二区下温度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .threeUpTempBoard(boardService.lineSellp(deviceCode, "三区上温度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .threeDownTempBoard(boardService.lineSellp(deviceCode, "三区下温度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .fourUpTempBoard(boardService.lineSellp(deviceCode, "四区上温度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .fourDownTempBoard(boardService.lineSellp(deviceCode, "四区下温度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .build();
+            listSellpOvenVos.add(listSellpOvenVo);
         }else {
             List<ListDeviceIotVo> listDeviceIotVos=boardService.listDeviceIot("Oven");
             for (ListDeviceIotVo listDeviceIotVo : listDeviceIotVos) {
-                List<BoardDataDevice> boardDataDevices1 = boardService.lineSellp(listDeviceIotVo.getDeviceCode(), bySelect,
-                        "dbl", simpleDateFormat.parse(byDate + " 00:00:00").getTime(),
-                        simpleDateFormat.parse(byDate + " 23:59:59").getTime());
-                map.put(listDeviceIotVo.getDeviceCode(),boardDataDevices1);
+                ListSellpOvenVo listSellpOvenVo=ListSellpOvenVo.builder()
+                        .deviceCode(listDeviceIotVo.getDeviceCode())
+                        .deviceName(listDeviceIotVo.getDeviceName())
+                        .oneUpTempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "一区上温度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .oneDownTempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "一区下温度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .twoUpTempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "二区上温度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .twoDownTempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "二区下温度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .threeUpTempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "三区上温度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .threeDownTempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "三区下温度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .fourUpTempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "四区上温度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .fourDownTempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "四区下温度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .build();
+                listSellpOvenVos.add(listSellpOvenVo);
             }
         }
-        return ResultUtil.success(map);
+        return ResultUtil.success(listSellpOvenVos);
     }
 
 
     @ApiOperation("温湿仪折线图")
     @PostMapping("/listSellpTANSensor")
-    public ResponseResult<Map<String,List<BoardDataDevice>>> listSellpTANSensor(@RequestBody ListSellpOvenDto listSellpOvenDto) throws ParseException {
-        Map<String,List<BoardDataDevice>> map=new HashMap<>();
-        String bySelect = listSellpOvenDto.getBySelect();
+    public ResponseResult<List<ListSellpTANSensorVo>> listSellpTANSensor(@RequestBody ListSellpOvenDto listSellpOvenDto) throws ParseException {
+        List<ListSellpTANSensorVo> listSellpTANSensorVos=new ArrayList<>();
         String byDate = listSellpOvenDto.getByDate();
         String deviceCode = listSellpOvenDto.getDeviceCode();
-        List<BoardDataDevice> boardDataDevices=new ArrayList<>();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if(StringUtils.isNotBlank(deviceCode)){
-            boardDataDevices = boardService.lineSellp(listSellpOvenDto.getDeviceName(), bySelect,
-                    "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
-                    simpleDateFormat.parse(byDate+" 23:59:59").getTime());
-            map.put(deviceCode,boardDataDevices);
+            ListSellpTANSensorVo listSellpTANSensorVo=ListSellpTANSensorVo.builder()
+                    .deviceCode(listSellpOvenDto.getDeviceCode())
+                    .deviceName(listSellpOvenDto.getDeviceName())
+                    .tempBoard(boardService.lineSellp(listSellpOvenDto.getDeviceName(), "温度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .hempBoard(boardService.lineSellp(listSellpOvenDto.getDeviceName(), "湿度",
+                            "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                            simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .build();
+            listSellpTANSensorVos.add(listSellpTANSensorVo);
         }else {
             List<ListDeviceIotVo> listDeviceIotVos=boardService.listDeviceIot("TANSensor");
             for (ListDeviceIotVo listDeviceIotVo : listDeviceIotVos) {
-                List<BoardDataDevice> boardDataDevices1 = boardService.lineSellp(listDeviceIotVo.getDeviceCode(), bySelect,
-                        "dbl", simpleDateFormat.parse(byDate + " 00:00:00").getTime(),
-                        simpleDateFormat.parse(byDate + " 23:59:59").getTime());
-                map.put(listDeviceIotVo.getDeviceName(),boardDataDevices1);
+                ListSellpTANSensorVo listSellpTANSensorVo=ListSellpTANSensorVo.builder()
+                        .deviceCode(listDeviceIotVo.getDeviceCode())
+                        .deviceName(listDeviceIotVo.getDeviceName())
+                        .tempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "温度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .hempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "湿度",
+                                "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
+                                simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .build();
+                listSellpTANSensorVos.add(listSellpTANSensorVo);
             }
         }
-        return ResultUtil.success(map);
+        return ResultUtil.success(listSellpTANSensorVos);
     }
 
 }

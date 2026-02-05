@@ -511,15 +511,16 @@ public class BoardServiceImpl implements BoardService {
 
                     BigDecimal gz = deviceRepository.countByQty(device.getName(),
                             "故障警告", BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal aq = deviceRepository.countByQty(device.getName(),
-                            "安全报警", BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal cw = deviceRepository.countByQty(device.getName(),
-                            "超温报警", BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal dj = deviceRepository.countByQty(device.getName(),
-                            "电机报警", BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal xt = deviceRepository.countByQty(device.getName(),
-                            "系统报警", BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
-                    ovenDeviceRunVo.setErrorSize(gz.add(aq).add(cw).add(dj).add(xt).intValue());
+//                    BigDecimal aq = deviceRepository.countByQty(device.getName(),
+//                            "安全报警", BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
+//                    BigDecimal cw = deviceRepository.countByQty(device.getName(),
+//                            "超温报警", BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
+//                    BigDecimal dj = deviceRepository.countByQty(device.getName(),
+//                            "电机报警", BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
+//                    BigDecimal xt = deviceRepository.countByQty(device.getName(),
+//                            "系统报警", BigDecimal.ZERO, byDateFrontTimes, byDateLaterTimes);
+//                    ovenDeviceRunVo.setErrorSize(gz.add(aq).add(cw).add(dj).add(xt).intValue());
+                    ovenDeviceRunVo.setErrorSize(gz.intValue());
 
                     ovenDeviceRunVos.add(ovenDeviceRunVo);
                 }
