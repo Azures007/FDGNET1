@@ -13,6 +13,9 @@ import org.thingsboard.server.common.data.mes.sys.TSyncMaterial;
 import org.thingsboard.server.common.data.mes.sys.TSysCodeDsc;
 import org.thingsboard.server.common.data.report.TimeDimensionUtils;
 import org.thingsboard.server.dao.constant.GlobalConstant;
+
+import java.math.RoundingMode;
+import java.util.Map;
 import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.dao.sql.mes.productionBoard.ProductionBoardRepository;
 import org.thingsboard.server.dao.sql.mes.sync.SyncMaterialRepository;
@@ -131,6 +134,208 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
      */
     private BigDecimal getDefectiveProductDataFromNC(String productionLine, String startDate, String endDate) {
         return getBadStockDataByClassification(productionLine, startDate, endDate, "废品");
+    }
+
+    /**
+     * 从NC接口获取按时间分组的废品和次品数据
+     * @param productionLine 生产线ID
+     * @param startDate 开始日期 yyyy-MM-dd
+     * @param endDate 结束日期 yyyy-MM-dd
+     * @param isDay 是否按日分组
+     * @param isWeek 是否按周分组
+     * @return Map<String, Map<String, BigDecimal>> 外层key为时间，内层key为物料分类，value为数量
+     */
+    private Map<String, Map<String, BigDecimal>> getBadStockDataGroupedByTime(String productionLine, String startDate, String endDate, boolean isDay, boolean isWeek) {
+        Map<String, Map<String, BigDecimal>> result = new HashMap<>();
+        
+        try {
+            // 构建请求体
+            Map<String, Object> requestBody = new HashMap<>();
+            if (productionLine != null && !productionLine.trim().isEmpty()) {
+                requestBody.put("cwkid", productionLine);
+            }
+            requestBody.put("startDate", startDate);
+            requestBody.put("endDate", endDate);
+            
+            // 调用NC接口
+            JsonNode dataArray = ncApiClient.postAndGetData(BAD_STOCK_DATA_PATH, requestBody);
+            
+            if (dataArray != null && dataArray.isArray()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                
+                // 遍历数据，按时间和物料分类分组
+                for (JsonNode item : dataArray) {
+                    String code_str = item.has("code") ? item.get("code").asText() : "";
+                    String billdate = item.has("billdate") ? item.get("billdate").asText() : "";
+                    double nnum = item.has("nnum") ? item.get("nnum").asDouble() : 0.0;
+                    
+                    if (code_str != null && !code_str.isEmpty() && billdate != null && !billdate.isEmpty()) {
+                        // 根据物料编码查找物料分类
+                        List<TSyncMaterial> materials = syncMaterialRepository.getByMaterialCode(code_str);
+                        if (materials != null && !materials.isEmpty()) {
+                            TSyncMaterial material = materials.get(0);
+                            String materialClassification = material.getNcMaterialClassification();
+                            
+                            // 只处理废品和返工料
+                            if ("废品".equals(materialClassification) || "返工料".equals(materialClassification)) {
+                                // 根据时间维度生成时间键
+                                String timeKey = generateTimeKey(billdate, isDay, isWeek, sdf);
+                                
+                                if (timeKey != null) {
+                                    // 初始化时间键对应的Map
+                                    result.computeIfAbsent(timeKey, k -> new HashMap<>());
+                                    
+                                    // 累加数量
+                                    BigDecimal currentQuantity = result.get(timeKey).getOrDefault(materialClassification, BigDecimal.ZERO);
+                                    result.get(timeKey).put(materialClassification, currentQuantity.add(BigDecimal.valueOf(nnum)));
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                log.info("成功获取按时间分组的报废料数据，共{}个时间点", result.size());
+            }
+            
+            return result;
+        } catch (Exception e) {
+            log.error("调用按时间分组报废料数据接口异常", e);
+            return result;
+        }
+    }
+    
+    /**
+     * 根据时间维度生成时间键
+     * @param billdate 账单日期 yyyy-MM-dd
+     * @param isDay 是否按日分组
+     * @param isWeek 是否按周分组
+     * @param sdf 日期格式化器
+     * @return 时间键
+     */
+    private String generateTimeKey(String billdate, boolean isDay, boolean isWeek, SimpleDateFormat sdf) {
+        try {
+            Date date = sdf.parse(billdate);
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTime(date);
+            
+            if (isDay) {
+                // 按日：返回 MM-dd 格式
+                SimpleDateFormat dayFormat = new SimpleDateFormat("MM-dd");
+                return dayFormat.format(date);
+            } else if (isWeek) {
+                // 按周：返回 "第X周" 格式
+                int weekOfYear = cal.get(java.util.Calendar.WEEK_OF_YEAR);
+                return "第" + weekOfYear + "周";
+            } else {
+                // 按月：返回 yyyy-MM 格式
+                SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM");
+                return monthFormat.format(date);
+            }
+        } catch (Exception e) {
+            log.error("生成时间键异常，日期: {}", billdate, e);
+            return null;
+        }
+    }
+
+    /**
+     * 获取指定时间段的废料数据
+     * @param productionLine 生产线ID
+     * @param startDate 开始日期 yyyy-MM-dd
+     * @param endDate 结束日期 yyyy-MM-dd
+     * @param worklineIds 允许的生产线ID列表
+     * @return 废料产出分析数据
+     */
+    private WasteOutputAnalysis getWasteDataForPeriod(String productionLine, String startDate, String endDate, List<String> worklineIds) {
+        try {
+            // 1. 从NC接口获取废品重量（物料分类=废品）
+            BigDecimal defectiveWeight = getDefectiveProductDataFromNC(productionLine, startDate, endDate);
+            
+            // 2. 从NC接口获取次品重量（物料分类=返工料）
+            BigDecimal wasteWeight = getBadStockDataFromNC(productionLine, startDate, endDate);
+            
+            // 3. 从数据库获取净含量报工总重量
+            SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date startDateTime = fullSdf.parse(startDate + " 00:00:00");
+            Date endDateTime = fullSdf.parse(endDate + " 23:59:59");
+            
+            BigDecimal netContentWeight = productionBoardRepository.sumNetContentWeightByDateRange(
+                startDateTime, endDateTime, productionLine, worklineIds);
+            
+            // 4. 计算废品率 = 原辅材废品重量 / 净含量报工总重量 * 100%
+            BigDecimal wasteRate = BigDecimal.ZERO;
+            if (netContentWeight != null && netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
+                wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
+                    .multiply(new BigDecimal("100"))
+                    .setScale(2, RoundingMode.HALF_UP);
+            }
+            
+            return new WasteOutputAnalysis(
+                "",  // timeX will be set by caller
+                wasteWeight,  // 次品重量（返工料）
+                defectiveWeight,  // 废料重量（废品）
+                wasteRate  // 废料率（百分比，保留2位小数）
+            );
+            
+        } catch (Exception e) {
+            log.error("获取时间段废料数据异常，开始日期: {}, 结束日期: {}", startDate, endDate, e);
+            return new WasteOutputAnalysis(
+                "",
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO
+            );
+        }
+    }
+
+    /**
+     * 获取指定时间段的废料数据（用于完整时间轴生成）
+     * @param productionLine 生产线ID
+     * @param startDate 开始日期 yyyy-MM-dd
+     * @param endDate 结束日期 yyyy-MM-dd
+     * @param worklineIds 允许的生产线ID列表
+     * @param timeKey 时间键（用于匹配数据库查询结果）
+     * @param netContentMap 净含量数据Map（key为时间，value为净含量）
+     * @return 废料产出分析数据
+     */
+    private WasteOutputAnalysis getWasteDataForTimeAxis(String productionLine, String startDate, String endDate, 
+                                                       List<String> worklineIds, String timeKey, 
+                                                       Map<String, BigDecimal> netContentMap) {
+        try {
+            // 1. 从NC接口获取废品重量（物料分类=废品）
+            // 注意：NC接口不支持按时间分组，这里获取整个时间段的数据
+            // 在实际应用中，可能需要根据业务需求调整
+            BigDecimal defectiveWeight = getDefectiveProductDataFromNC(productionLine, startDate, endDate);
+            
+            // 2. 从NC接口获取次品重量（物料分类=返工料）
+            BigDecimal wasteWeight = getBadStockDataFromNC(productionLine, startDate, endDate);
+            
+            // 3. 从净含量Map中获取对应时间的净含量
+            BigDecimal netContentWeight = netContentMap.getOrDefault(timeKey, BigDecimal.ZERO);
+            
+            // 4. 计算废品率 = 原辅材废品重量 / 净含量报工总重量 * 100%
+            BigDecimal wasteRate = BigDecimal.ZERO;
+            if (netContentWeight != null && netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
+                wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
+                    .multiply(new BigDecimal("100"))
+                    .setScale(2, RoundingMode.HALF_UP);
+            }
+            
+            return new WasteOutputAnalysis(
+                "",  // timeX will be set by caller
+                wasteWeight,  // 次品重量（返工料）
+                defectiveWeight,  // 废料重量（废品）
+                wasteRate  // 废料率（百分比，保留2位小数）
+            );
+            
+        } catch (Exception e) {
+            log.error("获取时间轴废料数据异常，时间键: {}", timeKey, e);
+            return new WasteOutputAnalysis(
+                "",
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO
+            );
+        }
     }
 
     @Override
@@ -423,15 +628,18 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
 
     @Override
     public List<WasteOutputAnalysis> getWasteOutputAnalysis(String productionLine, String dateType, String startDate, String endDate) {
+        // 获取允许的生产线ID列表
+        List<String> worklineIds = getAllowedWorklineIds();
+        if (worklineIds.isEmpty()) {
+            log.warn("用户没有权限访问任何生产线");
+            return new ArrayList<>();
+        }
+        
         String finalStartDate;
         String finalEndDate;
         
-        // 优先使用传入的日期范围
-        if (startDate != null && !startDate.trim().isEmpty() && endDate != null && !endDate.trim().isEmpty()) {
-            finalStartDate = startDate;
-            finalEndDate = endDate;
-        } else if (dateType != null && !dateType.trim().isEmpty()) {
-            // 否则使用时间维度
+        // 解析时间维度
+        if (dateType != null && !dateType.trim().isEmpty()) {
             TimeDimensionUtils.TimeRange timeRange = TimeDimensionUtils.getTimeRange(dateType);
             finalStartDate = timeRange.getStartDate();
             finalEndDate = timeRange.getEndDate();
@@ -444,76 +652,163 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             finalStartDate = sdf.format(cal.getTime());
         }
         
-        // TODO: 实际实现时，使用finalStartDate和finalEndDate查询数据库
-        // 根据dateType返回不同维度的Mock数据
-        List<WasteOutputAnalysis> list = new ArrayList<>();
-        
-        // 判断时间维度
-        boolean isDay = dateType != null && (dateType.contains("日") || dateType.equals("TODAY") || dateType.equals("YESTERDAY"));
-        boolean isWeek = dateType != null && dateType.contains("周");
-        
-        if (isDay) {
-            // 按日维度 - 返回最近5天的数据
-            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            for (int i = 4; i >= 0; i--) {
-                cal.setTime(new Date());
-                cal.add(java.util.Calendar.DAY_OF_MONTH, -i);
-                String dayLabel = sdf.format(cal.getTime());
-                
-                // 生成模拟数据（每天数据有波动）
-                BigDecimal base = new BigDecimal(15 + i * 2);
-                list.add(new WasteOutputAnalysis(
-                    dayLabel,
-                    base.add(new BigDecimal("5")),  // 次品重量
-                    base.add(new BigDecimal("3")),  // 废料重量
-                    base,                            // 包材废品重量
-                    new BigDecimal("0.12").add(new BigDecimal(i * 0.01))  // 废料率
-                ));
-            }
-        } else if (isWeek) {
-            // 按周维度 - 返回最近5周的数据
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            for (int i = 4; i >= 0; i--) {
-                cal.setTime(new Date());
-                cal.add(java.util.Calendar.WEEK_OF_YEAR, -i);
-                
-                // 获取该周的周数
-                int weekOfYear = cal.get(java.util.Calendar.WEEK_OF_YEAR);
-                String weekLabel = "第" + weekOfYear + "周";
-                
-                // 生成模拟数据（每周数据有波动）
-                BigDecimal base = new BigDecimal(80 + i * 10);
-                list.add(new WasteOutputAnalysis(
-                    weekLabel,
-                    base.add(new BigDecimal("20")),  // 次品重量
-                    base.add(new BigDecimal("15")),  // 废料重量
-                    base,                             // 包材废品重量
-                    new BigDecimal("0.15").add(new BigDecimal(i * 0.01))  // 废料率
-                ));
-            }
-        } else {
-            // 按月维度 - 返回最近5个月的数据（默认）
-            SimpleDateFormat sdf = new SimpleDateFormat("M");
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            for (int i = 4; i >= 0; i--) {
-                cal.setTime(new Date());
-                cal.add(java.util.Calendar.MONTH, -i);
-                String monthLabel = sdf.format(cal.getTime()) + "月";
-                
-                // 生成模拟数据（每月数据递增）
-                BigDecimal base = new BigDecimal(100 + (4 - i) * 20);
-                list.add(new WasteOutputAnalysis(
-                    monthLabel,
-                    base.add(new BigDecimal("30")),  // 次品重量
-                    base.add(new BigDecimal("20")),  // 废料重量
-                    base,                             // 包材废品重量
-                    new BigDecimal("0.15").add(new BigDecimal((4 - i) * 0.02))  // 废料率
-                ));
-            }
+        // 优先使用传入的日期范围
+        if (startDate != null && !startDate.trim().isEmpty() && endDate != null && !endDate.trim().isEmpty()) {
+            finalStartDate = startDate;
+            finalEndDate = endDate;
         }
         
-        return list;
+        try {
+            // 将字符串日期转换为Date对象
+            SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date startDateTime = fullSdf.parse(finalStartDate + " 00:00:00");
+            Date endDateTime = fullSdf.parse(finalEndDate + " 23:59:59");
+            
+            // 判断时间维度
+            boolean isDay = dateType != null && (dateType.contains("日") || dateType.equals("TODAY") || dateType.equals("YESTERDAY"));
+            boolean isWeek = dateType != null && dateType.contains("周");
+            
+            // 查询净含量数据（按时间分组）
+            List<Map> netContentResults;
+            if (isDay) {
+                netContentResults = productionBoardRepository.findNetContentWeightByDay(
+                    startDateTime, endDateTime, productionLine, worklineIds);
+            } else if (isWeek) {
+                netContentResults = productionBoardRepository.findNetContentWeightByWeek(
+                    startDateTime, endDateTime, productionLine, worklineIds);
+            } else {
+                netContentResults = productionBoardRepository.findNetContentWeightByMonth(
+                    startDateTime, endDateTime, productionLine, worklineIds);
+            }
+            
+            // 将净含量查询结果转换为Map，key为时间，value为净含量
+            Map<String, BigDecimal> netContentMap = new java.util.HashMap<>();
+            if (netContentResults != null && !netContentResults.isEmpty()) {
+                for (Map row : netContentResults) {
+                    String timeX = (String) row.get("timeX");
+                    BigDecimal netContentWeight = row.get("netContentWeight") != null ? 
+                        new BigDecimal(row.get("netContentWeight").toString()) : BigDecimal.ZERO;
+                    netContentMap.put(timeX, netContentWeight);
+                }
+            }
+            
+            // 获取按时间分组的NC接口数据（废品和次品）
+            Map<String, Map<String, BigDecimal>> ncDataMap = getBadStockDataGroupedByTime(
+                productionLine, finalStartDate, finalEndDate, isDay, isWeek);
+            
+            // 生成完整的时间轴数据
+            List<WasteOutputAnalysis> list = new ArrayList<>();
+            
+            if (isDay) {
+                // 按日生成时间轴
+                SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTime(startDateTime);
+                
+                while (!cal.getTime().after(endDateTime)) {
+                    String timeKey = sdf.format(cal.getTime());
+                    
+                    // 获取该时间点的数据
+                    BigDecimal netContentWeight = netContentMap.getOrDefault(timeKey, BigDecimal.ZERO);
+                    Map<String, BigDecimal> ncData = ncDataMap.getOrDefault(timeKey, new HashMap<>());
+                    BigDecimal defectiveWeight = ncData.getOrDefault("废品", BigDecimal.ZERO);
+                    BigDecimal wasteWeight = ncData.getOrDefault("返工料", BigDecimal.ZERO);
+                    
+                    // 计算废品率
+                    BigDecimal wasteRate = BigDecimal.ZERO;
+                    if (netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
+                        wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
+                            .multiply(new BigDecimal("100"))
+                            .setScale(2, RoundingMode.HALF_UP);
+                    }
+                    
+                    WasteOutputAnalysis analysis = new WasteOutputAnalysis(
+                        timeKey,
+                        wasteWeight,  // 次品重量（返工料）
+                        defectiveWeight,  // 废料重量（废品）
+                        wasteRate  // 废料率
+                    );
+                    
+                    list.add(analysis);
+                    cal.add(java.util.Calendar.DAY_OF_MONTH, 1);
+                }
+            } else if (isWeek) {
+                // 按周生成时间轴
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTime(startDateTime);
+                
+                while (!cal.getTime().after(endDateTime)) {
+                    // 获取该周的周数
+                    int weekOfYear = cal.get(java.util.Calendar.WEEK_OF_YEAR);
+                    String timeKey = "第" + weekOfYear + "周";
+                    
+                    // 获取该时间点的数据
+                    BigDecimal netContentWeight = netContentMap.getOrDefault(timeKey, BigDecimal.ZERO);
+                    Map<String, BigDecimal> ncData = ncDataMap.getOrDefault(timeKey, new HashMap<>());
+                    BigDecimal defectiveWeight = ncData.getOrDefault("废品", BigDecimal.ZERO);
+                    BigDecimal wasteWeight = ncData.getOrDefault("返工料", BigDecimal.ZERO);
+                    
+                    // 计算废品率
+                    BigDecimal wasteRate = BigDecimal.ZERO;
+                    if (netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
+                        wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
+                            .multiply(new BigDecimal("100"))
+                            .setScale(2, RoundingMode.HALF_UP);
+                    }
+                    
+                    WasteOutputAnalysis analysis = new WasteOutputAnalysis(
+                        timeKey,
+                        wasteWeight,  // 次品重量（返工料）
+                        defectiveWeight,  // 废料重量（废品）
+                        wasteRate  // 废料率
+                    );
+                    
+                    list.add(analysis);
+                    cal.add(java.util.Calendar.WEEK_OF_YEAR, 1);
+                }
+            } else {
+                // 按月生成时间轴
+                SimpleDateFormat keyFormat = new SimpleDateFormat("yyyy-MM");
+                SimpleDateFormat displayFormat = new SimpleDateFormat("M");
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTime(startDateTime);
+                
+                while (!cal.getTime().after(endDateTime)) {
+                    String timeKey = keyFormat.format(cal.getTime());
+                    String displayTime = displayFormat.format(cal.getTime()) + "月";
+                    
+                    // 获取该时间点的数据
+                    BigDecimal netContentWeight = netContentMap.getOrDefault(timeKey, BigDecimal.ZERO);
+                    Map<String, BigDecimal> ncData = ncDataMap.getOrDefault(timeKey, new HashMap<>());
+                    BigDecimal defectiveWeight = ncData.getOrDefault("废品", BigDecimal.ZERO);
+                    BigDecimal wasteWeight = ncData.getOrDefault("返工料", BigDecimal.ZERO);
+                    
+                    // 计算废品率
+                    BigDecimal wasteRate = BigDecimal.ZERO;
+                    if (netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
+                        wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
+                            .multiply(new BigDecimal("100"))
+                            .setScale(2, RoundingMode.HALF_UP);
+                    }
+                    
+                    WasteOutputAnalysis analysis = new WasteOutputAnalysis(
+                        displayTime,
+                        wasteWeight,  // 次品重量（返工料）
+                        defectiveWeight,  // 废料重量（废品）
+                        wasteRate  // 废料率
+                    );
+                    
+                    list.add(analysis);
+                    cal.add(java.util.Calendar.MONTH, 1);
+                }
+            }
+            
+            return list;
+            
+        } catch (Exception e) {
+            log.error("获取废料产出分析数据异常", e);
+            return new ArrayList<>();
+        }
     }
 
     @Override

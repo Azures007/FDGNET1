@@ -901,4 +901,121 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
                                                                @Param("endDate") Date endDate,
                                                                @Param("worklineIds") List<String> worklineIds,
                                                                Pageable pageable);
+
+    /**
+     * 汇总指定时间范围内的净含量报工总重量（process_number='GX-011'）
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param productionLine 生产线ID（可选）
+     * @param worklineIds 允许的生产线ID列表
+     * @return 净含量报工总重量
+     */
+    @Query(value = "SELECT COALESCE(SUM(r.record_qty), 0) " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
+           "WHERE h.is_deleted = '0' " +
+           "AND h.bill_type = '普通流程生产订单' " +
+           "AND r.process_number = 'GX-011' " +
+           "AND r.bus_type = 'BG' " +
+           "AND r.record_type = '3' " +
+           "AND r.report_status = '0' " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND h.nc_cwkid IN (:worklineIds) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR))",
+           nativeQuery = true)
+    BigDecimal sumNetContentWeightByDateRange(@Param("startDate") Date startDate,
+                                              @Param("endDate") Date endDate,
+                                              @Param("productionLine") String productionLine,
+                                              @Param("worklineIds") List<String> worklineIds);
+
+    /**
+     * 按日分组查询废料产出分析数据（净含量报工总重量）
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param productionLine 生产线ID（可选）
+     * @param worklineIds 允许的生产线ID列表
+     * @return List<Map> [时间, 净含量报工总重量]
+     */
+    @Query(value = "SELECT TO_CHAR(r.report_time, 'MM-DD') as timeX, " +
+           "COALESCE(SUM(r.record_qty), 0) as netContentWeight " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
+           "WHERE h.is_deleted = '0' " +
+           "AND h.bill_type = '普通流程生产订单' " +
+           "AND r.process_number = 'GX-011' " +
+           "AND r.bus_type = 'BG' " +
+           "AND r.record_type = '3' " +
+           "AND r.report_status = '0' " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND h.nc_cwkid IN (:worklineIds) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
+           "GROUP BY TO_CHAR(r.report_time, 'MM-DD') " +
+           "ORDER BY TO_CHAR(r.report_time, 'MM-DD')",
+           nativeQuery = true)
+    List<Map> findNetContentWeightByDay(@Param("startDate") Date startDate,
+                                        @Param("endDate") Date endDate,
+                                        @Param("productionLine") String productionLine,
+                                        @Param("worklineIds") List<String> worklineIds);
+
+    /**
+     * 按月分组查询废料产出分析数据（净含量报工总重量）
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param productionLine 生产线ID（可选）
+     * @param worklineIds 允许的生产线ID列表
+     * @return List<Map> [时间, 净含量报工总重量]
+     */
+    @Query(value = "SELECT TO_CHAR(r.report_time, 'YYYY-MM') as timeX, " +
+           "COALESCE(SUM(r.record_qty), 0) as netContentWeight " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
+           "WHERE h.is_deleted = '0' " +
+           "AND h.bill_type = '普通流程生产订单' " +
+           "AND r.process_number = 'GX-011' " +
+           "AND r.bus_type = 'BG' " +
+           "AND r.record_type = '3' " +
+           "AND r.report_status = '0' " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND h.nc_cwkid IN (:worklineIds) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
+           "GROUP BY TO_CHAR(r.report_time, 'YYYY-MM') " +
+           "ORDER BY TO_CHAR(r.report_time, 'YYYY-MM')",
+           nativeQuery = true)
+    List<Map> findNetContentWeightByMonth(@Param("startDate") Date startDate,
+                                          @Param("endDate") Date endDate,
+                                          @Param("productionLine") String productionLine,
+                                          @Param("worklineIds") List<String> worklineIds);
+
+    /**
+     * 按周分组查询废料产出分析数据（净含量报工总重量）
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param productionLine 生产线ID（可选）
+     * @param worklineIds 允许的生产线ID列表
+     * @return List<Map> [时间, 净含量报工总重量]
+     */
+    @Query(value = "SELECT CONCAT('第', TO_CHAR(r.report_time, 'WW'), '周') as timeX, " +
+           "COALESCE(SUM(r.record_qty), 0) as netContentWeight " +
+           "FROM t_bus_order_head h " +
+           "JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
+           "WHERE h.is_deleted = '0' " +
+           "AND h.bill_type = '普通流程生产订单' " +
+           "AND r.process_number = 'GX-011' " +
+           "AND r.bus_type = 'BG' " +
+           "AND r.record_type = '3' " +
+           "AND r.report_status = '0' " +
+           "AND r.report_time >= :startDate " +
+           "AND r.report_time <= :endDate " +
+           "AND h.nc_cwkid IN (:worklineIds) " +
+           "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
+           "GROUP BY TO_CHAR(r.report_time, 'WW') " +
+           "ORDER BY TO_CHAR(r.report_time, 'WW')",
+           nativeQuery = true)
+    List<Map> findNetContentWeightByWeek(@Param("startDate") Date startDate,
+                                         @Param("endDate") Date endDate,
+                                         @Param("productionLine") String productionLine,
+                                         @Param("worklineIds") List<String> worklineIds);
 }

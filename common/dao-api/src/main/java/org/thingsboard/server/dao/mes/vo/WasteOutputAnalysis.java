@@ -20,13 +20,10 @@ public class WasteOutputAnalysis {
     @ApiModelProperty("时间")
     private String timeX;
 
-    @ApiModelProperty("包材重量")
-    private BigDecimal packWeight;
-
-    @ApiModelProperty("原辅材废品重量")
+    @ApiModelProperty("原辅材次品重量")
     private BigDecimal wasteWeight;
 
-    @ApiModelProperty("原辅材次品重量")
+    @ApiModelProperty("原辅材废品重量")
     private BigDecimal rejectWeight;
 
     @ApiModelProperty("废料率(%)")
