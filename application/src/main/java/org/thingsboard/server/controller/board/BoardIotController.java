@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import org.thingsboard.server.common.data.web.ResponseResult;
 import org.thingsboard.server.common.data.web.ResultUtil;
 import org.thingsboard.server.controller.BaseController;
+import org.thingsboard.server.dao.constant.GlobalConstant;
 import org.thingsboard.server.dao.mes.dto.IotDeviceDto;
 import org.thingsboard.server.dao.mes.dto.ListSellpOvenDto;
 import org.thingsboard.server.dao.mes.vo.*;
 import org.thingsboard.server.service.TSysDevice.TSysDeviceExcelService;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -110,6 +112,22 @@ public class BoardIotController extends BaseController {
                     .fourDownTempBoard(boardService.lineSellp(deviceCode, "四区下温度",
                             "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
                             simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .overOneUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最大值"))
+                    .overOneUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最小值"))
+                    .overOneDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区下温度最大值"))
+                    .overOneDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区下温度最小值"))
+                    .overTwoUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最大值"))
+                    .overTwoUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最小值"))
+                    .overTwoDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区下温度最大值"))
+                    .overTwoDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区下温度最小值"))
+                    .overThreeUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最大值"))
+                    .overThreeUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最小值"))
+                    .overThreeDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区下温度最大值"))
+                    .overThreeDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区下温度最小值"))
+                    .overFourUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最大值"))
+                    .overFourUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最小值"))
+                    .overFourDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区下温度最大值"))
+                    .overFourDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区下温度最小值"))
                     .build();
             listSellpOvenVos.add(listSellpOvenVo);
         }else {
@@ -142,7 +160,24 @@ public class BoardIotController extends BaseController {
                         .fourDownTempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "四区下温度",
                                 "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
                                 simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .overOneUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最大值"))
+                        .overOneUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区上温度最小值"))
+                        .overOneDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区下温度最大值"))
+                        .overOneDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "一区下温度最小值"))
+                        .overTwoUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最大值"))
+                        .overTwoUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区上温度最小值"))
+                        .overTwoDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区下温度最大值"))
+                        .overTwoDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "二区下温度最小值"))
+                        .overThreeUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最大值"))
+                        .overThreeUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区上温度最小值"))
+                        .overThreeDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区下温度最大值"))
+                        .overThreeDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "三区下温度最小值"))
+                        .overFourUpMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最大值"))
+                        .overFourUpMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区上温度最小值"))
+                        .overFourDownMaxTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区下温度最大值"))
+                        .overFourDownMinTemp(GlobalConstant.getCodeDscName("iot_over_error", "四区下温度最小值"))
                         .build();
+
                 listSellpOvenVos.add(listSellpOvenVo);
             }
         }
@@ -167,7 +202,13 @@ public class BoardIotController extends BaseController {
                     .hempBoard(boardService.lineSellp(listSellpOvenDto.getDeviceName(), "湿度",
                             "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
                             simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                    .inMaxTemp(new BigDecimal(GlobalConstant.getCodeDscName("iot_temp", deviceCode)))
+                    .inMinTemp(new BigDecimal(GlobalConstant.getCodeDscName("in_min_temp", deviceCode)))
+                    .inMaxHemp(new BigDecimal(GlobalConstant.getCodeDscName("iot_hemp", deviceCode)))
+                    .inMinHemp(new BigDecimal(GlobalConstant.getCodeDscName("in_min_hemp", deviceCode)))
+
                     .build();
+
             listSellpTANSensorVos.add(listSellpTANSensorVo);
         }else {
             List<ListDeviceIotVo> listDeviceIotVos=boardService.listDeviceIot("TANSensor");
@@ -181,6 +222,10 @@ public class BoardIotController extends BaseController {
                         .hempBoard(boardService.lineSellp(listDeviceIotVo.getDeviceCode(), "湿度",
                                 "dbl",simpleDateFormat.parse(byDate+" 00:00:00").getTime(),
                                 simpleDateFormat.parse(byDate+" 23:59:59").getTime()))
+                        .inMaxTemp(new BigDecimal(GlobalConstant.getCodeDscName("iot_temp", listDeviceIotVo.getDeviceCode())))
+                        .inMinTemp(new BigDecimal(GlobalConstant.getCodeDscName("in_min_temp", listDeviceIotVo.getDeviceCode())))
+                        .inMaxHemp(new BigDecimal(GlobalConstant.getCodeDscName("iot_hemp", listDeviceIotVo.getDeviceCode())))
+                        .inMinHemp(new BigDecimal(GlobalConstant.getCodeDscName("in_min_hemp", listDeviceIotVo.getDeviceCode())))
                         .build();
                 listSellpTANSensorVos.add(listSellpTANSensorVo);
             }

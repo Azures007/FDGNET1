@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -26,5 +27,17 @@ public class ListSellpTANSensorVo {
 
     @ApiModelProperty("一区下半区温度列表")
     private List<BoardDataDevice> hempBoard;
+
+    @ApiModelProperty("设置的最大温度")
+    private BigDecimal inMaxTemp;
+
+    @ApiModelProperty("设置的最小温度")
+    private BigDecimal inMinTemp;
+
+    @ApiModelProperty("设置的最大湿度")
+    private BigDecimal inMaxHemp;
+
+    @ApiModelProperty("设置的最小湿度")
+    private BigDecimal inMinHemp;
 
 }
