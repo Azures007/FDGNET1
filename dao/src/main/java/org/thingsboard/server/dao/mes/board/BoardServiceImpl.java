@@ -696,6 +696,10 @@ public class BoardServiceImpl implements BoardService {
                     }
 
                     BigDecimal tempSize = deviceRepository.countByQty(device.getName(), "温度", inTepmSize, byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal tempminSize = deviceRepository.countMinByQty(device.getName(), "温度",
+                            new BigDecimal(GlobalConstant.getCodeDscName("in_min_temp",device.getName())),
+                            byDateFrontTimes, byDateLaterTimes);
+                    tempSize=tempSize.add(tempminSize);
                     tanSensorDeviceRunVo.setTempSize(tempSize);
 
                     BigDecimal tempSuccess = countTepmSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0")
@@ -727,10 +731,17 @@ public class BoardServiceImpl implements BoardService {
                     BigDecimal countHepmSize = deviceRepository.countQtyByMykey(device.getName(),
                             "湿度", byDateFrontTimes, byDateLaterTimes);
 
+                    //湿度超标次数
                     BigDecimal hempSize = deviceRepository.countByQty(device.getName(), "湿度", inHepmSize, byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal hempminSize = deviceRepository.countMinByQty(device.getName(), "湿度",
+                            new BigDecimal(GlobalConstant.getCodeDscName("in_min_hemp",device.getName())),
+                            byDateFrontTimes, byDateLaterTimes);
+                    hempSize=hempSize.add(hempminSize);
                     tanSensorDeviceRunVo.setHempSize(hempSize);
+
                     BigDecimal hempSuccess = (countHepmSize.subtract(hempSize));
-                    hempSuccess = hempSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0") : hempSuccess.divide(countHepmSize, 4, RoundingMode.HALF_UP);
+                    hempSuccess = hempSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0") :
+                            countHepmSize.subtract(hempSuccess).divide(countHepmSize, 4, RoundingMode.HALF_UP);
                     tanSensorDeviceRunVo.setHempSuccess(hempSuccess.multiply(new BigDecimal("100")));
 
                     tanSensorDeviceRunVos.add(tanSensorDeviceRunVo);
