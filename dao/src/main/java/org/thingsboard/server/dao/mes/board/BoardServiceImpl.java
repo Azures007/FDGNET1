@@ -743,10 +743,10 @@ public class BoardServiceImpl implements BoardService {
 
                     //湿度超标次数
                     BigDecimal hempSize = deviceRepository.countByQty(device.getName(), "湿度", inHepmSize, byDateFrontTimes, byDateLaterTimes);
-                    BigDecimal hempminSize = deviceRepository.countMinByQty(device.getName(), "湿度",
-                            new BigDecimal(GlobalConstant.getCodeDscName("in_min_hemp",device.getName())),
-                            byDateFrontTimes, byDateLaterTimes);
-                    hempSize=hempSize.add(hempminSize);
+//                    BigDecimal hempminSize = deviceRepository.countMinByQty(device.getName(), "湿度",
+//                            new BigDecimal(GlobalConstant.getCodeDscName("in_min_hemp",device.getName())),
+//                            byDateFrontTimes, byDateLaterTimes);
+//                    hempSize=hempSize.add(hempminSize);
                     tanSensorDeviceRunVo.setHempSize(hempSize);
 
                     BigDecimal hempSuccess = (countHepmSize.subtract(hempSize));
