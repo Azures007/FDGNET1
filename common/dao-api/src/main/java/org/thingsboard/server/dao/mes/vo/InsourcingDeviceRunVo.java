@@ -59,9 +59,9 @@ public class InsourcingDeviceRunVo extends BaseRowModel {
     @ApiModelProperty("平均温度")
     private BigDecimal avgTemp;
 
-    @ExcelIgnore
+    @ExcelProperty(value = "超标次数", index = 8)
     @ApiModelProperty("超标次数")
-    private Integer overSize;
+    private BigDecimal overSize;
 
     @ExcelIgnore
     @ApiModelProperty("温度达标率")

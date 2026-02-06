@@ -162,6 +162,8 @@ public class BoardServiceImpl implements BoardService {
                 BigDecimal deviceHz = deviceRepository.listDeviceKvLatest(map.get("name").toString(), "热风频率");
                 //速度
                 BigDecimal deviceSd = deviceRepository.listDeviceKvLatest(map.get("name").toString(), "速度");
+
+
                 listDeviceIotVo = ListDeviceIotVo.builder()
                         .deviceCode(map.get("name").toString())
                         .deviceName(map.get("label").toString())
@@ -595,7 +597,15 @@ public class BoardServiceImpl implements BoardService {
                     BigDecimal minPieceQty = deviceRepository.minQtyByMykey(device.getName(),
                             "包装件数", byDateFrontTimes, byDateLaterTimes);
                     insourcingDeviceRunVo.setPieceQty(maxPieceQty.subtract(minPieceQty));
-                    insourcingDeviceRunVo.setOverSize(0);
+                    //超标次数
+                    BigDecimal sellpSize = deviceRepository.countByQty(device.getName(), "速度",
+                            new BigDecimal(GlobalConstant.getCodeDscName("in_iot_sellp_max",device.getName())), byDateFrontTimes, byDateLaterTimes);
+                    BigDecimal sellpminSize = deviceRepository.countMinByQty(device.getName(), "速度",
+                            new BigDecimal(GlobalConstant.getCodeDscName("in_iot_sellp_min",device.getName())),
+                            byDateFrontTimes, byDateLaterTimes);
+                    sellpSize=sellpSize.add(sellpminSize);
+
+                    insourcingDeviceRunVo.setOverSize(sellpSize);
                     insourcingDeviceRunVo.setTempSuccess(new BigDecimal("0"));
                     insourcingDeviceRunVos.add(insourcingDeviceRunVo);
                 }
@@ -741,7 +751,7 @@ public class BoardServiceImpl implements BoardService {
 
                     BigDecimal hempSuccess = (countHepmSize.subtract(hempSize));
                     hempSuccess = hempSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0") :
-                            countHepmSize.subtract(hempSuccess).divide(countHepmSize, 4, RoundingMode.HALF_UP);
+                            countHepmSize.subtract(hempSize).divide(countHepmSize, 4, RoundingMode.HALF_UP);
                     tanSensorDeviceRunVo.setHempSuccess(hempSuccess.multiply(new BigDecimal("100")));
 
                     tanSensorDeviceRunVos.add(tanSensorDeviceRunVo);
