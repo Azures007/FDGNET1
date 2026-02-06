@@ -277,3 +277,7 @@ INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_i
 INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br, menu_icon) VALUES(261, '内包机设备看板', '', '/bi/package', '0', 255, '1', '2026-01-13', 'tenant@thingsboard.org', '2026-01-13', 'tenant@thingsboard.org', 'link', '', 2, '内包机设备看板', NULL);
 INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br, menu_icon) VALUES(262, '烤炉设备看板', '', '/bi/oven', '0', 255, '1', '2026-01-13', 'tenant@thingsboard.org', '2026-01-13', 'tenant@thingsboard.org', 'link', '', 3, '烤炉设备看板', NULL);
 
+-- 设备数采记录
+INSERT INTO t_sys_menu (menu_id, menu_name, menu_explain, "path", flag, parent_id, enabled, created_time, created_name, updated_time, updated_name, menu_type, skip_url, sort, br, menu_icon) VALUES(263, '设备数采记录', '', '/device-iot', '0', 0, '1', '2026-02-04', 'tenant@thingsboard.org', '2026-02-04', 'tenant@thingsboard.org', 'link', '', 154, '设备数采记录', NULL);
+-- 修改菜单表的序列号
+-- SELECT setval('t_sys_menu_menu_id_seq', 263);
