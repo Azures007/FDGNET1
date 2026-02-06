@@ -126,6 +126,22 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
     }
     
     /**
+     * 标准化日期字符串，提取日期部分（去除时间部分）
+     * @param dateStr 日期字符串，可能包含时间部分
+     * @return 标准化后的日期字符串 yyyy-MM-dd
+     */
+    private String normalizeDateString(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            return dateStr;
+        }
+        // 如果包含空格（说明有时间部分），只取日期部分
+        if (dateStr.contains(" ")) {
+            return dateStr.split(" ")[0];
+        }
+        return dateStr;
+    }
+    
+    /**
      * 从NC接口获取废品数据
      * @param productionLine 生产线ID
      * @param startDate 开始日期 yyyy-MM-dd
@@ -359,6 +375,10 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             finalEndDate = timeRange.getEndDate();
         }
         
+        // 标准化日期字符串，去除可能的时间部分
+        finalStartDate = normalizeDateString(finalStartDate);
+        finalEndDate = normalizeDateString(finalEndDate);
+        
         ProductionStatistics stats = new ProductionStatistics();
         
         try {
@@ -507,6 +527,10 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             finalStartDate = startDate;
             finalEndDate = endDate;
         }
+        
+        // 标准化日期字符串，去除可能的时间部分
+        finalStartDate = normalizeDateString(finalStartDate);
+        finalEndDate = normalizeDateString(finalEndDate);
         try {
             // 将字符串日期转换为Date对象
             SimpleDateFormat fullSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -657,6 +681,10 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
             finalStartDate = startDate;
             finalEndDate = endDate;
         }
+        
+        // 标准化日期字符串，去除可能的时间部分
+        finalStartDate = normalizeDateString(finalStartDate);
+        finalEndDate = normalizeDateString(finalEndDate);
         
         try {
             // 将字符串日期转换为Date对象
