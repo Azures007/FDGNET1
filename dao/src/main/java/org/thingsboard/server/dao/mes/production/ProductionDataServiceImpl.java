@@ -116,31 +116,20 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                 fillBaseInfo(vo, data, groupKey);
                 voList.add(vo);
             } else {
-                // 过滤掉单位为 EA 的投入信息
-                List<InputMaterialItem> filteredItems = materialItems.stream()
-                        .filter(item -> !"EA".equalsIgnoreCase(item.getRecordUnit()))
-                        .collect(Collectors.toList());
-                
-                // 如果过滤后为空，至少保留一条空记录
-                if (filteredItems.isEmpty()) {
+                // 显示所有投入信息（不做过滤）
+                for (InputMaterialItem materialItem : materialItems) {
                     ProductionDataExcelVo vo = new ProductionDataExcelVo();
                     fillBaseInfo(vo, data, groupKey);
+                    
+                    // 投入信息
+                    vo.setMaterialNumber(materialItem.getMaterialNumber());
+                    vo.setMaterialName(materialItem.getMaterialName());
+                    vo.setRecordType(materialItem.getRecordType());
+                    vo.setRecordUnit(materialItem.getRecordUnit());
+                    vo.setPlannedInput(materialItem.getPlannedInput() != null ? materialItem.getPlannedInput() : "0.000");
+                    vo.setActualInput(materialItem.getActualInput() != null ? materialItem.getActualInput() : "0.000");
+                    
                     voList.add(vo);
-                } else {
-                    for (InputMaterialItem materialItem : filteredItems) {
-                        ProductionDataExcelVo vo = new ProductionDataExcelVo();
-                        fillBaseInfo(vo, data, groupKey);
-                        
-                        // 投入信息
-                        vo.setMaterialNumber(materialItem.getMaterialNumber());
-                        vo.setMaterialName(materialItem.getMaterialName());
-                        vo.setRecordType(materialItem.getRecordType());
-                        vo.setRecordUnit(materialItem.getRecordUnit());
-                        vo.setPlannedInput(materialItem.getPlannedInput() != null ? materialItem.getPlannedInput() : "0.000");
-                        vo.setActualInput(materialItem.getActualInput() != null ? materialItem.getActualInput() : "0.000");
-                        
-                        voList.add(vo);
-                    }
                 }
             }
             return voList.stream();
@@ -458,25 +447,24 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                     productionData.setProductionLine(productionLine);
                     productionData.setDate(date);
         
-                    // --- 1. 处理投入信息 (合并处理该分组下所有订单的投入，包括周转订单和成品订单) ---
+                    // --- 1. 处理投入信息 (只取周转类型订单的投入) ---
                     List<InputMaterialItem> inputMaterialItems = new ArrayList<>();
                     BigDecimal totalActualInputSum = BigDecimal.ZERO;
                     BigDecimal rawMaterialInputSum = BigDecimal.ZERO;
         
-                    if (!ordersInGroup.isEmpty()) {
-                        // 计划投入聚合
+                    if (!turnoverOrders.isEmpty()) {
+                        // 只处理周转订单的投入信息
                         Map<String, BigDecimal> materialPlannedInputMap = new HashMap<>();
-                        // 实际投入聚合 (从 DB 聚合结果中取)
                         Map<String, BigDecimal> materialActualInputMap = new HashMap<>();
-                        Map<String, String[]> matMetadataMap = new HashMap<>(); // matNum -> [name, unit, type]
+                        Map<String, String[]> matMetadataMap = new HashMap<>();
         
-                        for (TBusOrderHead o : ordersInGroup) {
+                        for (TBusOrderHead o : turnoverOrders) {
                             String oNo = o.getOrderNo();
-                            // 计划
+                            // 计划投入
                             Map<String, BigDecimal> boms = orderPlannedInputMap.get(oNo);
                             if (boms != null) boms.forEach((num, q) -> materialPlannedInputMap.merge(num, q, BigDecimal::add));
                                     
-                            // 实际
+                            // 实际投入
                             List<Object[]> aggs = actualInputAggMap.get(oNo);
                             if (aggs != null) {
                                 for (Object[] row : aggs) {
@@ -515,19 +503,20 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                             inputMaterialItems.add(item);
                         }
                     } else {
-                        // 占位符
+                        // 没有周转订单时的占位符
                         InputMaterialItem p = new InputMaterialItem();
                         p.setMaterialNumber("-"); p.setMaterialName("-"); p.setRecordType("-"); p.setRecordUnit("-"); p.setPlannedInput("-"); p.setActualInput("-");
                         inputMaterialItems.add(p);
                     }
                     productionData.setInputMaterialItems(inputMaterialItems);
         
-                    // --- 2. 处理产出信息 (成品订单) ---
+                    // --- 2. 处理产出信息 (只取成品类型订单的数据) ---
                     if (!finishedOrders.isEmpty()) {
                         BigDecimal totalPlannedOut = BigDecimal.ZERO;
                         BigDecimal totalActualOut = BigDecimal.ZERO;
                         BigDecimal totalNetWeight = BigDecimal.ZERO;
         
+                        // 只处理成品订单的产出信息
                         for (TBusOrderHead order : finishedOrders) {
                             String oNo = order.getOrderNo();
                             totalPlannedOut = totalPlannedOut.add(order.getBodyPlanPrdQty() != null ? order.getBodyPlanPrdQty() : BigDecimal.ZERO);
@@ -545,25 +534,31 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                         productionData.setActualOutput(totalActualOut.setScale(3, BigDecimal.ROUND_HALF_UP).toString());
                         productionData.setNetContentWeight(totalNetWeight.setScale(3, BigDecimal.ROUND_HALF_UP).toString());
                         
-                        // 从批量获取的废次品数据缓存中获取，避免N+1查询
+                        // 从批量获取的废次品数据缓存中获取，基于成品订单数据
                         BigDecimal defectiveWeight = defectiveWeightMap.getOrDefault(groupKey, BigDecimal.ZERO);
                         productionData.setDefectiveWeight(defectiveWeight.setScale(3, BigDecimal.ROUND_HALF_UP).toString());
                         
-                        // 计算废次品比率 = 废次品重量 / (净含量重量 + 废次品重量) * 100%，保留两位百分小数
+                        // 计算废次品比率 = 废次品重量 / (净含量重量 + 废次品重量) * 100%
                         BigDecimal defectiveRate = calculateDefectiveRate(defectiveWeight, totalNetWeight);
                         productionData.setDefectiveRate(defectiveRate.toString());
         
-                        if (totalNetWeight.compareTo(BigDecimal.ZERO) > 0) {
+                        // 投入产出比基于周转订单的投入和成品订单的产出计算
+                        if (totalNetWeight.compareTo(BigDecimal.ZERO) > 0 && totalActualInputSum.compareTo(BigDecimal.ZERO) > 0) {
                             productionData.setInputOutputRatio(totalActualInputSum.divide(totalNetWeight, 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(3, BigDecimal.ROUND_HALF_UP).toString());
                         } else productionData.setInputOutputRatio("-");
         
-                        if (totalActualOut.compareTo(BigDecimal.ZERO) > 0) {
+                        if (totalActualOut.compareTo(BigDecimal.ZERO) > 0 && rawMaterialInputSum.compareTo(BigDecimal.ZERO) > 0) {
                             productionData.setMaterialConsumptionPerBox(rawMaterialInputSum.divide(totalActualOut, 4, BigDecimal.ROUND_HALF_UP).setScale(3, BigDecimal.ROUND_HALF_UP).toString());
                         } else productionData.setMaterialConsumptionPerBox("-");
                     } else {
-                        productionData.setPlannedOutput("-"); productionData.setActualOutput("-"); productionData.setNetContentWeight("-");
-                        productionData.setDefectiveWeight("-"); productionData.setInputOutputRatio("-");
-                        productionData.setMaterialConsumptionPerBox("-"); productionData.setDefectiveRate("-");
+                        // 没有成品订单时的默认值
+                        productionData.setPlannedOutput("-"); 
+                        productionData.setActualOutput("-"); 
+                        productionData.setNetContentWeight("-");
+                        productionData.setDefectiveWeight("-"); 
+                        productionData.setInputOutputRatio("-");
+                        productionData.setMaterialConsumptionPerBox("-"); 
+                        productionData.setDefectiveRate("-");
                     }
         
                     return productionData;
@@ -571,26 +566,7 @@ public class ProductionDataServiceImpl implements ProductionDataService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     
-        // 过滤掉单位为 EA 的投入信息
-        for (ProductionData productionData : pagedResult) {
-            if (productionData.getInputMaterialItems() != null && !productionData.getInputMaterialItems().isEmpty()) {
-                List<InputMaterialItem> filteredItems = productionData.getInputMaterialItems().stream()
-                        .filter(item -> !"EA".equalsIgnoreCase(item.getRecordUnit()))
-                        .collect(Collectors.toList());
-                // 如果过滤后为空，保留一个占位符
-                if (filteredItems.isEmpty()) {
-                    InputMaterialItem placeholder = new InputMaterialItem();
-                    placeholder.setMaterialNumber("-");
-                    placeholder.setMaterialName("-");
-                    placeholder.setRecordType("-");
-                    placeholder.setRecordUnit("-");
-                    placeholder.setPlannedInput("-");
-                    placeholder.setActualInput("-");
-                    filteredItems.add(placeholder);
-                }
-                productionData.setInputMaterialItems(filteredItems);
-            }
-        }
+        // 不对投入信息进行额外过滤，保持原有逻辑
         
         // 构建分页结果
         PageVo<ProductionData> pageResult = new PageVo<>();
