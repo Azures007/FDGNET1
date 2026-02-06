@@ -750,7 +750,7 @@ public class BoardServiceImpl implements BoardService {
                     tanSensorDeviceRunVo.setHempSize(hempSize);
 
                     BigDecimal hempSuccess = (countHepmSize.subtract(hempSize));
-                    hempSuccess = hempSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0") :
+                    hempSuccess = countHepmSize.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal("0") :
                             countHepmSize.subtract(hempSize).divide(countHepmSize, 4, RoundingMode.HALF_UP);
                     tanSensorDeviceRunVo.setHempSuccess(hempSuccess.multiply(new BigDecimal("100")));
 
