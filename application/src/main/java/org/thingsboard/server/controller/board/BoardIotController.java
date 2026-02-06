@@ -48,7 +48,7 @@ public class BoardIotController extends BaseController {
                                                  @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                  @RequestBody IotDeviceDto iotDeviceDto,
                                                  HttpServletResponse response){
-        PageVo<IotDeviceAndOvenVo> pageVo=boardService.listIotDeviceAndOven(current,size,iotDeviceDto);
+        PageVo<IotDeviceAndOvenVo> pageVo=boardService.listIotDeviceAndOven(0,1000000,iotDeviceDto);
         List<IotDeviceAndOvenVo> list = pageVo.getList();
         downloadService.exportIotDeviceAndOven(response,list);
         return ResultUtil.success();
@@ -65,13 +65,13 @@ public class BoardIotController extends BaseController {
     }
 
 
-    @ApiOperation("设备数采报表---温湿仪")
+    @ApiOperation("设备数采报表---温湿仪(导出)")
     @PostMapping("/exportIotDeviceAndTANS")
     public ResponseResult exportIotDeviceAndTANS(@RequestParam(value = "current", defaultValue = "0") Integer current,
                                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                            @RequestBody IotDeviceDto iotDeviceDto,
                                                HttpServletResponse response){
-        PageVo<IotDeviceAndTANSVo> pageVo=boardService.listIotDeviceAndTANS(current,size,iotDeviceDto);
+        PageVo<IotDeviceAndTANSVo> pageVo=boardService.listIotDeviceAndTANS(0,100000,iotDeviceDto);
         List<IotDeviceAndTANSVo> list = pageVo.getList();
         downloadService.exportIotDeviceAndTANS(response,list);
         return ResultUtil.success();
