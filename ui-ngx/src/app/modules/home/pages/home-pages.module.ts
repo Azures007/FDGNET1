@@ -60,6 +60,7 @@ import { RecipeModule } from '@home/pages/recipe/recipe.module';
 import { ReportRecordModule } from '@home/pages/report-record/report-record.module';
 import { BiModule } from '@home/pages/bi/bi.module';
 import { StatisticsModule } from '@home/pages/statistics/statistics.module';
+import { DeviceIotModule } from '@home/pages/device-iot/device-iot.module';
 
 
 
@@ -103,7 +104,8 @@ import { StatisticsModule } from '@home/pages/statistics/statistics.module';
     RecipeModule,
     ReportRecordModule,
     BiModule,
-    StatisticsModule
+    StatisticsModule,
+    DeviceIotModule
   ],
   providers: [
     {

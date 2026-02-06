@@ -1,0 +1,183 @@
+<div class="page-container flex-column">
+  <div class="page-header">
+
+    <div class="row-block cols4" *ngIf="!isChart">
+      <label class="label">运行日期</label>
+      <mat-form-field appearance="fill" class="dateRange">
+        <mat-date-range-input [formGroup]="pdRange" [rangePicker]="picker">
+          <input readonly formControlName="start" matStartDate placeholder="开始日期">
+          <input readonly formControlName="end" matEndDate placeholder="结束日期">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker fontSize="12" #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+    <div class="row-block cols4" *ngIf="isChart">
+      <label class="label">运行日期</label>
+      <mat-form-field appearance="fill" class="dateRange" [formGroup]="pdRange">
+        <input readonly formControlName="date" matInput [matDatepicker]="datepicker">
+        <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+        <mat-datepicker #datepicker fontSize="12"></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="row-block cols4">
+      <label class="label">设备名称</label>
+      <select [(ngModel)]="searchFormGroup.value.deviceCode">
+        <option *ngFor="let deviceItem of deviceList" [value]="deviceItem.deviceCode">
+          {{deviceItem.deviceName}}
+        </option>
+      </select>
+    </div>
+
+    <div class="row-block cols4">
+      <label class="label"></label>
+      <div class="btn-group">
+        <button class="search_btn" (click)="getTableData()">
+          <mat-icon>search</mat-icon>查询
+        </button>
+        <button class="search_btn" (click)="reset()">
+          <mat-icon>refresh</mat-icon>重置
+        </button>
+        <button class="search_btn" (click)="export()" *ngIf="!isChart">
+          <mat-icon>vertical_align_bottom</mat-icon>导出
+        </button>
+      </div>
+
+    </div>
+
+
+  </div>
+  <div class="tags">
+    <div class="tags-wrapper">
+      <div class="tag" (click)="changeTable('Oven')" [ngClass]="{'active': curTable === 'Oven'}">
+        烤炉
+      </div>
+      <div class="tag" (click)="changeTable('TANSensor')" [ngClass]="{'active': curTable === 'TANSensor'}">
+        温湿度监测
+      </div>
+    </div>
+    <div class="tags-wrapper">
+      <div class="tag" (click)="changeChart(true)" *ngIf="!isChart">
+        切换图表
+      </div>
+      <div class="tag" (click)="changeChart(false)" *ngIf="isChart">
+        切换记录
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content" *ngIf="curTable === 'Oven' && !isChart">
+   <!-- 原生table渲染 -->
+    <table class="table" align="center">
+      <thead>
+        <tr>
+          <th>运行日期</th>
+          <th>采集时间</th>
+          <th>设备编号</th>
+          <th>设备名称</th>
+          <!-- <th>运行时间</th> -->
+          <th>1区上半区温度(℃)</th>
+          <th>1区下半区温度(℃)</th>
+          <th>2区上半区温度(℃)</th>
+          <th>2区下半区温度(℃)</th>
+          <th>3区上半区温度(℃)</th>
+          <th>3区下半区温度(℃)</th>
+          <th>4区上半区温度(℃)</th>
+          <th>4区下半区温度(℃)</th>
+          <th>循环风机1</th>
+          <th>循环风机2</th>
+          <th>鼓风机</th>
+          <th>速度(包)</th>
+          <th>是否故障</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of dataSource">
+          <td>{{item.byDateDates}}</td>
+          <td>{{item.byDateTimes}}</td>
+          <td>{{item.deviceCode}}</td>
+          <td>{{item.deviceName}}</td>
+          <!-- <td>{{item.byTs}}</td> -->
+          <td>{{item.upOneTemp}}</td>
+          <td>{{item.downOneTemp}}</td>
+          <td>{{item.upTwoTemp}}</td>
+          <td>{{item.downTwoTemp}}</td>
+          <td>{{item.upThreeTemp}}</td>
+          <td>{{item.downThreeTemp}}</td>
+          <td>{{item.upFourTemp}}</td>
+          <td>{{item.downFourTemp}}</td>
+          <td>{{item.oneFan}}</td>
+          <td>{{item.twoFan}}</td>
+          <td>{{item.airFan}}</td>
+          <td>{{item.bySellp}}</td>
+          <td>{{item.byGzBr}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="page-content" *ngIf="curTable === 'TANSensor' && !isChart">
+   <!-- 原生table渲染 -->
+    <table class="table" align="center">
+      <thead>
+        <tr>
+          <th>运行日期</th>
+          <th>采集时间</th>
+          <th>设备编号</th>
+          <th>设备名称</th>
+          <!-- <th>运行时间</th> -->
+          <th>温度(℃)</th>
+          <th>湿度(%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of dataSource">
+          <td>{{item.byDateDates}}</td>
+          <td>{{item.byDateTimes}}</td>
+          <td>{{item.deviceCode}}</td>
+          <td>{{item.deviceName}}</td>
+          <!-- <td>{{item.byTs}}</td> -->
+          <td>{{item.byTemp}}</td>
+          <td>{{item.byHemp}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="page-content" *ngIf="curTable === 'Oven' && isChart">
+    <!-- 图表渲染 -->
+     <div *ngFor="let item of ovenChartData" class="chart-item">
+      <div class="title">
+        <span>{{item.deviceName}}</span>
+        <select [(ngModel)]="item.area1" (change)="areaChange(item)">
+          <option *ngFor="let areaItem of item.areaList1" [value]="areaItem.key">
+            {{areaItem.value}}
+          </option>
+        </select>
+        <select [(ngModel)]="item.area2" (change)="areaChange(item)">
+          <option *ngFor="let areaItem of item.areaList2" [value]="areaItem.key">
+            {{areaItem.value}}
+          </option>
+        </select>
+      </div>
+      <div [id]="item.deviceCode" class="chart-container" style="height: 300px;"></div>
+    </div>
+  </div>
+  <div class="page-content" *ngIf="curTable === 'TANSensor' && isChart">
+    <!-- 图表渲染 -->
+     <div *ngFor="let item of tanSensorChartData" class="chart-item">
+      <div class="title">
+        <span>{{item.deviceName}}</span>
+        <select [(ngModel)]="item.area" (change)="areaChange(item)">
+          <option *ngFor="let areaItem of item.areaList" [value]="areaItem.key">
+            {{areaItem.value}}
+          </option>
+        </select>
+      </div>
+      <div [id]="item.deviceCode" class="chart-container" style="height: 300px;"></div>
+    </div>
+  </div>
+  <div class="page-footer" *ngIf="!isChart">
+    <mat-paginator [length]="total" [pageSize]="searchFormGroup.value.size" [pageSizeOptions]="pageSizeOptions"
+      aria-label="选择要跳转的页面" (page)="getNotices($event)">
+    </mat-paginator>
+  </div>
+</div>

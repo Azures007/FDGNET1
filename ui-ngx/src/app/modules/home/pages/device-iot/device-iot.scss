@@ -194,9 +194,10 @@
     }
     th {
       background-color: #e0e0e0;
-      // padding: 10px 0;
+      padding: 10px 0;
       border-right: 1px solid #dcdfe6;
-      font-size: 16px;
+      font-size: 14px;
+      // border-top: 1px solid #000;
     }
     tbody {
       background-color: #fff;
@@ -210,9 +211,6 @@
           text-align: center;
           border-right: 1px solid #dcdfe6;
           font-size: 13px;
-        }
-        .red{
-          color: rgba(255, 51, 0, 1);
         }
         .doing{
           color: rgba(102, 204, 0, 1);
@@ -347,6 +345,25 @@
 
 }
 
+.chart-item {
+  padding: 20px 40px;
+  margin-bottom: 20px;
+  background: #fff;
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+  }
+}
+
 .search_btn {
   color: #fff;
   background-color: #3399ff;
@@ -392,4 +409,27 @@
 .link {
   color: #0066ff;
   cursor: pointer;
+}
+
+.tags {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+
+  .tags-wrapper {
+    display: flex;
+    .tag {
+      background-color: #fff;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-right: 10px;
+      cursor: pointer;
+
+      &.active {
+        color: #fff;
+        background-color: #3399ff;
+      }
+    }
+  }
+
 }
