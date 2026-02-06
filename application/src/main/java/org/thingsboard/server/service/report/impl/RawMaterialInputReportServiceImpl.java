@@ -82,6 +82,11 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
     @Autowired
     private UserService userService;
     
+    // 工序信息缓存，避免重复查询
+    private Map<String, TSysProcessInfo> processMapCache = null;
+    private long processCacheTime = 0;
+    private static final long PROCESS_CACHE_EXPIRE = 300000; // 5分钟过期
+    
     /**
      * 获取当前登录用户ID
      */
@@ -178,9 +183,8 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         
         if (orderHeadPage.hasContent()) {
             List<TBusOrderHead> orderHeads = orderHeadPage.getContent();
-            // 预取工序映射以加速查询
-            Map<String, TSysProcessInfo> allProcessMap = processInfoRepository.findAll().stream()
-                    .collect(Collectors.toMap(TSysProcessInfo::getProcessNumber, p -> p, (a, b) -> a));
+            // 使用缓存的工序信息
+            Map<String, TSysProcessInfo> allProcessMap = getProcessMapCache();
             
             // 预取所有需要的数据，解决N+1问题
             Map<String, Object> prefetchContext = prefetchData(orderHeads, allProcessMap);
@@ -209,14 +213,15 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         long startTime = System.currentTimeMillis();
         Map<String, Object> context = new ConcurrentHashMap<>();
         
-        List<String> orderNos = orderHeads.stream().map(TBusOrderHead::getOrderNo).collect(Collectors.toList());
-        List<Integer> orderIds = orderHeads.stream().map(TBusOrderHead::getOrderId).collect(Collectors.toList());
+        List<String> orderNos = orderHeads.stream().map(TBusOrderHead::getOrderNo).distinct().collect(Collectors.toList());
+        List<Integer> orderIds = orderHeads.stream().map(TBusOrderHead::getOrderId).distinct().collect(Collectors.toList());
         List<String> productCodes = orderHeads.stream().map(TBusOrderHead::getBodyMaterialNumber)
                 .filter(StringUtils::isNotEmpty).distinct().collect(Collectors.toList());
         
         context.put("orderHeads", orderHeads.stream().collect(Collectors.groupingBy(TBusOrderHead::getOrderNo)));
         
-        // 将数据库查询改为顺序执行，以避免异步线程导致的 Transaction/Session 丢失问题
+        // 优化：一次性批量查询所有数据，不再分批
+        log.info("开始预取数据，订单数量: {}", orderNos.size());
         
         // 1. 查询实际产量记录
         List<TBusOrderProcessHistory> actualOutputRecords = orderProcessHistoryRepository.findAllByOrderNoInAndProcessName(orderNos, "外包装");
@@ -231,7 +236,7 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         context.put("orderProcesses", orderProcesses.stream().collect(Collectors.groupingBy(TBusOrderProcess::getOrderNo)));
         context.put("orderProcessesById", orderProcesses.stream().collect(Collectors.toMap(TBusOrderProcess::getOrderProcessId, p -> p, (a, b) -> a)));
         
-        List<Integer> orderProcessIds = orderProcesses.stream().map(TBusOrderProcess::getOrderProcessId).collect(Collectors.toList());
+        List<Integer> orderProcessIds = orderProcesses.stream().map(TBusOrderProcess::getOrderProcessId).distinct().collect(Collectors.toList());
         if (!orderProcessIds.isEmpty()) {
             List<TBusOrderPotCount> potCounts = orderPotCountRepository.findAllByOrderProcessIdIn(orderProcessIds);
             context.put("potCounts", potCounts.stream().collect(Collectors.groupingBy(TBusOrderPotCount::getOrderProcessId)));
@@ -684,13 +689,12 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
         Sort sort = Sort.by(orders);
         
         // 分页获取数据，避免一次性查询太多导致内存问题，但增加批次大小
-        int batchSize = 500;
+        int batchSize = 1000;  // 优化：增大批次大小从500到1000
         int current = 0;
         List<RawMaterialInputReportVo> allList = new ArrayList<>();
         
-        // 获取所有工序映射以加速查询
-        Map<String, TSysProcessInfo> allProcessMap = processInfoRepository.findAll().stream()
-                .collect(Collectors.toMap(TSysProcessInfo::getProcessNumber, p -> p, (a, b) -> a));
+        // 使用缓存的工序映射以加速查询
+        Map<String, TSysProcessInfo> allProcessMap = getProcessMapCache();
         
         while (true) {
             Pageable pageable = PageRequest.of(current, batchSize, sort);
@@ -1090,6 +1094,20 @@ public class RawMaterialInputReportServiceImpl implements RawMaterialInputReport
 
         // 返回分组内物料的最小投入次数
         return minInputCount == Integer.MAX_VALUE ? 0 : minInputCount;
+    }
+    
+    /**
+     * 获取工序信息缓存，避免重复查询数据库
+     */
+    private synchronized Map<String, TSysProcessInfo> getProcessMapCache() {
+        long currentTime = System.currentTimeMillis();
+        if (processMapCache == null || (currentTime - processCacheTime) > PROCESS_CACHE_EXPIRE) {
+            processMapCache = processInfoRepository.findAll().stream()
+                    .collect(Collectors.toMap(TSysProcessInfo::getProcessNumber, p -> p, (a, b) -> a));
+            processCacheTime = currentTime;
+            log.debug("刷新工序信息缓存，共{}条记录", processMapCache.size());
+        }
+        return processMapCache;
     }
     
     /**
