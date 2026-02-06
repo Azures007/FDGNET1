@@ -85,7 +85,7 @@
               <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.plannedOutput}}</td>
               <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.actualOutput}}</td>
               <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.netContentWeight}}</td>
-              <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.inputOutputRatio}}%</td>
+              <td [class]="{'red': firstItem.inputOutputRatio > 110}" [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.inputOutputRatio}}%</td>
               <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.materialConsumptionPerBox}}</td>
               <td [attr.rowspan]="firstItem.inputMaterialItems.length" *ngIf="secondIndex == 0">{{firstItem.defectiveRate}}</td>
             </tr>
