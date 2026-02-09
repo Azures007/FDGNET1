@@ -746,7 +746,6 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     BigDecimal wasteRate = BigDecimal.ZERO;
                     if (netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
                         wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
-                            .multiply(new BigDecimal("100"))
                             .setScale(2, RoundingMode.HALF_UP);
                     }
                     
@@ -780,7 +779,6 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     BigDecimal wasteRate = BigDecimal.ZERO;
                     if (netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
                         wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
-                            .multiply(new BigDecimal("100"))
                             .setScale(2, RoundingMode.HALF_UP);
                     }
                     
@@ -815,7 +813,6 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     BigDecimal wasteRate = BigDecimal.ZERO;
                     if (netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
                         wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
-                            .multiply(new BigDecimal("100"))
                             .setScale(2, RoundingMode.HALF_UP);
                     }
                     

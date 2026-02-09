@@ -937,7 +937,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      * @param worklineIds 允许的生产线ID列表
      * @return List<Map> [时间, 净含量报工总重量]
      */
-    @Query(value = "SELECT TO_CHAR(r.report_time, 'MM-DD') as timeX, " +
+    @Query(value = "SELECT TO_CHAR(h.body_plan_start_date, 'MM-DD') as timeX, " +
            "COALESCE(SUM(r.record_qty), 0) as netContentWeight " +
            "FROM t_bus_order_head h " +
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
@@ -947,12 +947,12 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND r.bus_type = 'BG' " +
            "AND r.record_type = '3' " +
            "AND r.report_status = '0' " +
-           "AND r.report_time >= :startDate " +
-           "AND r.report_time <= :endDate " +
+           "AND h.body_plan_start_date >= :startDate " +
+           "AND h.body_plan_start_date <= :endDate " +
            "AND h.nc_cwkid IN (:worklineIds) " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
-           "GROUP BY TO_CHAR(r.report_time, 'MM-DD') " +
-           "ORDER BY TO_CHAR(r.report_time, 'MM-DD')",
+           "GROUP BY TO_CHAR(h.body_plan_start_date, 'MM-DD') " +
+           "ORDER BY TO_CHAR(h.body_plan_start_date, 'MM-DD')",
            nativeQuery = true)
     List<Map> findNetContentWeightByDay(@Param("startDate") Date startDate,
                                         @Param("endDate") Date endDate,
@@ -967,7 +967,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      * @param worklineIds 允许的生产线ID列表
      * @return List<Map> [时间, 净含量报工总重量]
      */
-    @Query(value = "SELECT TO_CHAR(r.report_time, 'YYYY-MM') as timeX, " +
+    @Query(value = "SELECT TO_CHAR(h.body_plan_start_date, 'YYYY-MM') as timeX, " +
            "COALESCE(SUM(r.record_qty), 0) as netContentWeight " +
            "FROM t_bus_order_head h " +
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
@@ -977,12 +977,12 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND r.bus_type = 'BG' " +
            "AND r.record_type = '3' " +
            "AND r.report_status = '0' " +
-           "AND r.report_time >= :startDate " +
-           "AND r.report_time <= :endDate " +
+           "AND h.body_plan_start_date >= :startDate " +
+           "AND h.body_plan_start_date <= :endDate " +
            "AND h.nc_cwkid IN (:worklineIds) " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
-           "GROUP BY TO_CHAR(r.report_time, 'YYYY-MM') " +
-           "ORDER BY TO_CHAR(r.report_time, 'YYYY-MM')",
+           "GROUP BY TO_CHAR(h.body_plan_start_date, 'YYYY-MM') " +
+           "ORDER BY TO_CHAR(h.body_plan_start_date, 'YYYY-MM')",
            nativeQuery = true)
     List<Map> findNetContentWeightByMonth(@Param("startDate") Date startDate,
                                           @Param("endDate") Date endDate,
@@ -997,7 +997,7 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
      * @param worklineIds 允许的生产线ID列表
      * @return List<Map> [时间, 净含量报工总重量]
      */
-    @Query(value = "SELECT CONCAT('第', TO_CHAR(r.report_time, 'WW'), '周') as timeX, " +
+    @Query(value = "SELECT CONCAT('第', TO_CHAR(h.body_plan_start_date, 'WW'), '周') as timeX, " +
            "COALESCE(SUM(r.record_qty), 0) as netContentWeight " +
            "FROM t_bus_order_head h " +
            "JOIN t_bus_order_process_history r ON h.order_no = r.order_no " +
@@ -1007,12 +1007,12 @@ public interface ProductionBoardRepository extends JpaRepository<NcTBusOrderHead
            "AND r.bus_type = 'BG' " +
            "AND r.record_type = '3' " +
            "AND r.report_status = '0' " +
-           "AND r.report_time >= :startDate " +
-           "AND r.report_time <= :endDate " +
+           "AND h.body_plan_start_date >= :startDate " +
+           "AND h.body_plan_start_date <= :endDate " +
            "AND h.nc_cwkid IN (:worklineIds) " +
            "AND (CAST(:productionLine AS VARCHAR) IS NULL OR h.nc_cwkid = CAST(:productionLine AS VARCHAR)) " +
-           "GROUP BY TO_CHAR(r.report_time, 'WW') " +
-           "ORDER BY TO_CHAR(r.report_time, 'WW')",
+           "GROUP BY TO_CHAR(h.body_plan_start_date, 'WW') " +
+           "ORDER BY TO_CHAR(h.body_plan_start_date, 'WW')",
            nativeQuery = true)
     List<Map> findNetContentWeightByWeek(@Param("startDate") Date startDate,
                                          @Param("endDate") Date endDate,
