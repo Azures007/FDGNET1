@@ -745,7 +745,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     // 计算废品率
                     BigDecimal wasteRate = BigDecimal.ZERO;
                     if (netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
-                        wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
+                        wasteRate = defectiveWeight.divide(defectiveWeight.add(wasteWeight).add(netContentWeight), 4, RoundingMode.HALF_UP)
                             .setScale(5, RoundingMode.HALF_UP);
                     }
                     
@@ -778,7 +778,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     // 计算废品率
                     BigDecimal wasteRate = BigDecimal.ZERO;
                     if (netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
-                        wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
+                        wasteRate = defectiveWeight.divide(defectiveWeight.add(wasteWeight).add(netContentWeight), 4, RoundingMode.HALF_UP)
                             .setScale(5, RoundingMode.HALF_UP);
                     }
                     
@@ -812,7 +812,7 @@ public class ProductionBoardServiceImpl implements ProductionBoardService {
                     // 计算废品率
                     BigDecimal wasteRate = BigDecimal.ZERO;
                     if (netContentWeight.compareTo(BigDecimal.ZERO) > 0) {
-                        wasteRate = defectiveWeight.divide(netContentWeight, 4, RoundingMode.HALF_UP)
+                        wasteRate = defectiveWeight.divide(defectiveWeight.add(wasteWeight).add(netContentWeight), 4, RoundingMode.HALF_UP)
                             .setScale(5, RoundingMode.HALF_UP);
                     }
                     
